@@ -25,6 +25,13 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 - Artikel-Detailseiten mit Due Diligence Box und Expert Tips
 - Team-Seite mit Milena Bubanja & Holger Kuhlmann
 - Kontakt-Seite
+- **Serbia Executive Access Seite:** `/serbia-executive`
+  - Video-Intro (eingebettet)
+  - Government Relations (Behörden-Zugang)
+  - Infrastructure & PPP (Großprojekte)
+  - Incentives & Subsidies (Förderungen)
+  - Executive Inquiry Formular (MOCKED)
+  - ShareButtons & Kommentare integriert
 - **Rechtliche Seiten:**
   - Impressum (inkl. Niederlassung Deutschland: Speditionsstraße 15a, 40221 Düsseldorf)
   - Datenschutz (DSGVO-konform)
@@ -87,6 +94,11 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 
 ## Verbleibende Aufgaben
 
+### P0 - Offen
+- [ ] SMTP-Credentials für E-Mail-Benachrichtigungen konfigurieren (Backend `.env`)
+  - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`
+- [ ] Executive Inquiry Formular Backend-Endpoint (optional)
+
 ### P1 - Wichtig
 - [x] Social Sharing Buttons (implementiert)
 - [ ] Newsletter-Integration (Email-Sammlung, Lead Magnet)
@@ -116,19 +128,22 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 │   ├── seed_articles.py       # Initial 17 Artikel
 │   ├── add_remaining_articles.py  # +26 Artikel
 │   ├── add_final_articles.py  # +17 Artikel
-│   ├── .env                   # Credentials
+│   ├── .env                   # Credentials (inkl. SMTP)
 │   └── requirements.txt
 └── frontend
     ├── src
     │   ├── components/        # UI Komponenten
+    │   │   ├── ShareButtons.jsx
+    │   │   └── CommentsSection.jsx
     │   ├── pages/             # Seiten
     │   │   ├── Home.jsx
     │   │   ├── BlogPage.jsx
     │   │   ├── ArticlePage.jsx
     │   │   ├── TeamPage.jsx
     │   │   ├── ContactPage.jsx
-    │   │   ├── AdminPage.jsx      # CMS Admin
-    │   │   ├── ImpressumPage.jsx  # Legal
+    │   │   ├── AdminPage.jsx           # CMS Admin
+    │   │   ├── SerbiaExecutivePage.jsx # Serbia Executive Access
+    │   │   ├── ImpressumPage.jsx       # Legal
     │   │   └── DatenschutzPage.jsx
     │   ├── services/
     │   │   └── api.js         # API Service
@@ -141,6 +156,16 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 ---
 
 ## Changelog
+
+### 2026-03-15 (Update 3)
+- ✅ **Serbia Executive Access Seite** komplett implementiert (`/serbia-executive`)
+  - Video-Intro eingebettet
+  - 3 Service-Sektionen: Government Relations, Infrastructure & PPP, Incentives & Subsidies
+  - Executive Inquiry Formular mit Erfolgsbestätigung (MOCKED - kein Backend-Endpoint)
+  - ShareButtons und Kommentar-System integriert
+  - Navigation-Link im Header mit exklusivem Badge
+- ✅ Veraltete Datei `pillarArticlesComplete.js` gelöscht
+- ✅ SMTP-Code für E-Mail-Benachrichtigungen ist vorbereitet (Credentials in .env eintragen)
 
 ### 2025-03-15 (Update 2)
 - ✅ Share-Buttons implementiert (LinkedIn, X, Facebook, WhatsApp, E-Mail)
