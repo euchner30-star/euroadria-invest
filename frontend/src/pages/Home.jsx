@@ -1,13 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Hero from '../components/Hero';
 import TeamSection from '../components/TeamSection';
 import { LeadMagnetBox } from '../components/ArticleComponents';
 import { Link } from 'react-router-dom';
-import pillarArticles from '../data/pillarArticlesComplete';
-import { ArrowRight, Clock, Shield, TrendingUp, Award } from 'lucide-react';
+import { articlesApi } from '../services/api';
+import { ArrowRight, Clock, Shield, TrendingUp, Award, Loader2 } from 'lucide-react';
 
 const Home = () => {
-  const featuredArticles = pillarArticles.filter(a => a.featured).slice(0, 3);
+  const [featuredArticles, setFeaturedArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const data = await articlesApi.getFeatured(3);
+        setFeaturedArticles(data);
+      } catch (err) {
+        console.error('Failed to fetch featured articles:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -81,54 +96,61 @@ const Home = () => {
           </div>
 
           {/* Featured Articles Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {featuredArticles.map((article) => (
-              <Link
-                key={article.id}
-                to={`/blog/${article.slug}`}
-                className="group"
-              >
-                <article className="glass-card-hover h-full overflow-hidden">
-                  {/* Article Image */}
-                  <div className="relative h-56 overflow-hidden">
-                    <img
-                      src={article.image}
-                      alt={article.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                    <div className="absolute top-4 left-4">
-                      <span className="glass-card text-xs text-white px-3 py-1.5 font-medium">
-                        {article.category}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Article Content */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-gold transition-colors line-clamp-2">
-                      {article.title}
-                    </h3>
-                    <p className="text-white/70 text-sm leading-relaxed mb-4 line-clamp-3">
-                      {article.excerpt}
-                    </p>
-
-                    {/* Meta Info */}
-                    <div className="flex items-center justify-between text-xs text-white/50">
-                      <div className="flex items-center space-x-2">
-                        <Clock className="w-4 h-4" />
-                        <span>{article.readTime}</span>
+          {loading ? (
+            <div className="flex justify-center items-center py-16">
+              <Loader2 className="w-10 h-10 text-gold animate-spin" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {featuredArticles.map((article) => (
+                <Link
+                  key={article.id}
+                  to={`/blog/${article.slug}`}
+                  className="group"
+                  data-testid={`featured-article-${article.slug}`}
+                >
+                  <article className="glass-card-hover h-full overflow-hidden">
+                    {/* Article Image */}
+                    <div className="relative h-56 overflow-hidden">
+                      <img
+                        src={article.image}
+                        alt={article.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute top-4 left-4">
+                        <span className="glass-card text-xs text-white px-3 py-1.5 font-medium">
+                          {article.category}
+                        </span>
                       </div>
-                      <span className="group-hover:text-gold transition-colors flex items-center space-x-1">
-                        <span>Weiterlesen</span>
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      </span>
                     </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
-          </div>
+
+                    {/* Article Content */}
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-gold transition-colors line-clamp-2">
+                        {article.title}
+                      </h3>
+                      <p className="text-white/70 text-sm leading-relaxed mb-4 line-clamp-3">
+                        {article.excerpt}
+                      </p>
+
+                      {/* Meta Info */}
+                      <div className="flex items-center justify-between text-xs text-white/50">
+                        <div className="flex items-center space-x-2">
+                          <Clock className="w-4 h-4" />
+                          <span>{article.readTime}</span>
+                        </div>
+                        <span className="group-hover:text-gold transition-colors flex items-center space-x-1">
+                          <span>Weiterlesen</span>
+                          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* CTA to Blog */}
           <div className="text-center">

@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,9 +7,10 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
+import secrets
 
 
 ROOT_DIR = Path(__file__).parent
@@ -25,10 +27,30 @@ app = FastAPI()
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Simple HTTP Basic Auth for Admin
+security = HTTPBasic()
+
+# Admin credentials (in production, use environment variables and proper hashing)
+ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'euroadria2025')
+
+
+def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
+    """Verify admin credentials"""
+    correct_username = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
+    correct_password = secrets.compare_digest(credentials.password, ADMIN_PASSWORD)
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
 
 # Define Models
 class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
+    model_config = ConfigDict(extra="ignore")
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     client_name: str
@@ -36,6 +58,56 @@ class StatusCheck(BaseModel):
 
 class StatusCheckCreate(BaseModel):
     client_name: str
+
+
+# Article Models
+class DueDiligenceBox(BaseModel):
+    title: str
+    content: str
+
+class ExpertTip(BaseModel):
+    author: str
+    title: str
+    content: str
+
+class ArticleBase(BaseModel):
+    cluster: str
+    title: str
+    slug: str
+    excerpt: str
+    content: str
+    image: str
+    category: str
+    date: str
+    readTime: str
+    featured: bool = False
+    author: str
+    relatedArticles: List[int] = []
+    dueDiligenceBox: Optional[DueDiligenceBox] = None
+    expertTip: Optional[ExpertTip] = None
+
+class ArticleCreate(ArticleBase):
+    pass
+
+class ArticleUpdate(BaseModel):
+    cluster: Optional[str] = None
+    title: Optional[str] = None
+    slug: Optional[str] = None
+    excerpt: Optional[str] = None
+    content: Optional[str] = None
+    image: Optional[str] = None
+    category: Optional[str] = None
+    date: Optional[str] = None
+    readTime: Optional[str] = None
+    featured: Optional[bool] = None
+    author: Optional[str] = None
+    relatedArticles: Optional[List[int]] = None
+    dueDiligenceBox: Optional[DueDiligenceBox] = None
+    expertTip: Optional[ExpertTip] = None
+
+class Article(ArticleBase):
+    model_config = ConfigDict(extra="ignore")
+    id: int
 
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
@@ -65,6 +137,167 @@ async def get_status_checks():
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
     
     return status_checks
+
+
+# =============================================
+# ARTICLE ENDPOINTS (Public)
+# =============================================
+
+@api_router.get("/articles", response_model=List[Article])
+async def get_articles(
+    cluster: Optional[str] = None,
+    featured: Optional[bool] = None,
+    category: Optional[str] = None,
+    limit: Optional[int] = None
+):
+    """Get all articles with optional filters"""
+    query = {}
+    if cluster:
+        query["cluster"] = cluster
+    if featured is not None:
+        query["featured"] = featured
+    if category:
+        query["category"] = category
+    
+    cursor = db.articles.find(query, {"_id": 0})
+    if limit:
+        cursor = cursor.limit(limit)
+    
+    articles = await cursor.to_list(1000)
+    return articles
+
+
+@api_router.get("/articles/{slug}", response_model=Article)
+async def get_article_by_slug(slug: str):
+    """Get a single article by slug"""
+    article = await db.articles.find_one({"slug": slug}, {"_id": 0})
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    return article
+
+
+@api_router.get("/articles/id/{article_id}", response_model=Article)
+async def get_article_by_id(article_id: int):
+    """Get a single article by ID"""
+    article = await db.articles.find_one({"id": article_id}, {"_id": 0})
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    return article
+
+
+@api_router.get("/clusters")
+async def get_clusters():
+    """Get all unique clusters with article counts"""
+    pipeline = [
+        {"$group": {"_id": "$cluster", "count": {"$sum": 1}, "category": {"$first": "$category"}}},
+        {"$sort": {"_id": 1}}
+    ]
+    clusters = await db.articles.aggregate(pipeline).to_list(100)
+    return [{"cluster": c["_id"], "count": c["count"], "category": c["category"]} for c in clusters]
+
+
+@api_router.get("/categories")
+async def get_categories():
+    """Get all unique categories with article counts"""
+    pipeline = [
+        {"$group": {"_id": "$category", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    categories = await db.articles.aggregate(pipeline).to_list(100)
+    return [{"category": c["_id"], "count": c["count"]} for c in categories]
+
+
+# =============================================
+# ADMIN ENDPOINTS (Protected)
+# =============================================
+
+@api_router.post("/admin/articles", response_model=Article)
+async def create_article(article: ArticleCreate, admin: str = Depends(verify_admin)):
+    """Create a new article (Admin only)"""
+    # Check if slug already exists
+    existing = await db.articles.find_one({"slug": article.slug})
+    if existing:
+        raise HTTPException(status_code=400, detail="Article with this slug already exists")
+    
+    # Generate new ID (find max ID and increment)
+    max_id_doc = await db.articles.find_one(sort=[("id", -1)])
+    new_id = (max_id_doc["id"] + 1) if max_id_doc else 101
+    
+    article_dict = article.model_dump()
+    article_dict["id"] = new_id
+    
+    await db.articles.insert_one(article_dict)
+    
+    # Return without _id
+    return article_dict
+
+
+@api_router.put("/admin/articles/{article_id}", response_model=Article)
+async def update_article(article_id: int, article_update: ArticleUpdate, admin: str = Depends(verify_admin)):
+    """Update an article (Admin only)"""
+    # Check if article exists
+    existing = await db.articles.find_one({"id": article_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Article not found")
+    
+    # Build update dict excluding None values
+    update_data = {k: v for k, v in article_update.model_dump().items() if v is not None}
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    # If slug is being updated, check it doesn't conflict
+    if "slug" in update_data and update_data["slug"] != existing.get("slug"):
+        slug_exists = await db.articles.find_one({"slug": update_data["slug"], "id": {"$ne": article_id}})
+        if slug_exists:
+            raise HTTPException(status_code=400, detail="Article with this slug already exists")
+    
+    await db.articles.update_one({"id": article_id}, {"$set": update_data})
+    
+    updated = await db.articles.find_one({"id": article_id}, {"_id": 0})
+    return updated
+
+
+@api_router.delete("/admin/articles/{article_id}")
+async def delete_article(article_id: int, admin: str = Depends(verify_admin)):
+    """Delete an article (Admin only)"""
+    result = await db.articles.delete_one({"id": article_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Article not found")
+    return {"message": "Article deleted successfully", "id": article_id}
+
+
+@api_router.get("/admin/verify")
+async def verify_admin_access(admin: str = Depends(verify_admin)):
+    """Verify admin credentials"""
+    return {"authenticated": True, "username": admin}
+
+
+@api_router.post("/admin/seed-articles")
+async def seed_articles(admin: str = Depends(verify_admin)):
+    """Seed the database with initial articles (Admin only)"""
+    # Check if articles already exist
+    count = await db.articles.count_documents({})
+    if count > 0:
+        return {"message": f"Database already contains {count} articles. Skipping seed.", "seeded": False}
+    
+    # The pillar articles data will be sent from frontend during initial setup
+    return {"message": "Use POST /api/admin/seed-articles-data with articles array to seed", "seeded": False}
+
+
+@api_router.post("/admin/seed-articles-data")
+async def seed_articles_data(articles: List[ArticleCreate], admin: str = Depends(verify_admin)):
+    """Seed the database with provided articles data (Admin only)"""
+    # Clear existing articles
+    await db.articles.delete_many({})
+    
+    # Insert all articles with IDs
+    for i, article in enumerate(articles):
+        article_dict = article.model_dump()
+        article_dict["id"] = 101 + i
+        await db.articles.insert_one(article_dict)
+    
+    return {"message": f"Successfully seeded {len(articles)} articles", "seeded": True, "count": len(articles)}
 
 # Include the router in the main app
 app.include_router(api_router)

@@ -1,99 +1,168 @@
 # EuroAdria - Product Requirements Document
 
-## Original Problem Statement
-Erstelle eine High-End-Webseite für 'EuroAdria' (Nische: Investment, Business & Lifestyle an der Adria/Balkan) mit ultra-modernem Glassmorphism-Design, 60+ SEO-optimierten Blog-Artikeln, dunklem Thema, Gold-Akzenten (#D4AF37), und exklusivem Premium-Look.
+## Projekt-Übersicht
+EuroAdria ist eine professionelle Website für eine Investment-, Business- und Lifestyle-Beratung mit Fokus auf die Adria/Balkan-Region.
 
-## Tech Stack
-- **Frontend**: React 19, TailwindCSS, Shadcn UI
-- **Backend**: FastAPI, MongoDB
-- **Fonts**: Playfair Display (Headings), Montserrat (Body)
-- **Design**: Dark Mode mit Glassmorphism, Gold-Akzente
+## Zielgruppe
+- DACH-Investoren (Deutschland, Österreich, Schweiz)
+- Auswanderer und Digital Nomads
+- Unternehmer und Geschäftsleute
 
-## User Personas
-1. **DACH-Investoren**: Deutschsprachige Investoren auf der Suche nach exklusiven Balkan-Investments
-2. **High-Net-Worth Individuals**: Personen mit hohem Vermögen, die Lifestyle & ROI kombinieren wollen
-3. **Business-Entscheider**: Unternehmer, die Expansion in den Balkan erwägen
+## Design-Prinzipien
+- **"Quiet Luxury"** Stil
+- Navy Blue (#002147) als Basis
+- Gold (#D4AF37) als Akzentfarbe
+- Playfair Display für Headlines
+- Montserrat für Body Text
 
-## Core Requirements (Static)
+---
 
-### Design Anforderungen
-- ✅ Glassmorphism-Design mit halbtransparenten Karten und Backdrop-Blur
-- ✅ Dark Mode als Standard mit Gold-Akzentfarbe (#D4AF37)
-- ✅ Hochauflösendes Hintergrundbild (kroatische/montenegrinische Küste)
-- ✅ Schwebende Glas-Navigationsleiste
-- ✅ Fonts: Playfair Display + Montserrat
+## Implementierter Umfang
 
-### Funktionale Anforderungen
-- ✅ Hero-Sektion mit prominentem Logo
-- ✅ Blog mit 60+ Artikeln (Featured + Liste)
-- ✅ SEO-optimierte URL-Struktur (/blog/artikel-slug)
-- ✅ Kategorie-Filter (Investment, Real Estate, Business, Lifestyle)
-- ✅ Suchfunktion für Artikel
-- ✅ "Ähnliche Beiträge" Section für interne Verlinkung
-- ✅ Kontaktformular mit Glassmorphism-Design
+### ✅ Frontend (React + TailwindCSS)
+- Homepage mit Hero-Sektion und Team-Präsentation
+- Blog-Seite mit 60 Artikeln in 6 Themen-Clustern
+- Artikel-Detailseiten mit Due Diligence Box und Expert Tips
+- Team-Seite mit Milena Bubanja & Holger Kuhlmann
+- Kontakt-Seite
+- **Rechtliche Seiten:**
+  - Impressum (inkl. Niederlassung Deutschland: Speditionsstraße 15a, 40221 Düsseldorf)
+  - Datenschutz (DSGVO-konform)
 
-## What's Been Implemented (2024-12-15)
+### ✅ Backend (FastAPI + MongoDB)
+- **REST API für Artikel:**
+  - `GET /api/articles` - Alle Artikel (mit Filtern)
+  - `GET /api/articles/{slug}` - Einzelner Artikel
+  - `GET /api/clusters` - Themen-Cluster mit Anzahl
+  - `GET /api/categories` - Kategorien
+- **Admin API (HTTP Basic Auth):**
+  - `POST /api/admin/articles` - Artikel erstellen
+  - `PUT /api/admin/articles/{id}` - Artikel bearbeiten
+  - `DELETE /api/admin/articles/{id}` - Artikel löschen
+  - `GET /api/admin/verify` - Login-Verifizierung
 
-### Frontend (✅ Completed)
-1. **Layout & Navigation**
-   - Header mit schwebender Glas-Navigationsleiste
-   - Logo prominent in Hero + dezent in Navigation
-   - Footer mit Social Links, Services, Kontaktinfo
-   
-2. **Pages**
-   - Home Page mit Hero-Sektion + Featured Articles
-   - Blog Page mit Search, Filter, Featured + Liste
-   - Article Page mit SEO-Struktur, H1-Tags, Related Articles
-   - Contact Page mit funktionierendem Formular
+### ✅ CMS Admin Panel
+- Login unter `/admin`
+- Artikel-Liste mit Bearbeitungs- und Löschfunktion
+- Artikel-Editor für alle Felder inkl. Due Diligence Box und Expert Tip
+- **Credentials:** admin / euroadria2025
 
-3. **Design System**
-   - Glassmorphism CSS (glass-card, glass-card-hover, glass-card-strong)
-   - Gold Button mit Gradient und Hover-Effekten
-   - Custom Animations (fadeIn, slideUp, hover-glow)
-   - Responsive Design für mobile, tablet, desktop
+### ✅ Content
+- **60 vollständige Artikel** in 6 Clustern:
+  - A: Makro & Strategie (11)
+  - B: Recht & Compliance (10)
+  - C: Montenegro Regionen (10)
+  - D: Serbien & Balkan (8)
+  - E: Lifestyle & Relocation (10)
+  - F: Business Setup (11)
 
-4. **Content**
-   - 60 Blog-Artikel als Mock-Daten
-   - Hochwertige lizenzfreie Bilder via Vision Expert Agent
-   - SEO-optimierte Titel und Beschreibungen
-   - Kategorisierung und Tagging
+---
 
-### Mock Data Structure
-- `/app/frontend/src/data/mockArticles.js`
-  - 60 Artikel mit ID, title, slug, excerpt, content, image, category, date, readTime, author, relatedArticles
-  - Helper functions: getFeaturedArticles(), getNonFeaturedArticles(), getArticleBySlug(), getRelatedArticles()
+## Technischer Stack
+- **Frontend:** React 19, React Router, TailwindCSS, Lucide Icons
+- **Backend:** FastAPI (Python), Motor (async MongoDB driver)
+- **Database:** MongoDB
+- **Auth:** HTTP Basic Authentication für Admin
 
-## Prioritized Backlog
+## API-Endpunkte
 
-### P0 (Next Phase - Backend Development)
-- [ ] MongoDB Models für Blog-Artikel
-- [ ] FastAPI Endpoints für CRUD Operations
-- [ ] Admin-Interface für Content-Management
-- [ ] Integration Frontend → Backend (Replace Mock Data)
+### Öffentlich
+| Methode | Endpoint | Beschreibung |
+|---------|----------|--------------|
+| GET | /api/articles | Alle Artikel |
+| GET | /api/articles/{slug} | Artikel by Slug |
+| GET | /api/articles/id/{id} | Artikel by ID |
+| GET | /api/clusters | Cluster mit Anzahl |
+| GET | /api/categories | Kategorien |
 
-### P1 (Enhancement Features)
-- [ ] Newsletter-Anmeldung
-- [ ] Social Media Sharing Buttons
-- [ ] Reading Progress Bar für Artikel
-- [ ] Dark/Light Mode Toggle
+### Admin (Basic Auth)
+| Methode | Endpoint | Beschreibung |
+|---------|----------|--------------|
+| GET | /api/admin/verify | Login prüfen |
+| POST | /api/admin/articles | Erstellen |
+| PUT | /api/admin/articles/{id} | Bearbeiten |
+| DELETE | /api/admin/articles/{id} | Löschen |
+
+---
+
+## Verbleibende Aufgaben
+
+### P1 - Wichtig
+- [ ] Newsletter-Integration (Email-Sammlung, Lead Magnet)
+- [ ] SEO-Meta-Tags für alle Seiten
+- [ ] Social Sharing Buttons
+
+### P2 - Nice-to-Have
+- [ ] Artikel-Suche mit Volltextsuche
+- [ ] Kommentar-Funktion
+- [ ] Related Articles Algorithmus verbessern
 - [ ] Multi-Language Support (DE/EN)
-
-### P2 (Advanced Features)
-- [ ] Comment System für Artikel
-- [ ] Bookmark/Favorite Funktion
-- [ ] Author Profile Pages
-- [ ] Related Articles Algorithm (ML-basiert)
 - [ ] Analytics Integration
 
-## Next Tasks
-1. ✅ Review Frontend Design & Functionality
-2. ✅ Test Navigation & Routing
-3. Backend Planning & API Design
-4. MongoDB Schema Design für Blog
-5. Admin CMS Development
+### P3 - Zukunft
+- [ ] Newsletter-Automatisierung
+- [ ] User-Registrierung für Lead Magnet
+- [ ] CRM-Integration
+- [ ] Blog-Import von externen Quellen
 
-## Notes
-- Alle Artikel verwenden lizenzfreie Stock-Fotos
-- Mock-Daten ermöglichen sofortiges User-Feedback
-- Design folgt strikt den Glassmorphism-Prinzipien
-- SEO-Struktur bereits implementiert (saubere URLs, H1-Tags)
+---
+
+## Dateistruktur
+
+```
+/app
+├── backend
+│   ├── server.py              # FastAPI Backend
+│   ├── seed_articles.py       # Initial 17 Artikel
+│   ├── add_remaining_articles.py  # +26 Artikel
+│   ├── add_final_articles.py  # +17 Artikel
+│   ├── .env                   # Credentials
+│   └── requirements.txt
+└── frontend
+    ├── src
+    │   ├── components/        # UI Komponenten
+    │   ├── pages/             # Seiten
+    │   │   ├── Home.jsx
+    │   │   ├── BlogPage.jsx
+    │   │   ├── ArticlePage.jsx
+    │   │   ├── TeamPage.jsx
+    │   │   ├── ContactPage.jsx
+    │   │   ├── AdminPage.jsx      # CMS Admin
+    │   │   ├── ImpressumPage.jsx  # Legal
+    │   │   └── DatenschutzPage.jsx
+    │   ├── services/
+    │   │   └── api.js         # API Service
+    │   ├── data/
+    │   │   └── clusters.js    # Cluster Definitionen
+    │   └── App.js             # Router
+    └── package.json
+```
+
+---
+
+## Changelog
+
+### 2025-03-15
+- ✅ Impressum-Seite mit Niederlassung Deutschland erstellt
+- ✅ Datenschutz-Seite (DSGVO) erstellt
+- ✅ Footer-Links zu rechtlichen Seiten hinzugefügt
+- ✅ CMS-Backend mit MongoDB implementiert
+- ✅ Admin-Panel unter /admin erstellt
+- ✅ CRUD-API für Artikel implementiert
+- ✅ Frontend auf API-Daten umgestellt (statt lokaler JS-Datei)
+- ✅ 43 weitere Artikel hinzugefügt (60 total)
+- ✅ Alle 6 Themen-Cluster vollständig befüllt
+
+### Frühere Updates
+- Website-Redesign zu "Quiet Luxury" (Navy/Gold)
+- 15 Pillar-Artikel erstellt
+- Team-Integration (Milena Bubanja & Holger Kuhlmann)
+- Mobile Menu repariert
+- Lead Magnet Komponente hinzugefügt
+
+---
+
+## Admin-Zugang
+- **URL:** /admin
+- **Benutzername:** admin
+- **Passwort:** euroadria2025

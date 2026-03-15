@@ -1,15 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import pillarArticles from '../data/pillarArticlesComplete';
+import { articlesApi } from '../services/api';
 import { themeClusters } from '../data/clusters';
-import { Clock, ArrowRight, Search } from 'lucide-react';
+import { Clock, ArrowRight, Search, Loader2 } from 'lucide-react';
 
 const BlogPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCluster, setSelectedCluster] = useState('All');
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const featuredArticles = pillarArticles.filter(a => a.featured);
-  const allArticles = pillarArticles;
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        setLoading(true);
+        const data = await articlesApi.getAll();
+        setArticles(data);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch articles:', err);
+        setError('Artikel konnten nicht geladen werden.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchArticles();
+  }, []);
+
+  const featuredArticles = articles.filter(a => a.featured);
+  const allArticles = articles;
 
   // Filter articles
   const filteredArticles = allArticles.filter(article => {
@@ -32,40 +52,58 @@ const BlogPage = () => {
           </p>
         </div>
 
-        {/* Theme Clusters Navigation */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-6">Themen-Cluster</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
-            <button
-              onClick={() => setSelectedCluster('All')}
-              className={`p-4 rounded-lg text-center transition-all ${
-                selectedCluster === 'All'
-                  ? 'bg-gold text-navy font-semibold'
-                  : 'glass-card text-white hover:border-gold/30'
-              }`}
-            >
-              <div className="font-medium">Alle</div>
-              <div className="text-xs mt-1 opacity-80">{allArticles.length} Artikel</div>
-            </button>
-            {themeClusters.map((cluster) => {
-              const count = allArticles.filter(a => a.cluster === cluster.id).length;
-              return (
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="w-10 h-10 text-gold animate-spin" />
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="glass-card p-8 text-center mb-12">
+            <p className="text-red-400">{error}</p>
+          </div>
+        )}
+
+        {!loading && !error && (
+          <>
+            {/* Theme Clusters Navigation */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-white mb-6">Themen-Cluster</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
                 <button
-                  key={cluster.id}
-                  onClick={() => setSelectedCluster(cluster.id)}
+                  onClick={() => setSelectedCluster('All')}
+                  data-testid="cluster-filter-all"
                   className={`p-4 rounded-lg text-center transition-all ${
-                    selectedCluster === cluster.id
+                    selectedCluster === 'All'
                       ? 'bg-gold text-navy font-semibold'
                       : 'glass-card text-white hover:border-gold/30'
                   }`}
                 >
-                  <div className="font-medium text-sm">{cluster.name}</div>
-                  <div className="text-xs mt-1 opacity-80">{count} Artikel</div>
+                  <div className="font-medium">Alle</div>
+                  <div className="text-xs mt-1 opacity-80">{allArticles.length} Artikel</div>
                 </button>
-              );
-            })}
-          </div>
-        </div>
+                {themeClusters.map((cluster) => {
+                  const count = allArticles.filter(a => a.cluster === cluster.id).length;
+                  return (
+                    <button
+                      key={cluster.id}
+                      onClick={() => setSelectedCluster(cluster.id)}
+                      data-testid={`cluster-filter-${cluster.id}`}
+                      className={`p-4 rounded-lg text-center transition-all ${
+                        selectedCluster === cluster.id
+                          ? 'bg-gold text-navy font-semibold'
+                          : 'glass-card text-white hover:border-gold/30'
+                      }`}
+                    >
+                      <div className="font-medium text-sm">{cluster.name}</div>
+                      <div className="text-xs mt-1 opacity-80">{count} Artikel</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
         {/* Search Bar */}
         <div className="glass-card p-6 mb-12">
@@ -194,6 +232,8 @@ const BlogPage = () => {
             </div>
           )}
         </div>
+        </>
+        )}
       </div>
     </div>
   );

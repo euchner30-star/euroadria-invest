@@ -7,6 +7,9 @@ import BlogPage from "./pages/BlogPage";
 import ArticlePage from "./pages/ArticlePage";
 import ContactPage from "./pages/ContactPage";
 import TeamPage from "./pages/TeamPage";
+import ImpressumPage from "./pages/ImpressumPage";
+import DatenschutzPage from "./pages/DatenschutzPage";
+import AdminPage from "./pages/AdminPage";
 
 function App() {
   return (
@@ -20,6 +23,9 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/team" element={<TeamPage />} />
           <Route path="/investments" element={<Home />} />
+          <Route path="/impressum" element={<ImpressumPage />} />
+          <Route path="/datenschutz" element={<DatenschutzPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
         <Footer />
       </BrowserRouter>

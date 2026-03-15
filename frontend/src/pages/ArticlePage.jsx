@@ -1,24 +1,60 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import pillarArticles from '../data/pillarArticlesComplete';
-import { Clock, Calendar, User, ArrowLeft, ArrowRight } from 'lucide-react';
+import { articlesApi, getRelatedArticles } from '../services/api';
+import { Clock, Calendar, User, ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 import { DueDiligenceBox, ExpertTipBox, LeadMagnetBox } from '../components/ArticleComponents';
 
 const ArticlePage = () => {
   const { slug } = useParams();
-  const article = pillarArticles.find(a => a.slug === slug);
+  const [article, setArticle] = useState(null);
+  const [relatedArticles, setRelatedArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    const fetchArticle = async () => {
+      try {
+        setLoading(true);
+        const data = await articlesApi.getBySlug(slug);
+        if (!data) {
+          setNotFound(true);
+          return;
+        }
+        setArticle(data);
+        
+        // Fetch related articles
+        if (data.relatedArticles && data.relatedArticles.length > 0) {
+          const related = await getRelatedArticles(data.relatedArticles.slice(0, 3));
+          setRelatedArticles(related);
+        }
+      } catch (err) {
+        console.error('Failed to fetch article:', err);
+        setNotFound(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchArticle();
   }, [slug]);
+
+  if (notFound) {
+    return <Navigate to="/blog" replace />;
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-32 pb-20 px-6 flex justify-center items-center">
+        <Loader2 className="w-12 h-12 text-gold animate-spin" />
+      </div>
+    );
+  }
 
   if (!article) {
     return <Navigate to="/blog" replace />;
   }
-
-  const relatedArticles = article.relatedArticles
-    ? article.relatedArticles.map(id => pillarArticles.find(a => a.id === id)).filter(Boolean).slice(0, 3)
-    : [];
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-6">
