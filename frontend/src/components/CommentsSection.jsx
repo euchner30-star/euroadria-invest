@@ -48,24 +48,26 @@ export const CommentForm = ({ articleId, articleSlug, onCommentSubmitted }) => {
   };
 
   return (
-    <div className="glass-card p-6 md:p-8 rounded-xl" data-testid="comment-form">
+    <div className="bg-white border border-gray-200 p-6 md:p-8 rounded-xl shadow-sm" data-testid="comment-form">
       <div className="flex items-center space-x-3 mb-6">
-        <MessageSquare className="w-6 h-6 text-gold" />
-        <h3 className="text-xl font-bold text-white">Kommentar hinterlassen</h3>
+        <div className="w-10 h-10 bg-ea-gold/10 rounded-lg flex items-center justify-center">
+          <MessageSquare className="w-5 h-5 text-ea-gold" />
+        </div>
+        <h3 className="text-xl font-semibold text-ea-dark">Kommentar hinterlassen</h3>
       </div>
 
       {status.message && (
         <div className={`p-4 rounded-lg mb-6 flex items-start space-x-3 ${
           status.type === 'success' 
-            ? 'bg-green-500/10 border border-green-500/30' 
-            : 'bg-red-500/10 border border-red-500/30'
-        }`}>
+            ? 'bg-green-50 border border-green-200' 
+            : 'bg-red-50 border border-red-200'
+        }`} data-testid="comment-status">
           {status.type === 'success' ? (
-            <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
           ) : (
-            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
           )}
-          <p className={status.type === 'success' ? 'text-green-300' : 'text-red-300'}>
+          <p className={status.type === 'success' ? 'text-green-700' : 'text-red-700'}>
             {status.message}
           </p>
         </div>
@@ -74,8 +76,8 @@ export const CommentForm = ({ articleId, articleSlug, onCommentSubmitted }) => {
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-white/70 text-sm mb-2">
-              <User className="w-4 h-4 inline mr-2 text-gold" />
+            <label className="block text-ea-dark/80 text-sm font-medium mb-2">
+              <User className="w-4 h-4 inline mr-2 text-ea-gold" />
               Name *
             </label>
             <input
@@ -84,14 +86,14 @@ export const CommentForm = ({ articleId, articleSlug, onCommentSubmitted }) => {
               onChange={(e) => handleChange('name', e.target.value)}
               placeholder="Ihr Name"
               required
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-gold/50 transition-colors"
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark placeholder-ea-dark/40 focus:outline-none focus:border-ea-gold focus:ring-2 focus:ring-ea-gold/20 transition-colors"
               data-testid="comment-name-input"
             />
           </div>
           <div>
-            <label className="block text-white/70 text-sm mb-2">
-              <Mail className="w-4 h-4 inline mr-2 text-gold" />
-              E-Mail * <span className="text-white/40">(wird nicht veröffentlicht)</span>
+            <label className="block text-ea-dark/80 text-sm font-medium mb-2">
+              <Mail className="w-4 h-4 inline mr-2 text-ea-gold" />
+              E-Mail * <span className="text-ea-dark/40">(wird nicht veröffentlicht)</span>
             </label>
             <input
               type="email"
@@ -99,15 +101,15 @@ export const CommentForm = ({ articleId, articleSlug, onCommentSubmitted }) => {
               onChange={(e) => handleChange('email', e.target.value)}
               placeholder="ihre@email.de"
               required
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-gold/50 transition-colors"
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark placeholder-ea-dark/40 focus:outline-none focus:border-ea-gold focus:ring-2 focus:ring-ea-gold/20 transition-colors"
               data-testid="comment-email-input"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-white/70 text-sm mb-2">
-            <MessageSquare className="w-4 h-4 inline mr-2 text-gold" />
+          <label className="block text-ea-dark/80 text-sm font-medium mb-2">
+            <MessageSquare className="w-4 h-4 inline mr-2 text-ea-gold" />
             Ihr Kommentar *
           </label>
           <textarea
@@ -116,19 +118,19 @@ export const CommentForm = ({ articleId, articleSlug, onCommentSubmitted }) => {
             placeholder="Teilen Sie Ihre Gedanken, Fragen oder Erfahrungen..."
             required
             rows={5}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-gold/50 transition-colors resize-none"
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark placeholder-ea-dark/40 focus:outline-none focus:border-ea-gold focus:ring-2 focus:ring-ea-gold/20 transition-colors resize-none"
             data-testid="comment-content-input"
           />
         </div>
 
-        <div className="flex items-center justify-between">
-          <p className="text-white/40 text-xs">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <p className="text-ea-dark/40 text-xs">
             * Pflichtfelder. Kommentare werden vor Veröffentlichung geprüft.
           </p>
           <button
             type="submit"
             disabled={submitting}
-            className="btn-gold flex items-center space-x-2"
+            className="px-6 py-3 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all flex items-center space-x-2 disabled:opacity-70"
             data-testid="comment-submit-button"
           >
             {submitting ? (
@@ -157,24 +159,24 @@ const Comment = ({ comment }) => {
   };
 
   return (
-    <div className="glass-card p-5 rounded-lg" data-testid={`comment-${comment.id}`}>
+    <div className="bg-ea-light border border-gray-200 p-5 rounded-lg" data-testid={`comment-${comment.id}`}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center">
-            <span className="text-gold font-bold text-lg">
+          <div className="w-10 h-10 rounded-full bg-ea-gold/20 flex items-center justify-center">
+            <span className="text-ea-gold font-bold text-lg">
               {comment.name.charAt(0).toUpperCase()}
             </span>
           </div>
           <div>
-            <p className="text-white font-medium">{comment.name}</p>
-            <p className="text-white/50 text-xs flex items-center space-x-1">
+            <p className="text-ea-dark font-medium">{comment.name}</p>
+            <p className="text-ea-dark/50 text-xs flex items-center space-x-1">
               <Clock className="w-3 h-3" />
               <span>{formatDate(comment.createdAt)}</span>
             </p>
           </div>
         </div>
       </div>
-      <p className="text-white/80 leading-relaxed">{comment.content}</p>
+      <p className="text-ea-dark/80 leading-relaxed">{comment.content}</p>
     </div>
   );
 };
@@ -205,7 +207,7 @@ export const CommentsList = ({ articleId }) => {
   if (loading) {
     return (
       <div className="flex justify-center py-8">
-        <Loader2 className="w-8 h-8 text-gold animate-spin" />
+        <Loader2 className="w-8 h-8 text-ea-gold animate-spin" />
       </div>
     );
   }
@@ -213,15 +215,15 @@ export const CommentsList = ({ articleId }) => {
   if (comments.length === 0) {
     return (
       <div className="text-center py-8">
-        <MessageSquare className="w-12 h-12 text-white/20 mx-auto mb-3" />
-        <p className="text-white/50">Noch keine Kommentare. Seien Sie der Erste!</p>
+        <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+        <p className="text-ea-dark/50">Noch keine Kommentare. Seien Sie der Erste!</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-4" data-testid="comments-list">
-      <p className="text-white/60 text-sm mb-4">
+      <p className="text-ea-dark/50 text-sm mb-4">
         {comments.length} {comments.length === 1 ? 'Kommentar' : 'Kommentare'}
       </p>
       {comments.map((comment) => (
@@ -242,8 +244,8 @@ const CommentsSection = ({ articleId, articleSlug }) => {
 
   return (
     <div className="mt-16" data-testid="comments-section">
-      <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-8">
-        Diskussion & <span className="text-gold">Kommentare</span>
+      <h2 className="text-2xl md:text-3xl font-semibold text-ea-dark mb-8">
+        Diskussion & <span className="text-ea-gold">Kommentare</span>
       </h2>
 
       {/* Comments List */}

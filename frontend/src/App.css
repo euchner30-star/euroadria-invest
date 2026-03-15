@@ -1,12 +1,21 @@
-/* EuroAdria - Original Design System from euroadria.me */
-/* LIGHT THEME - Professional Corporate Design */
+/* EuroAdria - Exact Design System from euroadria.me */
+/* Extracted exact color values and typography */
 
 /* ============================================
-   COLOR PALETTE - From euroadria.me
+   EXACT COLOR PALETTE FROM EUROADRIA.ME
    ============================================ */
 :root {
-  --white: #ffffff;
-  --black: #1a1a1a;
+  /* Core Colors - Exact from euroadria.me */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  --color-light: #F9F5EE;           /* Beige/Cream background */
+  --color-dark: #04151F;            /* Dark navy for text/footer */
+  --color-key1: #D5B781;            /* Gold accent */
+  --color-key2: #0E2A3B;            /* Navy blue */
+  --color-cta: #3eb489;             /* Teal/Green CTA button */
+  --color-cta-hover: #35a07a;
+  
+  /* Gray Scale */
   --gray-50: #fafafa;
   --gray-100: #f5f5f5;
   --gray-200: #e5e5e5;
@@ -15,51 +24,54 @@
   --gray-500: #737373;
   --gray-600: #525252;
   --gray-700: #404040;
-  --gray-800: #262626;
-  --gray-900: #171717;
-  --red-primary: #dc2626;
-  --red-hover: #b91c1c;
-  --teal-primary: #3eb489;
-  --teal-light: #5fcfa0;
+  
+  /* Typography - Figtree from euroadria.me */
+  --font-header: 'Figtree', sans-serif;
+  --font-text: 'Figtree', sans-serif;
+  --font-weight-normal: 400;
+  --font-weight-bold: 600;
 }
 
 /* ============================================
    BASE STYLES
    ============================================ */
 body {
-  background: var(--white);
-  color: var(--black);
+  background: var(--color-white);
+  color: var(--color-dark);
+  font-family: var(--font-text);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.5;
   min-height: 100vh;
 }
 
 /* ============================================
-   TYPOGRAPHY
+   TYPOGRAPHY - Matching euroadria.me
    ============================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-header);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.3;
+  letter-spacing: -0.4px;
+  color: var(--color-dark);
+}
+
 .text-display {
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-family: var(--font-header);
+  font-weight: var(--font-weight-bold);
 }
 
 /* ============================================
-   CARD STYLES - Light Theme
+   CARD STYLES
    ============================================ */
 .glass-card {
-  background: var(--white);
+  background: var(--color-white);
   border: 1px solid var(--gray-200);
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
 
-.glass-card-strong {
-  background: var(--white);
-  border: 1px solid var(--gray-200);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-}
-
 .glass-card-hover {
-  background: var(--white);
+  background: var(--color-white);
   border: 1px solid var(--gray-200);
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
@@ -69,71 +81,93 @@ body {
 .glass-card-hover:hover {
   border-color: var(--gray-300);
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
 }
 
 /* ============================================
-   BUTTON STYLES - euroadria.me Style
+   BUTTON STYLES - euroadria.me exact
    ============================================ */
+/* Primary CTA Button - Teal/Green */
 .btn-gold {
-  background: var(--teal-primary);
-  color: var(--white);
-  font-weight: 600;
-  padding: 1rem 2rem;
+  background: var(--color-cta);
+  color: var(--color-white);
+  font-family: var(--font-text);
+  font-weight: var(--font-weight-bold);
+  padding: 0.875rem 2rem;
   border-radius: 8px;
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
-  font-size: 0.9375rem;
-  letter-spacing: 0.02em;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .btn-gold:hover {
-  background: #35a07a;
+  background: var(--color-cta-hover);
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(62, 180, 137, 0.3);
 }
 
+/* Secondary Button - Dark/Solid */
 .btn-outline {
-  background: var(--black);
-  color: var(--white);
-  font-weight: 500;
-  padding: 1rem 2rem;
+  background: var(--color-dark);
+  color: var(--color-white);
+  font-family: var(--font-text);
+  font-weight: var(--font-weight-bold);
+  padding: 0.875rem 2rem;
   border-radius: 8px;
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
-  font-size: 0.9375rem;
+  font-size: 1rem;
 }
 
 .btn-outline:hover {
-  background: var(--gray-800);
+  background: var(--color-key2);
   transform: translateY(-2px);
+}
+
+/* ============================================
+   TAGS - "PRÄZISE. EFFIZIENT. STRATEGISCH."
+   ============================================ */
+.badge-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-300);
+  border-radius: 4px;
+  color: var(--color-dark);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 /* ============================================
    SPECIAL BOXES
    ============================================ */
 .due-diligence-box {
-  background: var(--gray-50);
+  background: var(--color-light);
   border: 1px solid var(--gray-200);
-  border-left: 4px solid var(--teal-primary);
+  border-left: 4px solid var(--color-cta);
   border-radius: 12px;
   padding: 2rem;
   margin: 2.5rem 0;
 }
 
 .expert-tip-box {
-  background: var(--gray-50);
-  border-left: 4px solid var(--teal-primary);
+  background: var(--color-light);
+  border-left: 4px solid var(--color-key1);
   border-radius: 12px;
   padding: 2rem;
   margin: 2.5rem 0;
 }
 
 .lead-magnet-box {
-  background: linear-gradient(135deg, rgba(62, 180, 137, 0.08) 0%, rgba(62, 180, 137, 0.02) 100%);
-  border: 1px solid rgba(62, 180, 137, 0.2);
+  background: linear-gradient(135deg, rgba(213, 183, 129, 0.1) 0%, rgba(213, 183, 129, 0.02) 100%);
+  border: 1px solid rgba(213, 183, 129, 0.3);
   border-radius: 16px;
   padding: 2.5rem;
 }
@@ -144,7 +178,7 @@ body {
 .section-divider {
   width: 80px;
   height: 3px;
-  background: var(--teal-primary);
+  background: var(--color-cta);
   margin: 0 auto;
   border-radius: 2px;
 }
@@ -152,38 +186,21 @@ body {
 .accent-line {
   width: 60px;
   height: 2px;
-  background: var(--teal-primary);
+  background: var(--color-cta);
   margin-bottom: 1.5rem;
-}
-
-/* ============================================
-   BADGE / TAG STYLE
-   ============================================ */
-.badge-premium {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: var(--gray-100);
-  border: 1px solid var(--gray-300);
-  border-radius: 4px;
-  color: var(--gray-700);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
 }
 
 /* ============================================
    FORM INPUTS
    ============================================ */
 .input-premium {
-  background: var(--white);
+  background: var(--color-white);
   border: 1px solid var(--gray-300);
   border-radius: 8px;
   padding: 1rem 1.25rem;
-  color: var(--black);
-  font-size: 0.9375rem;
+  color: var(--color-dark);
+  font-family: var(--font-text);
+  font-size: 1rem;
   transition: all 0.3s ease;
   width: 100%;
 }
@@ -194,7 +211,7 @@ body {
 
 .input-premium:focus {
   outline: none;
-  border-color: var(--teal-primary);
+  border-color: var(--color-cta);
   box-shadow: 0 0 0 3px rgba(62, 180, 137, 0.1);
 }
 
@@ -202,7 +219,7 @@ body {
    LEGAL PAGES
    ============================================ */
 .legal-section {
-  background: var(--white);
+  background: var(--color-white);
   border: 1px solid var(--gray-200);
   border-radius: 16px;
   padding: 2rem;
@@ -211,7 +228,7 @@ body {
 
 .legal-section h2,
 .legal-section h3 {
-  color: var(--black);
+  color: var(--color-dark);
   margin-bottom: 1rem;
 }
 
@@ -238,9 +255,9 @@ body {
 }
 
 .share-btn:hover {
-  background: var(--teal-primary);
-  border-color: var(--teal-primary);
-  color: var(--white);
+  background: var(--color-cta);
+  border-color: var(--color-cta);
+  color: var(--color-white);
   transform: translateY(-2px);
 }
 
@@ -248,16 +265,10 @@ body {
    COMMENT SECTION
    ============================================ */
 .comment-card {
-  background: var(--gray-50);
+  background: var(--color-light);
   border: 1px solid var(--gray-200);
   border-radius: 12px;
   padding: 1.5rem;
-  transition: all 0.3s ease;
-}
-
-.comment-card:hover {
-  background: var(--white);
-  border-color: var(--gray-300);
 }
 
 /* ============================================
@@ -273,47 +284,42 @@ body {
 /* ============================================
    STAT BOXES
    ============================================ */
-.stat-box {
-  text-align: center;
-  padding: 1.5rem;
-}
-
 .stat-value {
   font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--teal-primary);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-cta);
   line-height: 1;
   margin-bottom: 0.5rem;
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-header);
 }
 
 .stat-label {
   font-size: 0.875rem;
   color: var(--gray-500);
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
 }
 
 /* ============================================
-   GOLD/TEAL COLOR UTILITIES
+   COLOR UTILITIES
    ============================================ */
 .text-gold {
-  color: var(--teal-primary);
+  color: var(--color-cta);
 }
 
 .bg-gold {
-  background-color: var(--teal-primary);
+  background-color: var(--color-cta);
 }
 
 .border-gold {
-  border-color: var(--teal-primary);
+  border-color: var(--color-cta);
 }
 
 .text-navy {
-  color: var(--black);
+  color: var(--color-dark);
 }
 
 .bg-navy {
-  background-color: var(--black);
+  background-color: var(--color-dark);
 }
 
 /* ============================================
@@ -367,7 +373,7 @@ body {
 }
 
 /* ============================================
-   SCROLLING & SCROLLBAR
+   SCROLLING
    ============================================ */
 html {
   scroll-behavior: smooth;
@@ -391,20 +397,20 @@ html {
 }
 
 /* ============================================
-   SELECTION & FOCUS
+   SELECTION
    ============================================ */
 ::selection {
   background: rgba(62, 180, 137, 0.2);
-  color: var(--black);
+  color: var(--color-dark);
 }
 
 *:focus-visible {
-  outline: 2px solid var(--teal-primary);
+  outline: 2px solid var(--color-cta);
   outline-offset: 2px;
 }
 
 /* ============================================
-   SMOOTH TRANSITIONS
+   TRANSITIONS
    ============================================ */
 a, button, input, textarea {
   transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
@@ -417,22 +423,22 @@ img {
 }
 
 /* ============================================
-   SPACING
+   SPACING - euroadria.me generous spacing
    ============================================ */
 .section-spacing {
-  padding: 6rem 0;
+  padding: 5rem 0;
 }
 
 .section-spacing-sm {
-  padding: 4rem 0;
+  padding: 3rem 0;
 }
 
 @media (max-width: 768px) {
   .section-spacing {
-    padding: 4rem 0;
+    padding: 3rem 0;
   }
   .section-spacing-sm {
-    padding: 2.5rem 0;
+    padding: 2rem 0;
   }
 }
 
@@ -442,20 +448,19 @@ img {
 @media (max-width: 1024px) {
   .btn-gold,
   .btn-outline {
-    padding: 0.875rem 1.75rem;
-    font-size: 0.875rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
   }
 }
 
 @media (max-width: 640px) {
-  .glass-card,
-  .glass-card-strong {
+  .glass-card {
     border-radius: 12px;
   }
   
   .btn-gold,
   .btn-outline {
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 1.25rem;
     width: 100%;
     text-align: center;
   }

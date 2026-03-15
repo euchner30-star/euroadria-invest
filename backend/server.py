@@ -178,7 +178,7 @@ async def send_notification_email(comment_data: dict, article_title: str):
                     Dieser Kommentar wartet auf Freigabe im Admin-Panel.
                 </p>
                 
-                <a href="https://serbia-investment.preview.emergentagent.com/admin" 
+                <a href="https://euroadria-cms.preview.emergentagent.com/admin" 
                    style="display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #D4AF37; color: #002147; text-decoration: none; border-radius: 5px; font-weight: bold;">
                     Zum Admin-Panel
                 </a>

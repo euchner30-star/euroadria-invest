@@ -16,8 +16,8 @@ test.describe('Legal Pages - Impressum and Datenschutz', () => {
     // Verify main heading
     await expect(page.getByRole('heading', { name: 'Impressum', exact: true })).toBeVisible();
     
-    // Verify company info - use heading role to be specific
-    await expect(page.getByRole('heading', { name: 'EuroAdria Corporate Solutions' })).toBeVisible();
+    // Verify company info - use testid scope to avoid footer conflict
+    await expect(page.getByTestId('impressum-page').getByRole('heading', { name: 'EuroAdria Corporate Solutions' })).toBeVisible();
     await expect(page.getByTestId('impressum-page').getByText('Firmensitz:')).toBeVisible();
     
     // Verify German branch address (key requirement)
@@ -51,8 +51,8 @@ test.describe('Legal Pages - Impressum and Datenschutz', () => {
     
     // Verify responsible entity section
     await expect(page.getByRole('heading', { name: '1. Verantwortliche Stelle' })).toBeVisible();
-    // Verify EuroAdria company name within datenschutz page content
-    await expect(page.getByTestId('datenschutz-page').locator('p.text-gray-900').filter({ hasText: 'EuroAdria' })).toBeVisible();
+    // Verify EuroAdria company name within datenschutz page content - use more flexible selector
+    await expect(page.getByTestId('datenschutz-page').getByText('EuroAdria').first()).toBeVisible();
     
     // Verify data processing sections
     await expect(page.getByRole('heading', { name: /Erhebung und Speicherung/ })).toBeVisible();

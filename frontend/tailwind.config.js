@@ -8,8 +8,8 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                'display': ['Playfair Display', 'serif'],
-                'sans': ['Montserrat', 'sans-serif'],
+                'sans': ['Figtree', 'sans-serif'],
+                'display': ['Figtree', 'sans-serif'],
             },
             borderRadius: {
                 lg: 'var(--radius)',
@@ -17,11 +17,12 @@ module.exports = {
                 sm: 'calc(var(--radius) - 4px)'
             },
             colors: {
-                gold: {
-                    DEFAULT: '#D4AF37',
-                    light: '#F4D03F',
-                    dark: '#B8941F',
-                },
+                // EuroAdria Design System - Exakt von euroadria.me
+                'ea-dark': '#04151F',      // Hauptfarbe dunkel (Navy)
+                'ea-light': '#F9F5EE',     // Hintergrund hell (Creme)
+                'ea-gold': '#D5B781',      // Akzentfarbe Gold
+                'ea-navy': '#0E2A3B',      // Sekundäres Navy
+                'ea-white': '#FFFFFF',
                 background: 'hsl(var(--background))',
                 foreground: 'hsl(var(--foreground))',
                 card: {
@@ -65,20 +66,12 @@ module.exports = {
             },
             keyframes: {
                 'accordion-down': {
-                    from: {
-                        height: '0'
-                    },
-                    to: {
-                        height: 'var(--radix-accordion-content-height)'
-                    }
+                    from: { height: '0' },
+                    to: { height: 'var(--radix-accordion-content-height)' }
                 },
                 'accordion-up': {
-                    from: {
-                        height: 'var(--radix-accordion-content-height)'
-                    },
-                    to: {
-                        height: '0'
-                    }
+                    from: { height: 'var(--radix-accordion-content-height)' },
+                    to: { height: '0' }
                 }
             },
             animation: {

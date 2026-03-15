@@ -34,14 +34,14 @@ const ShareButtons = ({ title, url, excerpt }) => {
     }
   };
 
-  const buttonClass = "flex items-center justify-center w-11 h-11 rounded-lg bg-gray-100 border border-gray-200 text-gray-600 hover:bg-[#3eb489] hover:border-[#3eb489] hover:text-white transition-all duration-300 hover:-translate-y-0.5";
+  const buttonClass = "flex items-center justify-center w-11 h-11 rounded-lg bg-ea-light border border-gray-200 text-ea-dark/60 hover:bg-ea-dark hover:border-ea-dark hover:text-white transition-all duration-300 hover:-translate-y-0.5";
 
   return (
     <div className="mt-10 pt-8 border-t border-gray-200" data-testid="share-buttons">
       <div className="flex items-center justify-between flex-wrap gap-6">
-        <div className="flex items-center gap-3 text-gray-500">
-          <div className="w-10 h-10 rounded-lg bg-[#3eb489]/10 flex items-center justify-center">
-            <Share2 className="w-5 h-5 text-[#3eb489]" />
+        <div className="flex items-center gap-3 text-ea-dark/60">
+          <div className="w-10 h-10 rounded-lg bg-ea-gold/10 flex items-center justify-center">
+            <Share2 className="w-5 h-5 text-ea-gold" />
           </div>
           <span className="text-sm font-medium">Artikel teilen</span>
         </div>

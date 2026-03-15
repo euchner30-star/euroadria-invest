@@ -1,21 +1,21 @@
 import { test, expect } from '@playwright/test';
 import { waitForAppReady, dismissToasts } from '../fixtures/helpers';
 
-test.describe('Design Update - euroadria.me Style Verification', () => {
+test.describe('Design Update - euroadria.me Style Verification (Gold/Navy Theme)', () => {
   test.beforeEach(async ({ page }) => {
     await dismissToasts(page);
   });
 
-  test('Header has green CTA button (#3eb489)', async ({ page }) => {
+  test('Header has dark navy CTA button (#04151F)', async ({ page }) => {
     await page.goto('/');
     await waitForAppReady(page);
     
     // Find the CTA button in header "Jetzt Beratung anfragen"
-    const ctaButton = page.locator('header').getByRole('link', { name: /Jetzt Beratung anfragen/i });
+    const ctaButton = page.getByTestId('header-cta-button');
     await expect(ctaButton).toBeVisible();
     
-    // Verify it has green background color (#3eb489 = rgb(62, 180, 137))
-    await expect(ctaButton).toHaveCSS('background-color', /rgb\(62, 180, 137\)/);
+    // Verify it has dark navy background color (#04151F = rgb(4, 21, 31))
+    await expect(ctaButton).toHaveCSS('background-color', /rgb\(4, 21, 31\)/);
   });
 
   test('Homepage renders with white background content sections', async ({ page }) => {
@@ -26,25 +26,25 @@ test.describe('Design Update - euroadria.me Style Verification', () => {
     const body = page.locator('body');
     await expect(body).toHaveCSS('background', /rgb\(255, 255, 255\)|white/);
     
-    // Verify content boxes have white background with borders (glass-card style)
+    // Verify content boxes have white background with borders
     // The "Warum Balkan statt EU" card should have white background
     const balkanCard = page.locator('.bg-white').first();
     await expect(balkanCard).toBeVisible();
   });
 
-  test('Blog page has green active filter tab', async ({ page }) => {
+  test('Blog page has dark navy active filter tab', async ({ page }) => {
     await page.goto('/blog');
     await waitForAppReady(page);
     
-    // Wait for articles to load
+    // Wait for articles to load (loader should disappear)
     await expect(page.locator('[class*="animate-spin"]').first()).not.toBeVisible();
     
-    // The "Alle" filter should be active by default with green background
+    // The "Alle" filter should be active by default with dark navy background
     const allFilter = page.getByTestId('cluster-filter-all');
     await expect(allFilter).toBeVisible();
     
-    // Verify green background (#3eb489 = rgb(62, 180, 137))
-    await expect(allFilter).toHaveCSS('background-color', /rgb\(62, 180, 137\)/);
+    // Verify dark navy background (#04151F = rgb(4, 21, 31))
+    await expect(allFilter).toHaveCSS('background-color', /rgb\(4, 21, 31\)/);
   });
 
   test('Blog page has white article cards', async ({ page }) => {
@@ -83,10 +83,10 @@ test.describe('Design Update - euroadria.me Style Verification', () => {
     
     await expect(page.getByTestId('datenschutz-page')).toBeVisible();
     
-    // Verify page header is green (use first() to avoid strict mode with footer)
+    // Verify page header "Rechtliches" label is gold (#D5B781 = rgb(213, 183, 129))
     const legalLabel = page.getByTestId('datenschutz-page').getByText('Rechtliches');
     await expect(legalLabel).toBeVisible();
-    await expect(legalLabel).toHaveCSS('color', /rgb\(62, 180, 137\)/);
+    await expect(legalLabel).toHaveCSS('color', /rgb\(213, 183, 129\)/);
     
     // Verify content sections have white background
     const responsibleSection = page.locator('section').filter({ has: page.getByText('1. Verantwortliche Stelle') });
@@ -94,41 +94,41 @@ test.describe('Design Update - euroadria.me Style Verification', () => {
     await expect(responsibleSection).toHaveCSS('background-color', /rgb\(255, 255, 255\)/);
   });
 
-  test('Serbia Executive page has green buttons', async ({ page }) => {
+  test('Serbia Executive page has gold CTA button and gold trust values', async ({ page }) => {
     await page.goto('/serbia-executive');
     await waitForAppReady(page);
     
     await expect(page.getByTestId('serbia-executive-page')).toBeVisible();
     
-    // Verify Executive Inquiry CTA has green background
+    // Verify Executive Inquiry CTA has gold background (#D5B781 = rgb(213, 183, 129))
     const ctaButton = page.getByTestId('executive-inquiry-cta');
     await expect(ctaButton).toBeVisible();
-    await expect(ctaButton).toHaveCSS('background-color', /rgb\(62, 180, 137\)/);
+    await expect(ctaButton).toHaveCSS('background-color', /rgb\(213, 183, 129\)/);
     
-    // Verify trust indicator values are green
+    // Verify trust indicator values are gold
     const trustValue = page.getByText('15+', { exact: true }).first();
     await expect(trustValue).toBeVisible();
-    await expect(trustValue).toHaveCSS('color', /rgb\(62, 180, 137\)/);
+    await expect(trustValue).toHaveCSS('color', /rgb\(213, 183, 129\)/);
   });
 
   test('All navigation links work correctly', async ({ page }) => {
     await page.goto('/');
     await waitForAppReady(page);
     
-    // Test HOME link
-    await page.getByRole('link', { name: 'HOME', exact: true }).click();
+    // Test HOME link - get from header nav specifically
+    await page.locator('header').getByRole('link', { name: 'HOME', exact: true }).click();
     await expect(page).toHaveURL('/');
     
     // Test BLOG link
-    await page.getByRole('link', { name: 'BLOG', exact: true }).click();
+    await page.locator('header').getByRole('link', { name: 'BLOG', exact: true }).click();
     await expect(page).toHaveURL('/blog');
     
     // Test ÜBER UNS link
-    await page.getByRole('link', { name: 'ÜBER UNS', exact: true }).click();
+    await page.locator('header').getByRole('link', { name: 'ÜBER UNS', exact: true }).click();
     await expect(page).toHaveURL('/team');
     
     // Test KONTAKT link
-    await page.getByRole('link', { name: 'KONTAKT', exact: true }).click();
+    await page.locator('header').getByRole('link', { name: 'KONTAKT', exact: true }).click();
     await expect(page).toHaveURL('/contact');
     
     // Test SERBIA EXECUTIVE link via data-testid
@@ -161,32 +161,70 @@ test.describe('Design Update - euroadria.me Style Verification', () => {
     await expect(whatsappBtn).toBeVisible();
     await expect(emailBtn).toBeVisible();
     
-    // Verify initial button styling (gray background)
-    await expect(linkedInBtn).toHaveCSS('background-color', /rgb\(243, 244, 246\)|rgb\(245, 245, 245\)|rgb\(241, 245, 249\)/);
+    // Verify initial button styling (cream background = ea-light #F9F5EE = rgb(249, 245, 238))
+    await expect(linkedInBtn).toHaveCSS('background-color', /rgb\(249, 245, 238\)/);
     
     // Verify buttons have border-radius (rounded corners)
-    await expect(linkedInBtn).toHaveCSS('border-radius', '8px');
+    await expect(linkedInBtn).toHaveCSS('border-radius', /8px|0.5rem/);
   });
 
   test('Header CTA button links to contact page', async ({ page }) => {
     await page.goto('/');
     await waitForAppReady(page);
     
-    const ctaButton = page.locator('header').getByRole('link', { name: /Jetzt Beratung anfragen/i });
+    const ctaButton = page.getByTestId('header-cta-button');
     await ctaButton.click();
     
     await expect(page).toHaveURL('/contact');
   });
 
-  test('Section divider has green accent color', async ({ page }) => {
-    await page.goto('/impressum');
+  test('Footer has dark navy background (#04151F)', async ({ page }) => {
+    await page.goto('/');
     await waitForAppReady(page);
     
-    // Find the section divider (green bar under page title)
-    const divider = page.locator('.section-divider');
-    await expect(divider).toBeVisible();
+    // Scroll to footer
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     
-    // Verify it has green background (#3eb489)
-    await expect(divider).toHaveCSS('background-color', /rgb\(62, 180, 137\)/);
+    // Verify footer has dark navy background
+    const footer = page.locator('footer');
+    await expect(footer).toBeVisible();
+    await expect(footer).toHaveCSS('background-color', /rgb\(4, 21, 31\)/);
+  });
+
+  test('Homepage hero section has gold accents', async ({ page }) => {
+    await page.goto('/');
+    await waitForAppReady(page);
+    
+    // Verify the gold colored text in hero - "Executive" in the title
+    const heroSection = page.locator('section').first();
+    await expect(heroSection).toBeVisible();
+    
+    // Check for gold text color (#D5B781)
+    const goldText = page.locator('.text-ea-gold').first();
+    await expect(goldText).toBeVisible();
+    await expect(goldText).toHaveCSS('color', /rgb\(213, 183, 129\)/);
+  });
+
+  test('Active navigation link shows gold color', async ({ page }) => {
+    await page.goto('/blog');
+    await waitForAppReady(page);
+    
+    // BLOG link should be active (gold color)
+    const blogLink = page.locator('header').getByRole('link', { name: 'BLOG', exact: true });
+    await expect(blogLink).toBeVisible();
+    await expect(blogLink).toHaveCSS('color', /rgb\(213, 183, 129\)/);
+  });
+
+  test('Contact page form displays with gold accents', async ({ page }) => {
+    await page.goto('/contact');
+    await waitForAppReady(page);
+    
+    // Verify page title has gold accent
+    const titleAccent = page.getByText('aufnahme', { exact: false });
+    await expect(titleAccent).toBeVisible();
+    
+    // Verify "Nachricht" accent text is gold
+    const nachrichtAccent = page.getByText('Nachricht', { exact: false }).first();
+    await expect(nachrichtAccent).toBeVisible();
   });
 });

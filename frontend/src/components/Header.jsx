@@ -11,7 +11,6 @@ const Header = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -31,7 +30,9 @@ const Header = () => {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md' : 'bg-white/95'
+        isScrolled 
+          ? 'bg-white shadow-md' 
+          : 'bg-white/95'
       }`}
     >
       <nav className="max-w-7xl mx-auto px-6 py-4">
@@ -48,10 +49,7 @@ const Header = () => {
               }}
             />
             <div className="hidden items-center gap-1" style={{ display: 'none' }}>
-              <div className="w-10 h-10 rounded bg-[#3eb489] flex items-center justify-center">
-                <span className="text-white font-bold text-xl">E</span>
-              </div>
-              <span className="text-gray-900 font-semibold text-xl tracking-tight">EuroAdria</span>
+              <span className="text-ea-dark font-semibold text-xl tracking-tight">EuroAdria</span>
             </div>
           </Link>
 
@@ -63,30 +61,31 @@ const Header = () => {
                 to={item.path}
                 className={`text-sm font-semibold tracking-wider transition-colors duration-300 ${
                   item.isExclusive 
-                    ? 'flex items-center gap-2 px-4 py-2 bg-[#3eb489]/10 border border-[#3eb489]/30 rounded-lg text-[#3eb489] hover:bg-[#3eb489]/20'
+                    ? 'flex items-center gap-2 px-4 py-2 bg-ea-gold/10 border border-ea-gold/30 rounded-lg text-ea-dark hover:bg-ea-gold/20'
                     : location.pathname === item.path
-                      ? 'text-[#3eb489]'
-                      : 'text-gray-700 hover:text-[#3eb489]'
+                      ? 'text-ea-gold'
+                      : 'text-ea-dark hover:text-ea-gold'
                 }`}
                 data-testid={item.isExclusive ? 'nav-serbia-executive' : undefined}
               >
-                {item.isExclusive && <Shield className="w-4 h-4" />}
+                {item.isExclusive && <Shield className="w-4 h-4 text-ea-gold" />}
                 {item.name}
               </Link>
             ))}
           </div>
 
-          {/* Desktop CTA Button */}
+          {/* Desktop CTA Button - Navy wie euroadria.me */}
           <Link
             to="/contact"
-            className="hidden lg:block px-6 py-3 bg-[#3eb489] text-white text-sm font-semibold rounded-lg hover:bg-[#35a07a] transition-all duration-300 hover:shadow-lg"
+            className="hidden lg:block px-6 py-3 bg-ea-dark text-white text-sm font-semibold rounded-lg hover:bg-ea-navy transition-all duration-300 hover:shadow-lg"
+            data-testid="header-cta-button"
           >
             Jetzt Beratung anfragen
           </Link>
 
           {/* Mobile Menu Button */}
           <button 
-            className="lg:hidden text-gray-700 hover:text-[#3eb489] transition-colors p-2"
+            className="lg:hidden text-ea-dark hover:text-ea-gold transition-colors p-2"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -108,19 +107,19 @@ const Header = () => {
                   to={item.path}
                   className={`text-base font-semibold tracking-wide transition-all duration-300 rounded-lg px-4 py-3 ${
                     item.isExclusive
-                      ? 'flex items-center gap-3 border border-[#3eb489]/30 bg-[#3eb489]/10 text-[#3eb489]'
+                      ? 'flex items-center gap-3 border border-ea-gold/30 bg-ea-gold/10 text-ea-dark'
                       : location.pathname === item.path
-                        ? 'text-[#3eb489] bg-gray-50'
-                        : 'text-gray-700 hover:text-[#3eb489] hover:bg-gray-50'
+                        ? 'text-ea-gold bg-ea-light'
+                        : 'text-ea-dark hover:text-ea-gold hover:bg-ea-light'
                   }`}
                 >
-                  {item.isExclusive && <Shield className="w-5 h-5" />}
+                  {item.isExclusive && <Shield className="w-5 h-5 text-ea-gold" />}
                   {item.name}
                 </Link>
               ))}
               <Link
                 to="/contact"
-                className="mt-2 px-4 py-3 bg-[#3eb489] text-white text-base font-semibold rounded-lg text-center hover:bg-[#35a07a]"
+                className="mt-2 px-4 py-3 bg-ea-dark text-white text-base font-semibold rounded-lg text-center hover:bg-ea-navy"
               >
                 Jetzt Beratung anfragen
               </Link>

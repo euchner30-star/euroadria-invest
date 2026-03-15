@@ -17,8 +17,8 @@ const ImpressumPage = () => {
       <div className="max-w-4xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-16 animate-fadeIn">
-          <p className="text-[#3eb489] text-sm font-semibold tracking-wider uppercase mb-4">Rechtliches</p>
-          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-gray-900 mb-6">
+          <p className="text-ea-gold text-sm font-semibold tracking-wider uppercase mb-4">Rechtliches</p>
+          <h1 className="text-4xl md:text-5xl font-semibold text-ea-dark mb-6">
             Impressum
           </h1>
           <div className="section-divider"></div>
@@ -30,31 +30,31 @@ const ImpressumPage = () => {
           {/* Company Information */}
           <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-14 h-14 rounded-xl bg-[#3eb489]/10 flex items-center justify-center">
-                <Building2 className="w-7 h-7 text-[#3eb489]" />
+              <div className="w-14 h-14 rounded-xl bg-ea-gold/10 flex items-center justify-center">
+                <Building2 className="w-7 h-7 text-ea-gold" />
               </div>
-              <h2 className="text-2xl font-display font-bold text-gray-900">EuroAdria Corporate Solutions</h2>
+              <h2 className="text-2xl font-semibold text-ea-dark">EuroAdria Corporate Solutions</h2>
             </div>
             
-            <div className="bg-gray-50 rounded-xl p-6 space-y-4">
-              <p className="text-gray-700 leading-relaxed">
-                <strong className="text-[#3eb489] block mb-2">Firmensitz:</strong>
+            <div className="bg-ea-light rounded-xl p-6 space-y-4">
+              <p className="text-ea-dark/80 leading-relaxed">
+                <strong className="text-ea-gold block mb-2">Firmensitz:</strong>
                 Montaris & Co. d.o.o. Novi Sad<br />
                 NOVI SAD, MARKA MILJANOVA 12<br />
                 NOVI SAD, Serbien
               </p>
               
               <div className="flex flex-wrap gap-6 pt-6 border-t border-gray-200">
-                <a href="tel:+38268559776" className="flex items-center gap-2 text-gray-600 hover:text-[#3eb489] transition-colors group">
-                  <Phone className="w-5 h-5 text-[#3eb489] group-hover:scale-110 transition-transform" />
+                <a href="tel:+38268559776" className="flex items-center gap-2 text-ea-dark/70 hover:text-ea-gold transition-colors group">
+                  <Phone className="w-5 h-5 text-ea-gold group-hover:scale-110 transition-transform" />
                   <span>+382 68 559 776</span>
                 </a>
-                <a href="mailto:office@euroadria.me" className="flex items-center gap-2 text-gray-600 hover:text-[#3eb489] transition-colors group">
-                  <Mail className="w-5 h-5 text-[#3eb489] group-hover:scale-110 transition-transform" />
+                <a href="mailto:office@euroadria.me" className="flex items-center gap-2 text-ea-dark/70 hover:text-ea-gold transition-colors group">
+                  <Mail className="w-5 h-5 text-ea-gold group-hover:scale-110 transition-transform" />
                   <span>office@euroadria.me</span>
                 </a>
-                <a href="https://www.euroadria.me" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-gray-600 hover:text-[#3eb489] transition-colors group">
-                  <Globe className="w-5 h-5 text-[#3eb489] group-hover:scale-110 transition-transform" />
+                <a href="https://www.euroadria.me" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-ea-dark/70 hover:text-ea-gold transition-colors group">
+                  <Globe className="w-5 h-5 text-ea-gold group-hover:scale-110 transition-transform" />
                   <span>www.euroadria.me</span>
                 </a>
               </div>
@@ -62,23 +62,23 @@ const ImpressumPage = () => {
           </section>
 
           {/* German Branch */}
-          <section className="bg-[#3eb489]/5 border border-[#3eb489]/20 rounded-2xl p-8">
+          <section className="bg-ea-gold/5 border border-ea-gold/20 rounded-2xl p-8">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-14 h-14 rounded-xl bg-[#3eb489]/15 flex items-center justify-center">
-                <MapPin className="w-7 h-7 text-[#3eb489]" />
+              <div className="w-14 h-14 rounded-xl bg-ea-gold/15 flex items-center justify-center">
+                <MapPin className="w-7 h-7 text-ea-gold" />
               </div>
-              <h2 className="text-2xl font-display font-bold text-gray-900">Niederlassung Deutschland</h2>
+              <h2 className="text-2xl font-semibold font-bold text-ea-dark">Niederlassung Deutschland</h2>
             </div>
             
             <div className="space-y-4">
-              <p className="text-gray-700 leading-relaxed">
-                <strong className="text-[#3eb489] block mb-2">Adresse:</strong>
+              <p className="text-ea-dark/80 leading-relaxed">
+                <strong className="text-ea-gold block mb-2">Adresse:</strong>
                 Speditionsstraße 15a<br />
                 40221 Düsseldorf<br />
                 Deutschland
               </p>
-              <p className="text-gray-700">
-                <strong className="text-[#3eb489]">Verantwortlich:</strong> Holger Kuhlmann
+              <p className="text-ea-dark/80">
+                <strong className="text-ea-gold">Verantwortlich:</strong> Holger Kuhlmann
               </p>
             </div>
           </section>
@@ -86,30 +86,30 @@ const ImpressumPage = () => {
           {/* Vertretungsberechtigt */}
           <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-14 h-14 rounded-xl bg-[#3eb489]/10 flex items-center justify-center">
-                <User className="w-7 h-7 text-[#3eb489]" />
+              <div className="w-14 h-14 rounded-xl bg-ea-gold/10 flex items-center justify-center">
+                <User className="w-7 h-7 text-ea-gold" />
               </div>
-              <h2 className="text-2xl font-display font-bold text-gray-900">Vertretungsberechtigt</h2>
+              <h2 className="text-2xl font-semibold font-bold text-ea-dark">Vertretungsberechtigt</h2>
             </div>
             
-            <p className="text-gray-700 leading-relaxed">
+            <p className="text-ea-dark/80 leading-relaxed">
               Montaris & Co. d.o.o. Novi Sad, vertreten durch die Geschäftsführung
             </p>
           </section>
 
           {/* Verantwortlich für Inhalt */}
           <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
-            <h3 className="text-xl font-display font-bold text-[#3eb489] mb-4">
+            <h3 className="text-xl font-semibold font-bold text-ea-gold mb-4">
               Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV (Deutschland)
             </h3>
-            <p className="text-gray-700">Holger Kuhlmann</p>
+            <p className="text-ea-dark/80">Holger Kuhlmann</p>
           </section>
 
           {/* Haftungsausschluss */}
           <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
-            <h2 className="text-2xl font-display font-bold text-gray-900 mb-6">Haftungsausschluss</h2>
+            <h2 className="text-2xl font-semibold font-bold text-ea-dark mb-6">Haftungsausschluss</h2>
             
-            <div className="space-y-4 text-gray-600 leading-relaxed">
+            <div className="space-y-4 text-ea-dark/70 leading-relaxed">
               <p>
                 Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, 
                 Vollständigkeit und Aktualität der Inhalte übernehmen wir jedoch keine Gewähr. Als 
@@ -132,8 +132,8 @@ const ImpressumPage = () => {
 
           {/* Haftung für Links */}
           <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
-            <h2 className="text-2xl font-display font-bold text-gray-900 mb-6">Haftung für Links</h2>
-            <p className="text-gray-600 leading-relaxed">
+            <h2 className="text-2xl font-semibold font-bold text-ea-dark mb-6">Haftung für Links</h2>
+            <p className="text-ea-dark/70 leading-relaxed">
               Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir 
               keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine 
               Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige 
@@ -144,8 +144,8 @@ const ImpressumPage = () => {
 
           {/* Urheberrecht */}
           <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
-            <h2 className="text-2xl font-display font-bold text-gray-900 mb-6">Urheberrecht</h2>
-            <p className="text-gray-600 leading-relaxed">
+            <h2 className="text-2xl font-semibold font-bold text-ea-dark mb-6">Urheberrecht</h2>
+            <p className="text-ea-dark/70 leading-relaxed">
               Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten 
               unterliegen dem Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und 
               jede Art der Verwertung außerhalb der Grenzen des Urheberrechts bedürfen der 
