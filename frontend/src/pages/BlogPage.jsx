@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { articlesApi } from '../services/api';
 import { themeClusters } from '../data/clusters';
-import { Clock, ArrowRight, Search, Loader2, ChevronRight } from 'lucide-react';
+import { Clock, ArrowRight, Search, Loader2, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import SEO from '../components/SEO';
 
 const BlogPage = () => {
@@ -11,6 +11,7 @@ const BlogPage = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isListExpanded, setIsListExpanded] = useState(false);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -169,43 +170,59 @@ const BlogPage = () => {
                   ))}
                 </div>
 
-                {/* Remaining Articles as List */}
+                {/* Remaining Articles as Collapsible List */}
                 {listArticles.length > 0 && (
                   <div className="border-t border-gray-200 pt-12">
-                    <h2 className="text-2xl font-semibold text-ea-dark mb-6">
-                      Weitere <span className="text-ea-gold">Artikel</span>
-                      <span className="text-ea-dark/50 text-base font-normal ml-2">({listArticles.length})</span>
-                    </h2>
+                    <button
+                      onClick={() => setIsListExpanded(!isListExpanded)}
+                      className="w-full flex items-center justify-between mb-6 group"
+                      data-testid="toggle-article-list"
+                    >
+                      <h2 className="text-2xl font-semibold text-ea-dark">
+                        Weitere <span className="text-ea-gold">Artikel</span>
+                        <span className="text-ea-dark/50 text-base font-normal ml-2">({listArticles.length})</span>
+                      </h2>
+                      <div className="flex items-center gap-2 text-ea-dark/60 group-hover:text-ea-gold transition-colors">
+                        <span className="text-sm">{isListExpanded ? 'Einklappen' : 'Alle anzeigen'}</span>
+                        {isListExpanded ? (
+                          <ChevronUp className="w-5 h-5" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5" />
+                        )}
+                      </div>
+                    </button>
                     
-                    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                      {listArticles.map((article, index) => (
-                        <Link
-                          key={article.id}
-                          to={`/blog/${article.slug}`}
-                          className={`flex items-center justify-between p-4 hover:bg-ea-light transition-colors group ${
-                            index !== listArticles.length - 1 ? 'border-b border-gray-100' : ''
-                          }`}
-                          data-testid={`article-list-${article.slug}`}
-                        >
-                          <div className="flex-1 min-w-0 pr-4">
-                            <div className="flex items-center gap-3 mb-1">
-                              <span className="text-xs text-ea-gold font-medium bg-ea-gold/10 px-2 py-0.5 rounded">
-                                {article.category}
-                              </span>
-                              <span className="text-xs text-ea-dark/40">{article.date}</span>
+                    {isListExpanded && (
+                      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden animate-fadeIn">
+                        {listArticles.map((article, index) => (
+                          <Link
+                            key={article.id}
+                            to={`/blog/${article.slug}`}
+                            className={`flex items-center justify-between p-4 hover:bg-ea-light transition-colors group ${
+                              index !== listArticles.length - 1 ? 'border-b border-gray-100' : ''
+                            }`}
+                            data-testid={`article-list-${article.slug}`}
+                          >
+                            <div className="flex-1 min-w-0 pr-4">
+                              <div className="flex items-center gap-3 mb-1">
+                                <span className="text-xs text-ea-gold font-medium bg-ea-gold/10 px-2 py-0.5 rounded">
+                                  {article.category}
+                                </span>
+                                <span className="text-xs text-ea-dark/40">{article.date}</span>
+                              </div>
+                              <h3 className="text-ea-dark font-medium group-hover:text-ea-gold transition-colors truncate">
+                                {article.title}
+                              </h3>
                             </div>
-                            <h3 className="text-ea-dark font-medium group-hover:text-ea-gold transition-colors truncate">
-                              {article.title}
-                            </h3>
-                          </div>
-                          <div className="flex items-center gap-2 text-ea-dark/40 group-hover:text-ea-gold transition-colors flex-shrink-0">
-                            <Clock className="w-4 h-4" />
-                            <span className="text-sm">{article.readTime}</span>
-                            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
+                            <div className="flex items-center gap-2 text-ea-dark/40 group-hover:text-ea-gold transition-colors flex-shrink-0">
+                              <Clock className="w-4 h-4" />
+                              <span className="text-sm">{article.readTime}</span>
+                              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </>
