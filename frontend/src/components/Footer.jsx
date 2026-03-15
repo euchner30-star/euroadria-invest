@@ -15,10 +15,7 @@ const Footer = () => {
               <img 
                 src="/euroadria-logo.png" 
                 alt="EuroAdria Logo" 
-                className="h-12 w-auto"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
+                className="h-14 w-auto brightness-0 invert"
               />
             </div>
             <p className="text-ea-light/70 text-sm leading-relaxed mb-6">

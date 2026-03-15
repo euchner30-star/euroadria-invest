@@ -42,15 +42,8 @@ const Header = () => {
             <img 
               src="/euroadria-logo.png" 
               alt="EuroAdria Logo" 
-              className="h-10 w-auto"
-              onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'flex';
-              }}
+              className="h-10 w-auto object-contain"
             />
-            <div className="hidden items-center gap-1" style={{ display: 'none' }}>
-              <span className="text-ea-dark font-semibold text-xl tracking-tight">EuroAdria</span>
-            </div>
           </Link>
 
           {/* Desktop Navigation */}

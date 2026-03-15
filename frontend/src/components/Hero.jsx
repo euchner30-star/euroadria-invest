@@ -23,10 +23,7 @@ const Hero = () => {
           <img 
             src="/euroadria-logo.png" 
             alt="EuroAdria Logo" 
-            className="h-24 w-auto"
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
+            className="h-20 w-auto"
           />
         </div>
 
