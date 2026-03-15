@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { articlesApi, getRelatedArticles } from '../services/api';
-import { Clock, Calendar, User, ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
+import { Clock, Calendar, User, ArrowLeft, ArrowRight, Loader2, Shield } from 'lucide-react';
 import { DueDiligenceBox, ExpertTipBox, LeadMagnetBox } from '../components/ArticleComponents';
 import ShareButtons from '../components/ShareButtons';
 import CommentsSection from '../components/CommentsSection';
 import SEO from '../components/SEO';
+import { parseContentToHTML } from '../utils/contentParser';
 
 const ArticlePage = () => {
   const { slug } = useParams();
@@ -129,13 +130,36 @@ const ArticlePage = () => {
             {article.excerpt}
           </p>
 
-          {/* Article Content */}
-          <div className="prose prose-sm md:prose-lg max-w-none">
+          {/* Article Content - Semantic HTML */}
+          <section className="prose prose-sm md:prose-lg max-w-none" itemProp="articleBody">
             <div 
               className="text-ea-dark/80 leading-relaxed space-y-4 md:space-y-6 text-sm md:text-base"
-              dangerouslySetInnerHTML={{ __html: article.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br />') }}
+              dangerouslySetInnerHTML={{ __html: parseContentToHTML(article.content) }}
             />
-          </div>
+          </section>
+
+          {/* Serbia Executive CTA - Internal Linking for GEO */}
+          {(article.cluster === 'serbien-balkan' || article.content.toLowerCase().includes('serbien')) && (
+            <aside className="my-8 p-6 bg-ea-navy rounded-xl border border-ea-gold/20">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-ea-gold/20 rounded-lg">
+                  <Shield className="w-6 h-6 text-ea-gold" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-2">Serbia Executive Access</h3>
+                  <p className="text-ea-light/80 text-sm mb-4">
+                    Exklusiver Zugang zu serbischen Regierungskontakten, Infrastrukturprojekten und Investment-Incentives.
+                  </p>
+                  <Link 
+                    to="/serbia-executive" 
+                    className="inline-flex items-center gap-2 text-ea-gold hover:text-ea-gold/80 font-medium text-sm"
+                  >
+                    Mehr erfahren <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            </aside>
+          )}
 
           {/* Due Diligence Box */}
           {article.dueDiligenceBox && (

@@ -72,6 +72,15 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 
 ## Abgeschlossene Arbeiten
 
+### 15. März 2026 - SEO & GEO Optimierung
+- ✅ Erweiterte Schema.org strukturierte Daten (Organization, ProfessionalService, InvestmentOrDeposit, FAQPage)
+- ✅ GEO-optimierte Inhalte mit zitierfähigen Fakten (Weltbank-Ranking, Steuersätze, Förderquoten)
+- ✅ Semantische HTML-Struktur (article, section, figure, figcaption)
+- ✅ Content-Parser für Markdown-zu-HTML Konvertierung
+- ✅ Interne Verlinkung zu Serbia Executive Access in relevanten Artikeln
+- ✅ Erweiterte Meta-Tags und FAQ-Schema für KI-Systeme
+- ✅ robots.txt für GPTBot, ClaudeBot und andere KI-Crawler optimiert
+
 ### 15. März 2026 - Design-Überarbeitung
 - ✅ Komplette Design-Überarbeitung um euroadria.me 1:1 zu replizieren
 - ✅ Farben aktualisiert: Navy (#04151F), Gold (#D5B781), Creme (#F9F5EE)

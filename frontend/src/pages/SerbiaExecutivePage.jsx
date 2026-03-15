@@ -30,9 +30,29 @@ const SerbiaExecutivePage = () => {
   return (
     <div className="min-h-screen bg-white" data-testid="serbia-executive-page">
       <SEO 
-        title="Serbia Executive Access"
-        description="Privilegierter Zugang zu Serbiens wirtschaftlicher Elite. Exklusive Kontakte zu Regierungsstellen, Infrastrukturprojekten und staatlichen Förderprogrammen."
+        title="Serbia Executive Access - Exklusive Investoren-Kontakte"
+        description="Privilegierter Zugang zu Serbiens wirtschaftlicher Elite. Regierungskontakte, PPP-Infrastrukturprojekte, bis zu 50% staatliche Förderung. Für DACH-Investoren ab €500.000."
         url="/serbia-executive"
+        service={{
+          name: "Serbia Executive Access",
+          description: "Exklusiver Zugang zu serbischen Regierungskontakten, Infrastrukturprojekten und Investment-Incentives für internationale Investoren",
+          type: "Investment Consulting",
+          areaServed: ["Serbia", "Balkan Region"]
+        }}
+        faq={[
+          {
+            question: "Was bietet Serbia Executive Access?",
+            answer: "Direkter Zugang zu serbischen Ministerien und Entwicklungsagenturen, exklusive PPP-Infrastrukturprojekte, bis zu 50% staatliche Investitionsförderung, und ein Netzwerk von 120+ verifizierten lokalen Partnern."
+          },
+          {
+            question: "Welche Investitionsförderungen gibt es in Serbien?",
+            answer: "Serbien bietet bis zu 50% Zuschuss auf Investitionskosten, 10 Jahre Steuerbefreiung bei Investitionen über 8,5 Mio EUR, kostenlose Grundstücke in Sonderwirtschaftszonen, und Lohnkostenzuschüsse von €3.000-10.000 pro Arbeitsplatz."
+          },
+          {
+            question: "Für wen ist Serbia Executive Access geeignet?",
+            answer: "Das Programm richtet sich an DACH-Investoren mit einem Mindestinvestitionsvolumen von €500.000, die Zugang zu Off-Market Opportunities und direkten Regierungskontakten in Serbien suchen."
+          }
+        ]}
       />
       
       {/* Hero Section */}

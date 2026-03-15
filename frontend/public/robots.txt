@@ -1,15 +1,46 @@
-# robots.txt für EuroAdria
+# EuroAdria Corporate Solutions - robots.txt
 # https://euroadria.me
 
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /api/
+
+# Important pages for crawlers
+Allow: /blog
+Allow: /serbia-executive
+Allow: /team
+Allow: /contact
+Allow: /impressum
+Allow: /datenschutz
 
 # Sitemaps
 Sitemap: https://euroadria.me/sitemap.xml
 
-# Admin-Bereich ausschließen
-Disallow: /admin
-Disallow: /api/
-
-# Crawl-Delay für höfliches Crawling
+# Crawl-Delay for polite crawling
 Crawl-delay: 1
+
+# Allow specific bots for better indexing
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+# Host directive
+Host: https://euroadria.me

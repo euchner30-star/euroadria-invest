@@ -43,31 +43,189 @@
         <link rel="preload" href="https://onecdn.io/font-storage/figtree/figtree.css" as="style" />
         <link rel="stylesheet" href="https://onecdn.io/font-storage/figtree/figtree.css" />
         
-        <!-- Structured Data -->
+        <!-- Structured Data - Organization -->
         <script type="application/ld+json">
         {
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": "EuroAdria",
-            "alternateName": "EuroAdria Investment Consulting",
+            "name": "EuroAdria Corporate Solutions",
+            "alternateName": ["EuroAdria", "EuroAdria Investment Consulting"],
             "url": "https://euroadria.me",
             "logo": "https://euroadria.me/euroadria-logo.png",
-            "description": "Premium Investment & Lifestyle Partner für die Adria-Region",
+            "description": "Premium Investment & Lifestyle Partner für die Adria-Region. Spezialisiert auf Firmengründung, Immobilien-Investments und Relocation nach Montenegro und Serbien für DACH-Investoren.",
+            "foundingDate": "2020",
+            "founder": [
+                {
+                    "@type": "Person",
+                    "name": "Holger Kuhlmann",
+                    "jobTitle": "Strategic Investment Advisor"
+                },
+                {
+                    "@type": "Person",
+                    "name": "Milena Bubanja",
+                    "jobTitle": "Legal & Compliance Expert"
+                }
+            ],
             "address": {
                 "@type": "PostalAddress",
-                "streetAddress": "Speditionsstraße 15a",
-                "addressLocality": "Düsseldorf",
-                "postalCode": "40221",
-                "addressCountry": "DE"
+                "streetAddress": "Marka Miljanova 12",
+                "addressLocality": "Novi Sad",
+                "addressCountry": "RS"
             },
             "contactPoint": {
                 "@type": "ContactPoint",
+                "telephone": "+382-68-559-776",
                 "email": "office@euroadria.me",
                 "contactType": "customer service",
                 "availableLanguage": ["German", "English", "Serbian"]
             },
+            "areaServed": [
+                {
+                    "@type": "Country",
+                    "name": "Montenegro"
+                },
+                {
+                    "@type": "Country",
+                    "name": "Serbia"
+                },
+                {
+                    "@type": "Country",
+                    "name": "Germany"
+                },
+                {
+                    "@type": "Country",
+                    "name": "Austria"
+                },
+                {
+                    "@type": "Country",
+                    "name": "Switzerland"
+                }
+            ],
             "sameAs": [
-                "https://www.linkedin.com/company/euroadria"
+                "https://www.linkedin.com/company/euroadria",
+                "https://www.facebook.com/people/EuroAdria/61578380116731/",
+                "https://www.instagram.com/euro.adria/",
+                "https://x.com/AdriaEuro"
+            ]
+        }
+        </script>
+        
+        <!-- Structured Data - Professional Services -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "ProfessionalService",
+            "name": "EuroAdria Investment Beratung",
+            "serviceType": ["Investment Consulting", "Business Setup", "Real Estate Advisory", "Relocation Services"],
+            "provider": {
+                "@type": "Organization",
+                "name": "EuroAdria Corporate Solutions"
+            },
+            "areaServed": ["Montenegro", "Serbia", "Balkan Region"],
+            "description": "Forensische Due Diligence, Firmengründung, Immobilien-Investments und Relocation-Services für DACH-Investoren in der Adria-Region.",
+            "hasOfferCatalog": {
+                "@type": "OfferCatalog",
+                "name": "Investment Services",
+                "itemListElement": [
+                    {
+                        "@type": "Offer",
+                        "itemOffered": {
+                            "@type": "Service",
+                            "name": "Firmengründung Montenegro",
+                            "description": "Komplette Unternehmensgründung in Montenegro inkl. Bankability-Garantie und KYC/AML-Compliance"
+                        }
+                    },
+                    {
+                        "@type": "Offer",
+                        "itemOffered": {
+                            "@type": "Service",
+                            "name": "Serbia Executive Access",
+                            "description": "Exklusiver Zugang zu serbischen Regierungskontakten, Infrastrukturprojekten und Investment-Incentives"
+                        }
+                    },
+                    {
+                        "@type": "Offer",
+                        "itemOffered": {
+                            "@type": "Service",
+                            "name": "Due Diligence Balkan",
+                            "description": "Forensische Prüfung von Immobilien und Unternehmen nach internationalen Standards"
+                        }
+                    }
+                ]
+            }
+        }
+        </script>
+        
+        <!-- Structured Data - Investment Projects -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": "Balkan Investment Opportunities",
+            "description": "Aktuelle Investment-Möglichkeiten in Montenegro und Serbien",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "item": {
+                        "@type": "InvestmentOrDeposit",
+                        "name": "Montenegro Immobilien Investment",
+                        "description": "Premium-Immobilien an der Adriaküste mit 60-80% Wertsteigerungspotenzial vor EU-Beitritt 2028",
+                        "amount": {
+                            "@type": "MonetaryAmount",
+                            "minValue": 100000,
+                            "currency": "EUR"
+                        }
+                    }
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "item": {
+                        "@type": "InvestmentOrDeposit",
+                        "name": "Serbien Industrie & Logistik",
+                        "description": "Investitionen in serbische Industrie- und Logistikprojekte mit 8-12% ROI, unterstützt durch staatliche Incentives",
+                        "amount": {
+                            "@type": "MonetaryAmount",
+                            "minValue": 500000,
+                            "currency": "EUR"
+                        }
+                    }
+                }
+            ]
+        }
+        </script>
+        
+        <!-- Structured Data - FAQ for GEO -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": "Warum in Montenegro investieren?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Montenegro bietet DACH-Investoren einzigartige Vorteile: EU-Beitritt voraussichtlich 2028, 9% Körperschaftssteuer (niedrigste in Europa), keine Kapitalertragssteuer für Ausländer, und ein stabiles Rechtsumfeld mit Euro als Währung. Laut Weltbank rangiert Montenegro auf Platz 50 im Ease of Doing Business Index."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Welche Incentives bietet Serbien für ausländische Investoren?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Serbien bietet umfangreiche staatliche Förderungen: Bis zu 50% Zuschuss auf Investitionskosten, Steuerbefreiungen für 10 Jahre bei Investitionen über 8,5 Mio EUR, kostenlose Grundstücke in Sonderwirtschaftszonen, und vereinfachte Genehmigungsverfahren. Das Land hat Freihandelsabkommen mit der EU, Russland und der Türkei."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Was ist forensische Due Diligence bei Balkan-Investments?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Forensische Due Diligence geht über Standard-Prüfungen hinaus: Lückenlose Eigentumskette bis 1945, Prüfung von Restitutionsansprüchen, Verifizierung aller Baugenehmigungen (Occupancy Permits), KYC/AML-Compliance nach FATF-Standards, und Bankability-Garantie für westliche Finanzierungen."
+                    }
+                }
             ]
         }
         </script>

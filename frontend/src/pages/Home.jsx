@@ -24,11 +24,21 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white" itemScope itemType="https://schema.org/WebPage">
       <SEO 
         title="Investment & Business Beratung für Adria & Balkan"
-        description="Premium Investment & Lifestyle Partner für die Adria-Region. Exklusive Beratung für DACH-Investoren."
+        description="Premium Investment & Lifestyle Partner für die Adria-Region. Forensische Due Diligence, Firmengründung Montenegro, Serbien Investments. Für DACH-Investoren mit 8-15% Zielrendite."
         url="/"
+        faq={[
+          {
+            question: "Was macht EuroAdria?",
+            answer: "EuroAdria ist ein Premium Investment Advisor für DACH-Investoren in der Adria-Region. Wir bieten forensische Due Diligence, Firmengründung in Montenegro (9% Körperschaftssteuer), und exklusiven Zugang zu Off-Market Investments in Montenegro und Serbien."
+          },
+          {
+            question: "Warum Balkan statt EU für Investments?",
+            answer: "Der Balkan bietet strukturierte Wachstumsinvestments mit 8-15% Zielrendite, während EU-Märkte nur 4-6% bieten. Montenegro erwartet 60-80% Wertsteigerung vor dem EU-Beitritt 2028. Serbien bietet bis zu 50% staatliche Investitionsförderung."
+          }
+        ]}
       />
       <Hero />
 
@@ -53,28 +63,29 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Balkan vs EU Section - mit korrekten Farben */}
-      <section className="py-20 bg-ea-light">
+      {/* Balkan vs EU Section - GEO-optimiert mit Fakten */}
+      <section className="py-20 bg-ea-light" itemScope itemType="https://schema.org/Article">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="bg-white border border-gray-200 rounded-2xl p-8 md:p-12 shadow-sm">
+          <article className="bg-white border border-gray-200 rounded-2xl p-8 md:p-12 shadow-sm">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <div className="inline-block bg-ea-gold/10 border border-ea-gold/30 text-sm text-ea-dark px-4 py-2 rounded-full mb-4 font-medium">
                   Alpha-Potenzial
                 </div>
-                <h2 className="text-3xl md:text-4xl font-semibold text-ea-dark mb-6 leading-tight">
+                <h2 className="text-3xl md:text-4xl font-semibold text-ea-dark mb-6 leading-tight" itemProp="headline">
                   Warum <span className="text-ea-gold">Balkan</span> statt EU?
                 </h2>
-                <p className="text-ea-dark/70 text-lg leading-relaxed mb-6">
-                  Während EU-Märkte Stabilität bei komprimierten Renditen bieten (4-6%), 
-                  lockt der Balkan mit strukturierten Wachstumsinvestments und zweistelligen Zielrenditen.
+                <p className="text-ea-dark/70 text-lg leading-relaxed mb-6" itemProp="description">
+                  Laut Weltbank rangiert Montenegro auf Platz 50 im Ease of Doing Business Index. 
+                  Mit nur <strong>9% Körperschaftssteuer</strong> (niedrigste in Europa) und dem 
+                  erwarteten <strong>EU-Beitritt 2028</strong> bietet die Region einzigartige Konvergenz-Arbitrage.
                 </p>
                 <ul className="space-y-4 mb-8">
                   {[
-                    'Konvergenz-Arbitrage vor EU-Beitritt (Montenegro 2028)',
-                    'Forensische Due Diligence statt Spekulation',
-                    'Bankability nach internationalen Standards',
-                    'Off-Market Access durch lokales Netzwerk'
+                    'Montenegro: 9% Körperschaftssteuer, Euro als Währung',
+                    'Serbien: Bis zu 50% staatliche Investitionsförderung',
+                    '60-80% Wertsteigerungspotenzial vor EU-Beitritt',
+                    'Forensische Due Diligence nach FATF-Standards'
                   ].map((point, idx) => (
                     <li key={idx} className="flex items-start space-x-3">
                       <CheckCircle className="w-5 h-5 text-ea-gold flex-shrink-0 mt-0.5" />
@@ -91,21 +102,22 @@ const Home = () => {
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               </div>
-              <div className="relative">
+              <figure className="relative">
                 <img
                   src="https://images.unsplash.com/photo-1517048676732-d65bc937f952"
-                  alt="Balkan vs EU Investment"
+                  alt="Investment-Beratung für Balkan-Märkte - EuroAdria Team Meeting"
                   className="rounded-xl shadow-lg"
+                  itemProp="image"
                 />
-                <div className="absolute -bottom-6 -left-6 bg-white border border-gray-200 rounded-xl p-6 shadow-lg max-w-xs">
+                <figcaption className="absolute -bottom-6 -left-6 bg-white border border-gray-200 rounded-xl p-6 shadow-lg max-w-xs">
                   <div className="text-3xl font-bold text-ea-gold mb-2">60-80%</div>
                   <div className="text-ea-dark/70 text-sm">
-                    Wertsteigerung in Montenegro nach EU-Beitritt
+                    Erwartete Wertsteigerung in Montenegro vor EU-Beitritt (Quelle: EuroAdria Marktanalyse)
                   </div>
-                </div>
-              </div>
+                </figcaption>
+              </figure>
             </div>
-          </div>
+          </article>
         </div>
       </section>
 
@@ -258,7 +270,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 };
 
