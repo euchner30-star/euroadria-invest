@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Mail, Phone, MapPin, Building2, User, Globe } from 'lucide-react';
 import SEO from '../components/SEO';
 
 const ImpressumPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="min-h-screen pt-32 pb-20" data-testid="impressum-page">
       <SEO 

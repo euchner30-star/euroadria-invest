@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Shield, Mail, Phone, Database, Cookie, Lock, FileText } from 'lucide-react';
 import SEO from '../components/SEO';
 
 const DatenschutzPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="min-h-screen pt-32 pb-20" data-testid="datenschutz-page">
       <SEO 
