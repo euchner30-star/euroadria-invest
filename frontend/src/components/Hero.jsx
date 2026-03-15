@@ -21,9 +21,13 @@ const Hero = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
         {/* Main Logo and Tagline */}
         <div className="mb-8 animate-fadeIn">
-          <h1 className="text-7xl md:text-8xl lg:text-9xl font-display font-bold text-white mb-6 tracking-tight hover-glow">
-            <span className="text-gold">Euro</span>Adria
-          </h1>
+          <div className="flex justify-center mb-8">
+            <img 
+              src="/euroadria-logo.png" 
+              alt="EuroAdria Logo" 
+              className="w-full max-w-2xl h-auto hover-glow"
+            />
+          </div>
           <div className="flex items-center justify-center space-x-4 text-xl md:text-2xl text-white/90 font-light tracking-widest">
             <span className="hover:text-gold transition-colors cursor-default">Business</span>
             <span className="text-gold">•</span>

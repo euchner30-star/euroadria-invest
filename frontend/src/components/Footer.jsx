@@ -14,9 +14,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand Column */}
           <div>
-            <div className="text-3xl font-bold font-display text-white mb-4">
-              <span className="text-gold">Euro</span>Adria
-            </div>
+            <img 
+              src="/euroadria-logo.png" 
+              alt="EuroAdria Logo" 
+              className="h-16 w-auto mb-4"
+            />
             <p className="text-white/70 text-sm leading-relaxed mb-4">
               Premium Investment & Lifestyle Partner für die Adria-Region. 
               Expertise, Vertrauen, Exklusivität.

@@ -42,9 +42,11 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <div className="text-2xl font-bold font-display text-white tracking-wider hover-glow">
-              <span className="text-gold">Euro</span>Adria
-            </div>
+            <img 
+              src="/euroadria-logo.png" 
+              alt="EuroAdria Logo" 
+              className="h-12 w-auto transition-transform duration-300 group-hover:scale-105"
+            />
           </Link>
 
           {/* Navigation Links */}
