@@ -149,4 +149,91 @@ export const getRelatedArticles = async (articleIds) => {
   return articles;
 };
 
-export default { articlesApi, adminApi, getRelatedArticles };
+// Comments API (public for reading approved, protected for submission)
+export const commentsApi = {
+  // Get approved comments for an article
+  getByArticle: async (articleId) => {
+    const response = await fetch(`${API_BASE_URL}/api/comments/article/${articleId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch comments');
+    }
+    return response.json();
+  },
+
+  // Create a new comment (requires moderation)
+  create: async (commentData) => {
+    const response = await fetch(`${API_BASE_URL}/api/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(commentData)
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to submit comment');
+    }
+    return response.json();
+  },
+
+  // Admin: Get all comments (with optional status filter)
+  getAll: async (credentials, status = null) => {
+    const url = status 
+      ? `${API_BASE_URL}/api/admin/comments?status=${status}`
+      : `${API_BASE_URL}/api/admin/comments`;
+    
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch comments');
+    }
+    return response.json();
+  },
+
+  // Admin: Approve a comment
+  approve: async (commentId, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/comments/${commentId}/approve`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to approve comment');
+    }
+    return response.json();
+  },
+
+  // Admin: Reject a comment
+  reject: async (commentId, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/comments/${commentId}/reject`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to reject comment');
+    }
+    return response.json();
+  },
+
+  // Admin: Delete a comment
+  delete: async (commentId, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete comment');
+    }
+    return response.json();
+  }
+};
+
+export default { articlesApi, adminApi, commentsApi, getRelatedArticles };

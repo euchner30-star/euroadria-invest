@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, BackgroundTasks
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -6,11 +6,14 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional
+from pydantic import BaseModel, Field, ConfigDict, EmailStr
+from typing import List, Optional, Literal
 import uuid
 from datetime import datetime, timezone
 import secrets
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 ROOT_DIR = Path(__file__).parent
@@ -33,6 +36,17 @@ security = HTTPBasic()
 # Admin credentials (in production, use environment variables and proper hashing)
 ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'euroadria2025')
+
+# Email notification settings
+NOTIFICATION_EMAIL = os.environ.get('NOTIFICATION_EMAIL', 'office@euroadria.me')
+SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
+SMTP_PORT = int(os.environ.get('SMTP_PORT', '587'))
+SMTP_USER = os.environ.get('SMTP_USER', '')
+SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
@@ -108,6 +122,81 @@ class ArticleUpdate(BaseModel):
 class Article(ArticleBase):
     model_config = ConfigDict(extra="ignore")
     id: int
+
+
+# Comment Models
+class CommentCreate(BaseModel):
+    articleId: int
+    articleSlug: str
+    name: str
+    email: str
+    content: str
+
+class CommentResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    articleId: int
+    articleSlug: str
+    name: str
+    content: str
+    status: str
+    createdAt: str
+
+class CommentAdminResponse(CommentResponse):
+    email: str
+    articleTitle: Optional[str] = None
+
+
+# Email notification function
+async def send_notification_email(comment_data: dict, article_title: str):
+    """Send email notification for new comment"""
+    if not SMTP_USER or not SMTP_PASSWORD:
+        logger.warning("SMTP credentials not configured - skipping email notification")
+        return
+    
+    try:
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = f'Neuer Kommentar auf EuroAdria: {article_title[:50]}'
+        msg['From'] = SMTP_USER
+        msg['To'] = NOTIFICATION_EMAIL
+        
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; background-color: #002147; color: #ffffff; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #001233; padding: 30px; border-radius: 10px; border: 1px solid #D4AF37;">
+                <h2 style="color: #D4AF37; margin-bottom: 20px;">Neuer Kommentar eingegangen</h2>
+                
+                <p style="color: #ffffff; margin-bottom: 10px;"><strong>Artikel:</strong> {article_title}</p>
+                <p style="color: #ffffff; margin-bottom: 10px;"><strong>Name:</strong> {comment_data['name']}</p>
+                <p style="color: #ffffff; margin-bottom: 10px;"><strong>E-Mail:</strong> {comment_data['email']}</p>
+                <p style="color: #ffffff; margin-bottom: 20px;"><strong>Kommentar:</strong></p>
+                <div style="background-color: #002147; padding: 15px; border-radius: 5px; border-left: 3px solid #D4AF37;">
+                    <p style="color: #ffffff; margin: 0;">{comment_data['content']}</p>
+                </div>
+                
+                <p style="color: #888888; margin-top: 30px; font-size: 12px;">
+                    Dieser Kommentar wartet auf Freigabe im Admin-Panel.
+                </p>
+                
+                <a href="https://investment-hub-test.preview.emergentagent.com/admin" 
+                   style="display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #D4AF37; color: #002147; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                    Zum Admin-Panel
+                </a>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_content, 'html'))
+        
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.send_message(msg)
+        
+        logger.info(f"Notification email sent for comment by {comment_data['name']}")
+    except Exception as e:
+        logger.error(f"Failed to send notification email: {e}")
 
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
@@ -298,6 +387,113 @@ async def seed_articles_data(articles: List[ArticleCreate], admin: str = Depends
         await db.articles.insert_one(article_dict)
     
     return {"message": f"Successfully seeded {len(articles)} articles", "seeded": True, "count": len(articles)}
+
+
+# =============================================
+# COMMENT ENDPOINTS (Public & Admin)
+# =============================================
+
+@api_router.get("/comments/article/{article_id}")
+async def get_approved_comments(article_id: int):
+    """Get all approved comments for an article (Public)"""
+    comments = await db.comments.find(
+        {"articleId": article_id, "status": "approved"},
+        {"_id": 0, "email": 0}  # Don't expose email publicly
+    ).sort("createdAt", -1).to_list(100)
+    return comments
+
+
+@api_router.post("/comments")
+async def create_comment(comment: CommentCreate, background_tasks: BackgroundTasks):
+    """Create a new comment (requires moderation)"""
+    # Get article info for email notification
+    article = await db.articles.find_one({"id": comment.articleId}, {"title": 1})
+    article_title = article.get("title", "Unknown Article") if article else "Unknown Article"
+    
+    comment_id = str(uuid.uuid4())
+    comment_dict = {
+        "id": comment_id,
+        **comment.model_dump(),
+        "status": "pending",  # pending, approved, rejected
+        "createdAt": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.comments.insert_one(comment_dict)
+    
+    # Send notification email in background
+    background_tasks.add_task(send_notification_email, comment_dict, article_title)
+    
+    return {"message": "Comment submitted for moderation", "id": comment_id}
+
+
+@api_router.get("/admin/comments")
+async def get_all_comments(
+    status: Optional[str] = None,
+    admin: str = Depends(verify_admin)
+):
+    """Get all comments with optional status filter (Admin only)"""
+    query = {}
+    if status:
+        query["status"] = status
+    
+    comments = await db.comments.find(query, {"_id": 0}).sort("createdAt", -1).to_list(500)
+    
+    # Enrich with article titles
+    for comment in comments:
+        article = await db.articles.find_one({"id": comment.get("articleId")}, {"title": 1})
+        comment["articleTitle"] = article.get("title", "Unknown") if article else "Unknown"
+    
+    return comments
+
+
+@api_router.get("/admin/comments/stats")
+async def get_comments_stats(admin: str = Depends(verify_admin)):
+    """Get comment statistics (Admin only)"""
+    total = await db.comments.count_documents({})
+    pending = await db.comments.count_documents({"status": "pending"})
+    approved = await db.comments.count_documents({"status": "approved"})
+    rejected = await db.comments.count_documents({"status": "rejected"})
+    
+    return {
+        "total": total,
+        "pending": pending,
+        "approved": approved,
+        "rejected": rejected
+    }
+
+
+@api_router.put("/admin/comments/{comment_id}/approve")
+async def approve_comment(comment_id: str, admin: str = Depends(verify_admin)):
+    """Approve a comment (Admin only)"""
+    result = await db.comments.update_one(
+        {"id": comment_id},
+        {"$set": {"status": "approved"}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    return {"message": "Comment approved", "id": comment_id}
+
+
+@api_router.put("/admin/comments/{comment_id}/reject")
+async def reject_comment(comment_id: str, admin: str = Depends(verify_admin)):
+    """Reject a comment (Admin only)"""
+    result = await db.comments.update_one(
+        {"id": comment_id},
+        {"$set": {"status": "rejected"}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    return {"message": "Comment rejected", "id": comment_id}
+
+
+@api_router.delete("/admin/comments/{comment_id}")
+async def delete_comment(comment_id: str, admin: str = Depends(verify_admin)):
+    """Delete a comment (Admin only)"""
+    result = await db.comments.delete_one({"id": comment_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    return {"message": "Comment deleted", "id": comment_id}
+
 
 # Include the router in the main app
 app.include_router(api_router)

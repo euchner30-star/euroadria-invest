@@ -88,13 +88,13 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 ## Verbleibende Aufgaben
 
 ### P1 - Wichtig
+- [x] Social Sharing Buttons (implementiert)
 - [ ] Newsletter-Integration (Email-Sammlung, Lead Magnet)
 - [ ] SEO-Meta-Tags für alle Seiten
-- [ ] Social Sharing Buttons
 
 ### P2 - Nice-to-Have
+- [x] Kommentar-Funktion (implementiert mit Moderation)
 - [ ] Artikel-Suche mit Volltextsuche
-- [ ] Kommentar-Funktion
 - [ ] Related Articles Algorithmus verbessern
 - [ ] Multi-Language Support (DE/EN)
 - [ ] Analytics Integration
@@ -142,7 +142,14 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 
 ## Changelog
 
-### 2025-03-15
+### 2025-03-15 (Update 2)
+- ✅ Share-Buttons implementiert (LinkedIn, X, Facebook, WhatsApp, E-Mail)
+- ✅ Kommentar-System mit Moderation eingerichtet
+- ✅ Admin-Panel um Kommentar-Verwaltung erweitert (Freigabe/Ablehnung/Löschen)
+- ✅ E-Mail-Benachrichtigung bei neuen Kommentaren konfiguriert (office@euroadria.me)
+- ✅ Backend-API für Kommentare (CRUD + Moderation)
+
+### 2025-03-15 (Update 1)
 - ✅ Impressum-Seite mit Niederlassung Deutschland erstellt
 - ✅ Datenschutz-Seite (DSGVO) erstellt
 - ✅ Footer-Links zu rechtlichen Seiten hinzugefügt

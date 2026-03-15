@@ -3,6 +3,8 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { articlesApi, getRelatedArticles } from '../services/api';
 import { Clock, Calendar, User, ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 import { DueDiligenceBox, ExpertTipBox, LeadMagnetBox } from '../components/ArticleComponents';
+import ShareButtons from '../components/ShareButtons';
+import CommentsSection from '../components/CommentsSection';
 
 const ArticlePage = () => {
   const { slug } = useParams();
@@ -143,6 +145,13 @@ const ArticlePage = () => {
           {/* Lead Magnet */}
           <LeadMagnetBox />
 
+          {/* Share Buttons */}
+          <ShareButtons 
+            title={article.title}
+            url={window.location.href}
+            excerpt={article.excerpt}
+          />
+
           {/* CTA Section */}
           <div className="mt-12 p-8 glass-card-strong rounded-xl border border-gold/20">
             <h3 className="text-2xl font-bold text-white mb-3">
@@ -160,6 +169,9 @@ const ArticlePage = () => {
             </Link>
           </div>
         </article>
+
+        {/* Comments Section */}
+        <CommentsSection articleId={article.id} articleSlug={article.slug} />
 
         {/* Related Articles */}
         {relatedArticles.length > 0 && (

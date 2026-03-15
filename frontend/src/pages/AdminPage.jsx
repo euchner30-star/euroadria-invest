@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { adminApi, articlesApi } from '../services/api';
+import { adminApi, articlesApi, commentsApi } from '../services/api';
 import { 
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
-  FileText, Loader2, AlertCircle, Check 
+  FileText, Loader2, AlertCircle, Check, MessageSquare,
+  CheckCircle, XCircle, Clock, Mail, User
 } from 'lucide-react';
 
 const AdminPage = () => {
@@ -11,10 +12,21 @@ const AdminPage = () => {
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
   
+  // Active Tab: 'articles' or 'comments'
+  const [activeTab, setActiveTab] = useState('articles');
+  
+  // Articles State
   const [articles, setArticles] = useState([]);
   const [articlesLoading, setArticlesLoading] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
+  
+  // Comments State
+  const [comments, setComments] = useState([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentsFilter, setCommentsFilter] = useState('pending');
+  const [commentsStats, setCommentsStats] = useState({ total: 0, pending: 0, approved: 0, rejected: 0 });
+  
   const [saveStatus, setSaveStatus] = useState({ type: '', message: '' });
 
   // Check for stored credentials
@@ -33,6 +45,8 @@ const AdminPage = () => {
       if (valid) {
         setIsAuthenticated(true);
         fetchArticles(creds);
+        fetchComments(creds);
+        fetchCommentsStats(creds);
       } else {
         sessionStorage.removeItem('adminCredentials');
       }
@@ -52,6 +66,8 @@ const AdminPage = () => {
         setIsAuthenticated(true);
         sessionStorage.setItem('adminCredentials', JSON.stringify(credentials));
         fetchArticles(credentials);
+        fetchComments(credentials);
+        fetchCommentsStats(credentials);
       } else {
         setLoginError('Ungültige Zugangsdaten');
       }
@@ -67,6 +83,7 @@ const AdminPage = () => {
     setCredentials({ username: '', password: '' });
     sessionStorage.removeItem('adminCredentials');
     setArticles([]);
+    setComments([]);
   };
 
   const fetchArticles = async (creds) => {
@@ -80,6 +97,77 @@ const AdminPage = () => {
       setArticlesLoading(false);
     }
   };
+
+  const fetchComments = async (creds, status = null) => {
+    setCommentsLoading(true);
+    try {
+      const data = await commentsApi.getAll(creds, status);
+      setComments(data);
+    } catch (err) {
+      console.error('Failed to fetch comments:', err);
+    } finally {
+      setCommentsLoading(false);
+    }
+  };
+
+  const fetchCommentsStats = async (creds) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/comments/stats`, {
+        headers: {
+          'Authorization': 'Basic ' + btoa(`${creds.username}:${creds.password}`)
+        }
+      });
+      if (response.ok) {
+        const stats = await response.json();
+        setCommentsStats(stats);
+      }
+    } catch (err) {
+      console.error('Failed to fetch comment stats:', err);
+    }
+  };
+
+  const handleApproveComment = async (commentId) => {
+    try {
+      await commentsApi.approve(commentId, credentials);
+      fetchComments(credentials, commentsFilter === 'all' ? null : commentsFilter);
+      fetchCommentsStats(credentials);
+      setSaveStatus({ type: 'success', message: 'Kommentar freigegeben!' });
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: 'Fehler beim Freigeben' });
+    }
+  };
+
+  const handleRejectComment = async (commentId) => {
+    try {
+      await commentsApi.reject(commentId, credentials);
+      fetchComments(credentials, commentsFilter === 'all' ? null : commentsFilter);
+      fetchCommentsStats(credentials);
+      setSaveStatus({ type: 'success', message: 'Kommentar abgelehnt!' });
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: 'Fehler beim Ablehnen' });
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Kommentar wirklich löschen?')) return;
+    try {
+      await commentsApi.delete(commentId, credentials);
+      fetchComments(credentials, commentsFilter === 'all' ? null : commentsFilter);
+      fetchCommentsStats(credentials);
+      setSaveStatus({ type: 'success', message: 'Kommentar gelöscht!' });
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: 'Fehler beim Löschen' });
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated && activeTab === 'comments') {
+      fetchComments(credentials, commentsFilter === 'all' ? null : commentsFilter);
+    }
+  }, [commentsFilter, activeTab, isAuthenticated]);
 
   const handleSaveArticle = async (articleData) => {
     setSaveStatus({ type: 'loading', message: 'Speichern...' });
@@ -236,17 +324,19 @@ const AdminPage = () => {
             <h1 className="text-4xl font-display font-bold text-white mb-2">
               Admin <span className="text-gold">Dashboard</span>
             </h1>
-            <p className="text-white/70">Verwalten Sie Ihre Blog-Artikel</p>
+            <p className="text-white/70">Verwalten Sie Artikel und Kommentare</p>
           </div>
           <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setIsCreating(true)}
-              className="btn-gold flex items-center space-x-2"
-              data-testid="create-article-button"
-            >
-              <Plus className="w-5 h-5" />
-              <span>Neuer Artikel</span>
-            </button>
+            {activeTab === 'articles' && (
+              <button
+                onClick={() => setIsCreating(true)}
+                className="btn-gold flex items-center space-x-2"
+                data-testid="create-article-button"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Neuer Artikel</span>
+              </button>
+            )}
             <button
               onClick={handleLogout}
               className="glass-card px-4 py-2 text-white/70 hover:text-white transition-colors flex items-center space-x-2"
@@ -273,62 +363,253 @@ const AdminPage = () => {
           </div>
         )}
 
-        {/* Articles List */}
-        <div className="glass-card overflow-hidden">
-          <div className="p-4 border-b border-white/10 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <FileText className="w-5 h-5 text-gold" />
-              <span className="text-white font-medium">Artikel ({articles.length})</span>
-            </div>
-          </div>
+        {/* Tabs */}
+        <div className="flex space-x-4 mb-6">
+          <button
+            onClick={() => setActiveTab('articles')}
+            className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
+              activeTab === 'articles'
+                ? 'bg-gold text-navy font-semibold'
+                : 'glass-card text-white/70 hover:text-white'
+            }`}
+            data-testid="tab-articles"
+          >
+            <FileText className="w-5 h-5" />
+            <span>Artikel ({articles.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('comments')}
+            className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
+              activeTab === 'comments'
+                ? 'bg-gold text-navy font-semibold'
+                : 'glass-card text-white/70 hover:text-white'
+            }`}
+            data-testid="tab-comments"
+          >
+            <MessageSquare className="w-5 h-5" />
+            <span>Kommentare</span>
+            {commentsStats.pending > 0 && (
+              <span className="ml-1 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full">
+                {commentsStats.pending}
+              </span>
+            )}
+          </button>
+        </div>
 
-          {articlesLoading ? (
-            <div className="p-8 flex justify-center">
-              <Loader2 className="w-8 h-8 text-gold animate-spin" />
+        {/* Articles Tab */}
+        {activeTab === 'articles' && (
+          <div className="glass-card overflow-hidden">
+            <div className="p-4 border-b border-white/10 flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <FileText className="w-5 h-5 text-gold" />
+                <span className="text-white font-medium">Artikel ({articles.length})</span>
+              </div>
             </div>
-          ) : (
-            <div className="divide-y divide-white/10">
-              {articles.map((article) => (
-                <div 
-                  key={article.id} 
-                  className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
-                  data-testid={`article-row-${article.id}`}
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-xs text-gold font-medium bg-gold/10 px-2 py-1 rounded">
-                        {article.cluster}
-                      </span>
-                      {article.featured && (
-                        <span className="text-xs text-white bg-white/10 px-2 py-1 rounded">
-                          Featured
+
+            {articlesLoading ? (
+              <div className="p-8 flex justify-center">
+                <Loader2 className="w-8 h-8 text-gold animate-spin" />
+              </div>
+            ) : (
+              <div className="divide-y divide-white/10">
+                {articles.map((article) => (
+                  <div 
+                    key={article.id} 
+                    className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+                    data-testid={`article-row-${article.id}`}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-xs text-gold font-medium bg-gold/10 px-2 py-1 rounded">
+                          {article.cluster}
                         </span>
-                      )}
+                        {article.featured && (
+                          <span className="text-xs text-white bg-white/10 px-2 py-1 rounded">
+                            Featured
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-white font-medium mt-2 truncate">{article.title}</h3>
+                      <p className="text-white/50 text-sm">{article.category} • {article.date}</p>
                     </div>
-                    <h3 className="text-white font-medium mt-2 truncate">{article.title}</h3>
-                    <p className="text-white/50 text-sm">{article.category} • {article.date}</p>
+                    <div className="flex items-center space-x-2 ml-4">
+                      <button
+                        onClick={() => setEditingArticle(article)}
+                        className="p-2 text-white/70 hover:text-gold transition-colors"
+                        data-testid={`edit-article-${article.id}`}
+                      >
+                        <Edit2 className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteArticle(article.id)}
+                        className="p-2 text-white/70 hover:text-red-400 transition-colors"
+                        data-testid={`delete-article-${article.id}`}
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2 ml-4">
-                    <button
-                      onClick={() => setEditingArticle(article)}
-                      className="p-2 text-white/70 hover:text-gold transition-colors"
-                      data-testid={`edit-article-${article.id}`}
-                    >
-                      <Edit2 className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteArticle(article.id)}
-                      className="p-2 text-white/70 hover:text-red-400 transition-colors"
-                      data-testid={`delete-article-${article.id}`}
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Comments Tab */}
+        {activeTab === 'comments' && (
+          <div className="space-y-6">
+            {/* Comments Stats */}
+            <div className="grid grid-cols-4 gap-4">
+              <div className="glass-card p-4 text-center">
+                <p className="text-3xl font-bold text-white">{commentsStats.total}</p>
+                <p className="text-white/60 text-sm">Gesamt</p>
+              </div>
+              <div className="glass-card p-4 text-center border-yellow-500/30">
+                <p className="text-3xl font-bold text-yellow-400">{commentsStats.pending}</p>
+                <p className="text-white/60 text-sm">Ausstehend</p>
+              </div>
+              <div className="glass-card p-4 text-center border-green-500/30">
+                <p className="text-3xl font-bold text-green-400">{commentsStats.approved}</p>
+                <p className="text-white/60 text-sm">Freigegeben</p>
+              </div>
+              <div className="glass-card p-4 text-center border-red-500/30">
+                <p className="text-3xl font-bold text-red-400">{commentsStats.rejected}</p>
+                <p className="text-white/60 text-sm">Abgelehnt</p>
+              </div>
+            </div>
+
+            {/* Comments Filter */}
+            <div className="flex space-x-2">
+              {['pending', 'approved', 'rejected', 'all'].map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => setCommentsFilter(filter)}
+                  className={`px-4 py-2 rounded-lg text-sm transition-all ${
+                    commentsFilter === filter
+                      ? 'bg-gold/20 text-gold border border-gold/50'
+                      : 'glass-card text-white/70 hover:text-white'
+                  }`}
+                  data-testid={`filter-${filter}`}
+                >
+                  {filter === 'pending' && 'Ausstehend'}
+                  {filter === 'approved' && 'Freigegeben'}
+                  {filter === 'rejected' && 'Abgelehnt'}
+                  {filter === 'all' && 'Alle'}
+                </button>
               ))}
             </div>
-          )}
-        </div>
+
+            {/* Comments List */}
+            <div className="glass-card overflow-hidden">
+              <div className="p-4 border-b border-white/10 flex items-center space-x-2">
+                <MessageSquare className="w-5 h-5 text-gold" />
+                <span className="text-white font-medium">
+                  {commentsFilter === 'pending' && 'Ausstehende Kommentare'}
+                  {commentsFilter === 'approved' && 'Freigegebene Kommentare'}
+                  {commentsFilter === 'rejected' && 'Abgelehnte Kommentare'}
+                  {commentsFilter === 'all' && 'Alle Kommentare'}
+                </span>
+              </div>
+
+              {commentsLoading ? (
+                <div className="p-8 flex justify-center">
+                  <Loader2 className="w-8 h-8 text-gold animate-spin" />
+                </div>
+              ) : comments.length === 0 ? (
+                <div className="p-8 text-center text-white/50">
+                  Keine Kommentare in dieser Kategorie.
+                </div>
+              ) : (
+                <div className="divide-y divide-white/10">
+                  {comments.map((comment) => (
+                    <div 
+                      key={comment.id} 
+                      className="p-5 hover:bg-white/5 transition-colors"
+                      data-testid={`comment-row-${comment.id}`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          {/* Comment Header */}
+                          <div className="flex items-center space-x-3 mb-2">
+                            <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center">
+                              <span className="text-gold font-bold">
+                                {comment.name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <div>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-white font-medium">{comment.name}</span>
+                                <span className={`px-2 py-0.5 rounded text-xs ${
+                                  comment.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
+                                  comment.status === 'approved' ? 'bg-green-500/20 text-green-400' :
+                                  'bg-red-500/20 text-red-400'
+                                }`}>
+                                  {comment.status === 'pending' && 'Ausstehend'}
+                                  {comment.status === 'approved' && 'Freigegeben'}
+                                  {comment.status === 'rejected' && 'Abgelehnt'}
+                                </span>
+                              </div>
+                              <div className="flex items-center space-x-3 text-white/50 text-xs">
+                                <span className="flex items-center space-x-1">
+                                  <Mail className="w-3 h-3" />
+                                  <span>{comment.email}</span>
+                                </span>
+                                <span className="flex items-center space-x-1">
+                                  <Clock className="w-3 h-3" />
+                                  <span>{new Date(comment.createdAt).toLocaleString('de-DE')}</span>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Article Reference */}
+                          <p className="text-white/50 text-xs mb-2">
+                            Artikel: <span className="text-gold">{comment.articleTitle}</span>
+                          </p>
+                          
+                          {/* Comment Content */}
+                          <p className="text-white/80 bg-white/5 p-3 rounded-lg">{comment.content}</p>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center space-x-2 ml-4">
+                          {comment.status === 'pending' && (
+                            <>
+                              <button
+                                onClick={() => handleApproveComment(comment.id)}
+                                className="p-2 text-white/70 hover:text-green-400 transition-colors"
+                                title="Freigeben"
+                                data-testid={`approve-comment-${comment.id}`}
+                              >
+                                <CheckCircle className="w-5 h-5" />
+                              </button>
+                              <button
+                                onClick={() => handleRejectComment(comment.id)}
+                                className="p-2 text-white/70 hover:text-red-400 transition-colors"
+                                title="Ablehnen"
+                                data-testid={`reject-comment-${comment.id}`}
+                              >
+                                <XCircle className="w-5 h-5" />
+                              </button>
+                            </>
+                          )}
+                          <button
+                            onClick={() => handleDeleteComment(comment.id)}
+                            className="p-2 text-white/70 hover:text-red-400 transition-colors"
+                            title="Löschen"
+                            data-testid={`delete-comment-${comment.id}`}
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
