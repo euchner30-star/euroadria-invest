@@ -1,9 +1,15 @@
 import React from 'react';
 import { Shield, Mail, Phone, Database, Cookie, Lock, FileText } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const DatenschutzPage = () => {
   return (
     <div className="min-h-screen pt-32 pb-20" data-testid="datenschutz-page">
+      <SEO 
+        title="Datenschutzerklärung"
+        description="Datenschutzerklärung der EuroAdria. Informationen zum Umgang mit Ihren personenbezogenen Daten gemäß DSGVO."
+        url="/datenschutz"
+      />
       <div className="max-w-4xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12">

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -32,6 +33,11 @@ const ContactPage = () => {
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-6">
+      <SEO 
+        title="Kontakt"
+        description="Kontaktieren Sie EuroAdria für Ihre Investment-Beratung. Wir beraten Sie zu Immobilien, Unternehmensgründung und Relocation in der Adria-Region."
+        url="/contact"
+      />
       <div className="max-w-6xl mx-auto">
         {/* Page Header */}
         <div className="text-center mb-16">

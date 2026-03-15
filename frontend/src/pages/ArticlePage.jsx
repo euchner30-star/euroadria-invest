@@ -5,6 +5,7 @@ import { Clock, Calendar, User, ArrowLeft, ArrowRight, Loader2 } from 'lucide-re
 import { DueDiligenceBox, ExpertTipBox, LeadMagnetBox } from '../components/ArticleComponents';
 import ShareButtons from '../components/ShareButtons';
 import CommentsSection from '../components/CommentsSection';
+import SEO from '../components/SEO';
 
 const ArticlePage = () => {
   const { slug } = useParams();
@@ -60,6 +61,18 @@ const ArticlePage = () => {
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-6">
+      <SEO 
+        title={article.title}
+        description={article.excerpt}
+        image={article.image}
+        url={`/blog/${article.slug}`}
+        type="article"
+        article={{
+          date: article.date,
+          author: article.author,
+          category: article.category
+        }}
+      />
       <div className="max-w-4xl mx-auto">
         {/* Back Button */}
         <Link

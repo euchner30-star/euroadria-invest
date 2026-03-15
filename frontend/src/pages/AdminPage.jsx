@@ -5,6 +5,7 @@ import {
   FileText, Loader2, AlertCircle, Check, MessageSquare,
   CheckCircle, XCircle, Clock, Mail, User
 } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const AdminPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -205,6 +206,12 @@ const AdminPage = () => {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen pt-32 pb-20 px-6" data-testid="admin-login-page">
+        <SEO 
+          title="Admin Login"
+          description="EuroAdria Admin-Bereich"
+          url="/admin"
+          noindex={true}
+        />
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-display font-bold text-white mb-4">

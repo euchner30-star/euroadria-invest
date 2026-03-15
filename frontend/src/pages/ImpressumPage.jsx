@@ -1,9 +1,15 @@
 import React from 'react';
 import { Mail, Phone, MapPin, Building2, User, Globe } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const ImpressumPage = () => {
   return (
     <div className="min-h-screen pt-32 pb-20" data-testid="impressum-page">
+      <SEO 
+        title="Impressum"
+        description="Impressum der EuroAdria - Investment & Business Beratung. Angaben gemäß § 5 TMG."
+        url="/impressum"
+      />
       <div className="max-w-4xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12">

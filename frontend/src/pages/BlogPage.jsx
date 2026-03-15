@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { articlesApi } from '../services/api';
 import { themeClusters } from '../data/clusters';
 import { Clock, ArrowRight, Search, Loader2 } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const BlogPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -41,6 +42,11 @@ const BlogPage = () => {
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-6">
+      <SEO 
+        title="Blog & Insights"
+        description="Tiefgehende Analysen, Marktberichte und praktische Guides für erfolgreiche Investments an der Adria. Expertenwissen zu Montenegro, Serbien und dem Balkan."
+        url="/blog"
+      />
       <div className="max-w-7xl mx-auto">
         {/* Page Header */}
         <div className="text-center mb-16">

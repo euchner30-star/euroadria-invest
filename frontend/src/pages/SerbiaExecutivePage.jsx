@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import ShareButtons from '../components/ShareButtons';
 import CommentsSection from '../components/CommentsSection';
+import SEO from '../components/SEO';
 
 const SerbiaExecutivePage = () => {
   const [inquiryForm, setInquiryForm] = useState({
@@ -36,6 +37,11 @@ const SerbiaExecutivePage = () => {
 
   return (
     <div className="min-h-screen" data-testid="serbia-executive-page">
+      <SEO 
+        title="Serbia Executive Access"
+        description="Privilegierter Zugang zu Serbiens wirtschaftlicher Elite. Exklusive Kontakte zu Regierungsstellen, Infrastrukturprojekten und staatlichen Förderprogrammen für strategische DACH-Investoren."
+        url="/serbia-executive"
+      />
       {/* Hero Section with Video */}
       <section className="relative pt-24 pb-20 overflow-hidden">
         {/* Background gradient overlay */}

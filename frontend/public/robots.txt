@@ -1,0 +1,15 @@
+# robots.txt für EuroAdria
+# https://euroadria.me
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://euroadria.me/sitemap.xml
+
+# Admin-Bereich ausschließen
+Disallow: /admin
+Disallow: /api/
+
+# Crawl-Delay für höfliches Crawling
+Crawl-delay: 1

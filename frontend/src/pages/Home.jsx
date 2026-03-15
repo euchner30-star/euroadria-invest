@@ -5,6 +5,7 @@ import { LeadMagnetBox } from '../components/ArticleComponents';
 import { Link } from 'react-router-dom';
 import { articlesApi } from '../services/api';
 import { ArrowRight, Clock, Shield, TrendingUp, Award, Loader2 } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const Home = () => {
   const [featuredArticles, setFeaturedArticles] = useState([]);
@@ -26,6 +27,11 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO 
+        title="Investment & Business Beratung für Adria & Balkan"
+        description="Premium Investment & Lifestyle Partner für die Adria-Region. Exklusive Beratung für DACH-Investoren: Immobilien, Unternehmensgründung, Relocation nach Montenegro, Serbien & Kroatien."
+        url="/"
+      />
       <Hero />
 
       {/* Balkan vs EU Section - Prominent */}
