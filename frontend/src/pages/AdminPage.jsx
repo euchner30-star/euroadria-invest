@@ -3,9 +3,10 @@ import { adminApi, articlesApi, commentsApi } from '../services/api';
 import { 
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
   FileText, Loader2, AlertCircle, Check, MessageSquare,
-  CheckCircle, XCircle, Clock, Mail, User
+  CheckCircle, XCircle, Clock, Mail, User, HelpCircle
 } from 'lucide-react';
 import SEO from '../components/SEO';
+import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHtml } from '../components/admin/WYSIWYGEditor';
 
 const AdminPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -625,9 +626,16 @@ const AdminPage = () => {
 // Article Form Component
 const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
   const [formData, setFormData] = useState(initialData);
+  const [editorContent, setEditorContent] = useState(contentToHtml(initialData.content || ''));
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Auto-generate slug from title
+    if (field === 'title') {
+      const newSlug = generateSlug(value);
+      setFormData(prev => ({ ...prev, slug: newSlug }));
+    }
   };
 
   const handleNestedChange = (parent, field, value) => {
@@ -635,6 +643,13 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
       ...prev,
       [parent]: { ...prev[parent], [field]: value }
     }));
+  };
+
+  const handleEditorChange = (html) => {
+    setEditorContent(html);
+    // Convert HTML to clean content for storage
+    const cleanContent = htmlToCleanContent(html);
+    setFormData(prev => ({ ...prev, content: cleanContent }));
   };
 
   const handleSubmit = (e) => {
@@ -662,14 +677,30 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
     { id: 'F', name: 'Business Setup' }
   ];
 
+  // Tooltip helper component
+  const Tooltip = ({ text }) => (
+    <div className="relative group inline-flex items-center ml-1">
+      <HelpCircle className="w-4 h-4 text-ea-dark/40 hover:text-ea-gold cursor-help" />
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-ea-dark text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 max-w-xs">
+        {text}
+      </div>
+    </div>
+  );
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-6">
-        <h3 className="text-xl font-bold text-ea-gold">Grundinformationen</h3>
+        <h3 className="text-xl font-bold text-ea-gold flex items-center">
+          Grundinformationen
+          <Tooltip text="Diese Felder sind wichtig für SEO und die Darstellung auf der Website." />
+        </h3>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-ea-dark/80 text-sm mb-2">Cluster</label>
+            <label className="flex items-center text-ea-dark/80 text-sm mb-2">
+              Cluster
+              <Tooltip text="Wähle das Thema des Artikels. Beeinflusst die Kategorie-Filter im Blog." />
+            </label>
             <select
               value={formData.cluster}
               onChange={(e) => handleChange('cluster', e.target.value)}
@@ -681,7 +712,10 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
             </select>
           </div>
           <div>
-            <label className="block text-ea-dark/80 text-sm mb-2">Kategorie</label>
+            <label className="flex items-center text-ea-dark/80 text-sm mb-2">
+              Kategorie
+              <Tooltip text="Wird als Badge auf der Artikel-Karte angezeigt." />
+            </label>
             <select
               value={formData.category}
               onChange={(e) => handleChange('category', e.target.value)}
@@ -695,56 +729,79 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
         </div>
 
         <div>
-          <label className="block text-ea-dark/80 text-sm mb-2">Titel *</label>
+          <label className="flex items-center text-ea-dark/80 text-sm mb-2">
+            Titel *
+            <Tooltip text="SEO-Tipp: 50-60 Zeichen sind optimal. Der Titel erscheint in Google-Suchergebnissen." />
+          </label>
           <input
             type="text"
             value={formData.title}
             onChange={(e) => handleChange('title', e.target.value)}
             className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            placeholder="z.B. Firmengründung in Montenegro: Der ultimative Guide 2025"
             required
           />
+          <p className="text-xs text-ea-dark/50 mt-1">{formData.title?.length || 0}/60 Zeichen</p>
         </div>
 
         <div>
-          <label className="block text-ea-dark/80 text-sm mb-2">Slug (URL) *</label>
-          <input
-            type="text"
-            value={formData.slug}
-            onChange={(e) => handleChange('slug', e.target.value)}
-            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
-            placeholder="mein-artikel-slug"
-            required
-          />
+          <label className="flex items-center text-ea-dark/80 text-sm mb-2">
+            Slug (URL) *
+            <Tooltip text="Wird automatisch aus dem Titel generiert. Nur Kleinbuchstaben, Zahlen und Bindestriche erlaubt." />
+          </label>
+          <div className="flex items-center gap-2">
+            <span className="text-ea-dark/50 text-sm">/blog/</span>
+            <input
+              type="text"
+              value={formData.slug}
+              onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
+              className="flex-1 bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              placeholder="wird-automatisch-generiert"
+              required
+            />
+          </div>
+          <p className="text-xs text-ea-gold mt-1">✓ Slug wird automatisch aus dem Titel generiert</p>
         </div>
 
         <div>
-          <label className="block text-ea-dark/80 text-sm mb-2">Kurzfassung *</label>
+          <label className="flex items-center text-ea-dark/80 text-sm mb-2">
+            Kurzfassung *
+            <Tooltip text="Erscheint in der Vorschau und als Meta-Description für SEO. 150-160 Zeichen optimal." />
+          </label>
           <textarea
             value={formData.excerpt}
             onChange={(e) => handleChange('excerpt', e.target.value)}
             className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold h-24"
+            placeholder="Eine prägnante Zusammenfassung des Artikels für die Vorschau..."
             required
           />
+          <p className="text-xs text-ea-dark/50 mt-1">{formData.excerpt?.length || 0}/160 Zeichen</p>
         </div>
 
         <div>
-          <label className="block text-ea-dark/80 text-sm mb-2">Inhalt (Markdown) *</label>
-          <textarea
-            value={formData.content}
-            onChange={(e) => handleChange('content', e.target.value)}
-            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold h-64 font-mono text-sm"
-            required
+          <label className="flex items-center text-ea-dark/80 text-sm mb-2">
+            Inhalt *
+            <Tooltip text="Nutze die Toolbar für Formatierung. H1 nur 1x verwenden (Hauptüberschrift)!" />
+          </label>
+          <WYSIWYGEditor
+            value={editorContent}
+            onChange={handleEditorChange}
+            placeholder="Beginne hier zu schreiben... Markiere Text und wähle eine Formatierung aus der Toolbar."
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-ea-dark/80 text-sm mb-2">Bild-URL *</label>
+            <label className="flex items-center text-ea-dark/80 text-sm mb-2">
+              Bild-URL *
+              <Tooltip text="Nutze direkte Bild-URLs (z.B. von imgbb.com). Google Drive Links funktionieren nicht!" />
+            </label>
             <input
               type="url"
               value={formData.image}
               onChange={(e) => handleChange('image', e.target.value)}
               className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              placeholder="https://i.ibb.co/xxx/bild.jpg"
               required
             />
           </div>
