@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState, useEffect } from 'react';
 import { 
   Bold, Italic, Heading1, Heading2, Heading3, 
   List, ListOrdered, Quote, Link2, Undo, Redo,
@@ -23,9 +23,108 @@ const HelpTooltip = ({ text }) => (
   </Tooltip>
 );
 
-// WYSIWYG Editor Component
+// WYSIWYG Editor Component with History
 const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
   const editorRef = useRef(null);
+  const [history, setHistory] = useState(['']);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const isUndoRedo = useRef(false);
+  const saveTimeout = useRef(null);
+
+  // Initialize with value
+  useEffect(() => {
+    if (value && history.length === 1 && history[0] === '') {
+      setHistory([value]);
+    }
+  }, [value]);
+
+  // Save to history (debounced)
+  const saveToHistory = useCallback((content) => {
+    if (isUndoRedo.current) {
+      isUndoRedo.current = false;
+      return;
+    }
+    
+    // Clear existing timeout
+    if (saveTimeout.current) {
+      clearTimeout(saveTimeout.current);
+    }
+
+    saveTimeout.current = setTimeout(() => {
+      setHistory(prev => {
+        // Remove future history if we're not at the end
+        const newHistory = prev.slice(0, historyIndex + 1);
+        // Don't save if content is same as last
+        if (newHistory[newHistory.length - 1] === content) {
+          return newHistory;
+        }
+        // Keep max 50 history entries
+        const updated = [...newHistory, content];
+        if (updated.length > 50) {
+          updated.shift();
+        }
+        return updated;
+      });
+      setHistoryIndex(prev => {
+        const newIndex = prev + 1;
+        return Math.min(newIndex, 49);
+      });
+    }, 800);
+  }, [historyIndex]);
+
+  // Undo function
+  const handleUndo = useCallback(() => {
+    if (historyIndex > 0) {
+      isUndoRedo.current = true;
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      const previousContent = history[newIndex];
+      if (editorRef.current) {
+        editorRef.current.innerHTML = previousContent;
+      }
+      if (onChange) {
+        onChange(previousContent);
+      }
+    }
+  }, [history, historyIndex, onChange]);
+
+  // Redo function
+  const handleRedo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      isUndoRedo.current = true;
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      const nextContent = history[newIndex];
+      if (editorRef.current) {
+        editorRef.current.innerHTML = nextContent;
+      }
+      if (onChange) {
+        onChange(nextContent);
+      }
+    }
+  }, [history, historyIndex, onChange]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        if (e.shiftKey) {
+          e.preventDefault();
+          handleRedo();
+        } else {
+          e.preventDefault();
+          handleUndo();
+        }
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+        e.preventDefault();
+        handleRedo();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleUndo, handleRedo]);
 
   // Execute formatting command
   const execCommand = useCallback((command, value = null) => {
@@ -33,9 +132,11 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
     editorRef.current?.focus();
     // Trigger onChange with new content
     if (onChange && editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+      const newContent = editorRef.current.innerHTML;
+      onChange(newContent);
+      saveToHistory(newContent);
     }
-  }, [onChange]);
+  }, [onChange, saveToHistory]);
 
   // Format as heading
   const formatHeading = (level) => {
@@ -45,7 +146,9 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
   // Handle content change
   const handleInput = () => {
     if (onChange && editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+      const newContent = editorRef.current.innerHTML;
+      onChange(newContent);
+      saveToHistory(newContent);
     }
   };
 
@@ -54,20 +157,32 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
     e.preventDefault();
     const text = e.clipboardData.getData('text/plain');
     document.execCommand('insertText', false, text);
+    if (editorRef.current) {
+      const newContent = editorRef.current.innerHTML;
+      saveToHistory(newContent);
+    }
   };
 
   // Toolbar Button Component
-  const ToolbarButton = ({ onClick, icon: Icon, tooltip, active }) => (
+  const ToolbarButton = ({ onClick, icon: Icon, tooltip, disabled }) => (
     <Tooltip text={tooltip}>
       <button
         type="button"
         onClick={onClick}
-        className={`p-2 rounded hover:bg-ea-gold/20 transition-colors ${active ? 'bg-ea-gold/20 text-ea-gold' : 'text-ea-dark/70'}`}
+        disabled={disabled}
+        className={`p-2 rounded transition-colors ${
+          disabled 
+            ? 'text-ea-dark/20 cursor-not-allowed' 
+            : 'text-ea-dark/70 hover:bg-ea-gold/20 hover:text-ea-gold'
+        }`}
       >
         <Icon className="w-4 h-4" />
       </button>
     </Tooltip>
   );
+
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
 
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
@@ -165,15 +280,20 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
         {/* Undo/Redo */}
         <div className="flex items-center gap-1 pl-2">
           <ToolbarButton 
-            onClick={() => execCommand('undo')} 
+            onClick={handleUndo} 
             icon={Undo} 
-            tooltip="Rückgängig (Strg+Z)" 
+            tooltip={`Rückgängig (Strg+Z)${canUndo ? '' : ' - Keine Änderungen'}`}
+            disabled={!canUndo}
           />
           <ToolbarButton 
-            onClick={() => execCommand('redo')} 
+            onClick={handleRedo} 
             icon={Redo} 
-            tooltip="Wiederholen (Strg+Y)" 
+            tooltip={`Wiederholen (Strg+Y)${canRedo ? '' : ' - Nichts zu wiederholen'}`}
+            disabled={!canRedo}
           />
+          <span className="text-xs text-ea-dark/40 ml-2">
+            {historyIndex + 1}/{history.length}
+          </span>
         </div>
       </div>
 
