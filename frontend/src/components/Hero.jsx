@@ -18,12 +18,12 @@ const Hero = () => {
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24">
-        {/* Logo Section */}
-        <div className="flex justify-center mb-8">
+        {/* Logo Section - Weißes Logo für Hauptseite */}
+        <div className="flex justify-center mb-10">
           <img 
-            src="/team-photo.jpg" 
-            alt="EuroAdria Logo" 
-            className="h-20 w-auto"
+            src="/euroadria-logo-white.png" 
+            alt="EuroAdria - Shaping the Adriatic's Future" 
+            className="h-40 md:h-52 w-auto"
           />
         </div>
 
