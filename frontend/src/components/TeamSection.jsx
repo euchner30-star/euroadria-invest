@@ -32,16 +32,15 @@ const TeamSection = () => {
 
         {/* Team Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-          {/* Holger Kuhlmann - LEFT in photo */}
+          {/* Holger Kuhlmann */}
           <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-lg transition-shadow">
             <div className="flex items-start space-x-6 mb-6">
               <div className="relative flex-shrink-0">
                 <div className="w-28 h-28 rounded-xl overflow-hidden border-2 border-ea-gold/20">
                   <img
-                    src="/team-photo.jpg"
+                    src="/holger-kuhlmann.jpg"
                     alt="Holger Kuhlmann"
-                    className="w-full h-full object-cover"
-                    style={{ objectPosition: '30% center' }}
+                    className="w-full h-full object-cover object-top"
                   />
                 </div>
                 <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-ea-gold rounded-lg flex items-center justify-center shadow-md">
@@ -84,16 +83,15 @@ const TeamSection = () => {
             </div>
           </div>
 
-          {/* Milena Bubanja - RIGHT in photo */}
+          {/* Milena Bubanja */}
           <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-lg transition-shadow">
             <div className="flex items-start space-x-6 mb-6">
               <div className="relative flex-shrink-0">
                 <div className="w-28 h-28 rounded-xl overflow-hidden border-2 border-ea-gold/20">
                   <img
-                    src="/team-photo.jpg"
+                    src="/milena-bubanja.jpg"
                     alt="Milena Bubanja"
-                    className="w-full h-full object-cover"
-                    style={{ objectPosition: '70% center' }}
+                    className="w-full h-full object-cover object-top"
                   />
                 </div>
                 <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-ea-gold rounded-lg flex items-center justify-center shadow-md">

@@ -21,7 +21,7 @@ const Hero = () => {
         {/* Logo Section */}
         <div className="flex justify-center mb-8">
           <img 
-            src="/euroadria-logo.png" 
+            src="/team-photo.jpg" 
             alt="EuroAdria Logo" 
             className="h-20 w-auto"
           />
