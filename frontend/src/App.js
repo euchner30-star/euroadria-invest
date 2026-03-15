@@ -10,6 +10,7 @@ import TeamPage from "./pages/TeamPage";
 import ImpressumPage from "./pages/ImpressumPage";
 import DatenschutzPage from "./pages/DatenschutzPage";
 import AdminPage from "./pages/AdminPage";
+import SerbiaExecutivePage from "./pages/SerbiaExecutivePage";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/impressum" element={<ImpressumPage />} />
           <Route path="/datenschutz" element={<DatenschutzPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/serbia-executive" element={<SerbiaExecutivePage />} />
         </Routes>
         <Footer />
       </BrowserRouter>

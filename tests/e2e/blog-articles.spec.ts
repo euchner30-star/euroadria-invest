@@ -98,15 +98,15 @@ test.describe('Article Detail Page', () => {
     // Verify article title
     await expect(page.getByRole('heading', { name: /Balkan vs\. EU Investment/i })).toBeVisible();
     
-    // Verify article metadata
-    await expect(page.getByText('Makro & Strategie')).toBeVisible();
-    await expect(page.getByText(/Dr\. Marcus Weber/)).toBeVisible();
+    // Verify article metadata - use .first() to avoid strict mode error
+    await expect(page.getByText('Makro & Strategie').first()).toBeVisible();
+    await expect(page.getByText(/Dr\. Marcus Weber/).first()).toBeVisible();
     
     // Verify back button
     await expect(page.getByRole('link', { name: /Zurück zum Blog/ })).toBeVisible();
     
     // Verify article has content
-    await expect(page.getByText(/Alpha-Potenzial/i)).toBeVisible();
+    await expect(page.getByText(/Alpha-Potenzial/i).first()).toBeVisible();
   });
 
   test('Back to blog link works', async ({ page }) => {

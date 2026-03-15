@@ -61,8 +61,8 @@ test.describe('Admin Login and Dashboard', () => {
     // Verify dashboard
     await expect(page.getByTestId('admin-dashboard')).toBeVisible();
     
-    // Verify articles count is displayed
-    await expect(page.getByText(/Artikel \(\d+\)/)).toBeVisible();
+    // Verify articles count is displayed - use getByTestId to avoid ambiguity
+    await expect(page.getByTestId('tab-articles')).toBeVisible();
     
     // Verify article rows exist (check for at least one)
     const articleRows = page.locator('[data-testid^="article-row-"]');

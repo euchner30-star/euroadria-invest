@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Shield } from 'lucide-react';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,6 +25,7 @@ const Header = () => {
     { name: 'Home', path: '/' },
     { name: 'Investments', path: '/investments' },
     { name: 'Blog', path: '/blog' },
+    { name: 'Serbia Executive', path: '/serbia-executive', isExclusive: true },
     { name: 'Kontakt', path: '/contact' }
   ];
 
@@ -51,19 +52,23 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 className={`relative text-sm font-medium tracking-wide transition-all duration-300 ${
-                  location.pathname === item.path
-                    ? 'text-gold'
-                    : 'text-white hover:text-gold'
+                  item.isExclusive 
+                    ? 'flex items-center space-x-1.5 px-3 py-1.5 rounded-full border border-gold/50 bg-gold/10 hover:bg-gold/20 text-gold'
+                    : location.pathname === item.path
+                      ? 'text-gold'
+                      : 'text-white hover:text-gold'
                 }`}
+                data-testid={item.isExclusive ? 'nav-serbia-executive' : undefined}
               >
-                {item.name}
-                {location.pathname === item.path && (
+                {item.isExclusive && <Shield className="w-3.5 h-3.5" />}
+                <span>{item.name}</span>
+                {!item.isExclusive && location.pathname === item.path && (
                   <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gold rounded-full"></span>
                 )}
               </Link>
@@ -101,12 +106,15 @@ const Header = () => {
                   key={item.path}
                   to={item.path}
                   className={`text-base font-medium transition-colors ${
-                    location.pathname === item.path
-                      ? 'text-gold'
-                      : 'text-white hover:text-gold'
+                    item.isExclusive
+                      ? 'flex items-center space-x-2 px-4 py-2 rounded-lg border border-gold/50 bg-gold/10 text-gold'
+                      : location.pathname === item.path
+                        ? 'text-gold'
+                        : 'text-white hover:text-gold'
                   }`}
                 >
-                  {item.name}
+                  {item.isExclusive && <Shield className="w-4 h-4" />}
+                  <span>{item.name}</span>
                 </Link>
               ))}
               <Link
