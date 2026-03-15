@@ -13,9 +13,9 @@ const Footer = () => {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <img 
-                src="/team-photo.jpg" 
+                src="/euroadria-logo-white.png" 
                 alt="EuroAdria Logo" 
-                className="h-14 w-auto"
+                className="h-20 w-auto"
               />
             </div>
             <p className="text-ea-light/70 text-sm leading-relaxed mb-6">
