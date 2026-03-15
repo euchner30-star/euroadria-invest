@@ -1,19 +1,75 @@
 import React from 'react';
 import Hero from '../components/Hero';
+import TeamSection from '../components/TeamSection';
+import { LeadMagnetBox } from '../components/ArticleComponents';
 import { Link } from 'react-router-dom';
-import { getFeaturedArticles } from '../data/mockArticles';
-import { ArrowRight, Clock } from 'lucide-react';
+import pillarArticles from '../data/pillarArticlesComplete';
+import { ArrowRight, Clock, Shield, TrendingUp, Award } from 'lucide-react';
 
 const Home = () => {
-  const featuredArticles = getFeaturedArticles().slice(0, 3);
+  const featuredArticles = pillarArticles.filter(a => a.featured).slice(0, 3);
 
   return (
     <div className="min-h-screen">
       <Hero />
 
+      {/* Balkan vs EU Section - Prominent */}
+      <section className="section-spacing relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="glass-card-strong p-8 md:p-12">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="inline-block glass-card text-sm text-gold px-4 py-2 mb-4 font-medium">
+                  Alpha-Potenzial
+                </div>
+                <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
+                  Warum <span className="text-gold">Balkan</span> statt EU?
+                </h2>
+                <p className="text-white/80 text-lg leading-relaxed mb-6">
+                  Während EU-Märkte Stabilität bei komprimierten Renditen bieten (4-6%), 
+                  lockt der Balkan mit strukturierten Wachstumsinvestments und zweistelligen Zielrenditen.
+                </p>
+                <ul className="space-y-4 mb-8">
+                  {[
+                    'Konvergenz-Arbitrage vor EU-Beitritt (Montenegro 2028)',
+                    'Forensische Due Diligence statt Spekulation',
+                    'Bankability nach internationalen Standards',
+                    'Off-Market Access durch lokales Netzwerk'
+                  ].map((point, idx) => (
+                    <li key={idx} className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gold/20 flex items-center justify-center mt-1">
+                        <span className="text-gold text-xs font-bold">✓</span>
+                      </div>
+                      <span className="text-white/70">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/blog/balkans-vs-eu-investing-reality-check" className="btn-gold inline-flex items-center space-x-2">
+                  <span>Komplette Analyse lesen</span>
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              </div>
+              <div className="relative">
+                <img
+                  src="https://images.unsplash.com/photo-1517048676732-d65bc937f952"
+                  alt="Balkan vs EU Investment"
+                  className="rounded-xl shadow-2xl"
+                />
+                <div className="absolute -bottom-6 -left-6 glass-card p-6 max-w-xs">
+                  <div className="text-3xl font-bold text-gold mb-2">60-80%</div>
+                  <div className="text-white/80 text-sm">
+                    Wertsteigerung in Montenegro nach EU-Beitritt (Croatia-Effect 2013)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Featured Articles Section */}
-      <section className="relative py-24 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section className="section-spacing relative">
+        <div className="max-w-7xl mx-auto px-6">
           {/* Section Header */}
           <div className="text-center mb-16">
             <h2 className="text-5xl md:text-6xl font-display font-bold text-white mb-4 hover-glow">
@@ -84,9 +140,16 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Lead Magnet Section */}
+      <section className="section-spacing relative">
+        <div className="max-w-4xl mx-auto px-6">
+          <LeadMagnetBox />
+        </div>
+      </section>
+
       {/* Why EuroAdria Section */}
-      <section className="relative py-24 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section className="section-spacing relative">
+        <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-5xl md:text-6xl font-display font-bold text-white mb-4">
               Warum <span className="text-gold">EuroAdria</span>?
@@ -96,22 +159,28 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                title: 'Expertise',
-                description: 'Über 15 Jahre Erfahrung in Balkan-Investments mit tiefem Marktverständnis und lokalen Partnernetzwerken.'
+                icon: Shield,
+                title: 'Forensische Due Diligence',
+                description: 'Wir prüfen Eigentumsketten bis 1945, schließen Restitutionsrisiken aus und stellen Bankability sicher. Keine versteckten Überraschungen.'
               },
               {
-                title: 'Exklusivität',
-                description: 'Zugang zu Off-Market-Deals und Premium-Properties, die der breiten Masse nicht zugänglich sind.'
+                icon: TrendingUp,
+                title: 'Off-Market Access',
+                description: 'Zugang zu Deals, die nie öffentlich werden. Familienbesitz, Restitutionsfälle, distressed Assets – hier liegt das wahre Alpha.'
               },
               {
-                title: 'Vertrauen',
-                description: 'Vollständige Transparenz, lückenlose Due Diligence und persönliche Betreuung während des gesamten Prozesses.'
+                icon: Award,
+                title: 'Keine Interessenskonflikte',
+                description: 'Wir sind keine Makler. Unsere Task Force arbeitet ausschließlich für Ihre Interessen – nur wenn der Deal sicher ist, sind wir erfolgreich.'
               }
             ].map((feature, index) => (
               <div
                 key={index}
                 className="glass-card-hover p-8 text-center"
               >
+                <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-6">
+                  <feature.icon className="w-8 h-8 text-gold" />
+                </div>
                 <h3 className="text-2xl font-bold text-gold mb-4">{feature.title}</h3>
                 <p className="text-white/70 leading-relaxed">{feature.description}</p>
               </div>
@@ -119,6 +188,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Team Section */}
+      <TeamSection />
     </div>
   );
 };

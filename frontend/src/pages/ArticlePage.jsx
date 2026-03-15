@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { getArticleBySlug, getRelatedArticles } from '../data/mockArticles';
+import pillarArticles from '../data/pillarArticlesComplete';
 import { Clock, Calendar, User, ArrowLeft, ArrowRight } from 'lucide-react';
+import { DueDiligenceBox, ExpertTipBox, LeadMagnetBox } from '../components/ArticleComponents';
 
 const ArticlePage = () => {
   const { slug } = useParams();
-  const article = getArticleBySlug(slug);
+  const article = pillarArticles.find(a => a.slug === slug);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -15,7 +16,9 @@ const ArticlePage = () => {
     return <Navigate to="/blog" replace />;
   }
 
-  const relatedArticles = getRelatedArticles(article.id);
+  const relatedArticles = article.relatedArticles
+    ? article.relatedArticles.map(id => pillarArticles.find(a => a.id === id)).filter(Boolean).slice(0, 3)
+    : [];
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-6">
@@ -32,7 +35,7 @@ const ArticlePage = () => {
         {/* Article Header */}
         <article className="glass-card p-8 md:p-12">
           {/* Category Badge */}
-          <div className="inline-block glass-card text-sm text-gold px-4 py-2 mb-6 font-medium">
+          <div className="inline-block glass-card text-sm text-gold px-4 py-2 mb-6 font-medium border border-gold/20">
             {article.category}
           </div>
 
@@ -71,42 +74,38 @@ const ArticlePage = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
           </div>
 
+          {/* Article Excerpt */}
+          <p className="text-xl text-white/90 leading-relaxed mb-8 font-light italic border-l-4 border-gold pl-6">
+            {article.excerpt}
+          </p>
+
           {/* Article Content */}
           <div className="prose prose-invert prose-lg max-w-none">
-            <p className="text-xl text-white/90 leading-relaxed mb-8 font-light">
-              {article.excerpt}
-            </p>
-            
-            <div className="text-white/80 leading-relaxed space-y-6">
-              {article.content.split('\n').map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
-              ))}
-              
-              {/* Extended content for demonstration */}
-              <h2 className="text-3xl font-bold text-white mt-12 mb-6">Wichtige Erkenntnisse</h2>
-              <p>
-                Der Balkan-Markt bietet einzigartige Chancen für versierte Investoren. 
-                Mit der richtigen Strategie und lokalem Wissen lassen sich attraktive Renditen erzielen, 
-                die in etablierten Märkten kaum noch möglich sind.
-              </p>
-              
-              <h2 className="text-3xl font-bold text-white mt-12 mb-6">Worauf Sie achten sollten</h2>
-              <ul className="list-disc list-inside space-y-3 text-white/80">
-                <li>Gründliche Due Diligence ist unverzichtbar</li>
-                <li>Lokale Expertise macht den Unterschied</li>
-                <li>Langfristige Perspektive ist entscheidend</li>
-                <li>Rechtliche Rahmenbedingungen genau prüfen</li>
-                <li>Netzwerk vor Ort aufbauen</li>
-              </ul>
-
-              <h2 className="text-3xl font-bold text-white mt-12 mb-6">Fazit</h2>
-              <p>
-                Die Investitionsmöglichkeiten an der Adria sind vielfältig und bieten 
-                erhebliches Potenzial. Mit der richtigen Herangehensweise und professioneller 
-                Unterstützung können Sie von diesem dynamischen Markt profitieren.
-              </p>
-            </div>
+            <div 
+              className="text-white/80 leading-relaxed space-y-6"
+              dangerouslySetInnerHTML={{ __html: article.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br />') }}
+            />
           </div>
+
+          {/* Due Diligence Box */}
+          {article.dueDiligenceBox && (
+            <DueDiligenceBox 
+              title={article.dueDiligenceBox.title}
+              content={article.dueDiligenceBox.content}
+            />
+          )}
+
+          {/* Expert Tip Box */}
+          {article.expertTip && (
+            <ExpertTipBox
+              author={article.expertTip.author}
+              title={article.expertTip.title}
+              content={article.expertTip.content}
+            />
+          )}
+
+          {/* Lead Magnet */}
+          <LeadMagnetBox />
 
           {/* CTA Section */}
           <div className="mt-12 p-8 glass-card-strong rounded-xl border border-gold/20">
