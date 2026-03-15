@@ -13,8 +13,8 @@ test.describe('Blog Page - Articles and Filtering', () => {
     // Wait for articles to load (loader should disappear)
     await expect(page.locator('[class*="animate-spin"]').first()).not.toBeVisible();
     
-    // Verify page header
-    await expect(page.getByRole('heading', { name: /EuroAdria.*Insights/i })).toBeVisible();
+    // Verify page header - now just "Insights" not "EuroAdria Insights"
+    await expect(page.getByRole('heading', { name: 'Insights', exact: true })).toBeVisible();
     
     // Verify articles are displayed - check for article links
     const articleLinks = page.locator('article');
@@ -36,34 +36,37 @@ test.describe('Blog Page - Articles and Filtering', () => {
     const initialArticles = await page.locator('article').count();
     expect(initialArticles).toBeGreaterThan(0);
     
-    // Click on cluster A filter
+    // Click on cluster A filter (Makro & Strategie)
     await page.getByTestId('cluster-filter-A').click();
     
-    // Articles should be filtered - should show fewer (cluster A has 3 articles)
-    await expect(page.getByText(/Makro & Strategie Artikel/)).toBeVisible();
+    // Verify filter shows cluster name as section title
+    await expect(page.getByRole('heading', { name: 'Makro & Strategie', exact: true })).toBeVisible();
     
-    // Verify cluster A button is active (has gold background styling)
+    // Verify cluster A button is active (has green background)
     const clusterAButton = page.getByTestId('cluster-filter-A');
     await expect(clusterAButton).toBeVisible();
     
-    // Click on cluster B filter
+    // Click on cluster B filter (Recht & Compliance)
     await page.getByTestId('cluster-filter-B').click();
-    await expect(page.getByText(/Recht & Compliance Artikel/)).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Recht & Compliance', exact: true })).toBeVisible();
     
-    // Click back to All
+    // Click back to All - section title changes to "Articles"
     await page.getByTestId('cluster-filter-all').click();
-    await expect(page.getByText('Alle Artikel')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Articles', exact: true })).toBeVisible();
   });
 
-  test('Featured articles section displays', async ({ page }) => {
+  test('Articles section displays when cluster is selected', async ({ page }) => {
     await page.goto('/blog');
     await waitForAppReady(page);
     
     // Wait for articles to load
     await expect(page.locator('[class*="animate-spin"]').first()).not.toBeVisible();
     
-    // Verify Featured Articles heading is visible (only when "All" cluster is selected)
-    await expect(page.getByRole('heading', { name: /Featured.*Articles/i })).toBeVisible();
+    // On "All" filter, section title should be "Articles"
+    await expect(page.getByRole('heading', { name: 'Articles', exact: true })).toBeVisible();
+    
+    // Verify article cards are visible
+    await expect(page.locator('article').first()).toBeVisible();
   });
 
   test('Search functionality filters articles', async ({ page }) => {

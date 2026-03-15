@@ -79,7 +79,7 @@ const Header = () => {
           {/* Desktop CTA Button */}
           <Link
             to="/contact"
-            className="hidden lg:block px-6 py-3 bg-[#dc2626] text-white text-sm font-semibold rounded-lg hover:bg-[#b91c1c] transition-all duration-300 hover:shadow-lg"
+            className="hidden lg:block px-6 py-3 bg-[#3eb489] text-white text-sm font-semibold rounded-lg hover:bg-[#35a07a] transition-all duration-300 hover:shadow-lg"
           >
             Jetzt Beratung anfragen
           </Link>
@@ -120,7 +120,7 @@ const Header = () => {
               ))}
               <Link
                 to="/contact"
-                className="mt-2 px-4 py-3 bg-[#dc2626] text-white text-base font-semibold rounded-lg text-center hover:bg-[#b91c1c]"
+                className="mt-2 px-4 py-3 bg-[#3eb489] text-white text-base font-semibold rounded-lg text-center hover:bg-[#35a07a]"
               >
                 Jetzt Beratung anfragen
               </Link>

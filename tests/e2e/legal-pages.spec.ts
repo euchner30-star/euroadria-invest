@@ -16,21 +16,22 @@ test.describe('Legal Pages - Impressum and Datenschutz', () => {
     // Verify main heading
     await expect(page.getByRole('heading', { name: 'Impressum', exact: true })).toBeVisible();
     
-    // Verify company info
-    await expect(page.getByText('EuroAdria Corporate Solutions')).toBeVisible();
-    await expect(page.getByText('Firmensitz:')).toBeVisible();
+    // Verify company info - use heading role to be specific
+    await expect(page.getByRole('heading', { name: 'EuroAdria Corporate Solutions' })).toBeVisible();
+    await expect(page.getByTestId('impressum-page').getByText('Firmensitz:')).toBeVisible();
     
     // Verify German branch address (key requirement)
     await expect(page.getByRole('heading', { name: 'Niederlassung Deutschland' })).toBeVisible();
-    await expect(page.getByText('Speditionsstraße 15a')).toBeVisible();
-    await expect(page.getByText('40221 Düsseldorf')).toBeVisible();
+    // Use testid scope to avoid footer conflict
+    await expect(page.getByTestId('impressum-page').getByText('Speditionsstraße 15a').first()).toBeVisible();
+    await expect(page.getByTestId('impressum-page').getByText('40221 Düsseldorf').first()).toBeVisible();
     
     // Verify responsible person (Holger Kuhlmann)
     await expect(page.getByText('Verantwortlich: Holger Kuhlmann')).toBeVisible();
     
-    // Verify contact info
-    await expect(page.getByText('+382 68 559 776').first()).toBeVisible();
-    await expect(page.getByText('office@euroadria.me').first()).toBeVisible();
+    // Verify contact info - use more specific selectors
+    await expect(page.getByTestId('impressum-page').getByText('+382 68 559 776').first()).toBeVisible();
+    await expect(page.getByTestId('impressum-page').getByText('office@euroadria.me').first()).toBeVisible();
     
     // Verify legal sections exist
     await expect(page.getByRole('heading', { name: 'Haftungsausschluss' })).toBeVisible();
@@ -50,7 +51,8 @@ test.describe('Legal Pages - Impressum and Datenschutz', () => {
     
     // Verify responsible entity section
     await expect(page.getByRole('heading', { name: '1. Verantwortliche Stelle' })).toBeVisible();
-    await expect(page.getByText('EuroAdria').first()).toBeVisible();
+    // Verify EuroAdria company name within datenschutz page content
+    await expect(page.getByTestId('datenschutz-page').locator('p.text-gray-900').filter({ hasText: 'EuroAdria' })).toBeVisible();
     
     // Verify data processing sections
     await expect(page.getByRole('heading', { name: /Erhebung und Speicherung/ })).toBeVisible();

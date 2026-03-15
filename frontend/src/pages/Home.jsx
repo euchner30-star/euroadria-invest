@@ -63,7 +63,7 @@ const Home = () => {
                     </li>
                   ))}
                 </ul>
-                <Link to="/blog/balkans-vs-eu-investing-reality-check" className="inline-flex items-center space-x-2 px-6 py-3 bg-[#dc2626] text-white font-semibold rounded-lg hover:bg-[#b91c1c] transition-all">
+                <Link to="/blog/balkans-vs-eu-investing-reality-check" className="inline-flex items-center space-x-2 px-6 py-3 bg-[#3eb489] text-white font-semibold rounded-lg hover:bg-[#35a07a] transition-all">
                   <span>Komplette Analyse lesen</span>
                   <ArrowRight className="w-5 h-5" />
                 </Link>
@@ -193,7 +193,7 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/contact"
-              className="px-8 py-4 bg-[#dc2626] text-white font-semibold rounded-lg hover:bg-[#b91c1c] transition-all"
+              className="px-8 py-4 bg-[#3eb489] text-white font-semibold rounded-lg hover:bg-[#35a07a] transition-all"
             >
               Kostenlose Beratung anfragen
             </Link>

@@ -76,7 +76,7 @@ body {
    BUTTON STYLES - euroadria.me Style
    ============================================ */
 .btn-gold {
-  background: var(--red-primary);
+  background: var(--teal-primary);
   color: var(--white);
   font-weight: 600;
   padding: 1rem 2rem;
@@ -89,9 +89,9 @@ body {
 }
 
 .btn-gold:hover {
-  background: var(--red-hover);
+  background: #35a07a;
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 4px 16px rgba(62, 180, 137, 0.3);
 }
 
 .btn-outline {

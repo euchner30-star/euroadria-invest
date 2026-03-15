@@ -55,7 +55,7 @@ const SerbiaExecutivePage = () => {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <a href="#inquiry" className="px-6 py-3 bg-[#dc2626] text-white font-semibold rounded-lg hover:bg-[#b91c1c] transition-all flex items-center gap-2" data-testid="executive-inquiry-cta">
+                <a href="#inquiry" className="px-6 py-3 bg-[#3eb489] text-white font-semibold rounded-lg hover:bg-[#35a07a] transition-all flex items-center gap-2" data-testid="executive-inquiry-cta">
                   <Shield className="w-5 h-5" />
                   <span>Executive Inquiry</span>
                 </a>
@@ -310,7 +310,7 @@ const SerbiaExecutivePage = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Nachricht</label>
                 <textarea rows={4} value={inquiryForm.message} onChange={(e) => handleChange('message', e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3eb489]/20 focus:border-[#3eb489] transition-colors resize-none" placeholder="Beschreiben Sie kurz Ihr Anliegen..." data-testid="inquiry-message" />
               </div>
-              <button type="submit" disabled={submitting} className="w-full py-4 bg-[#dc2626] text-white font-semibold rounded-lg hover:bg-[#b91c1c] transition-all flex items-center justify-center gap-2 disabled:opacity-70" data-testid="inquiry-submit">
+              <button type="submit" disabled={submitting} className="w-full py-4 bg-[#3eb489] text-white font-semibold rounded-lg hover:bg-[#35a07a] transition-all flex items-center justify-center gap-2 disabled:opacity-70" data-testid="inquiry-submit">
                 {submitting ? 'Wird gesendet...' : <><Send className="w-5 h-5" />Vertrauliche Anfrage senden</>}
               </button>
               <p className="text-gray-400 text-xs text-center">

@@ -76,7 +76,7 @@ const Hero = () => {
                   <span className="text-[#3eb489] font-semibold">Holger Kuhlmann:</span> Strategic Investment Advisor
                 </div>
               </div>
-              <Link to="/team" className="inline-flex items-center space-x-2 px-6 py-3 bg-[#dc2626] text-white font-semibold rounded-lg hover:bg-[#b91c1c] transition-all">
+              <Link to="/team" className="inline-flex items-center space-x-2 px-6 py-3 bg-[#3eb489] text-white font-semibold rounded-lg hover:bg-[#35a07a] transition-all">
                 <span>Unser Team</span>
                 <ArrowRight className="w-5 h-5" />
               </Link>
@@ -102,7 +102,7 @@ const Hero = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link to="/blog" className="px-10 py-4 bg-[#dc2626] text-white text-lg font-semibold rounded-lg hover:bg-[#b91c1c] transition-all group">
+          <Link to="/blog" className="px-10 py-4 bg-[#3eb489] text-white text-lg font-semibold rounded-lg hover:bg-[#35a07a] transition-all group">
             Entdecken Sie unsere Insights
             <ArrowRight className="inline-block ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
