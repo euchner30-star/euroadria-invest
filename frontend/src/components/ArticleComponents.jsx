@@ -22,39 +22,26 @@ export const DueDiligenceBox = ({ title, content }) => {
 
 // ExpertTipBox Component with Photo Icons
 export const ExpertTipBox = ({ author, title, content }) => {
-  // Determine photo crop based on author
+  // Use individual photos based on author name
   const getAuthorPhoto = (authorName) => {
     if (authorName.includes('Holger')) {
-      return { 
-        src: '/team-photo.jpg',
-        position: '30% center',
-        initials: 'HK'
-      };
+      return '/holger-kuhlmann.jpg';
     } else if (authorName.includes('Milena')) {
-      return {
-        src: '/team-photo.jpg',
-        position: '70% center',
-        initials: 'MB'
-      };
+      return '/milena-bubanja.jpg';
     }
-    return {
-      src: '/team-photo.jpg',
-      position: 'center',
-      initials: author.split(' ').map(n => n[0]).join('')
-    };
+    return '/team-photo.jpg';
   };
 
-  const photoData = getAuthorPhoto(author);
+  const photoSrc = getAuthorPhoto(author);
 
   return (
     <div className="my-8 bg-ea-navy rounded-xl p-6">
       <div className="flex items-start space-x-3 mb-3">
         <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden border-2 border-ea-gold shadow-lg">
           <img 
-            src={photoData.src}
+            src={photoSrc}
             alt={author}
-            className="w-full h-full object-cover"
-            style={{ objectPosition: photoData.position }}
+            className="w-full h-full object-cover object-top"
           />
         </div>
         <div className="flex-1">
