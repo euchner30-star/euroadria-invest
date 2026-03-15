@@ -1,171 +1,328 @@
-/* EuroAdria - Quiet Luxury & Professional Investment Design */
+/* EuroAdria - Original Design System from euroadria.me */
+/* LIGHT THEME - Professional Corporate Design */
 
-/* Background - Navy Blue Base with Elegant Gradients */
+/* ============================================
+   COLOR PALETTE - From euroadria.me
+   ============================================ */
+:root {
+  --white: #ffffff;
+  --black: #1a1a1a;
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #e5e5e5;
+  --gray-300: #d4d4d4;
+  --gray-400: #a3a3a3;
+  --gray-500: #737373;
+  --gray-600: #525252;
+  --gray-700: #404040;
+  --gray-800: #262626;
+  --gray-900: #171717;
+  --red-primary: #dc2626;
+  --red-hover: #b91c1c;
+  --teal-primary: #3eb489;
+  --teal-light: #5fcfa0;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
 body {
-  background: linear-gradient(135deg, #001429 0%, #002147 40%, #001a38 100%);
-  background-attachment: fixed;
+  background: var(--white);
+  color: var(--black);
   min-height: 100vh;
 }
 
-/* Refined Glassmorphism Effects - Professional & Elegant */
-.glass-card {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-}
-
-.glass-card-strong {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18);
-}
-
-.glass-card-hover {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-}
-
-.glass-card-hover:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(212, 175, 55, 0.3);
-  transform: translateY(-4px);
-  box-shadow: 0 20px 60px rgba(212, 175, 55, 0.12);
-}
-
-/* Due Diligence Box - Special Styling */
-.due-diligence-box {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.12) 0%, rgba(212, 175, 55, 0.06) 100%);
-  border: 2px solid rgba(212, 175, 55, 0.35);
-  border-radius: 12px;
-  padding: 2rem;
-  margin: 2.5rem 0;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.08);
-}
-
-/* Expert Tip Box - Holger's Insights */
-.expert-tip-box {
-  background: rgba(255, 255, 255, 0.05);
-  border-left: 4px solid #D4AF37;
-  border-radius: 8px;
-  padding: 1.75rem;
-  margin: 2.5rem 0;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
-/* Gold Color */
-.text-gold {
-  color: #D4AF37;
-}
-
-.bg-gold {
-  background-color: #D4AF37;
-}
-
-.border-gold {
-  border-color: #D4AF37;
-}
-
-/* Navy Color */
-.text-navy {
-  color: #002147;
-}
-
-.bg-navy {
-  background-color: #002147;
-}
-
-/* Buttons - Professional & Refined */
-.btn-gold {
-  background: linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%);
-  color: #002147;
-  font-weight: 600;
-  padding: 0.875rem 2.5rem;
-  border-radius: 8px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 24px rgba(212, 175, 55, 0.25);
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
-}
-
-.btn-gold:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 36px rgba(212, 175, 55, 0.35);
-  background: linear-gradient(135deg, #F4D03F 0%, #D4AF37 100%);
-}
-
-/* Secondary Button - Outline */
-.btn-outline {
-  background: transparent;
-  color: #ffffff;
-  font-weight: 500;
-  padding: 0.875rem 2.5rem;
-  border-radius: 8px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.btn-outline:hover {
-  border-color: rgba(212, 175, 55, 0.5);
-  background: rgba(212, 175, 55, 0.1);
-  color: #D4AF37;
-}
-
-/* Text Glow Effect - Subtle */
-.hover-glow {
-  transition: all 0.3s ease;
-}
-
-.hover-glow:hover {
-  text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
-}
-
-/* Lead Magnet Box */
-.lead-magnet-box {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
-  border: 2px solid rgba(212, 175, 55, 0.3);
-  border-radius: 16px;
-  padding: 2.5rem;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 12px 48px rgba(212, 175, 55, 0.15);
-}
-
-/* Professional Typography */
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
 .text-display {
   font-family: 'Playfair Display', serif;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
-.text-serif {
-  font-family: 'Cormorant Garamond', serif;
+/* ============================================
+   CARD STYLES - Light Theme
+   ============================================ */
+.glass-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
 
-/* Animations - Subtle & Professional */
+.glass-card-strong {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.glass-card-hover {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-hover:hover {
+  border-color: var(--gray-300);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* ============================================
+   BUTTON STYLES - euroadria.me Style
+   ============================================ */
+.btn-gold {
+  background: var(--red-primary);
+  color: var(--white);
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  letter-spacing: 0.02em;
+}
+
+.btn-gold:hover {
+  background: var(--red-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3);
+}
+
+.btn-outline {
+  background: var(--black);
+  color: var(--white);
+  font-weight: 500;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9375rem;
+}
+
+.btn-outline:hover {
+  background: var(--gray-800);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   SPECIAL BOXES
+   ============================================ */
+.due-diligence-box {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-left: 4px solid var(--teal-primary);
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2.5rem 0;
+}
+
+.expert-tip-box {
+  background: var(--gray-50);
+  border-left: 4px solid var(--teal-primary);
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2.5rem 0;
+}
+
+.lead-magnet-box {
+  background: linear-gradient(135deg, rgba(62, 180, 137, 0.08) 0%, rgba(62, 180, 137, 0.02) 100%);
+  border: 1px solid rgba(62, 180, 137, 0.2);
+  border-radius: 16px;
+  padding: 2.5rem;
+}
+
+/* ============================================
+   SECTION DIVIDERS
+   ============================================ */
+.section-divider {
+  width: 80px;
+  height: 3px;
+  background: var(--teal-primary);
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+.accent-line {
+  width: 60px;
+  height: 2px;
+  background: var(--teal-primary);
+  margin-bottom: 1.5rem;
+}
+
+/* ============================================
+   BADGE / TAG STYLE
+   ============================================ */
+.badge-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-300);
+  border-radius: 4px;
+  color: var(--gray-700);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ============================================
+   FORM INPUTS
+   ============================================ */
+.input-premium {
+  background: var(--white);
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  color: var(--black);
+  font-size: 0.9375rem;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.input-premium::placeholder {
+  color: var(--gray-400);
+}
+
+.input-premium:focus {
+  outline: none;
+  border-color: var(--teal-primary);
+  box-shadow: 0 0 0 3px rgba(62, 180, 137, 0.1);
+}
+
+/* ============================================
+   LEGAL PAGES
+   ============================================ */
+.legal-section {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.legal-section h2,
+.legal-section h3 {
+  color: var(--black);
+  margin-bottom: 1rem;
+}
+
+.legal-section p,
+.legal-section li {
+  color: var(--gray-600);
+  line-height: 1.8;
+}
+
+/* ============================================
+   SHARE BUTTONS
+   ============================================ */
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  color: var(--gray-600);
+  transition: all 0.3s ease;
+}
+
+.share-btn:hover {
+  background: var(--teal-primary);
+  border-color: var(--teal-primary);
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   COMMENT SECTION
+   ============================================ */
+.comment-card {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.comment-card:hover {
+  background: var(--white);
+  border-color: var(--gray-300);
+}
+
+/* ============================================
+   VIDEO CONTAINER
+   ============================================ */
+.video-premium {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--gray-200);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   STAT BOXES
+   ============================================ */
+.stat-box {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--teal-primary);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  font-family: 'Playfair Display', serif;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  font-weight: 400;
+}
+
+/* ============================================
+   GOLD/TEAL COLOR UTILITIES
+   ============================================ */
+.text-gold {
+  color: var(--teal-primary);
+}
+
+.bg-gold {
+  background-color: var(--teal-primary);
+}
+
+.border-gold {
+  border-color: var(--teal-primary);
+}
+
+.text-navy {
+  color: var(--black);
+}
+
+.bg-navy {
+  background-color: var(--black);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(15px);
   }
   to {
     opacity: 1;
@@ -176,7 +333,7 @@ body {
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(40px);
   }
   to {
     opacity: 1;
@@ -185,14 +342,16 @@ body {
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.6s ease-out;
+  animation: fadeIn 0.7s ease-out;
 }
 
 .animate-slideUp {
-  animation: slideUp 0.8s ease-out 0.2s both;
+  animation: slideUp 0.9s ease-out 0.2s both;
 }
 
-/* Line Clamp */
+/* ============================================
+   LINE CLAMP
+   ============================================ */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -207,60 +366,101 @@ body {
   overflow: hidden;
 }
 
-/* Smooth Scrolling */
+/* ============================================
+   SCROLLING & SCROLLBAR
+   ============================================ */
 html {
   scroll-behavior: smooth;
 }
 
-/* Custom Scrollbar - Navy Theme */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 33, 71, 0.3);
+  background: var(--gray-100);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(212, 175, 55, 0.4);
-  border-radius: 5px;
+  background: var(--gray-300);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 175, 55, 0.6);
+  background: var(--gray-400);
 }
 
-/* Selection */
+/* ============================================
+   SELECTION & FOCUS
+   ============================================ */
 ::selection {
-  background: rgba(212, 175, 55, 0.25);
-  color: white;
+  background: rgba(62, 180, 137, 0.2);
+  color: var(--black);
 }
 
-/* Focus States */
 *:focus-visible {
-  outline: 2px solid rgba(212, 175, 55, 0.4);
+  outline: 2px solid var(--teal-primary);
   outline-offset: 2px;
 }
 
-/* Smooth transitions for interactive elements */
+/* ============================================
+   SMOOTH TRANSITIONS
+   ============================================ */
 a, button, input, textarea {
-  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Prevent layout shift */
 img {
   max-width: 100%;
   height: auto;
   display: block;
 }
 
-/* Whitespace - Quiet Luxury Spacing */
+/* ============================================
+   SPACING
+   ============================================ */
 .section-spacing {
   padding: 6rem 0;
 }
 
+.section-spacing-sm {
+  padding: 4rem 0;
+}
+
 @media (max-width: 768px) {
   .section-spacing {
-    padding: 3rem 0;
+    padding: 4rem 0;
+  }
+  .section-spacing-sm {
+    padding: 2.5rem 0;
+  }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .btn-gold,
+  .btn-outline {
+    padding: 0.875rem 1.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .glass-card,
+  .glass-card-strong {
+    border-radius: 12px;
+  }
+  
+  .btn-gold,
+  .btn-outline {
+    padding: 0.75rem 1.5rem;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .legal-section {
+    padding: 1.5rem;
   }
 }

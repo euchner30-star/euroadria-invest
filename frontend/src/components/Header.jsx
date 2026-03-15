@@ -16,61 +16,62 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location]);
 
   const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'Investments', path: '/investments' },
-    { name: 'Blog', path: '/blog' },
-    { name: 'Serbia Executive', path: '/serbia-executive', isExclusive: true },
-    { name: 'Kontakt', path: '/contact' }
+    { name: 'HOME', path: '/' },
+    { name: 'BLOG', path: '/blog' },
+    { name: 'ÜBER UNS', path: '/team' },
+    { name: 'KONTAKT', path: '/contact' },
+    { name: 'SERBIA EXECUTIVE', path: '/serbia-executive', isExclusive: true },
   ];
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? 'py-3' : 'py-6'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'bg-white shadow-md' : 'bg-white/95'
       }`}
     >
-      <nav
-        className={`max-w-7xl mx-auto px-6 transition-all duration-500 ${
-          isScrolled ? 'glass-card-strong py-3' : 'glass-card py-4'
-        }`}
-        style={{ borderRadius: '16px' }}
-      >
+      <nav className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
+          <Link to="/" className="flex items-center gap-3 group">
             <img 
               src="/euroadria-logo.png" 
               alt="EuroAdria Logo" 
-              className="h-12 w-auto transition-transform duration-300 group-hover:scale-105"
+              className="h-10 w-auto"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
             />
+            <div className="hidden items-center gap-1" style={{ display: 'none' }}>
+              <div className="w-10 h-10 rounded bg-[#3eb489] flex items-center justify-center">
+                <span className="text-white font-bold text-xl">E</span>
+              </div>
+              <span className="text-gray-900 font-semibold text-xl tracking-tight">EuroAdria</span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden lg:flex items-center gap-8">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`relative text-sm font-medium tracking-wide transition-all duration-300 ${
+                className={`text-sm font-semibold tracking-wider transition-colors duration-300 ${
                   item.isExclusive 
-                    ? 'flex items-center space-x-1.5 px-3 py-1.5 rounded-full border border-gold/50 bg-gold/10 hover:bg-gold/20 text-gold'
+                    ? 'flex items-center gap-2 px-4 py-2 bg-[#3eb489]/10 border border-[#3eb489]/30 rounded-lg text-[#3eb489] hover:bg-[#3eb489]/20'
                     : location.pathname === item.path
-                      ? 'text-gold'
-                      : 'text-white hover:text-gold'
+                      ? 'text-[#3eb489]'
+                      : 'text-gray-700 hover:text-[#3eb489]'
                 }`}
                 data-testid={item.isExclusive ? 'nav-serbia-executive' : undefined}
               >
-                {item.isExclusive && <Shield className="w-3.5 h-3.5" />}
-                <span>{item.name}</span>
-                {!item.isExclusive && location.pathname === item.path && (
-                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gold rounded-full"></span>
-                )}
+                {item.isExclusive && <Shield className="w-4 h-4" />}
+                {item.name}
               </Link>
             ))}
           </div>
@@ -78,14 +79,14 @@ const Header = () => {
           {/* Desktop CTA Button */}
           <Link
             to="/contact"
-            className="hidden md:block btn-gold text-sm"
+            className="hidden lg:block px-6 py-3 bg-[#dc2626] text-white text-sm font-semibold rounded-lg hover:bg-[#b91c1c] transition-all duration-300 hover:shadow-lg"
           >
-            Beratung anfragen
+            Jetzt Beratung anfragen
           </Link>
 
           {/* Mobile Menu Button */}
           <button 
-            className="md:hidden text-white hover:text-gold transition-colors p-2"
+            className="lg:hidden text-gray-700 hover:text-[#3eb489] transition-colors p-2"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -99,29 +100,29 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 border-t border-white/10 animate-fadeIn">
-            <div className="flex flex-col space-y-4">
+          <div className="lg:hidden mt-4 pt-4 border-t border-gray-200 animate-fadeIn">
+            <div className="flex flex-col gap-2">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`text-base font-medium transition-colors ${
+                  className={`text-base font-semibold tracking-wide transition-all duration-300 rounded-lg px-4 py-3 ${
                     item.isExclusive
-                      ? 'flex items-center space-x-2 px-4 py-2 rounded-lg border border-gold/50 bg-gold/10 text-gold'
+                      ? 'flex items-center gap-3 border border-[#3eb489]/30 bg-[#3eb489]/10 text-[#3eb489]'
                       : location.pathname === item.path
-                        ? 'text-gold'
-                        : 'text-white hover:text-gold'
+                        ? 'text-[#3eb489] bg-gray-50'
+                        : 'text-gray-700 hover:text-[#3eb489] hover:bg-gray-50'
                   }`}
                 >
-                  {item.isExclusive && <Shield className="w-4 h-4" />}
-                  <span>{item.name}</span>
+                  {item.isExclusive && <Shield className="w-5 h-5" />}
+                  {item.name}
                 </Link>
               ))}
               <Link
                 to="/contact"
-                className="btn-gold text-sm text-center mt-2"
+                className="mt-2 px-4 py-3 bg-[#dc2626] text-white text-base font-semibold rounded-lg text-center hover:bg-[#b91c1c]"
               >
-                Beratung anfragen
+                Jetzt Beratung anfragen
               </Link>
             </div>
           </div>

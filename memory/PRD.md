@@ -157,6 +157,20 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 
 ## Changelog
 
+### 2026-03-15 (Update 4)
+- ✅ **Komplettes Design-Overhaul** - Von dunkel auf HELLES euroadria.me Theme umgestellt
+  - Header: Weiß mit rotem CTA-Button (#dc2626)
+  - Akzentfarbe: Türkis/Grün (#3eb489) statt Gold
+  - Hintergrund: Weiß statt Navy
+  - Professioneller Corporate-Look
+- ✅ **Alle Seiten aktualisiert:**
+  - Homepage mit neuem Hero
+  - Blog-Seite im hellen Design
+  - Serbia Executive Access (Premium-Landingpage)
+  - Impressum & Datenschutz (High-End Legal Pages)
+  - ShareButtons & Kommentare dezent integriert
+- ✅ Footer im euroadria.me Stil
+
 ### 2026-03-15 (Update 3)
 - ✅ **Serbia Executive Access Seite** komplett implementiert (`/serbia-executive`)
   - Video-Intro eingebettet

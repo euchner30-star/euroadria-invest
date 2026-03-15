@@ -6,41 +6,38 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative py-16 mt-20">
-      {/* Background with blur */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-md" />
-      
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
+    <footer className="bg-gray-900 py-16 mt-20">
+      <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand Column */}
           <div>
-            <img 
-              src="/euroadria-logo.png" 
-              alt="EuroAdria Logo" 
-              className="h-16 w-auto mb-4"
-            />
-            <p className="text-white/70 text-sm leading-relaxed mb-4">
-              Premium Investment & Lifestyle Partner für die Adria-Region. 
-              Expertise, Vertrauen, Exklusivität.
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 rounded bg-[#3eb489] flex items-center justify-center">
+                <span className="text-white font-bold text-xl">E</span>
+              </div>
+              <span className="text-white font-semibold text-xl">EuroAdria</span>
+            </div>
+            <p className="text-gray-400 text-sm leading-relaxed mb-6">
+              EuroAdria Corporate Solutions ist eine Marke der Montaris & Co. d.o.o. Novi Sad
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-3">
               <a
                 href="#"
-                className="w-10 h-10 rounded-full glass-card flex items-center justify-center text-white hover:text-gold transition-all hover:scale-110"
+                className="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-[#3eb489] hover:text-white transition-all"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="w-5 h-5" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 rounded-full glass-card flex items-center justify-center text-white hover:text-gold transition-all hover:scale-110"
+                className="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-[#3eb489] hover:text-white transition-all"
                 aria-label="Instagram"
               >
                 <Instagram className="w-5 h-5" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 rounded-full glass-card flex items-center justify-center text-white hover:text-gold transition-all hover:scale-110"
+                className="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-[#3eb489] hover:text-white transition-all"
                 aria-label="Facebook"
               >
                 <Facebook className="w-5 h-5" />
@@ -48,92 +45,88 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Rechtliches */}
           <div>
-            <h3 className="text-gold font-semibold text-lg mb-4">Quick Links</h3>
+            <h3 className="text-white font-semibold text-lg mb-6">Rechtliches</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="/" className="text-white/70 hover:text-gold transition-colors text-sm">
+                <Link to="/impressum" className="text-gray-400 hover:text-[#3eb489] transition-colors text-sm">
+                  Impressum
+                </Link>
+              </li>
+              <li>
+                <Link to="/datenschutz" className="text-gray-400 hover:text-[#3eb489] transition-colors text-sm">
+                  Datenschutz
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Navigation */}
+          <div>
+            <h3 className="text-white font-semibold text-lg mb-6">Navigation</h3>
+            <ul className="space-y-3">
+              <li>
+                <Link to="/" className="text-gray-400 hover:text-[#3eb489] transition-colors text-sm">
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/investments" className="text-white/70 hover:text-gold transition-colors text-sm">
-                  Investments
-                </Link>
-              </li>
-              <li>
-                <Link to="/blog" className="text-white/70 hover:text-gold transition-colors text-sm">
+                <Link to="/blog" className="text-gray-400 hover:text-[#3eb489] transition-colors text-sm">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-white/70 hover:text-gold transition-colors text-sm">
+                <Link to="/team" className="text-gray-400 hover:text-[#3eb489] transition-colors text-sm">
+                  Über uns
+                </Link>
+              </li>
+              <li>
+                <Link to="/serbia-executive" className="text-gray-400 hover:text-[#3eb489] transition-colors text-sm">
+                  Serbia Executive
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-gray-400 hover:text-[#3eb489] transition-colors text-sm">
                   Kontakt
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Services */}
+          {/* Kontakt */}
           <div>
-            <h3 className="text-gold font-semibold text-lg mb-4">Services</h3>
-            <ul className="space-y-3">
-              <li>
-                <span className="text-white/70 text-sm">Immobilien-Investment</span>
+            <h3 className="text-white font-semibold text-lg mb-6">Kontakt</h3>
+            <ul className="space-y-4">
+              <li className="flex items-start space-x-3">
+                <Mail className="w-5 h-5 text-[#3eb489] flex-shrink-0 mt-0.5" />
+                <a href="mailto:office@euroadria.me" className="text-gray-400 hover:text-[#3eb489] transition-colors text-sm">
+                  office@euroadria.me
+                </a>
               </li>
-              <li>
-                <span className="text-white/70 text-sm">Yacht-Investment</span>
+              <li className="flex items-start space-x-3">
+                <Phone className="w-5 h-5 text-[#3eb489] flex-shrink-0 mt-0.5" />
+                <a href="tel:+38268559776" className="text-gray-400 hover:text-[#3eb489] transition-colors text-sm">
+                  +382 68 559 776
+                </a>
               </li>
-              <li>
-                <span className="text-white/70 text-sm">Business-Consulting</span>
-              </li>
-              <li>
-                <span className="text-white/70 text-sm">Lifestyle-Beratung</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h3 className="text-gold font-semibold text-lg mb-4">Kontakt</h3>
-            <ul className="space-y-3">
-              <li className="flex items-start space-x-3 text-white/70 text-sm">
-                <Mail className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />
-                <span>info@euroadria.com</span>
-              </li>
-              <li className="flex items-start space-x-3 text-white/70 text-sm">
-                <Phone className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />
-                <span>+49 (0) 123 456789</span>
-              </li>
-              <li className="flex items-start space-x-3 text-white/70 text-sm">
-                <MapPin className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />
-                <span>München, Deutschland</span>
+              <li className="flex items-start space-x-3">
+                <MapPin className="w-5 h-5 text-[#3eb489] flex-shrink-0 mt-0.5" />
+                <span className="text-gray-400 text-sm">
+                  Speditionsstraße 15a<br />
+                  40221 Düsseldorf
+                </span>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="border-t border-white/10 pt-8">
+        <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-white/50 text-sm">
-              © {currentYear} EuroAdria. Alle Rechte vorbehalten.
+            <p className="text-gray-500 text-sm">
+              © {currentYear} EuroAdria Corporate Solutions. Alle Rechte vorbehalten.
             </p>
-            <div className="flex space-x-6">
-              <Link
-                to="/impressum"
-                className="text-white/50 hover:text-gold transition-colors text-sm"
-              >
-                Impressum
-              </Link>
-              <Link
-                to="/datenschutz"
-                className="text-white/50 hover:text-gold transition-colors text-sm"
-              >
-                Datenschutz
-              </Link>
-            </div>
           </div>
         </div>
       </div>
