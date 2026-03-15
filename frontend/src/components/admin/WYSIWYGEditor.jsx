@@ -163,6 +163,28 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
     }
   };
 
+  // Handle Enter key for new lines
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      
+      if (e.shiftKey) {
+        // Shift+Enter = line break <br>
+        document.execCommand('insertLineBreak');
+      } else {
+        // Enter = new paragraph
+        document.execCommand('insertParagraph');
+      }
+      
+      // Update content after Enter
+      if (onChange && editorRef.current) {
+        const newContent = editorRef.current.innerHTML;
+        onChange(newContent);
+        saveToHistory(newContent);
+      }
+    }
+  };
+
   // Toolbar Button Component
   const ToolbarButton = ({ onClick, icon: Icon, tooltip, disabled }) => (
     <Tooltip text={tooltip}>
@@ -303,6 +325,7 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
         contentEditable
         onInput={handleInput}
         onPaste={handlePaste}
+        onKeyDown={handleKeyDown}
         dangerouslySetInnerHTML={{ __html: value || '' }}
         className="min-h-[300px] p-4 focus:outline-none prose prose-sm max-w-none
           [&>h1]:text-3xl [&>h1]:font-bold [&>h1]:text-ea-dark [&>h1]:mb-4 [&>h1]:mt-6
@@ -320,7 +343,7 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
 
       {/* Helper Text */}
       <div className="px-4 py-2 bg-ea-light/50 border-t border-gray-100 text-xs text-ea-dark/50">
-        💡 Tipp: Text markieren und Formatierung wählen. Shortcuts: Strg+B (Fett), Strg+I (Kursiv)
+        💡 Enter = Neuer Absatz | Shift+Enter = Zeilenumbruch | Strg+B = Fett | Strg+I = Kursiv
       </div>
     </div>
   );
