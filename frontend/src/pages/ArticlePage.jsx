@@ -59,7 +59,7 @@ const ArticlePage = () => {
   }
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-6 bg-white">
+    <div className="min-h-screen pt-24 md:pt-32 pb-20 px-4 md:px-6 bg-white">
       <SEO 
         title={article.title}
         description={article.excerpt}
@@ -76,47 +76,47 @@ const ArticlePage = () => {
         {/* Back Button */}
         <Link
           to="/blog"
-          className="inline-flex items-center space-x-2 text-ea-dark/70 hover:text-ea-gold transition-colors mb-8 group"
+          className="inline-flex items-center space-x-2 text-ea-dark/70 hover:text-ea-gold transition-colors mb-6 md:mb-8 group text-sm md:text-base"
           data-testid="back-to-blog-button"
         >
-          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 group-hover:-translate-x-1 transition-transform" />
           <span>Zurück zum Blog</span>
         </Link>
 
         {/* Article Header */}
-        <article className="bg-white border border-gray-200 rounded-2xl p-8 md:p-12 shadow-sm">
+        <article className="bg-white border border-gray-200 rounded-xl md:rounded-2xl p-5 md:p-8 lg:p-12 shadow-sm">
           {/* Category Badge */}
-          <div className="inline-block bg-ea-light border border-ea-gold/20 text-sm text-ea-dark px-4 py-2 rounded-lg mb-6 font-medium">
+          <div className="inline-block bg-ea-light border border-ea-gold/20 text-xs md:text-sm text-ea-dark px-3 py-1.5 md:px-4 md:py-2 rounded-lg mb-4 md:mb-6 font-medium">
             {article.category}
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-ea-dark mb-6 leading-tight">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-ea-dark mb-4 md:mb-6 leading-tight">
             {article.title}
           </h1>
 
           {/* Meta Information */}
-          <div className="flex flex-wrap items-center gap-6 text-sm text-ea-dark/60 mb-8 pb-8 border-b border-gray-200">
-            <div className="flex items-center space-x-2">
-              <User className="w-4 h-4 text-ea-gold" />
+          <div className="flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm text-ea-dark/60 mb-6 md:mb-8 pb-6 md:pb-8 border-b border-gray-200">
+            <div className="flex items-center space-x-1.5 md:space-x-2">
+              <User className="w-3.5 h-3.5 md:w-4 md:h-4 text-ea-gold" />
               <span>{article.author}</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <Calendar className="w-4 h-4 text-ea-gold" />
+            <div className="flex items-center space-x-1.5 md:space-x-2">
+              <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4 text-ea-gold" />
               <span>{new Date(article.date).toLocaleDateString('de-DE', { 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric' 
               })}</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <Clock className="w-4 h-4 text-ea-gold" />
+            <div className="flex items-center space-x-1.5 md:space-x-2">
+              <Clock className="w-3.5 h-3.5 md:w-4 md:h-4 text-ea-gold" />
               <span>{article.readTime} Lesezeit</span>
             </div>
           </div>
 
           {/* Featured Image */}
-          <div className="relative h-96 rounded-xl overflow-hidden mb-10">
+          <div className="relative h-48 md:h-72 lg:h-96 rounded-lg md:rounded-xl overflow-hidden mb-6 md:mb-10">
             <img
               src={article.image}
               alt={article.title}
@@ -125,14 +125,14 @@ const ArticlePage = () => {
           </div>
 
           {/* Article Excerpt */}
-          <p className="text-xl text-ea-dark/80 leading-relaxed mb-8 font-light italic border-l-4 border-ea-gold pl-6">
+          <p className="text-base md:text-xl text-ea-dark/80 leading-relaxed mb-6 md:mb-8 font-light italic border-l-4 border-ea-gold pl-4 md:pl-6">
             {article.excerpt}
           </p>
 
           {/* Article Content */}
-          <div className="prose prose-lg max-w-none">
+          <div className="prose prose-sm md:prose-lg max-w-none">
             <div 
-              className="text-ea-dark/80 leading-relaxed space-y-6"
+              className="text-ea-dark/80 leading-relaxed space-y-4 md:space-y-6 text-sm md:text-base"
               dangerouslySetInnerHTML={{ __html: article.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br />') }}
             />
           </div>
@@ -165,20 +165,20 @@ const ArticlePage = () => {
           />
 
           {/* CTA Section */}
-          <div className="mt-12 p-8 bg-ea-light rounded-xl border border-ea-gold/20">
-            <h3 className="text-2xl font-semibold text-ea-dark mb-3">
+          <div className="mt-8 md:mt-12 p-5 md:p-8 bg-ea-light rounded-xl border border-ea-gold/20">
+            <h3 className="text-xl md:text-2xl font-semibold text-ea-dark mb-2 md:mb-3">
               Interessiert an Investment-Möglichkeiten?
             </h3>
-            <p className="text-ea-dark/70 mb-6">
+            <p className="text-ea-dark/70 mb-4 md:mb-6 text-sm md:text-base">
               Lassen Sie sich von unseren Experten beraten und entdecken Sie exklusive Opportunities.
             </p>
             <Link
               to="/contact"
-              className="inline-flex items-center space-x-2 px-6 py-3 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 md:px-6 md:py-3 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all text-sm md:text-base"
               data-testid="article-cta-button"
             >
               <span>Kostenlose Beratung anfragen</span>
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
             </Link>
           </div>
         </article>
@@ -188,28 +188,28 @@ const ArticlePage = () => {
 
         {/* Related Articles */}
         {relatedArticles.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-2xl md:text-3xl font-semibold text-ea-dark mb-8">
+          <div className="mt-12 md:mt-16">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-ea-dark mb-6 md:mb-8">
               Ähnliche <span className="text-ea-gold">Beiträge</span>
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {relatedArticles.map((related) => (
                 <Link
                   key={related.id}
                   to={`/blog/${related.slug}`}
                   className="group"
                 >
-                  <article className="bg-white border border-gray-200 rounded-2xl h-full overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                    <div className="relative h-40 overflow-hidden">
+                  <article className="bg-white border border-gray-200 rounded-xl md:rounded-2xl h-full overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <div className="relative h-32 md:h-40 overflow-hidden">
                       <img
                         src={related.image}
                         alt={related.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     </div>
-                    <div className="p-5">
+                    <div className="p-4 md:p-5">
                       <span className="text-xs text-ea-gold font-medium">{related.category}</span>
-                      <h3 className="text-lg font-semibold text-ea-dark mt-2 mb-2 group-hover:text-ea-gold transition-colors line-clamp-2">
+                      <h3 className="text-base md:text-lg font-semibold text-ea-dark mt-1.5 md:mt-2 mb-1.5 md:mb-2 group-hover:text-ea-gold transition-colors line-clamp-2">
                         {related.title}
                       </h3>
                       <div className="flex items-center space-x-2 text-xs text-ea-dark/50">
