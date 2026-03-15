@@ -10,17 +10,17 @@ const Hero = () => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: 'url(https://images.unsplash.com/photo-1554155845-440a0ec58d3b)',
-          filter: 'brightness(0.4)'
+          filter: 'brightness(0.3)'
         }}
       />
 
       {/* Gradient Overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
         {/* Main Logo and Tagline */}
-        <div className="mb-8 animate-fadeIn">
+        <div className="mb-12 animate-fadeIn">
           <div className="flex justify-center mb-8">
             <img 
               src="/euroadria-logo.png" 
@@ -43,6 +43,42 @@ const Hero = () => {
             Ihr exklusiver Partner für Investments, Business und Lifestyle an der Adria. 
             Entdecken Sie einzigartige Chancen auf dem Balkan mit erstklassiger Expertise.
           </p>
+        </div>
+
+        {/* Team Photo Section */}
+        <div className="glass-card-strong max-w-4xl mx-auto mb-12 p-8 animate-slideUp">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="order-2 md:order-1">
+              <img
+                src="/team-photo.jpg"
+                alt="Milena Bubanja & Holger Kuhlmann"
+                className="rounded-xl shadow-2xl w-full"
+              />
+            </div>
+            <div className="order-1 md:order-2 text-left">
+              <div className="inline-block glass-card text-sm text-gold px-4 py-2 mb-4 font-medium">
+                Ihre operative Task-Force
+              </div>
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">
+                Milena Bubanja & <br />Holger Kuhlmann
+              </h2>
+              <p className="text-white/80 text-lg leading-relaxed mb-6">
+                Wir sichern Ihr Vermögen am Balkan.
+              </p>
+              <div className="space-y-3 text-white/70 text-sm mb-6">
+                <div>
+                  <span className="text-gold font-semibold">Milena Bubanja:</span> Legal & Compliance Expert / Local Network Lead
+                </div>
+                <div>
+                  <span className="text-gold font-semibold">Holger Kuhlmann:</span> Strategic Investment Advisor / Asset Protection
+                </div>
+              </div>
+              <Link to="/team" className="btn-gold inline-flex items-center space-x-2">
+                <span>Unser Team kennenlernen</span>
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Feature Pills */}

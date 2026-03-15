@@ -20,13 +20,42 @@ export const DueDiligenceBox = ({ title, content }) => {
   );
 };
 
-// ExpertTipBox Component
+// ExpertTipBox Component with Photo Icons
 export const ExpertTipBox = ({ author, title, content }) => {
+  // Determine photo crop based on author
+  const getAuthorPhoto = (authorName) => {
+    if (authorName.includes('Holger')) {
+      return { 
+        src: '/team-photo.jpg',
+        position: '30% center', // Left side (Holger)
+        initials: 'HK'
+      };
+    } else if (authorName.includes('Milena')) {
+      return {
+        src: '/team-photo.jpg',
+        position: '70% center', // Right side (Milena)
+        initials: 'MB'
+      };
+    }
+    return {
+      src: '/team-photo.jpg',
+      position: 'center',
+      initials: author.split(' ').map(n => n[0]).join('')
+    };
+  };
+
+  const photoData = getAuthorPhoto(author);
+
   return (
     <div className="expert-tip-box my-8">
       <div className="flex items-start space-x-3 mb-3">
-        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gold flex items-center justify-center text-navy font-bold text-sm">
-          {author.split(' ').map(n => n[0]).join('')}
+        <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden border-2 border-gold shadow-lg">
+          <img 
+            src={photoData.src}
+            alt={author}
+            className="w-full h-full object-cover"
+            style={{ objectPosition: photoData.position }}
+          />
         </div>
         <div className="flex-1">
           <div className="text-xs text-gold/80 uppercase tracking-wide font-semibold mb-1">
@@ -35,7 +64,7 @@ export const ExpertTipBox = ({ author, title, content }) => {
           <h4 className="text-lg font-bold text-white">{title}</h4>
         </div>
       </div>
-      <p className="text-white/80 leading-relaxed pl-13">{content}</p>
+      <p className="text-white/80 leading-relaxed pl-15">{content}</p>
     </div>
   );
 };

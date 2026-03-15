@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import BlogPage from "./pages/BlogPage";
 import ArticlePage from "./pages/ArticlePage";
 import ContactPage from "./pages/ContactPage";
+import TeamPage from "./pages/TeamPage";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<ArticlePage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/team" element={<TeamPage />} />
           <Route path="/investments" element={<Home />} />
         </Routes>
         <Footer />
