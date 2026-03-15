@@ -79,6 +79,8 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 - ✅ Alle Komponenten und Seiten refaktoriert
 - ✅ tailwind.config.js mit ea-* Farbpalette
 - ✅ index.css mit CSS-Variablen
+- ✅ Team-Seite (Über uns) korrigiert - jetzt lesbar
+- ✅ Admin Panel komplett gestylt
 - ✅ Alle Tests bestanden (44/44 Frontend, 24/24 Backend)
 
 ### Frühere Arbeiten

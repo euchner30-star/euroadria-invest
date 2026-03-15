@@ -214,33 +214,33 @@ const AdminPage = () => {
         />
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-display font-bold text-white mb-4">
-              Admin <span className="text-gold">Login</span>
+            <h1 className="text-4xl font-semibold font-bold text-ea-dark mb-4">
+              Admin <span className="text-ea-gold">Login</span>
             </h1>
-            <p className="text-white/70">Melden Sie sich an, um Artikel zu verwalten</p>
+            <p className="text-ea-dark/70">Melden Sie sich an, um Artikel zu verwalten</p>
           </div>
 
-          <div className="glass-card p-8">
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
             <form onSubmit={handleLogin} className="space-y-6">
               <div>
-                <label className="block text-white/80 text-sm mb-2">Benutzername</label>
+                <label className="block text-ea-dark/80 text-sm mb-2">Benutzername</label>
                 <input
                   type="text"
                   value={credentials.username}
                   onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-gold/50"
+                  className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark placeholder-white/40 focus:outline-none focus:border-ea-gold"
                   placeholder="admin"
                   data-testid="admin-username-input"
                   required
                 />
               </div>
               <div>
-                <label className="block text-white/80 text-sm mb-2">Passwort</label>
+                <label className="block text-ea-dark/80 text-sm mb-2">Passwort</label>
                 <input
                   type="password"
                   value={credentials.password}
                   onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-gold/50"
+                  className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark placeholder-white/40 focus:outline-none focus:border-ea-gold"
                   placeholder="••••••••"
                   data-testid="admin-password-input"
                   required
@@ -257,7 +257,7 @@ const AdminPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-gold w-full flex items-center justify-center space-x-2"
+                className="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all w-full flex items-center justify-center space-x-2"
                 data-testid="admin-login-button"
               >
                 {loading ? (
@@ -299,12 +299,12 @@ const AdminPage = () => {
       <div className="min-h-screen pt-32 pb-20 px-6" data-testid="admin-editor">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-display font-bold text-white">
+            <h1 className="text-3xl font-semibold font-bold text-ea-dark">
               {isCreating ? 'Neuer Artikel' : 'Artikel bearbeiten'}
             </h1>
             <button
               onClick={() => { setEditingArticle(null); setIsCreating(false); }}
-              className="text-white/70 hover:text-white transition-colors"
+              className="text-ea-dark/70 hover:text-ea-dark transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
@@ -328,16 +328,16 @@ const AdminPage = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-display font-bold text-white mb-2">
-              Admin <span className="text-gold">Dashboard</span>
+            <h1 className="text-4xl font-semibold font-bold text-ea-dark mb-2">
+              Admin <span className="text-ea-gold">Dashboard</span>
             </h1>
-            <p className="text-white/70">Verwalten Sie Artikel und Kommentare</p>
+            <p className="text-ea-dark/70">Verwalten Sie Artikel und Kommentare</p>
           </div>
           <div className="flex items-center space-x-4">
             {activeTab === 'articles' && (
               <button
                 onClick={() => setIsCreating(true)}
-                className="btn-gold flex items-center space-x-2"
+                className="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all flex items-center space-x-2"
                 data-testid="create-article-button"
               >
                 <Plus className="w-5 h-5" />
@@ -346,7 +346,7 @@ const AdminPage = () => {
             )}
             <button
               onClick={handleLogout}
-              className="glass-card px-4 py-2 text-white/70 hover:text-white transition-colors flex items-center space-x-2"
+              className="bg-white border border-gray-200 rounded-xl shadow-sm px-4 py-2 text-ea-dark/70 hover:text-ea-dark transition-colors flex items-center space-x-2"
             >
               <LogOut className="w-5 h-5" />
               <span>Abmelden</span>
@@ -356,16 +356,16 @@ const AdminPage = () => {
 
         {/* Status Message */}
         {saveStatus.message && (
-          <div className={`glass-card p-4 mb-6 flex items-center space-x-2 ${
+          <div className={`bg-white border border-gray-200 rounded-xl shadow-sm p-4 mb-6 flex items-center space-x-2 ${
             saveStatus.type === 'success' ? 'border-green-500/30' : 
             saveStatus.type === 'error' ? 'border-red-500/30' : ''
           }`}>
             {saveStatus.type === 'success' && <Check className="w-5 h-5 text-green-400" />}
             {saveStatus.type === 'error' && <AlertCircle className="w-5 h-5 text-red-400" />}
-            {saveStatus.type === 'loading' && <Loader2 className="w-5 h-5 animate-spin text-gold" />}
+            {saveStatus.type === 'loading' && <Loader2 className="w-5 h-5 animate-spin text-ea-gold" />}
             <span className={
               saveStatus.type === 'success' ? 'text-green-400' : 
-              saveStatus.type === 'error' ? 'text-red-400' : 'text-white'
+              saveStatus.type === 'error' ? 'text-red-400' : 'text-ea-dark'
             }>{saveStatus.message}</span>
           </div>
         )}
@@ -376,8 +376,8 @@ const AdminPage = () => {
             onClick={() => setActiveTab('articles')}
             className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
               activeTab === 'articles'
-                ? 'bg-gold text-navy font-semibold'
-                : 'glass-card text-white/70 hover:text-white'
+                ? 'bg-ea-gold text-ea-dark font-semibold'
+                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
             }`}
             data-testid="tab-articles"
           >
@@ -388,15 +388,15 @@ const AdminPage = () => {
             onClick={() => setActiveTab('comments')}
             className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
               activeTab === 'comments'
-                ? 'bg-gold text-navy font-semibold'
-                : 'glass-card text-white/70 hover:text-white'
+                ? 'bg-ea-gold text-ea-dark font-semibold'
+                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
             }`}
             data-testid="tab-comments"
           >
             <MessageSquare className="w-5 h-5" />
             <span>Kommentare</span>
             {commentsStats.pending > 0 && (
-              <span className="ml-1 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full">
+              <span className="ml-1 px-2 py-0.5 bg-red-500 text-ea-dark text-xs rounded-full">
                 {commentsStats.pending}
               </span>
             )}
@@ -405,51 +405,51 @@ const AdminPage = () => {
 
         {/* Articles Tab */}
         {activeTab === 'articles' && (
-          <div className="glass-card overflow-hidden">
-            <div className="p-4 border-b border-white/10 flex items-center justify-between">
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <FileText className="w-5 h-5 text-gold" />
-                <span className="text-white font-medium">Artikel ({articles.length})</span>
+                <FileText className="w-5 h-5 text-ea-gold" />
+                <span className="text-ea-dark font-medium">Artikel ({articles.length})</span>
               </div>
             </div>
 
             {articlesLoading ? (
               <div className="p-8 flex justify-center">
-                <Loader2 className="w-8 h-8 text-gold animate-spin" />
+                <Loader2 className="w-8 h-8 text-ea-gold animate-spin" />
               </div>
             ) : (
-              <div className="divide-y divide-white/10">
+              <div className="divide-y divide-gray-200">
                 {articles.map((article) => (
                   <div 
                     key={article.id} 
-                    className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+                    className="p-4 flex items-center justify-between hover:bg-ea-light transition-colors"
                     data-testid={`article-row-${article.id}`}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-3">
-                        <span className="text-xs text-gold font-medium bg-gold/10 px-2 py-1 rounded">
+                        <span className="text-xs text-ea-gold font-medium bg-ea-gold/10 px-2 py-1 rounded">
                           {article.cluster}
                         </span>
                         {article.featured && (
-                          <span className="text-xs text-white bg-white/10 px-2 py-1 rounded">
+                          <span className="text-xs text-ea-dark bg-white/10 px-2 py-1 rounded">
                             Featured
                           </span>
                         )}
                       </div>
-                      <h3 className="text-white font-medium mt-2 truncate">{article.title}</h3>
-                      <p className="text-white/50 text-sm">{article.category} • {article.date}</p>
+                      <h3 className="text-ea-dark font-medium mt-2 truncate">{article.title}</h3>
+                      <p className="text-ea-dark/50 text-sm">{article.category} • {article.date}</p>
                     </div>
                     <div className="flex items-center space-x-2 ml-4">
                       <button
                         onClick={() => setEditingArticle(article)}
-                        className="p-2 text-white/70 hover:text-gold transition-colors"
+                        className="p-2 text-ea-dark/70 hover:text-ea-gold transition-colors"
                         data-testid={`edit-article-${article.id}`}
                       >
                         <Edit2 className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDeleteArticle(article.id)}
-                        className="p-2 text-white/70 hover:text-red-400 transition-colors"
+                        className="p-2 text-ea-dark/70 hover:text-red-400 transition-colors"
                         data-testid={`delete-article-${article.id}`}
                       >
                         <Trash2 className="w-5 h-5" />
@@ -467,21 +467,21 @@ const AdminPage = () => {
           <div className="space-y-6">
             {/* Comments Stats */}
             <div className="grid grid-cols-4 gap-4">
-              <div className="glass-card p-4 text-center">
-                <p className="text-3xl font-bold text-white">{commentsStats.total}</p>
-                <p className="text-white/60 text-sm">Gesamt</p>
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 text-center">
+                <p className="text-3xl font-bold text-ea-dark">{commentsStats.total}</p>
+                <p className="text-ea-dark/60 text-sm">Gesamt</p>
               </div>
-              <div className="glass-card p-4 text-center border-yellow-500/30">
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 text-center border-yellow-500/30">
                 <p className="text-3xl font-bold text-yellow-400">{commentsStats.pending}</p>
-                <p className="text-white/60 text-sm">Ausstehend</p>
+                <p className="text-ea-dark/60 text-sm">Ausstehend</p>
               </div>
-              <div className="glass-card p-4 text-center border-green-500/30">
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 text-center border-green-500/30">
                 <p className="text-3xl font-bold text-green-400">{commentsStats.approved}</p>
-                <p className="text-white/60 text-sm">Freigegeben</p>
+                <p className="text-ea-dark/60 text-sm">Freigegeben</p>
               </div>
-              <div className="glass-card p-4 text-center border-red-500/30">
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 text-center border-red-500/30">
                 <p className="text-3xl font-bold text-red-400">{commentsStats.rejected}</p>
-                <p className="text-white/60 text-sm">Abgelehnt</p>
+                <p className="text-ea-dark/60 text-sm">Abgelehnt</p>
               </div>
             </div>
 
@@ -493,8 +493,8 @@ const AdminPage = () => {
                   onClick={() => setCommentsFilter(filter)}
                   className={`px-4 py-2 rounded-lg text-sm transition-all ${
                     commentsFilter === filter
-                      ? 'bg-gold/20 text-gold border border-gold/50'
-                      : 'glass-card text-white/70 hover:text-white'
+                      ? 'bg-ea-gold/20 text-ea-gold border border-ea-gold'
+                      : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
                   }`}
                   data-testid={`filter-${filter}`}
                 >
@@ -507,10 +507,10 @@ const AdminPage = () => {
             </div>
 
             {/* Comments List */}
-            <div className="glass-card overflow-hidden">
-              <div className="p-4 border-b border-white/10 flex items-center space-x-2">
-                <MessageSquare className="w-5 h-5 text-gold" />
-                <span className="text-white font-medium">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-gray-200 flex items-center space-x-2">
+                <MessageSquare className="w-5 h-5 text-ea-gold" />
+                <span className="text-ea-dark font-medium">
                   {commentsFilter === 'pending' && 'Ausstehende Kommentare'}
                   {commentsFilter === 'approved' && 'Freigegebene Kommentare'}
                   {commentsFilter === 'rejected' && 'Abgelehnte Kommentare'}
@@ -520,32 +520,32 @@ const AdminPage = () => {
 
               {commentsLoading ? (
                 <div className="p-8 flex justify-center">
-                  <Loader2 className="w-8 h-8 text-gold animate-spin" />
+                  <Loader2 className="w-8 h-8 text-ea-gold animate-spin" />
                 </div>
               ) : comments.length === 0 ? (
-                <div className="p-8 text-center text-white/50">
+                <div className="p-8 text-center text-ea-dark/50">
                   Keine Kommentare in dieser Kategorie.
                 </div>
               ) : (
-                <div className="divide-y divide-white/10">
+                <div className="divide-y divide-gray-200">
                   {comments.map((comment) => (
                     <div 
                       key={comment.id} 
-                      className="p-5 hover:bg-white/5 transition-colors"
+                      className="p-5 hover:bg-ea-light transition-colors"
                       data-testid={`comment-row-${comment.id}`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           {/* Comment Header */}
                           <div className="flex items-center space-x-3 mb-2">
-                            <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center">
-                              <span className="text-gold font-bold">
+                            <div className="w-10 h-10 rounded-full bg-ea-gold/20 flex items-center justify-center">
+                              <span className="text-ea-gold font-bold">
                                 {comment.name.charAt(0).toUpperCase()}
                               </span>
                             </div>
                             <div>
                               <div className="flex items-center space-x-2">
-                                <span className="text-white font-medium">{comment.name}</span>
+                                <span className="text-ea-dark font-medium">{comment.name}</span>
                                 <span className={`px-2 py-0.5 rounded text-xs ${
                                   comment.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
                                   comment.status === 'approved' ? 'bg-green-500/20 text-green-400' :
@@ -556,7 +556,7 @@ const AdminPage = () => {
                                   {comment.status === 'rejected' && 'Abgelehnt'}
                                 </span>
                               </div>
-                              <div className="flex items-center space-x-3 text-white/50 text-xs">
+                              <div className="flex items-center space-x-3 text-ea-dark/50 text-xs">
                                 <span className="flex items-center space-x-1">
                                   <Mail className="w-3 h-3" />
                                   <span>{comment.email}</span>
@@ -570,12 +570,12 @@ const AdminPage = () => {
                           </div>
                           
                           {/* Article Reference */}
-                          <p className="text-white/50 text-xs mb-2">
-                            Artikel: <span className="text-gold">{comment.articleTitle}</span>
+                          <p className="text-ea-dark/50 text-xs mb-2">
+                            Artikel: <span className="text-ea-gold">{comment.articleTitle}</span>
                           </p>
                           
                           {/* Comment Content */}
-                          <p className="text-white/80 bg-white/5 p-3 rounded-lg">{comment.content}</p>
+                          <p className="text-ea-dark/80 bg-ea-light p-3 rounded-lg">{comment.content}</p>
                         </div>
 
                         {/* Actions */}
@@ -584,7 +584,7 @@ const AdminPage = () => {
                             <>
                               <button
                                 onClick={() => handleApproveComment(comment.id)}
-                                className="p-2 text-white/70 hover:text-green-400 transition-colors"
+                                className="p-2 text-ea-dark/70 hover:text-green-400 transition-colors"
                                 title="Freigeben"
                                 data-testid={`approve-comment-${comment.id}`}
                               >
@@ -592,7 +592,7 @@ const AdminPage = () => {
                               </button>
                               <button
                                 onClick={() => handleRejectComment(comment.id)}
-                                className="p-2 text-white/70 hover:text-red-400 transition-colors"
+                                className="p-2 text-ea-dark/70 hover:text-red-400 transition-colors"
                                 title="Ablehnen"
                                 data-testid={`reject-comment-${comment.id}`}
                               >
@@ -602,7 +602,7 @@ const AdminPage = () => {
                           )}
                           <button
                             onClick={() => handleDeleteComment(comment.id)}
-                            className="p-2 text-white/70 hover:text-red-400 transition-colors"
+                            className="p-2 text-ea-dark/70 hover:text-red-400 transition-colors"
                             title="Löschen"
                             data-testid={`delete-comment-${comment.id}`}
                           >
@@ -664,16 +664,16 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="glass-card p-6 space-y-6">
-        <h3 className="text-xl font-bold text-gold">Grundinformationen</h3>
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-6">
+        <h3 className="text-xl font-bold text-ea-gold">Grundinformationen</h3>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-white/80 text-sm mb-2">Cluster</label>
+            <label className="block text-ea-dark/80 text-sm mb-2">Cluster</label>
             <select
               value={formData.cluster}
               onChange={(e) => handleChange('cluster', e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
             >
               {clusters.map(c => (
                 <option key={c.id} value={c.id}>{c.id} - {c.name}</option>
@@ -681,11 +681,11 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
             </select>
           </div>
           <div>
-            <label className="block text-white/80 text-sm mb-2">Kategorie</label>
+            <label className="block text-ea-dark/80 text-sm mb-2">Kategorie</label>
             <select
               value={formData.category}
               onChange={(e) => handleChange('category', e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
             >
               {categories.map(cat => (
                 <option key={cat} value={cat}>{cat}</option>
@@ -695,66 +695,66 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
         </div>
 
         <div>
-          <label className="block text-white/80 text-sm mb-2">Titel *</label>
+          <label className="block text-ea-dark/80 text-sm mb-2">Titel *</label>
           <input
             type="text"
             value={formData.title}
             onChange={(e) => handleChange('title', e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
             required
           />
         </div>
 
         <div>
-          <label className="block text-white/80 text-sm mb-2">Slug (URL) *</label>
+          <label className="block text-ea-dark/80 text-sm mb-2">Slug (URL) *</label>
           <input
             type="text"
             value={formData.slug}
             onChange={(e) => handleChange('slug', e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
             placeholder="mein-artikel-slug"
             required
           />
         </div>
 
         <div>
-          <label className="block text-white/80 text-sm mb-2">Kurzfassung *</label>
+          <label className="block text-ea-dark/80 text-sm mb-2">Kurzfassung *</label>
           <textarea
             value={formData.excerpt}
             onChange={(e) => handleChange('excerpt', e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50 h-24"
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold h-24"
             required
           />
         </div>
 
         <div>
-          <label className="block text-white/80 text-sm mb-2">Inhalt (Markdown) *</label>
+          <label className="block text-ea-dark/80 text-sm mb-2">Inhalt (Markdown) *</label>
           <textarea
             value={formData.content}
             onChange={(e) => handleChange('content', e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50 h-64 font-mono text-sm"
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold h-64 font-mono text-sm"
             required
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-white/80 text-sm mb-2">Bild-URL *</label>
+            <label className="block text-ea-dark/80 text-sm mb-2">Bild-URL *</label>
             <input
               type="url"
               value={formData.image}
               onChange={(e) => handleChange('image', e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
               required
             />
           </div>
           <div>
-            <label className="block text-white/80 text-sm mb-2">Autor *</label>
+            <label className="block text-ea-dark/80 text-sm mb-2">Autor *</label>
             <input
               type="text"
               value={formData.author}
               onChange={(e) => handleChange('author', e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
               required
             />
           </div>
@@ -762,21 +762,21 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
 
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="block text-white/80 text-sm mb-2">Datum</label>
+            <label className="block text-ea-dark/80 text-sm mb-2">Datum</label>
             <input
               type="date"
               value={formData.date}
               onChange={(e) => handleChange('date', e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
             />
           </div>
           <div>
-            <label className="block text-white/80 text-sm mb-2">Lesezeit</label>
+            <label className="block text-ea-dark/80 text-sm mb-2">Lesezeit</label>
             <input
               type="text"
               value={formData.readTime}
               onChange={(e) => handleChange('readTime', e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
               placeholder="10 min"
             />
           </div>
@@ -786,65 +786,65 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
                 type="checkbox"
                 checked={formData.featured}
                 onChange={(e) => handleChange('featured', e.target.checked)}
-                className="w-5 h-5 rounded bg-white/5 border-white/10 text-gold focus:ring-gold"
+                className="w-5 h-5 rounded bg-ea-light border-gray-200 text-ea-gold focus:ring-gold"
               />
-              <span className="text-white/80">Featured</span>
+              <span className="text-ea-dark/80">Featured</span>
             </label>
           </div>
         </div>
       </div>
 
       {/* Due Diligence Box */}
-      <div className="glass-card p-6 space-y-4">
-        <h3 className="text-xl font-bold text-gold">Due Diligence Box</h3>
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
+        <h3 className="text-xl font-bold text-ea-gold">Due Diligence Box</h3>
         <div>
-          <label className="block text-white/80 text-sm mb-2">Titel</label>
+          <label className="block text-ea-dark/80 text-sm mb-2">Titel</label>
           <input
             type="text"
             value={formData.dueDiligenceBox?.title || ''}
             onChange={(e) => handleNestedChange('dueDiligenceBox', 'title', e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
           />
         </div>
         <div>
-          <label className="block text-white/80 text-sm mb-2">Inhalt</label>
+          <label className="block text-ea-dark/80 text-sm mb-2">Inhalt</label>
           <textarea
             value={formData.dueDiligenceBox?.content || ''}
             onChange={(e) => handleNestedChange('dueDiligenceBox', 'content', e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50 h-24"
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold h-24"
           />
         </div>
       </div>
 
       {/* Expert Tip */}
-      <div className="glass-card p-6 space-y-4">
-        <h3 className="text-xl font-bold text-gold">Experten-Tipp</h3>
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
+        <h3 className="text-xl font-bold text-ea-gold">Experten-Tipp</h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-white/80 text-sm mb-2">Autor</label>
+            <label className="block text-ea-dark/80 text-sm mb-2">Autor</label>
             <input
               type="text"
               value={formData.expertTip?.author || ''}
               onChange={(e) => handleNestedChange('expertTip', 'author', e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
             />
           </div>
           <div>
-            <label className="block text-white/80 text-sm mb-2">Titel</label>
+            <label className="block text-ea-dark/80 text-sm mb-2">Titel</label>
             <input
               type="text"
               value={formData.expertTip?.title || ''}
               onChange={(e) => handleNestedChange('expertTip', 'title', e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50"
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
             />
           </div>
         </div>
         <div>
-          <label className="block text-white/80 text-sm mb-2">Inhalt</label>
+          <label className="block text-ea-dark/80 text-sm mb-2">Inhalt</label>
           <textarea
             value={formData.expertTip?.content || ''}
             onChange={(e) => handleNestedChange('expertTip', 'content', e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold/50 h-24"
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold h-24"
           />
         </div>
       </div>
@@ -854,14 +854,14 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
         <button
           type="button"
           onClick={onCancel}
-          className="glass-card px-6 py-3 text-white/70 hover:text-white transition-colors"
+          className="bg-white border border-gray-200 rounded-xl shadow-sm px-6 py-3 text-ea-dark/70 hover:text-ea-dark transition-colors"
         >
           Abbrechen
         </button>
         <button
           type="submit"
           disabled={saveStatus.type === 'loading'}
-          className="btn-gold flex items-center space-x-2"
+          className="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all flex items-center space-x-2"
         >
           {saveStatus.type === 'loading' ? (
             <Loader2 className="w-5 h-5 animate-spin" />
