@@ -1,5 +1,6 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, BackgroundTasks
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, BackgroundTasks, UploadFile, File
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -14,9 +15,14 @@ import secrets
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from PIL import Image
+import io
 
 
 ROOT_DIR = Path(__file__).parent
+UPLOAD_DIR = ROOT_DIR.parent / "frontend" / "public" / "uploads"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
 load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
@@ -454,6 +460,139 @@ async def delete_article(article_id: int, admin: str = Depends(verify_admin)):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Article not found")
     return {"message": "Article deleted successfully", "id": article_id}
+
+
+# =============================================
+# IMAGE UPLOAD ENDPOINT (Admin only)
+# =============================================
+
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+MAX_IMAGE_DIMENSION = 1920  # Max width/height for optimization
+
+def optimize_image(image_data: bytes, max_dimension: int = MAX_IMAGE_DIMENSION, quality: int = 85) -> bytes:
+    """Optimize image: resize if too large, convert to WebP for better compression"""
+    img = Image.open(io.BytesIO(image_data))
+    
+    # Convert to RGB if necessary (for PNG with transparency)
+    if img.mode in ('RGBA', 'P'):
+        # Create white background
+        background = Image.new('RGB', img.size, (255, 255, 255))
+        if img.mode == 'RGBA':
+            background.paste(img, mask=img.split()[3])
+        else:
+            background.paste(img)
+        img = background
+    elif img.mode != 'RGB':
+        img = img.convert('RGB')
+    
+    # Resize if too large
+    width, height = img.size
+    if width > max_dimension or height > max_dimension:
+        ratio = min(max_dimension / width, max_dimension / height)
+        new_size = (int(width * ratio), int(height * ratio))
+        img = img.resize(new_size, Image.Resampling.LANCZOS)
+    
+    # Save as WebP for better compression
+    output = io.BytesIO()
+    img.save(output, format='WEBP', quality=quality, optimize=True)
+    return output.getvalue()
+
+
+@api_router.post("/admin/upload")
+async def upload_image(
+    file: UploadFile = File(...),
+    admin: str = Depends(verify_admin)
+):
+    """Upload and optimize an image (Admin only)"""
+    # Validate file extension
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Dateityp nicht erlaubt. Erlaubt: {', '.join(ALLOWED_EXTENSIONS)}"
+        )
+    
+    # Read file
+    content = await file.read()
+    
+    # Validate file size
+    if len(content) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Datei zu groß. Maximum: {MAX_FILE_SIZE // (1024*1024)}MB"
+        )
+    
+    try:
+        # Optimize image
+        optimized = optimize_image(content)
+        
+        # Generate unique filename
+        unique_id = str(uuid.uuid4())[:8]
+        original_name = Path(file.filename).stem
+        # Clean filename
+        clean_name = "".join(c for c in original_name if c.isalnum() or c in "-_")[:30]
+        filename = f"{clean_name}_{unique_id}.webp"
+        
+        # Save file
+        file_path = UPLOAD_DIR / filename
+        with open(file_path, "wb") as f:
+            f.write(optimized)
+        
+        # Return URL path
+        url = f"/uploads/{filename}"
+        
+        # Calculate size reduction
+        original_size = len(content)
+        optimized_size = len(optimized)
+        reduction = ((original_size - optimized_size) / original_size) * 100 if original_size > 0 else 0
+        
+        return {
+            "url": url,
+            "filename": filename,
+            "originalSize": original_size,
+            "optimizedSize": optimized_size,
+            "reduction": f"{reduction:.1f}%"
+        }
+        
+    except Exception as e:
+        logger.error(f"Image upload failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Bildverarbeitung fehlgeschlagen: {str(e)}")
+
+
+@api_router.get("/admin/uploads")
+async def list_uploads(admin: str = Depends(verify_admin)):
+    """List all uploaded images (Admin only)"""
+    uploads = []
+    for file_path in UPLOAD_DIR.glob("*"):
+        if file_path.suffix.lower() in ALLOWED_EXTENSIONS or file_path.suffix.lower() == ".webp":
+            stat = file_path.stat()
+            uploads.append({
+                "filename": file_path.name,
+                "url": f"/uploads/{file_path.name}",
+                "size": stat.st_size,
+                "created": datetime.fromtimestamp(stat.st_ctime).isoformat()
+            })
+    
+    # Sort by creation date, newest first
+    uploads.sort(key=lambda x: x["created"], reverse=True)
+    return uploads
+
+
+@api_router.delete("/admin/uploads/{filename}")
+async def delete_upload(filename: str, admin: str = Depends(verify_admin)):
+    """Delete an uploaded image (Admin only)"""
+    file_path = UPLOAD_DIR / filename
+    
+    # Security check - prevent directory traversal
+    if ".." in filename or "/" in filename:
+        raise HTTPException(status_code=400, detail="Ungültiger Dateiname")
+    
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Datei nicht gefunden")
+    
+    file_path.unlink()
+    return {"message": "Datei gelöscht", "filename": filename}
 
 
 @api_router.get("/admin/verify")

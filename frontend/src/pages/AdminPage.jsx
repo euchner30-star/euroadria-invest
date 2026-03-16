@@ -3,10 +3,11 @@ import { adminApi, articlesApi, commentsApi, regionsApi } from '../services/api'
 import { 
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
   FileText, Loader2, AlertCircle, Check, MessageSquare,
-  CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image
+  CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image as ImageIcon
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHtml } from '../components/admin/WYSIWYGEditor';
+import ImageUploader, { ImageGalleryUploader } from '../components/admin/ImageUploader';
 
 const AdminPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -368,6 +369,7 @@ const AdminPage = () => {
             onSave={handleSaveArticle}
             onCancel={() => { setEditingArticle(null); setIsCreating(false); }}
             saveStatus={saveStatus}
+            credentials={credentials}
           />
         </div>
       </div>
@@ -411,6 +413,7 @@ const AdminPage = () => {
             onCancel={() => { setEditingRegion(null); setIsCreatingRegion(false); }}
             saveStatus={saveStatus}
             isCreating={isCreatingRegion}
+            credentials={credentials}
           />
         </div>
       </div>
@@ -844,7 +847,7 @@ const AdminPage = () => {
 };
 
 // Article Form Component
-const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
+const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials }) => {
   const [formData, setFormData] = useState(initialData);
   const [editorContent, setEditorContent] = useState(contentToHtml(initialData.content || ''));
 
@@ -1012,17 +1015,11 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="flex items-center text-ea-dark/80 text-sm mb-2">
-              Bild-URL *
-              <Tooltip text="Nutze direkte Bild-URLs (z.B. von imgbb.com). Google Drive Links funktionieren nicht!" />
-            </label>
-            <input
-              type="url"
-              value={formData.image}
-              onChange={(e) => handleChange('image', e.target.value)}
-              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
-              placeholder="https://i.ibb.co/xxx/bild.jpg"
-              required
+            <ImageUploader
+              label="Artikel-Bild *"
+              currentImage={formData.image}
+              onImageUploaded={(url) => handleChange('image', url || '')}
+              credentials={credentials}
             />
           </div>
           <div>
@@ -1153,10 +1150,9 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
 };
 
 // Region Form Component
-const RegionForm = ({ initialData, onSave, onCancel, saveStatus, isCreating }) => {
+const RegionForm = ({ initialData, onSave, onCancel, saveStatus, isCreating, credentials }) => {
   const [formData, setFormData] = useState(initialData);
   const [bulletPointInput, setBulletPointInput] = useState('');
-  const [imageUrlInput, setImageUrlInput] = useState('');
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -1181,23 +1177,6 @@ const RegionForm = ({ initialData, onSave, onCancel, saveStatus, isCreating }) =
     setFormData(prev => ({
       ...prev,
       bulletPoints: prev.bulletPoints.filter((_, i) => i !== index)
-    }));
-  };
-
-  const addImageUrl = () => {
-    if (imageUrlInput.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        imageUrls: [...(prev.imageUrls || []), imageUrlInput.trim()]
-      }));
-      setImageUrlInput('');
-    }
-  };
-
-  const removeImageUrl = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      imageUrls: prev.imageUrls.filter((_, i) => i !== index)
     }));
   };
 
@@ -1372,49 +1351,16 @@ const RegionForm = ({ initialData, onSave, onCancel, saveStatus, isCreating }) =
       {/* Image Gallery */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
         <h3 className="text-xl font-bold text-ea-gold flex items-center space-x-2">
-          <Image className="w-5 h-5" />
+          <ImageIcon className="w-5 h-5" />
           <span>Bilder-Galerie</span>
         </h3>
         
-        <div className="flex space-x-2">
-          <input
-            type="url"
-            value={imageUrlInput}
-            onChange={(e) => setImageUrlInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImageUrl())}
-            className="flex-1 bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
-            placeholder="https://beispiel.com/bild.jpg"
-          />
-          <button
-            type="button"
-            onClick={addImageUrl}
-            className="px-4 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all"
-          >
-            <Plus className="w-5 h-5" />
-          </button>
-        </div>
-
-        {formData.imageUrls?.length > 0 && (
-          <div className="grid grid-cols-3 gap-4">
-            {formData.imageUrls.map((url, index) => (
-              <div key={index} className="relative group">
-                <img 
-                  src={url} 
-                  alt={`Bild ${index + 1}`} 
-                  className="w-full h-24 object-cover rounded-lg border border-gray-200"
-                  onError={(e) => e.target.src = 'https://via.placeholder.com/150?text=Fehler'}
-                />
-                <button
-                  type="button"
-                  onClick={() => removeImageUrl(index)}
-                  className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+        <ImageGalleryUploader
+          images={formData.imageUrls || []}
+          onImagesChange={(urls) => handleChange('imageUrls', urls)}
+          credentials={credentials}
+          maxImages={10}
+        />
       </div>
 
       {/* Apartments Info */}
