@@ -35,13 +35,38 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // 5 Regionen inkl. Podgorica
-  const immobilienRegions = [
-    { name: 'Skadar-Lake', path: '/immobilien/skadar-lake', description: 'Naturparadies am See' },
-    { name: 'Žabljak', path: '/immobilien/zabljak', description: 'Bergresort Durmitor' },
-    { name: 'Budva', path: '/immobilien/budva', description: 'Küstenmetropole' },
-    { name: 'Nikšić', path: '/immobilien/niksic', description: 'Industriezentrum' },
-    { name: 'Podgorica', path: '/immobilien/podgorica', description: 'Hauptstadt & Business-Hub' },
+  // Kategorisierte Regionen für Mega-Menu
+  const immobilienCategories = [
+    {
+      title: 'Premium-Küste',
+      color: 'text-amber-500',
+      regions: [
+        { name: 'Tivat', path: '/investment/standort/Tivat', desc: 'Porto Montenegro' },
+        { name: 'Sveti Stefan', path: '/investment/standort/Sveti%20Stefan', desc: 'Ultra-Premium' },
+        { name: 'Kotor', path: '/investment/standort/Kotor', desc: 'UNESCO Welterbe' },
+        { name: 'Budva', path: '/immobilien/budva', desc: 'Tourismus-Hotspot' },
+      ]
+    },
+    {
+      title: 'Aufstrebend',
+      color: 'text-green-500',
+      regions: [
+        { name: 'Buljarica', path: '/investment/standort/Buljarica', desc: '+22% Wachstum' },
+        { name: 'Čanj', path: '/investment/standort/%C4%8Canj', desc: 'Erschwinglicher Luxus' },
+        { name: 'Ulcinj', path: '/investment/standort/Ulcinj', desc: 'Längste Strände' },
+        { name: 'Bar', path: '/investment/standort/Bar', desc: 'Hafen & Logistik' },
+      ]
+    },
+    {
+      title: 'Inland & Seen',
+      color: 'text-blue-500',
+      regions: [
+        { name: 'Podgorica', path: '/immobilien/podgorica', desc: 'Hauptstadt' },
+        { name: 'Danilovgrad', path: '/investment/standort/Danilovgrad', desc: 'Logistik-Korridor' },
+        { name: 'Skutarisee', path: '/investment/standort/Skutarisee', desc: 'Öko-Tourismus' },
+        { name: 'Žabljak', path: '/immobilien/zabljak', desc: 'Durmitor' },
+      ]
+    },
   ];
 
   // Sekundäre Nav-Items (rechts vom Infrastruktur-Radar)
@@ -103,26 +128,43 @@ const Header = () => {
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isImmobilienOpen ? 'rotate-180' : ''}`} />
               </button>
               
-              {/* Dropdown Menu */}
+              {/* Mega Dropdown Menu */}
               {isImmobilienOpen && (
                 <div 
-                  className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50"
+                  className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-100 py-3 z-50"
                   onMouseLeave={() => setIsImmobilienOpen(false)}
+                  style={{ width: '420px' }}
                 >
-                  <div className="px-4 py-2 border-b border-gray-100">
-                    <p className="text-xs font-semibold text-ea-gold uppercase tracking-wider">Regionen in Montenegro</p>
+                  <div className="grid grid-cols-3 gap-1 px-3">
+                    {immobilienCategories.map((category) => (
+                      <div key={category.title}>
+                        <p className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 ${category.color}`}>
+                          {category.title}
+                        </p>
+                        {category.regions.map((region) => (
+                          <Link
+                            key={region.path}
+                            to={region.path}
+                            className="block px-2 py-1.5 rounded-lg hover:bg-ea-gold/10 transition-colors group"
+                            onClick={() => setIsImmobilienOpen(false)}
+                          >
+                            <span className="text-sm font-medium text-ea-dark group-hover:text-ea-gold">{region.name}</span>
+                            <span className="block text-[10px] text-ea-dark/40">{region.desc}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    ))}
                   </div>
-                  {immobilienRegions.map((region) => (
-                    <Link
-                      key={region.path}
-                      to={region.path}
-                      className="flex flex-col px-4 py-3 hover:bg-ea-gold/5 transition-colors"
-                      data-testid={`nav-immobilien-${region.name.toLowerCase()}`}
+                  <div className="border-t border-gray-100 mt-2 pt-2 px-3">
+                    <Link 
+                      to="/investment" 
+                      className="flex items-center justify-center gap-2 text-xs font-semibold text-ea-gold hover:text-ea-dark transition-colors py-1"
+                      onClick={() => setIsImmobilienOpen(false)}
                     >
-                      <span className="text-sm font-semibold text-ea-dark">{region.name}</span>
-                      <span className="text-xs text-ea-dark/50">{region.description}</span>
+                      <TrendingUp className="w-3 h-3" />
+                      Alle 22 Standorte im Dashboard →
                     </Link>
-                  ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -238,17 +280,32 @@ const Header = () => {
                 </button>
                 
                 {isMobileImmobilienOpen && (
-                  <div className="ml-6 mt-1 space-y-1 border-l-2 border-ea-gold/30 pl-4">
-                    {immobilienRegions.map((region) => (
-                      <Link
-                        key={region.path}
-                        to={region.path}
-                        className="block py-2 px-3 rounded-lg text-ea-dark hover:bg-ea-gold/10 transition-colors"
-                      >
-                        <span className="font-medium">{region.name}</span>
-                        <span className="text-xs text-ea-dark/50 block">{region.description}</span>
-                      </Link>
+                  <div className="ml-4 mt-2 space-y-3">
+                    {immobilienCategories.map((category) => (
+                      <div key={category.title}>
+                        <p className={`text-[10px] font-bold uppercase tracking-wider px-3 ${category.color}`}>
+                          {category.title}
+                        </p>
+                        <div className="grid grid-cols-2 gap-1 mt-1">
+                          {category.regions.map((region) => (
+                            <Link
+                              key={region.path}
+                              to={region.path}
+                              className="block py-1.5 px-3 rounded-lg text-ea-dark hover:bg-ea-gold/10 transition-colors"
+                            >
+                              <span className="font-medium text-sm">{region.name}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
                     ))}
+                    <Link 
+                      to="/investment" 
+                      className="flex items-center gap-2 text-xs font-semibold text-ea-gold px-3 pt-2"
+                    >
+                      <TrendingUp className="w-3 h-3" />
+                      Alle Standorte →
+                    </Link>
                   </div>
                 )}
               </div>
