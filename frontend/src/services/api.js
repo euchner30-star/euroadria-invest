@@ -151,9 +151,18 @@ export const getRelatedArticles = async (articleIds) => {
 
 // Comments API (public for reading approved, protected for submission)
 export const commentsApi = {
-  // Get approved comments for an article
+  // Get approved comments for an article by ID
   getByArticle: async (articleId) => {
     const response = await fetch(`${API_BASE_URL}/api/comments/article/${articleId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch comments');
+    }
+    return response.json();
+  },
+
+  // Get approved comments for an article by slug
+  getBySlug: async (articleSlug) => {
+    const response = await fetch(`${API_BASE_URL}/api/comments/slug/${articleSlug}`);
     if (!response.ok) {
       throw new Error('Failed to fetch comments');
     }

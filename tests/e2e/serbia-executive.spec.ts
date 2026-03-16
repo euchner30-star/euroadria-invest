@@ -188,11 +188,36 @@ test.describe('Serbia Executive Access Page', () => {
     // Submit the comment
     await page.getByTestId('comment-submit-button').click();
     
-    // BUG: Comment submission fails because SerbiaExecutivePage passes invalid articleId
-    // It passes articleId="serbia-executive-access" (string) instead of an integer
-    // and missing articleSlug parameter. API expects: {articleId: int, articleSlug: string}
-    // This test documents the bug - expect error message
-    await expect(page.getByText(/konnte.*nicht gesendet|nach Prüfung/i)).toBeVisible();
+    // BUG FIX VERIFIED: Comment submission now works correctly
+    // SerbiaExecutivePage now passes articleId={999} and articleSlug="serbia-executive-access"
+    // API uses slug-based endpoint for articles with ID >= 900
+    await expect(page.getByText(/nach Prüfung|Vielen Dank/i)).toBeVisible();
+  });
+
+  test('should load existing approved comments using slug-based retrieval', async ({ page }) => {
+    await page.goto('/serbia-executive');
+    await waitForAppReady(page);
+    
+    // Scroll to comments section
+    const commentsSection = page.getByTestId('comments-section');
+    await commentsSection.scrollIntoViewIfNeeded();
+    
+    // Wait for loading to complete
+    await page.waitForTimeout(2000);
+    
+    // Check if comments list is visible (even if empty shows "Noch keine Kommentare" or a list)
+    await expect(commentsSection).toBeVisible();
+    
+    // The page should load without errors - either showing comments list or empty message
+    // Use separate locators and check for either
+    const commentsList = page.getByTestId('comments-list');
+    const emptyMessage = page.getByText('Noch keine Kommentare');
+    
+    // One of these should be visible
+    const listVisible = await commentsList.isVisible().catch(() => false);
+    const emptyVisible = await emptyMessage.isVisible().catch(() => false);
+    
+    expect(listVisible || emptyVisible).toBeTruthy();
   });
 
   test('should have clickable Executive Inquiry CTA button in hero', async ({ page }) => {

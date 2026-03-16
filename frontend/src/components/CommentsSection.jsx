@@ -182,14 +182,18 @@ const Comment = ({ comment }) => {
 };
 
 // Comments List Component
-export const CommentsList = ({ articleId }) => {
+export const CommentsList = ({ articleId, articleSlug }) => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchComments = async () => {
     try {
       setLoading(true);
-      const data = await commentsApi.getByArticle(articleId);
+      // Use slug-based endpoint if articleId is not a valid DB id (e.g., 999 for static pages)
+      const useSlug = !articleId || articleId >= 900;
+      const data = useSlug && articleSlug 
+        ? await commentsApi.getBySlug(articleSlug)
+        : await commentsApi.getByArticle(articleId);
       setComments(data);
     } catch (err) {
       console.error('Failed to fetch comments:', err);
@@ -199,10 +203,10 @@ export const CommentsList = ({ articleId }) => {
   };
 
   useEffect(() => {
-    if (articleId) {
+    if (articleId || articleSlug) {
       fetchComments();
     }
-  }, [articleId]);
+  }, [articleId, articleSlug]);
 
   if (loading) {
     return (
@@ -250,7 +254,7 @@ const CommentsSection = ({ articleId, articleSlug }) => {
 
       {/* Comments List */}
       <div className="mb-8">
-        <CommentsList key={refreshKey} articleId={articleId} />
+        <CommentsList key={refreshKey} articleId={articleId} articleSlug={articleSlug} />
       </div>
 
       {/* Comment Form */}

@@ -146,7 +146,7 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
     execCommand('formatBlock', `h${level}`);
   };
 
-  // Handle content change - keep cursor at end
+  // Handle content change - preserve cursor position naturally
   const handleInput = () => {
     if (onChange && editorRef.current) {
       const newContent = editorRef.current.innerHTML;
@@ -155,22 +155,10 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
     }
   };
 
-  // Move cursor to end of content
-  const moveCursorToEnd = () => {
-    if (editorRef.current) {
-      const range = document.createRange();
-      const selection = window.getSelection();
-      range.selectNodeContents(editorRef.current);
-      range.collapse(false); // false = collapse to end
-      selection?.removeAllRanges();
-      selection?.addRange(range);
-    }
-  };
-
-  // Handle focus - move cursor to end
+  // Handle focus - do NOT move cursor on mobile to prevent backward text issue
   const handleFocus = () => {
-    // Small delay to let the browser set up
-    setTimeout(moveCursorToEnd, 10);
+    // Intentionally empty - let browser handle cursor naturally
+    // Moving cursor to end on focus causes backward text on mobile
   };
 
   // Handle paste - clean up formatting

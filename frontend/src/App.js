@@ -13,6 +13,11 @@ import DatenschutzPage from "./pages/DatenschutzPage";
 import AdminPage from "./pages/AdminPage";
 import SerbiaExecutivePage from "./pages/SerbiaExecutivePage";
 import InfrastrukturRadarPage from "./pages/InfrastrukturRadarPage";
+// Immobilien Region Pages
+import SkadarLakePage from "./pages/immobilien/SkadarLakePage";
+import ZabljakPage from "./pages/immobilien/ZabljakPage";
+import BudvaPage from "./pages/immobilien/BudvaPage";
+import NiksicPage from "./pages/immobilien/NiksicPage";
 
 function App() {
   return (
@@ -32,6 +37,11 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/serbia-executive" element={<SerbiaExecutivePage />} />
           <Route path="/infrastruktur-radar" element={<InfrastrukturRadarPage />} />
+          {/* Immobilien Region Routes */}
+          <Route path="/immobilien/skadar-lake" element={<SkadarLakePage />} />
+          <Route path="/immobilien/zabljak" element={<ZabljakPage />} />
+          <Route path="/immobilien/budva" element={<BudvaPage />} />
+          <Route path="/immobilien/niksic" element={<NiksicPage />} />
         </Routes>
         <Footer />
       </BrowserRouter>

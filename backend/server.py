@@ -178,7 +178,7 @@ async def send_notification_email(comment_data: dict, article_title: str):
                     Dieser Kommentar wartet auf Freigabe im Admin-Panel.
                 </p>
                 
-                <a href="https://euroadria-cms.preview.emergentagent.com/admin" 
+                <a href="https://property-showcase-144.preview.emergentagent.com/admin" 
                    style="display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #D4AF37; color: #002147; text-decoration: none; border-radius: 5px; font-weight: bold;">
                     Zum Admin-Panel
                 </a>
@@ -398,6 +398,16 @@ async def get_approved_comments(article_id: int):
     """Get all approved comments for an article (Public)"""
     comments = await db.comments.find(
         {"articleId": article_id, "status": "approved"},
+        {"_id": 0, "email": 0}  # Don't expose email publicly
+    ).sort("createdAt", -1).to_list(100)
+    return comments
+
+
+@api_router.get("/comments/slug/{article_slug}")
+async def get_approved_comments_by_slug(article_slug: str):
+    """Get all approved comments for an article by slug (Public)"""
+    comments = await db.comments.find(
+        {"articleSlug": article_slug, "status": "approved"},
         {"_id": 0, "email": 0}  # Don't expose email publicly
     ).sort("createdAt", -1).to_list(100)
     return comments

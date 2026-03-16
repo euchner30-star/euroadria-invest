@@ -1,0 +1,121 @@
+{
+  "summary": "Generated tests for new Immobilienangebot navigation dropdown and 4 region landing pages (Skadar-Lake, Žabljak, Budva, Nikšić). Verified bug fixes: 1) Serbia Executive comments now work with slug-based endpoint, 2) WYSIWYG editor backward text fix confirmed. All 57 frontend and 24 backend tests passing.",
+  "mode": "generate",
+  "baseline_commit": "3601fc88323fbf46596947c918fc5c6874663a7e",
+  "head_commit": "19cbc0e7e2298eb6b4d7459f660ddbcb47cb224c",
+  "specs_created": [
+    "/app/tests/e2e/immobilien-navigation.spec.ts",
+    "/app/tests/e2e/region-pages.spec.ts"
+  ],
+  "specs_updated": [
+    "/app/tests/e2e/serbia-executive.spec.ts",
+    "/app/tests/e2e/blog-articles.spec.ts",
+    "/app/backend/tests/test_articles_api.py"
+  ],
+  "quarantined_tests": [],
+  "test_report_links": [
+    "/app/tests/e2e/immobilien-navigation.spec.ts",
+    "/app/tests/e2e/region-pages.spec.ts",
+    "/app/tests/e2e/serbia-executive.spec.ts",
+    "/app/tests/e2e/design-update.spec.ts",
+    "/app/tests/e2e/blog-articles.spec.ts",
+    "/app/tests/e2e/legal-pages.spec.ts",
+    "/app/tests/e2e/admin-cms.spec.ts",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "regression_results": {
+    "total_specs": 57,
+    "passed": 57,
+    "failed": 0,
+    "skipped": 0
+  },
+  "issues": [],
+  "action_items": [],
+  "updated_files": [
+    "/app/tests/e2e/immobilien-navigation.spec.ts",
+    "/app/tests/e2e/region-pages.spec.ts",
+    "/app/tests/e2e/serbia-executive.spec.ts",
+    "/app/tests/e2e/blog-articles.spec.ts",
+    "/app/backend/tests/test_articles_api.py"
+  ],
+  "test_results": {
+    "backend": "100% (24/24 passed)",
+    "frontend": "100% (57/57 passed)"
+  },
+  "features_tested": {
+    "immobilien_dropdown_desktop": {
+      "status": "PASS",
+      "tests": [
+        "Dropdown button visible with correct styling",
+        "Dropdown opens on hover showing all 4 regions",
+        "Dropdown opens on click",
+        "Navigation to Skadar-Lake page",
+        "Navigation to Žabljak page",
+        "Navigation to Budva page",
+        "Navigation to Nikšić page",
+        "Dropdown highlights when on immobilien page"
+      ]
+    },
+    "immobilien_accordion_mobile": {
+      "status": "PASS",
+      "tests": [
+        "Mobile menu toggle visible",
+        "Immobilienangebot accordion visible in mobile menu",
+        "Accordion expands showing all 4 regions",
+        "Navigation to region page from accordion",
+        "Menu closes when navigating to a page"
+      ]
+    },
+    "skadar_lake_page": {
+      "status": "PASS",
+      "tests": [
+        "Page loads with correct structure",
+        "Investment-Kennzahlen displays 4 metrics (88/100, €800-1.500/m², 3-7 Jahre, +40-60%)",
+        "Exposé anfordern CTA is clickable",
+        "Exposé form submits and shows success message",
+        "Apartments placeholder section displays"
+      ]
+    },
+    "zabljak_page": {
+      "status": "PASS",
+      "tests": [
+        "Page loads with correct structure (Ski-Resort der Zukunft)",
+        "Investment metrics (91/100, €1.000-2.000/m², +50-80%)",
+        "Exposé CTA button present"
+      ]
+    },
+    "budva_page": {
+      "status": "PASS",
+      "tests": [
+        "Page loads with correct structure (Küstenmetropole der Adria)",
+        "Investment metrics (82/100, €2.500-5.000/m², 5-8% Mietrendite)",
+        "Exposé CTA button present"
+      ]
+    },
+    "niksic_page": {
+      "status": "PASS",
+      "tests": [
+        "Page loads with correct structure (Industriezentrum mit Zukunft)",
+        "Investment metrics (85/100, €600-1.200/m², +80-120%)",
+        "Exposé CTA button present"
+      ]
+    },
+    "serbia_executive_comments_bug_fix": {
+      "status": "PASS - BUG FIXED",
+      "description": "Comment submission and loading now works correctly using articleId=999 and articleSlug='serbia-executive-access' with slug-based endpoint",
+      "tests": [
+        "Comments section loads and displays existing comments",
+        "Comment form submits successfully",
+        "Success message shown after submission"
+      ]
+    },
+    "wysiwyg_editor_bug_fix": {
+      "status": "PASS - BUG FIXED VERIFIED",
+      "description": "WYSIWYG editor no longer moves cursor to end on focus, preventing backward text issue on mobile. handleFocus() is now empty to let browser handle cursor naturally."
+    }
+  },
+  "seed_data_creation": "No new seed data created",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All new features verified: Immobilienangebot dropdown/accordion navigation with 4 region pages (Skadar-Lake, Žabljak, Budva, Nikšić). Bug fixes verified: 1) Serbia Executive comments work via slug-based endpoint (articleId=999, articleSlug='serbia-executive-access'), 2) WYSIWYG editor handleFocus() is now empty to prevent backward text on mobile. Article title for 'balkans-vs-eu-investing-reality-check' is currently 'Speichern' (was edited via admin panel). Executive Inquiry form on Serbia Executive page is MOCKED (by design)."
+}
