@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Shield } from 'lucide-react';
+import { Menu, X, Shield, Map } from 'lucide-react';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -21,10 +21,11 @@ const Header = () => {
 
   const navItems = [
     { name: 'HOME', path: '/' },
+    { name: 'INFRASTRUKTUR-RADAR', path: '/infrastruktur-radar', icon: Map, isNew: true },
     { name: 'BLOG', path: '/blog' },
     { name: 'ÜBER UNS', path: '/team' },
     { name: 'KONTAKT', path: '/contact' },
-    { name: 'SERBIA EXECUTIVE', path: '/serbia-executive', isExclusive: true },
+    { name: 'SERBIA EXECUTIVE', path: '/serbia-executive', icon: Shield, isExclusive: true },
   ];
 
   return (
@@ -47,22 +48,23 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-6">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 className={`text-sm font-semibold tracking-wider transition-colors duration-300 ${
-                  item.isExclusive 
-                    ? 'flex items-center gap-2 px-4 py-2 bg-ea-gold/10 border border-ea-gold/30 rounded-lg text-ea-dark hover:bg-ea-gold/20'
+                  item.isExclusive || item.isNew
+                    ? 'flex items-center gap-2 px-3 py-2 bg-ea-gold/10 border border-ea-gold/30 rounded-lg text-ea-dark hover:bg-ea-gold/20'
                     : location.pathname === item.path
                       ? 'text-ea-gold'
                       : 'text-ea-dark hover:text-ea-gold'
                 }`}
-                data-testid={item.isExclusive ? 'nav-serbia-executive' : undefined}
+                data-testid={item.isExclusive ? 'nav-serbia-executive' : item.isNew ? 'nav-infrastruktur-radar' : undefined}
               >
-                {item.isExclusive && <Shield className="w-4 h-4 text-ea-gold" />}
+                {item.icon && <item.icon className="w-4 h-4 text-ea-gold" />}
                 {item.name}
+                {item.isNew && <span className="text-[10px] bg-ea-gold text-ea-dark px-1.5 py-0.5 rounded font-bold">NEU</span>}
               </Link>
             ))}
           </div>
@@ -99,15 +101,16 @@ const Header = () => {
                   key={item.path}
                   to={item.path}
                   className={`text-base font-semibold tracking-wide transition-all duration-300 rounded-lg px-4 py-3 ${
-                    item.isExclusive
+                    item.isExclusive || item.isNew
                       ? 'flex items-center gap-3 border border-ea-gold/30 bg-ea-gold/10 text-ea-dark'
                       : location.pathname === item.path
                         ? 'text-ea-gold bg-ea-light'
                         : 'text-ea-dark hover:text-ea-gold hover:bg-ea-light'
                   }`}
                 >
-                  {item.isExclusive && <Shield className="w-5 h-5 text-ea-gold" />}
+                  {item.icon && <item.icon className="w-5 h-5 text-ea-gold" />}
                   {item.name}
+                  {item.isNew && <span className="text-[10px] bg-ea-gold text-ea-dark px-1.5 py-0.5 rounded font-bold ml-auto">NEU</span>}
                 </Link>
               ))}
               <Link

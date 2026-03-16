@@ -12,6 +12,7 @@ import ImpressumPage from "./pages/ImpressumPage";
 import DatenschutzPage from "./pages/DatenschutzPage";
 import AdminPage from "./pages/AdminPage";
 import SerbiaExecutivePage from "./pages/SerbiaExecutivePage";
+import InfrastrukturRadarPage from "./pages/InfrastrukturRadarPage";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/datenschutz" element={<DatenschutzPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/serbia-executive" element={<SerbiaExecutivePage />} />
+          <Route path="/infrastruktur-radar" element={<InfrastrukturRadarPage />} />
         </Routes>
         <Footer />
       </BrowserRouter>

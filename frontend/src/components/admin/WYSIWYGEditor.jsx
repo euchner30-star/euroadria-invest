@@ -30,11 +30,14 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
   const [historyIndex, setHistoryIndex] = useState(0);
   const isUndoRedo = useRef(false);
   const saveTimeout = useRef(null);
+  const isInitialized = useRef(false);
 
-  // Initialize with value
+  // Initialize editor with value only once
   useEffect(() => {
-    if (value && history.length === 1 && history[0] === '') {
+    if (editorRef.current && value && !isInitialized.current) {
+      editorRef.current.innerHTML = value;
       setHistory([value]);
+      isInitialized.current = true;
     }
   }, [value]);
 
@@ -143,13 +146,31 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
     execCommand('formatBlock', `h${level}`);
   };
 
-  // Handle content change
+  // Handle content change - keep cursor at end
   const handleInput = () => {
     if (onChange && editorRef.current) {
       const newContent = editorRef.current.innerHTML;
       onChange(newContent);
       saveToHistory(newContent);
     }
+  };
+
+  // Move cursor to end of content
+  const moveCursorToEnd = () => {
+    if (editorRef.current) {
+      const range = document.createRange();
+      const selection = window.getSelection();
+      range.selectNodeContents(editorRef.current);
+      range.collapse(false); // false = collapse to end
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+  };
+
+  // Handle focus - move cursor to end
+  const handleFocus = () => {
+    // Small delay to let the browser set up
+    setTimeout(moveCursorToEnd, 10);
   };
 
   // Handle paste - clean up formatting
@@ -323,11 +344,13 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
       <div
         ref={editorRef}
         contentEditable
+        suppressContentEditableWarning={true}
         onInput={handleInput}
         onPaste={handlePaste}
         onKeyDown={handleKeyDown}
-        dangerouslySetInnerHTML={{ __html: value || '' }}
-        className="min-h-[300px] p-4 focus:outline-none prose prose-sm max-w-none
+        onFocus={handleFocus}
+        dir="ltr"
+        className="min-h-[300px] p-4 focus:outline-none prose prose-sm max-w-none text-left
           [&>h1]:text-3xl [&>h1]:font-bold [&>h1]:text-ea-dark [&>h1]:mb-4 [&>h1]:mt-6
           [&>h2]:text-2xl [&>h2]:font-semibold [&>h2]:text-ea-dark [&>h2]:mb-3 [&>h2]:mt-5
           [&>h3]:text-xl [&>h3]:font-semibold [&>h3]:text-ea-dark [&>h3]:mb-2 [&>h3]:mt-4
@@ -338,7 +361,13 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
           [&>a]:text-ea-gold [&>a]:underline
           [&_strong]:font-bold [&_em]:italic"
         data-placeholder={placeholder}
-        style={{ minHeight: '300px' }}
+        style={{ 
+          minHeight: '300px',
+          direction: 'ltr',
+          textAlign: 'left',
+          unicodeBidi: 'normal',
+          writingMode: 'horizontal-tb'
+        }}
       />
 
       {/* Helper Text */}
