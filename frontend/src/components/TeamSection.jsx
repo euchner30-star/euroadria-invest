@@ -1,18 +1,76 @@
-import React from 'react';
-import { Shield, TrendingUp, Mail, Linkedin } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Shield, TrendingUp, Mail, Linkedin, Loader2 } from 'lucide-react';
+import { pagesApi } from '../services/api';
 
 const TeamSection = () => {
+  const [pageData, setPageData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      try {
+        const data = await pagesApi.getBySlug('team');
+        setPageData(data);
+      } catch (err) {
+        console.error('Failed to fetch team data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTeamData();
+  }, []);
+
+  // Extract data from CMS or use defaults
+  const heroSection = pageData?.sections?.find(s => s.type === 'hero');
+  const teamSection = pageData?.sections?.find(s => s.type === 'team');
+  const members = teamSection?.data?.members || [];
+
+  // Fallback to default members if CMS data not available
+  const defaultMembers = [
+    {
+      id: 'holger',
+      name: 'Holger Kuhlmann',
+      title: 'Strategic Investment Advisor',
+      subtitle: 'Asset Protection Specialist',
+      description: 'Holger bringt 20+ Jahre internationale Investment-Erfahrung mit Fokus auf Emerging Markets. Er identifiziert Off-Market Opportunities und strukturiert Deals für maximale Sicherheit und ROI.',
+      image: '/holger-kuhlmann.jpg',
+      icon: 'trending-up',
+      skills: ['Investment-Strategie', 'Bankability', 'Deal-Structuring', 'Off-Market Access']
+    },
+    {
+      id: 'milena',
+      name: 'Milena Bubanja',
+      title: 'Legal & Compliance Expert',
+      subtitle: 'Local Network Lead',
+      description: 'Milena führt unsere forensische Due Diligence und stellt sicher, dass jedes Investment den höchsten rechtlichen Standards entspricht. Mit 15+ Jahren Erfahrung im montenegrinischen Immobilienrecht.',
+      image: '/milena-bubanja.jpg',
+      icon: 'shield',
+      skills: ['Due Diligence', 'Katasterprüfung', 'Restitutionsrecht', 'Compliance']
+    }
+  ];
+
+  const teamMembers = members.length > 0 ? members : defaultMembers;
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-6 flex justify-center">
+          <Loader2 className="w-10 h-10 text-ea-gold animate-spin" />
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-semibold text-ea-dark mb-6">
-            Unsere <span className="text-ea-gold">Task Force</span>
+            {heroSection?.data?.title || 'Unsere'} <span className="text-ea-gold">Task Force</span>
           </h2>
           <p className="text-ea-dark/70 text-lg max-w-3xl mx-auto">
-            Keine Makler. Keine Verkäufer. Nur zwei Experten, die Ihre Interessen vertreten 
-            und jeden Deal wie ihr eigenes Vermögen behandeln.
+            {heroSection?.data?.subtitle || 'Keine Makler. Keine Verkäufer. Nur zwei Experten, die Ihre Interessen vertreten und jeden Deal wie ihr eigenes Vermögen behandeln.'}
           </p>
         </div>
 
@@ -30,109 +88,76 @@ const TeamSection = () => {
           </div>
         </div>
 
-        {/* Team Grid */}
+        {/* Team Grid - Dynamic from CMS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-          {/* Holger Kuhlmann */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-lg transition-shadow">
-            <div className="flex items-start space-x-6 mb-6">
-              <div className="relative flex-shrink-0">
-                <div className="w-28 h-28 rounded-xl overflow-hidden border-2 border-ea-gold/20">
-                  <img
-                    src="/holger-kuhlmann.jpg"
-                    alt="Holger Kuhlmann"
-                    className="w-full h-full object-cover object-top"
-                  />
+          {teamMembers.map((member) => {
+            const IconComponent = member.icon === 'shield' || member.id === 'milena' ? Shield : TrendingUp;
+            
+            return (
+              <div key={member.id} className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-lg transition-shadow">
+                <div className="flex items-start space-x-6 mb-6">
+                  <div className="relative flex-shrink-0">
+                    <div className="w-28 h-28 rounded-xl overflow-hidden border-2 border-ea-gold/20">
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="w-full h-full object-cover object-top"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/112?text=' + encodeURIComponent(member.name?.charAt(0) || '?');
+                        }}
+                      />
+                    </div>
+                    <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-ea-gold rounded-lg flex items-center justify-center shadow-md">
+                      <IconComponent className="w-5 h-5 text-ea-dark" />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-semibold text-ea-dark mb-1">{member.name}</h3>
+                    <div className="text-ea-gold font-medium mb-1">{member.title}</div>
+                    {member.subtitle && (
+                      <div className="text-ea-dark/50 text-sm">{member.subtitle}</div>
+                    )}
+                  </div>
                 </div>
-                <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-ea-gold rounded-lg flex items-center justify-center shadow-md">
-                  <TrendingUp className="w-5 h-5 text-ea-dark" />
+
+                <p className="text-ea-dark/70 leading-relaxed mb-6">
+                  {member.description}
+                </p>
+
+                {member.skills && (
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {member.skills.map((skill, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-ea-light text-ea-dark text-xs px-3 py-1.5 rounded-lg font-medium border border-ea-gold/20"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex items-center space-x-4 pt-4 border-t border-gray-200">
+                  <a 
+                    href={`mailto:${member.email || 'office@euroadria.me'}`} 
+                    className="flex items-center space-x-2 text-ea-dark/60 hover:text-ea-gold transition-colors text-sm"
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span>Kontakt aufnehmen</span>
+                  </a>
+                  <a 
+                    href="https://www.linkedin.com/company/euroadria/" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center space-x-2 text-ea-dark/60 hover:text-ea-gold transition-colors text-sm"
+                  >
+                    <Linkedin className="w-4 h-4" />
+                    <span>LinkedIn</span>
+                  </a>
                 </div>
               </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-semibold text-ea-dark mb-1">Holger Kuhlmann</h3>
-                <div className="text-ea-gold font-medium mb-1">Strategic Investment Advisor</div>
-                <div className="text-ea-dark/50 text-sm">Asset Protection Specialist</div>
-              </div>
-            </div>
-
-            <p className="text-ea-dark/70 leading-relaxed mb-6">
-              Holger bringt 20+ Jahre internationale Investment-Erfahrung mit Fokus auf Emerging Markets. 
-              Er identifiziert Off-Market Opportunities und strukturiert Deals für maximale Sicherheit und ROI. 
-              Seine Insider-Kontakte öffnen Türen, die anderen verschlossen bleiben.
-            </p>
-
-            <div className="flex flex-wrap gap-2 mb-6">
-              {['Investment-Strategie', 'Bankability', 'Deal-Structuring', 'Off-Market Access'].map((skill, idx) => (
-                <span
-                  key={idx}
-                  className="bg-ea-light text-ea-dark text-xs px-3 py-1.5 rounded-lg font-medium border border-ea-gold/20"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-
-            <div className="flex items-center space-x-4 pt-4 border-t border-gray-200">
-              <a href="mailto:office@euroadria.me" className="flex items-center space-x-2 text-ea-dark/60 hover:text-ea-gold transition-colors text-sm">
-                <Mail className="w-4 h-4" />
-                <span>Kontakt aufnehmen</span>
-              </a>
-              <a href="https://www.linkedin.com/company/euroadria/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 text-ea-dark/60 hover:text-ea-gold transition-colors text-sm">
-                <Linkedin className="w-4 h-4" />
-                <span>LinkedIn</span>
-              </a>
-            </div>
-          </div>
-
-          {/* Milena Bubanja */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-lg transition-shadow">
-            <div className="flex items-start space-x-6 mb-6">
-              <div className="relative flex-shrink-0">
-                <div className="w-28 h-28 rounded-xl overflow-hidden border-2 border-ea-gold/20">
-                  <img
-                    src="/milena-bubanja.jpg"
-                    alt="Milena Bubanja"
-                    className="w-full h-full object-cover object-top"
-                  />
-                </div>
-                <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-ea-gold rounded-lg flex items-center justify-center shadow-md">
-                  <Shield className="w-5 h-5 text-ea-dark" />
-                </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-semibold text-ea-dark mb-1">Milena Bubanja</h3>
-                <div className="text-ea-gold font-medium mb-1">Legal & Compliance Expert</div>
-                <div className="text-ea-dark/50 text-sm">Local Network Lead</div>
-              </div>
-            </div>
-
-            <p className="text-ea-dark/70 leading-relaxed mb-6">
-              Milena führt unsere forensische Due Diligence und stellt sicher, dass jedes Investment den 
-              höchsten rechtlichen Standards entspricht. Mit 15+ Jahren Erfahrung im montenegrinischen 
-              Immobilienrecht kennt sie jeden Kataster-Eintrag und jede Restitutionsfalle.
-            </p>
-
-            <div className="flex flex-wrap gap-2 mb-6">
-              {['Due Diligence', 'Katasterprüfung', 'Restitutionsrecht', 'Compliance'].map((skill, idx) => (
-                <span
-                  key={idx}
-                  className="bg-ea-light text-ea-dark text-xs px-3 py-1.5 rounded-lg font-medium border border-ea-gold/20"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-
-            <div className="flex items-center space-x-4 pt-4 border-t border-gray-200">
-              <a href="mailto:office@euroadria.me" className="flex items-center space-x-2 text-ea-dark/60 hover:text-ea-gold transition-colors text-sm">
-                <Mail className="w-4 h-4" />
-                <span>Kontakt aufnehmen</span>
-              </a>
-              <a href="https://www.linkedin.com/company/euroadria/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 text-ea-dark/60 hover:text-ea-gold transition-colors text-sm">
-                <Linkedin className="w-4 h-4" />
-                <span>LinkedIn</span>
-              </a>
-            </div>
-          </div>
+            );
+          })}
         </div>
 
         {/* Why Task Force Approach */}

@@ -287,7 +287,7 @@ async def send_notification_email(comment_data: dict, article_title: str):
                     Dieser Kommentar wartet auf Freigabe im Admin-Panel.
                 </p>
                 
-                <a href="https://property-showcase-144.preview.emergentagent.com/admin" 
+                <a href="https://page-builder-dev-1.preview.emergentagent.com/admin" 
                    style="display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #D4AF37; color: #002147; text-decoration: none; border-radius: 5px; font-weight: bold;">
                     Zum Admin-Panel
                 </a>
@@ -983,7 +983,7 @@ DEFAULT_PAGES = {
                             "name": "Holger Kuhlmann",
                             "title": "Geschäftsführer & Senior Berater",
                             "description": "Über 20 Jahre Erfahrung in internationaler Unternehmensberatung. Spezialisiert auf Markteintrittsstrategien und M&A in Südosteuropa.",
-                            "image": "/uploads/team-holger.webp",
+                            "image": "/holger-kuhlmann.jpg",
                             "email": "holger@euroadria.me"
                         },
                         {
@@ -991,7 +991,7 @@ DEFAULT_PAGES = {
                             "name": "Milena Bubanja",
                             "title": "Partnerin & Lokale Expertin",
                             "description": "Gebürtige Montenegrinerin mit juristischem Hintergrund. Expertin für Immobilienrecht und Unternehmensgründungen in Montenegro.",
-                            "image": "/uploads/team-milena.webp",
+                            "image": "/milena-bubanja.jpg",
                             "email": "milena@euroadria.me"
                         }
                     ]
