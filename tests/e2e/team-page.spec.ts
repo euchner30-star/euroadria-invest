@@ -1,9 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { waitForAppReady, dismissToasts, adminLogin } from '../fixtures/helpers';
+import { waitForAppReady, dismissToasts, adminLogin, dismissCookieBanner } from '../fixtures/helpers';
 
 test.describe('Team Page - CMS Content Display', () => {
   test.beforeEach(async ({ page }) => {
     await dismissToasts(page);
+    // Dismiss cookie consent banner to prevent it from intercepting clicks
+    await page.goto('/');
+    await dismissCookieBanner(page);
   });
 
   test('Team page loads and displays team members', async ({ page }) => {
@@ -157,6 +160,9 @@ test.describe('Team Page API Integration', () => {
 test.describe('Navigation to Team Page', () => {
   test.beforeEach(async ({ page }) => {
     await dismissToasts(page);
+    // Dismiss cookie consent banner to prevent it from intercepting clicks
+    await page.goto('/');
+    await dismissCookieBanner(page);
   });
 
   test('Can navigate to team page from header', async ({ page }) => {

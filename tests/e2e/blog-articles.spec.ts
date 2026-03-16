@@ -1,9 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { waitForAppReady, dismissToasts } from '../fixtures/helpers';
+import { waitForAppReady, dismissToasts, dismissCookieBanner } from '../fixtures/helpers';
 
 test.describe('Blog Page - Articles and Filtering', () => {
   test.beforeEach(async ({ page }) => {
     await dismissToasts(page);
+    // Dismiss cookie consent banner to prevent it from intercepting clicks
+    await page.goto('/');
+    await dismissCookieBanner(page);
   });
 
   test('Blog page loads articles from API', async ({ page }) => {
@@ -87,16 +90,24 @@ test.describe('Blog Page - Articles and Filtering', () => {
     await searchInput.fill('Montenegro');
     
     // Results should be filtered to articles containing "Montenegro"
-    // Wait a moment for filtering
-    await page.waitForTimeout(500);
+    // Wait for search results
+    await expect(page.getByText(/Artikel gefunden/)).toBeVisible();
     
-    const articles = page.locator('article');
-    const count = await articles.count();
+    // Verify articles are displayed (check for article card links that go to /blog/)
+    const articleLinks = page.locator('a[href^="/blog/"]');
+    const count = await articleLinks.count();
     expect(count).toBeGreaterThan(0);
   });
 });
 
 test.describe('Article Detail Page', () => {
+  test.beforeEach(async ({ page }) => {
+    await dismissToasts(page);
+    // Dismiss cookie consent banner to prevent it from intercepting clicks
+    await page.goto('/');
+    await dismissCookieBanner(page);
+  });
+
   test('Article detail page loads correctly', async ({ page }) => {
     await page.goto('/blog/balkans-vs-eu-investing-reality-check');
     await waitForAppReady(page);

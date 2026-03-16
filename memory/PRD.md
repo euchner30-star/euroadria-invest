@@ -14,6 +14,21 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 - **Status:** TeamSection.jsx holt Daten von `pagesApi.getBySlug('team')` - CMS funktioniert vollständig
 - **Tests:** 54/54 Backend-Tests, 54/54 Frontend-Tests bestanden
 
+### ✅ DSGVO / Rechtliche Compliance Features
+- **Cookie-Consent Banner implementiert:**
+  - Erscheint beim ersten Besuch der Website
+  - 3 Optionen: "Alle akzeptieren", "Nur notwendige", "Einstellungen anpassen"
+  - Detaillierte Kategorien: Notwendig (immer aktiv), Analyse, Marketing
+  - Speichert Einwilligung in localStorage (`euroadria_cookie_consent`)
+  - Links zu Datenschutz & Impressum
+  - Datei: `/app/frontend/src/components/CookieConsent.jsx`
+
+- **Datenschutz-Einwilligung im Kontaktformular:**
+  - Pflicht-Checkbox vor dem Absenden
+  - Button deaktiviert bis Einwilligung gegeben
+  - Link zur Datenschutzerklärung
+  - Datei: `/app/frontend/src/pages/ContactPage.jsx` aktualisiert
+
 ## Zielgruppe
 - DACH-Investoren (Deutschland, Österreich, Schweiz)
 - Auswanderer und Digital Nomads

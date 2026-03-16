@@ -1,9 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { waitForAppReady, dismissToasts, adminLogin } from '../fixtures/helpers';
+import { waitForAppReady, dismissToasts, adminLogin, dismissCookieBanner } from '../fixtures/helpers';
 
 test.describe('Admin Login and Dashboard', () => {
   test.beforeEach(async ({ page }) => {
     await dismissToasts(page);
+    // Dismiss cookie consent banner to prevent it from intercepting clicks
+    await page.goto('/');
+    await dismissCookieBanner(page);
   });
 
   test('Admin login page renders correctly', async ({ page }) => {

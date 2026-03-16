@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Mail, Phone, MapPin, Send, CheckSquare } from 'lucide-react';
 import SEO from '../components/SEO';
 
 const ContactPage = () => {
@@ -8,15 +9,17 @@ const ContactPage = () => {
     email: '',
     phone: '',
     subject: '',
-    message: ''
+    message: '',
+    privacyConsent: false
   });
 
   const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: type === 'checkbox' ? checked : value
     });
   };
 
@@ -26,7 +29,7 @@ const ContactPage = () => {
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '', privacyConsent: false });
     }, 3000);
   };
 
@@ -217,10 +220,37 @@ const ContactPage = () => {
                   ></textarea>
                 </div>
 
+                {/* DSGVO Einwilligung */}
+                <div className="bg-ea-light border border-gray-200 rounded-lg p-4">
+                  <label className="flex items-start space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="privacyConsent"
+                      checked={formData.privacyConsent}
+                      onChange={handleChange}
+                      required
+                      data-testid="contact-privacy-consent"
+                      className="mt-1 w-5 h-5 text-ea-gold bg-white border-gray-300 rounded focus:ring-ea-gold focus:ring-2 cursor-pointer"
+                    />
+                    <span className="text-ea-dark/70 text-sm leading-relaxed">
+                      Ich habe die{' '}
+                      <Link to="/datenschutz" className="text-ea-gold hover:underline font-medium" target="_blank">
+                        Datenschutzerklärung
+                      </Link>{' '}
+                      gelesen und stimme der Verarbeitung meiner Daten zur Bearbeitung meiner Anfrage zu. *
+                    </span>
+                  </label>
+                </div>
+
                 <button
                   type="submit"
+                  disabled={!formData.privacyConsent}
                   data-testid="contact-submit-button"
-                  className="w-full md:w-auto flex items-center justify-center space-x-2 px-8 py-4 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all"
+                  className={`w-full md:w-auto flex items-center justify-center space-x-2 px-8 py-4 font-semibold rounded-lg transition-all ${
+                    formData.privacyConsent 
+                      ? 'bg-ea-dark text-white hover:bg-ea-navy cursor-pointer' 
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                 >
                   <span>Nachricht senden</span>
                   <Send className="w-5 h-5" />

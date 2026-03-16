@@ -1,7 +1,22 @@
 import { Page, expect } from '@playwright/test';
 
+const COOKIE_CONSENT_KEY = 'euroadria_cookie_consent';
+
 export async function waitForAppReady(page: Page) {
   await page.waitForLoadState('domcontentloaded');
+}
+
+export async function dismissCookieBanner(page: Page) {
+  // Set cookie consent in localStorage to prevent banner from appearing
+  await page.evaluate((key) => {
+    localStorage.setItem(key, JSON.stringify({
+      necessary: true,
+      analytics: false,
+      marketing: false,
+      timestamp: new Date().toISOString(),
+      version: '1.0'
+    }));
+  }, COOKIE_CONSENT_KEY);
 }
 
 export async function dismissToasts(page: Page) {

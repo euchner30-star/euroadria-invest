@@ -1,9 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { waitForAppReady, dismissToasts } from '../fixtures/helpers';
+import { waitForAppReady, dismissToasts, dismissCookieBanner } from '../fixtures/helpers';
 
 test.describe('Legal Pages - Impressum and Datenschutz', () => {
   test.beforeEach(async ({ page }) => {
     await dismissToasts(page);
+    // Dismiss cookie consent banner to prevent it from intercepting clicks
+    await page.goto('/');
+    await dismissCookieBanner(page);
   });
 
   test('Impressum page renders with required content', async ({ page }) => {
