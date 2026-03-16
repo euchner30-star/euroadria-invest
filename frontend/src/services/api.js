@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Article API
 export const articlesApi = {
-  // Get all articles with optional filters
+  // Get all articles with optional filters (full data)
   getAll: async (filters = {}) => {
     const params = new URLSearchParams();
     if (filters.cluster) params.append('cluster', filters.cluster);
@@ -17,6 +17,19 @@ export const articlesApi = {
     const url = `${API_BASE_URL}/api/articles${queryString ? `?${queryString}` : ''}`;
     
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch articles');
+    }
+    return response.json();
+  },
+
+  // Paginated lightweight list for blog page (no content field)
+  getList: async ({ page = 1, limit = 12, cluster = null, search = null } = {}) => {
+    const params = new URLSearchParams({ page: page.toString(), limit: limit.toString() });
+    if (cluster && cluster !== 'All') params.append('cluster', cluster);
+    if (search) params.append('search', search);
+    
+    const response = await fetch(`${API_BASE_URL}/api/articles/list?${params}`);
     if (!response.ok) {
       throw new Error('Failed to fetch articles');
     }

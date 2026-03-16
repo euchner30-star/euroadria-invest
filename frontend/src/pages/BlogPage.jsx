@@ -1,48 +1,157 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { articlesApi } from '../services/api';
 import { themeClusters } from '../data/clusters';
-import { Clock, ArrowRight, Search, Loader2, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { Clock, ArrowRight, Search, Loader2, ChevronRight, RefreshCw } from 'lucide-react';
 import SEO from '../components/SEO';
+
+// Lazy-loaded image component
+const LazyImage = ({ src, alt, className }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const imgRef = React.useRef();
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '100px' }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={imgRef} className={`${className} bg-ea-light`}>
+      {isInView && (
+        <img
+          src={src}
+          alt={alt}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={() => setIsLoaded(true)}
+          loading="lazy"
+        />
+      )}
+      {!isLoaded && isInView && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Loader2 className="w-6 h-6 text-ea-gold/50 animate-spin" />
+        </div>
+      )}
+    </div>
+  );
+};
 
 const BlogPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCluster, setSelectedCluster] = useState('All');
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
-  const [isListExpanded, setIsListExpanded] = useState(false);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    totalPages: 1,
+    total: 0,
+    hasMore: false
+  });
+  const [clusterCounts, setClusterCounts] = useState({});
 
+  // Debounced search
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  
   useEffect(() => {
-    const fetchArticles = async () => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch cluster counts on mount
+  useEffect(() => {
+    const fetchCounts = async () => {
       try {
-        setLoading(true);
-        const data = await articlesApi.getAll();
-        setArticles(data);
-        setError(null);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/clusters`);
+        if (response.ok) {
+          const data = await response.json();
+          const counts = {};
+          data.forEach(c => { counts[c.id] = c.count; });
+          setClusterCounts(counts);
+        }
       } catch (err) {
-        console.error('Failed to fetch articles:', err);
-        setError('Artikel konnten nicht geladen werden.');
-      } finally {
-        setLoading(false);
+        console.error('Failed to fetch cluster counts');
       }
     };
-    fetchArticles();
+    fetchCounts();
   }, []);
 
-  const filteredArticles = articles.filter(article => {
-    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          article.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCluster = selectedCluster === 'All' || article.cluster === selectedCluster;
-    return matchesSearch && matchesCluster;
-  });
+  // Fetch articles with pagination
+  const fetchArticles = useCallback(async (page = 1, append = false) => {
+    try {
+      if (page === 1) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
 
-  // Split articles: first 12 as cards, rest as list
-  const featuredArticles = filteredArticles.slice(0, 12);
-  const listArticles = filteredArticles.slice(12);
+      const data = await articlesApi.getList({
+        page,
+        limit: 12,
+        cluster: selectedCluster !== 'All' ? selectedCluster : null,
+        search: debouncedSearch || null
+      });
+
+      if (append) {
+        setArticles(prev => [...prev, ...data.articles]);
+      } else {
+        setArticles(data.articles);
+      }
+
+      setPagination({
+        page: data.page,
+        totalPages: data.totalPages,
+        total: data.total,
+        hasMore: data.hasMore
+      });
+
+      setError(null);
+    } catch (err) {
+      console.error('Failed to fetch articles:', err);
+      setError('Artikel konnten nicht geladen werden.');
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  }, [selectedCluster, debouncedSearch]);
+
+  // Initial fetch and when filters change
+  useEffect(() => {
+    fetchArticles(1, false);
+  }, [fetchArticles]);
+
+  // Load more handler
+  const handleLoadMore = () => {
+    if (pagination.hasMore && !loadingMore) {
+      fetchArticles(pagination.page + 1, true);
+    }
+  };
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPagination(prev => ({ ...prev, page: 1 }));
+  }, [selectedCluster, debouncedSearch]);
 
   return (
-    <div className="min-h-screen pt-28 pb-20 px-6 bg-white">
+    <div className="min-h-screen pt-28 pb-20 px-6 bg-white" data-testid="blog-page">
       <SEO 
         title="Blog & Insights"
         description="Tiefgehende Analysen, Marktberichte und praktische Guides für erfolgreiche Investments an der Adria."
@@ -59,78 +168,109 @@ const BlogPage = () => {
           </p>
         </div>
 
+        {/* Theme Clusters Navigation */}
+        <div className="mb-8">
+          <div className="flex flex-wrap gap-2 justify-center">
+            <button
+              onClick={() => setSelectedCluster('All')}
+              data-testid="cluster-filter-all"
+              className={`px-4 py-2 rounded-lg text-sm transition-all font-medium ${
+                selectedCluster === 'All'
+                  ? 'bg-ea-dark text-white'
+                  : 'bg-ea-light text-ea-dark hover:bg-ea-gold/20'
+              }`}
+            >
+              Alle ({pagination.total || Object.values(clusterCounts).reduce((a, b) => a + b, 0)})
+            </button>
+            {themeClusters.map((cluster) => (
+              <button
+                key={cluster.id}
+                onClick={() => setSelectedCluster(cluster.id)}
+                data-testid={`cluster-filter-${cluster.id}`}
+                className={`px-4 py-2 rounded-lg text-sm transition-all ${
+                  selectedCluster === cluster.id
+                    ? 'bg-ea-dark text-white font-medium'
+                    : 'bg-ea-light text-ea-dark hover:bg-ea-gold/20'
+                }`}
+              >
+                {cluster.name} ({clusterCounts[cluster.id] || 0})
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="max-w-xl mx-auto mb-12">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-ea-dark/40" />
+            <input
+              type="text"
+              placeholder="Artikel durchsuchen..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              data-testid="blog-search-input"
+              className="w-full bg-ea-light border border-gray-200 rounded-xl pl-12 pr-4 py-3 text-ea-dark placeholder-ea-dark/40 focus:outline-none focus:border-ea-gold focus:ring-2 focus:ring-ea-gold/20 transition-all"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-ea-dark/40 hover:text-ea-dark"
+              >
+                ×
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center py-20">
             <Loader2 className="w-10 h-10 text-ea-gold animate-spin" />
           </div>
         )}
 
-        {error && (
+        {/* Error State */}
+        {error && !loading && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center mb-12">
             <p className="text-red-600">{error}</p>
+            <button
+              onClick={() => fetchArticles(1, false)}
+              className="mt-4 px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+            >
+              Erneut versuchen
+            </button>
           </div>
         )}
 
+        {/* Articles Grid */}
         {!loading && !error && (
           <>
-            {/* Theme Clusters Navigation */}
-            <div className="mb-8">
-              <div className="flex flex-wrap gap-2 justify-center">
-                <button
-                  onClick={() => setSelectedCluster('All')}
-                  data-testid="cluster-filter-all"
-                  className={`px-4 py-2 rounded-lg text-sm transition-all font-medium ${
-                    selectedCluster === 'All'
-                      ? 'bg-ea-dark text-white'
-                      : 'bg-ea-light text-ea-dark hover:bg-ea-gold/20'
-                  }`}
-                >
-                  Alle ({articles.length})
-                </button>
-                {themeClusters.map((cluster) => {
-                  const count = articles.filter(a => a.cluster === cluster.id).length;
-                  return (
-                    <button
-                      key={cluster.id}
-                      onClick={() => setSelectedCluster(cluster.id)}
-                      data-testid={`cluster-filter-${cluster.id}`}
-                      className={`px-4 py-2 rounded-lg text-sm transition-all ${
-                        selectedCluster === cluster.id
-                          ? 'bg-ea-dark text-white font-medium'
-                          : 'bg-ea-light text-ea-dark hover:bg-ea-gold/20'
-                      }`}
-                    >
-                      {cluster.name} ({count})
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Search Bar */}
-            <div className="max-w-xl mx-auto mb-12">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-ea-dark/40" />
-                <input
-                  type="text"
-                  placeholder="Artikel durchsuchen..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  data-testid="blog-search-input"
-                  className="w-full bg-ea-light border border-gray-200 rounded-xl pl-12 pr-4 py-3 text-ea-dark placeholder-ea-dark/40 focus:outline-none focus:border-ea-gold focus:ring-2 focus:ring-ea-gold/20 transition-all"
-                />
-              </div>
-            </div>
-
-            {filteredArticles.length === 0 ? (
+            {articles.length === 0 ? (
               <div className="bg-ea-light border border-gray-200 rounded-xl p-12 text-center">
-                <p className="text-ea-dark/70 text-lg">Keine Artikel gefunden. Versuchen Sie einen anderen Suchbegriff.</p>
+                <p className="text-ea-dark/70 text-lg">
+                  {debouncedSearch 
+                    ? 'Keine Artikel gefunden. Versuchen Sie einen anderen Suchbegriff.'
+                    : 'Keine Artikel in dieser Kategorie.'}
+                </p>
               </div>
             ) : (
               <>
-                {/* Featured Articles Grid (12 Cards) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-                  {featuredArticles.map((article) => (
+                {/* Results Info */}
+                <div className="flex items-center justify-between mb-6">
+                  <p className="text-ea-dark/50 text-sm">
+                    {pagination.total} Artikel gefunden
+                    {debouncedSearch && ` für "${debouncedSearch}"`}
+                  </p>
+                  {articles.length < pagination.total && (
+                    <p className="text-ea-dark/50 text-sm">
+                      Zeige {articles.length} von {pagination.total}
+                    </p>
+                  )}
+                </div>
+
+                {/* Articles Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                  {articles.map((article) => (
                     <Link
                       key={article.id}
                       to={`/blog/${article.slug}`}
@@ -139,10 +279,10 @@ const BlogPage = () => {
                     >
                       <article className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full">
                         <div className="relative h-44 overflow-hidden">
-                          <img
+                          <LazyImage
                             src={article.image}
                             alt={article.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            className="w-full h-full relative"
                           />
                           <div className="absolute top-3 left-3">
                             <span className="bg-white/90 backdrop-blur-sm text-xs text-ea-dark px-2.5 py-1 rounded-full font-medium">
@@ -170,59 +310,39 @@ const BlogPage = () => {
                   ))}
                 </div>
 
-                {/* Remaining Articles as Collapsible List */}
-                {listArticles.length > 0 && (
-                  <div className="border-t border-gray-200 pt-12">
+                {/* Load More Button */}
+                {pagination.hasMore && (
+                  <div className="text-center">
                     <button
-                      onClick={() => setIsListExpanded(!isListExpanded)}
-                      className="w-full flex items-center justify-between mb-6 group"
-                      data-testid="toggle-article-list"
+                      onClick={handleLoadMore}
+                      disabled={loadingMore}
+                      className="px-8 py-4 bg-ea-dark text-white font-semibold rounded-xl hover:bg-ea-navy transition-all flex items-center gap-3 mx-auto disabled:opacity-50"
+                      data-testid="load-more-button"
                     >
-                      <h2 className="text-2xl font-semibold text-ea-dark">
-                        Weitere <span className="text-ea-gold">Artikel</span>
-                        <span className="text-ea-dark/50 text-base font-normal ml-2">({listArticles.length})</span>
-                      </h2>
-                      <div className="flex items-center gap-2 text-ea-dark/60 group-hover:text-ea-gold transition-colors">
-                        <span className="text-sm">{isListExpanded ? 'Einklappen' : 'Alle anzeigen'}</span>
-                        {isListExpanded ? (
-                          <ChevronUp className="w-5 h-5" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5" />
-                        )}
-                      </div>
+                      {loadingMore ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Lade...
+                        </>
+                      ) : (
+                        <>
+                          <RefreshCw className="w-5 h-5" />
+                          Weitere Artikel laden
+                          <span className="text-white/70 text-sm">
+                            ({pagination.total - articles.length} verbleibend)
+                          </span>
+                        </>
+                      )}
                     </button>
-                    
-                    {isListExpanded && (
-                      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden animate-fadeIn">
-                        {listArticles.map((article, index) => (
-                          <Link
-                            key={article.id}
-                            to={`/blog/${article.slug}`}
-                            className={`flex items-center justify-between p-4 hover:bg-ea-light transition-colors group ${
-                              index !== listArticles.length - 1 ? 'border-b border-gray-100' : ''
-                            }`}
-                            data-testid={`article-list-${article.slug}`}
-                          >
-                            <div className="flex-1 min-w-0 pr-4">
-                              <div className="flex items-center gap-3 mb-1">
-                                <span className="text-xs text-ea-gold font-medium bg-ea-gold/10 px-2 py-0.5 rounded">
-                                  {article.category}
-                                </span>
-                                <span className="text-xs text-ea-dark/40">{article.date}</span>
-                              </div>
-                              <h3 className="text-ea-dark font-medium group-hover:text-ea-gold transition-colors truncate">
-                                {article.title}
-                              </h3>
-                            </div>
-                            <div className="flex items-center gap-2 text-ea-dark/40 group-hover:text-ea-gold transition-colors flex-shrink-0">
-                              <Clock className="w-4 h-4" />
-                              <span className="text-sm">{article.readTime}</span>
-                              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                  </div>
+                )}
+
+                {/* All Loaded Message */}
+                {!pagination.hasMore && articles.length > 12 && (
+                  <div className="text-center py-8">
+                    <p className="text-ea-dark/50">
+                      Alle {pagination.total} Artikel geladen
+                    </p>
                   </div>
                 )}
               </>

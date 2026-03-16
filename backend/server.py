@@ -279,6 +279,59 @@ async def get_status_checks():
 # ARTICLE ENDPOINTS (Public)
 # =============================================
 
+# Lightweight article fields for blog list (excludes heavy content)
+BLOG_LIST_FIELDS = {
+    "_id": 0,
+    "id": 1,
+    "slug": 1,
+    "title": 1,
+    "excerpt": 1,
+    "image": 1,
+    "category": 1,
+    "cluster": 1,
+    "date": 1,
+    "readTime": 1,
+    "featured": 1,
+    "author": 1
+}
+
+@api_router.get("/articles/list")
+async def get_articles_list(
+    cluster: Optional[str] = None,
+    category: Optional[str] = None,
+    page: int = 1,
+    limit: int = 12,
+    search: Optional[str] = None
+):
+    """Get paginated article list for blog page (lightweight - no content)"""
+    query = {}
+    if cluster and cluster != "All":
+        query["cluster"] = cluster
+    if category:
+        query["category"] = category
+    if search:
+        query["$or"] = [
+            {"title": {"$regex": search, "$options": "i"}},
+            {"excerpt": {"$regex": search, "$options": "i"}}
+        ]
+    
+    # Get total count
+    total = await db.articles.count_documents(query)
+    
+    # Get paginated results
+    skip = (page - 1) * limit
+    articles = await db.articles.find(query, BLOG_LIST_FIELDS).skip(skip).limit(limit).to_list(limit)
+    
+    return {
+        "articles": articles,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "totalPages": (total + limit - 1) // limit,
+        "hasMore": skip + len(articles) < total
+    }
+
+
 @api_router.get("/articles", response_model=List[Article])
 async def get_articles(
     cluster: Optional[str] = None,
@@ -286,7 +339,7 @@ async def get_articles(
     category: Optional[str] = None,
     limit: Optional[int] = None
 ):
-    """Get all articles with optional filters"""
+    """Get all articles with optional filters (full data)"""
     query = {}
     if cluster:
         query["cluster"] = cluster
@@ -329,7 +382,7 @@ async def get_clusters():
         {"$sort": {"_id": 1}}
     ]
     clusters = await db.articles.aggregate(pipeline).to_list(100)
-    return [{"cluster": c["_id"], "count": c["count"], "category": c["category"]} for c in clusters]
+    return [{"id": c["_id"], "cluster": c["_id"], "count": c["count"], "category": c["category"]} for c in clusters]
 
 
 @api_router.get("/categories")
