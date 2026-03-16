@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { adminApi, articlesApi, commentsApi, regionsApi } from '../services/api';
+import { adminApi, articlesApi, commentsApi, regionsApi, pagesApi } from '../services/api';
 import { 
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
   FileText, Loader2, AlertCircle, Check, MessageSquare,
-  CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image as ImageIcon
+  CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image as ImageIcon,
+  Layout, Users, Home, Phone, Globe
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHtml } from '../components/admin/WYSIWYGEditor';
@@ -15,7 +16,7 @@ const AdminPage = () => {
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  // Active Tab: 'articles', 'comments', or 'regions'
+  // Active Tab: 'articles', 'comments', 'regions', or 'pages'
   const [activeTab, setActiveTab] = useState('articles');
   
   // Articles State
@@ -35,6 +36,11 @@ const AdminPage = () => {
   const [regionsLoading, setRegionsLoading] = useState(false);
   const [editingRegion, setEditingRegion] = useState(null);
   const [isCreatingRegion, setIsCreatingRegion] = useState(false);
+
+  // Pages CMS State
+  const [pages, setPages] = useState([]);
+  const [pagesLoading, setPagesLoading] = useState(false);
+  const [editingPage, setEditingPage] = useState(null);
   
   const [saveStatus, setSaveStatus] = useState({ type: '', message: '' });
 
@@ -57,6 +63,7 @@ const AdminPage = () => {
         fetchComments(creds);
         fetchCommentsStats(creds);
         fetchRegions(creds);
+        fetchPages(creds);
       } else {
         sessionStorage.removeItem('adminCredentials');
       }
@@ -79,6 +86,7 @@ const AdminPage = () => {
         fetchComments(credentials);
         fetchCommentsStats(credentials);
         fetchRegions(credentials);
+        fetchPages(credentials);
       } else {
         setLoginError('Ungültige Zugangsdaten');
       }
@@ -175,6 +183,45 @@ const AdminPage = () => {
       await regionsApi.delete(slug, credentials);
       fetchRegions(credentials);
       setSaveStatus({ type: 'success', message: 'Region gelöscht!' });
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: err.message });
+    }
+  };
+
+  // Pages CMS Functions
+  const fetchPages = async (creds) => {
+    setPagesLoading(true);
+    try {
+      const data = await pagesApi.getAdminPages(creds);
+      setPages(data);
+    } catch (err) {
+      console.error('Failed to fetch pages:', err);
+    } finally {
+      setPagesLoading(false);
+    }
+  };
+
+  const handleSavePage = async (pageData) => {
+    setSaveStatus({ type: 'loading', message: 'Speichern...' });
+    try {
+      await pagesApi.update(editingPage.slug, pageData, credentials);
+      setSaveStatus({ type: 'success', message: 'Seite gespeichert!' });
+      fetchPages(credentials);
+      setEditingPage(null);
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: err.message });
+    }
+  };
+
+  const handleResetPage = async (slug) => {
+    if (!window.confirm('Seite auf Standard zurücksetzen?')) return;
+    
+    try {
+      await pagesApi.delete(slug, credentials);
+      fetchPages(credentials);
+      setSaveStatus({ type: 'success', message: 'Seite zurückgesetzt!' });
       setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
     } catch (err) {
       setSaveStatus({ type: 'error', message: err.message });
@@ -420,6 +467,38 @@ const AdminPage = () => {
     );
   }
 
+  // Page Editor
+  if (editingPage) {
+    return (
+      <div className="min-h-screen pt-32 pb-20 px-6" data-testid="admin-page-editor">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-semibold font-bold text-ea-dark">
+                {editingPage.title} <span className="text-ea-gold">bearbeiten</span>
+              </h1>
+              <p className="text-ea-dark/50">/{editingPage.slug}</p>
+            </div>
+            <button
+              onClick={() => setEditingPage(null)}
+              className="text-ea-dark/70 hover:text-ea-dark transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <PageEditor
+            page={editingPage}
+            onSave={handleSavePage}
+            onCancel={() => setEditingPage(null)}
+            saveStatus={saveStatus}
+            credentials={credentials}
+          />
+        </div>
+      </div>
+    );
+  }
+
   // Admin Dashboard
   return (
     <div className="min-h-screen pt-32 pb-20 px-6" data-testid="admin-dashboard">
@@ -521,6 +600,18 @@ const AdminPage = () => {
           >
             <MapPin className="w-5 h-5" />
             <span>Regionen ({regions.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('pages')}
+            className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
+              activeTab === 'pages'
+                ? 'bg-ea-gold text-ea-dark font-semibold'
+                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
+            }`}
+            data-testid="tab-pages"
+          >
+            <Layout className="w-5 h-5" />
+            <span>Seiten ({pages.length})</span>
           </button>
         </div>
 
@@ -837,6 +928,94 @@ const AdminPage = () => {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Pages Tab */}
+        {activeTab === 'pages' && (
+          <div className="space-y-6">
+            {/* Pages Overview */}
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Layout className="w-5 h-5 text-ea-gold" />
+                  <span className="text-ea-dark font-medium">Seiten-Editor ({pages.length})</span>
+                </div>
+              </div>
+
+              {pagesLoading ? (
+                <div className="p-8 flex justify-center">
+                  <Loader2 className="w-8 h-8 text-ea-gold animate-spin" />
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {pages.map((page) => {
+                    const pageIcons = {
+                      'home': Home,
+                      'team': Users,
+                      'contact': Phone
+                    };
+                    const PageIcon = pageIcons[page.slug] || Globe;
+                    
+                    return (
+                      <div 
+                        key={page.slug} 
+                        className="p-4 flex items-center justify-between hover:bg-ea-light transition-colors"
+                        data-testid={`page-row-${page.slug}`}
+                      >
+                        <div className="flex items-center space-x-4">
+                          <div className="w-10 h-10 bg-ea-gold/10 rounded-lg flex items-center justify-center">
+                            <PageIcon className="w-5 h-5 text-ea-gold" />
+                          </div>
+                          <div>
+                            <h3 className="text-ea-dark font-medium">{page.title}</h3>
+                            <p className="text-ea-dark/50 text-sm">
+                              /{page.slug} • {page.sections?.length || 0} Sektionen
+                              {page.isDefault && (
+                                <span className="ml-2 text-xs bg-ea-light px-2 py-0.5 rounded">Standard</span>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => setEditingPage(page)}
+                            className="px-4 py-2 bg-ea-gold text-ea-dark text-sm font-medium rounded-lg hover:bg-ea-gold/80 transition-colors flex items-center space-x-2"
+                            data-testid={`edit-page-${page.slug}`}
+                          >
+                            <Edit2 className="w-4 h-4" />
+                            <span>Bearbeiten</span>
+                          </button>
+                          {!page.isDefault && (
+                            <button
+                              onClick={() => handleResetPage(page.slug)}
+                              className="p-2 text-ea-dark/50 hover:text-red-400 transition-colors"
+                              title="Auf Standard zurücksetzen"
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Help Info */}
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+              <h3 className="text-ea-dark font-semibold mb-4 flex items-center space-x-2">
+                <HelpCircle className="w-5 h-5 text-ea-gold" />
+                <span>Seiten-Editor Hilfe</span>
+              </h3>
+              <div className="text-ea-dark/70 text-sm space-y-2">
+                <p>• <strong>Home:</strong> Hero-Bereich, Info-Cards, Call-to-Actions</p>
+                <p>• <strong>Über uns:</strong> Team-Mitglieder, Beschreibungstexte</p>
+                <p>• <strong>Kontakt:</strong> Kontaktdaten, Öffnungszeiten</p>
+                <p>• Alle Änderungen werden live auf der Website angezeigt.</p>
               </div>
             </div>
           </div>
@@ -1398,6 +1577,397 @@ const RegionForm = ({ initialData, onSave, onCancel, saveStatus, isCreating, cre
         </button>
       </div>
     </form>
+  );
+};
+
+// Page Editor Component - Full CMS for all pages
+const PageEditor = ({ page, onSave, onCancel, saveStatus, credentials }) => {
+  const [pageData, setPageData] = useState(page);
+  const [activeSection, setActiveSection] = useState(page.sections?.[0]?.id || null);
+
+  const handleMetaChange = (field, value) => {
+    setPageData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSectionChange = (sectionId, field, value) => {
+    setPageData(prev => ({
+      ...prev,
+      sections: prev.sections.map(s => 
+        s.id === sectionId ? { ...s, [field]: value } : s
+      )
+    }));
+  };
+
+  const handleSectionDataChange = (sectionId, dataField, value) => {
+    setPageData(prev => ({
+      ...prev,
+      sections: prev.sections.map(s => 
+        s.id === sectionId ? { ...s, data: { ...s.data, [dataField]: value } } : s
+      )
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(pageData);
+  };
+
+  const currentSection = pageData.sections?.find(s => s.id === activeSection);
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* SEO Fields */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
+        <h3 className="text-xl font-bold text-ea-gold flex items-center space-x-2">
+          <Globe className="w-5 h-5" />
+          <span>SEO & Meta-Daten</span>
+        </h3>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Meta-Titel (Google)</label>
+            <input
+              type="text"
+              value={pageData.metaTitle || ''}
+              onChange={(e) => handleMetaChange('metaTitle', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              placeholder="Titel für Google-Suche"
+            />
+            <p className="text-xs text-ea-dark/40 mt-1">{(pageData.metaTitle || '').length}/60 Zeichen</p>
+          </div>
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">URL-Pfad</label>
+            <input
+              type="text"
+              value={`/${pageData.slug}`}
+              disabled
+              className="w-full bg-gray-100 border border-gray-200 rounded-lg px-4 py-3 text-ea-dark/50"
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label className="block text-ea-dark/80 text-sm mb-2">Meta-Beschreibung (Google)</label>
+          <textarea
+            value={pageData.metaDescription || ''}
+            onChange={(e) => handleMetaChange('metaDescription', e.target.value)}
+            rows={2}
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold resize-none"
+            placeholder="Kurzbeschreibung für Google-Vorschau"
+          />
+          <p className="text-xs text-ea-dark/40 mt-1">{(pageData.metaDescription || '').length}/160 Zeichen</p>
+        </div>
+      </div>
+
+      {/* Section Tabs */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="flex border-b border-gray-200 overflow-x-auto">
+          {pageData.sections?.map((section) => (
+            <button
+              key={section.id}
+              type="button"
+              onClick={() => setActiveSection(section.id)}
+              className={`px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors ${
+                activeSection === section.id
+                  ? 'bg-ea-gold/10 text-ea-gold border-b-2 border-ea-gold'
+                  : 'text-ea-dark/70 hover:text-ea-dark hover:bg-ea-light'
+              }`}
+            >
+              {section.type === 'hero' && 'Hero-Bereich'}
+              {section.type === 'cards' && (section.title || 'Info-Cards')}
+              {section.type === 'team' && 'Team'}
+              {section.type === 'text' && (section.title || 'Text')}
+              {section.type === 'contact' && 'Kontakt-Info'}
+            </button>
+          ))}
+        </div>
+
+        {/* Section Editor */}
+        <div className="p-6">
+          {currentSection && (
+            <SectionEditor
+              section={currentSection}
+              onChange={(field, value) => handleSectionChange(currentSection.id, field, value)}
+              onDataChange={(field, value) => handleSectionDataChange(currentSection.id, field, value)}
+              credentials={credentials}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center justify-end space-x-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="bg-white border border-gray-200 rounded-xl shadow-sm px-6 py-3 text-ea-dark/70 hover:text-ea-dark transition-colors"
+        >
+          Abbrechen
+        </button>
+        <button
+          type="submit"
+          disabled={saveStatus.type === 'loading'}
+          className="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all flex items-center space-x-2"
+        >
+          {saveStatus.type === 'loading' ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <Save className="w-5 h-5" />
+          )}
+          <span>Seite speichern</span>
+        </button>
+      </div>
+    </form>
+  );
+};
+
+// Section Editor - renders different editors based on section type
+const SectionEditor = ({ section, onChange, onDataChange, credentials }) => {
+  const data = section.data || {};
+
+  // Hero Section Editor
+  if (section.type === 'hero') {
+    return (
+      <div className="space-y-4">
+        <h4 className="text-lg font-semibold text-ea-dark">Hero-Bereich</h4>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Haupttitel (H1)</label>
+            <input
+              type="text"
+              value={data.title || ''}
+              onChange={(e) => onDataChange('title', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            />
+          </div>
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Untertitel</label>
+            <input
+              type="text"
+              value={data.subtitle || ''}
+              onChange={(e) => onDataChange('subtitle', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">CTA Button Text</label>
+            <input
+              type="text"
+              value={data.ctaText || ''}
+              onChange={(e) => onDataChange('ctaText', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              placeholder="z.B. Jetzt Beratung anfragen"
+            />
+          </div>
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">CTA Link</label>
+            <input
+              type="text"
+              value={data.ctaLink || ''}
+              onChange={(e) => onDataChange('ctaLink', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              placeholder="/contact"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Cards Section Editor (Info-Cards)
+  if (section.type === 'cards') {
+    const cards = data.cards || [];
+    
+    const updateCard = (cardId, field, value) => {
+      const newCards = cards.map(c => c.id === cardId ? { ...c, [field]: value } : c);
+      onDataChange('cards', newCards);
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h4 className="text-lg font-semibold text-ea-dark">{section.title || 'Info-Cards'}</h4>
+          <input
+            type="text"
+            value={section.title || ''}
+            onChange={(e) => onChange('title', e.target.value)}
+            className="bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold"
+            placeholder="Sektions-Titel"
+          />
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+          {cards.map((card, idx) => (
+            <div key={card.id || idx} className="bg-ea-light rounded-lg p-4 space-y-3">
+              <input
+                type="text"
+                value={card.title}
+                onChange={(e) => updateCard(card.id, 'title', e.target.value)}
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-ea-dark font-medium focus:outline-none focus:border-ea-gold"
+                placeholder="Titel"
+              />
+              <textarea
+                value={card.description}
+                onChange={(e) => updateCard(card.id, 'description', e.target.value)}
+                rows={2}
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-ea-dark text-sm focus:outline-none focus:border-ea-gold resize-none"
+                placeholder="Beschreibung"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Team Section Editor
+  if (section.type === 'team') {
+    const members = data.members || [];
+    
+    const updateMember = (memberId, field, value) => {
+      const newMembers = members.map(m => m.id === memberId ? { ...m, [field]: value } : m);
+      onDataChange('members', newMembers);
+    };
+
+    return (
+      <div className="space-y-6">
+        <h4 className="text-lg font-semibold text-ea-dark">Team-Mitglieder</h4>
+        
+        {members.map((member, idx) => (
+          <div key={member.id || idx} className="bg-ea-light rounded-xl p-6 space-y-4">
+            <div className="flex items-start gap-6">
+              <div className="w-32 flex-shrink-0">
+                <ImageUploader
+                  label="Foto"
+                  currentImage={member.image}
+                  onImageUploaded={(url) => updateMember(member.id, 'image', url || '')}
+                  credentials={credentials}
+                />
+              </div>
+              <div className="flex-1 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-ea-dark/80 text-xs mb-1">Name</label>
+                    <input
+                      type="text"
+                      value={member.name}
+                      onChange={(e) => updateMember(member.id, 'name', e.target.value)}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-ea-dark/80 text-xs mb-1">Titel/Position</label>
+                    <input
+                      type="text"
+                      value={member.title}
+                      onChange={(e) => updateMember(member.id, 'title', e.target.value)}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-ea-dark/80 text-xs mb-1">Beschreibung</label>
+                  <textarea
+                    value={member.description}
+                    onChange={(e) => updateMember(member.id, 'description', e.target.value)}
+                    rows={3}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-ea-dark text-sm focus:outline-none focus:border-ea-gold resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-ea-dark/80 text-xs mb-1">E-Mail</label>
+                  <input
+                    type="email"
+                    value={member.email || ''}
+                    onChange={(e) => updateMember(member.id, 'email', e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Text Section Editor (WYSIWYG)
+  if (section.type === 'text') {
+    return (
+      <div className="space-y-4">
+        <div>
+          <label className="block text-ea-dark/80 text-sm mb-2">Sektions-Titel</label>
+          <input
+            type="text"
+            value={section.title || ''}
+            onChange={(e) => onChange('title', e.target.value)}
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+          />
+        </div>
+        <div>
+          <label className="block text-ea-dark/80 text-sm mb-2">Inhalt (WYSIWYG)</label>
+          <WYSIWYGEditor
+            value={section.content || ''}
+            onChange={(content) => onChange('content', content)}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Contact Section Editor
+  if (section.type === 'contact') {
+    return (
+      <div className="space-y-4">
+        <h4 className="text-lg font-semibold text-ea-dark">Kontakt-Informationen</h4>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">E-Mail</label>
+            <input
+              type="email"
+              value={data.email || ''}
+              onChange={(e) => onDataChange('email', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            />
+          </div>
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Telefon</label>
+            <input
+              type="tel"
+              value={data.phone || ''}
+              onChange={(e) => onDataChange('phone', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            />
+          </div>
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Adresse</label>
+            <input
+              type="text"
+              value={data.address || ''}
+              onChange={(e) => onDataChange('address', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            />
+          </div>
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Öffnungszeiten</label>
+            <input
+              type="text"
+              value={data.hours || ''}
+              onChange={(e) => onDataChange('hours', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-ea-dark/50 text-center py-8">
+      Unbekannter Sektionstyp: {section.type}
+    </div>
   );
 };
 

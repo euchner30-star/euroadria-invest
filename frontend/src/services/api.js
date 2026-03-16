@@ -370,4 +370,87 @@ export const regionsApi = {
   }
 };
 
-export default { articlesApi, adminApi, commentsApi, regionsApi, getRelatedArticles };
+// Pages CMS API
+export const pagesApi = {
+  // Get all pages (public)
+  getAll: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/pages`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch pages');
+    }
+    return response.json();
+  },
+
+  // Get page by slug (public)
+  getBySlug: async (slug) => {
+    const response = await fetch(`${API_BASE_URL}/api/pages/${slug}`);
+    if (!response.ok) {
+      if (response.status === 404) return null;
+      throw new Error('Failed to fetch page');
+    }
+    return response.json();
+  },
+
+  // Admin: Get all pages including defaults
+  getAdminPages: async (credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/pages`, {
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch pages');
+    }
+    return response.json();
+  },
+
+  // Admin: Create page
+  create: async (pageData, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/pages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      },
+      body: JSON.stringify(pageData)
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to create page');
+    }
+    return response.json();
+  },
+
+  // Admin: Update page
+  update: async (slug, pageData, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/pages/${slug}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      },
+      body: JSON.stringify(pageData)
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to update page');
+    }
+    return response.json();
+  },
+
+  // Admin: Delete page (reset to default)
+  delete: async (slug, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/pages/${slug}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete page');
+    }
+    return response.json();
+  }
+};
+
+export default { articlesApi, adminApi, commentsApi, regionsApi, pagesApi, getRelatedArticles };
