@@ -197,4 +197,83 @@ test.describe('Region Landing Pages', () => {
       await expect(page).toHaveURL(/.*\/infrastruktur-radar/);
     });
   });
+
+  // Podgorica Page Tests
+  test.describe('Podgorica Page', () => {
+    test('should load Podgorica page with correct structure', async ({ page }) => {
+      await page.goto('/immobilien/podgorica');
+      await waitForAppReady(page);
+      
+      await expect(page.getByTestId('podgorica-page')).toBeVisible();
+      await expect(page.getByRole('heading', { level: 1 })).toContainText('Podgorica');
+      await expect(page.getByRole('heading', { level: 1 })).toContainText('Business-Hub');
+    });
+
+    test('should display Investment-Kennzahlen with Investment-Score 90/100', async ({ page }) => {
+      await page.goto('/immobilien/podgorica');
+      await waitForAppReady(page);
+      
+      // Check for Investment-Kennzahlen section
+      await expect(page.getByText('Investment-Kennzahlen')).toBeVisible();
+      
+      // Verify Podgorica-specific investment metrics
+      await expect(page.getByText('90/100')).toBeVisible(); // Investment-Score
+      await expect(page.getByText(/€1\.500-3\.000\/m²/)).toBeVisible(); // Price
+      await expect(page.getByText('2-5 Jahre')).toBeVisible(); // Zeithorizont
+      await expect(page.getByText('+35-55%')).toBeVisible(); // Potenzial
+    });
+
+    test('should have clickable Exposé anfordern CTA', async ({ page }) => {
+      await page.goto('/immobilien/podgorica');
+      await waitForAppReady(page);
+      
+      const ctaButton = page.getByTestId('podgorica-contact-cta');
+      await expect(ctaButton).toBeVisible();
+      await expect(ctaButton).toContainText('Exposé anfordern');
+      
+      // Click and verify form modal opens
+      await ctaButton.click();
+      await expect(page.getByText('Podgorica Exposé')).toBeVisible();
+    });
+
+    test('should submit Exposé form and show success message', async ({ page }) => {
+      await page.goto('/immobilien/podgorica');
+      await waitForAppReady(page);
+      
+      // Open form
+      await page.getByTestId('podgorica-contact-cta').click();
+      
+      // Fill form
+      await page.locator('input[placeholder="Ihr Name"]').fill('TEST_User_Podgorica');
+      await page.locator('input[placeholder*="email"]').fill('test@example.com');
+      
+      // Submit
+      await page.getByText('Exposé anfordern', { exact: false }).last().click();
+      
+      // Verify success message
+      await expect(page.getByText('Anfrage erhalten')).toBeVisible();
+    });
+
+    test('should display apartments section with placeholders', async ({ page }) => {
+      await page.goto('/immobilien/podgorica');
+      await waitForAppReady(page);
+      
+      // Scroll to apartments section
+      await page.locator('#apartments').scrollIntoViewIfNeeded();
+      
+      // Verify placeholder cards
+      await expect(page.getByTestId('apartment-placeholder-1')).toBeVisible();
+      await expect(page.getByTestId('apartment-placeholder-2')).toBeVisible();
+      await expect(page.getByTestId('apartment-placeholder-3')).toBeVisible();
+    });
+
+    test('should show main infrastructure advantages', async ({ page }) => {
+      await page.goto('/immobilien/podgorica');
+      await waitForAppReady(page);
+      
+      // Check for key infrastructure advantages mentioned on page
+      await expect(page.getByRole('heading', { name: 'Internationaler Flughafen' })).toBeVisible();
+      await expect(page.getByText(/KCCG/i).first()).toBeVisible();
+    });
+  });
 });

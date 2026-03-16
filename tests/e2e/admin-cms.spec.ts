@@ -111,3 +111,113 @@ test.describe('Admin Login and Dashboard', () => {
     await expect(page.getByTestId('admin-login-page')).toBeVisible();
   });
 });
+
+test.describe('Admin Regionen Tab', () => {
+  test.beforeEach(async ({ page }) => {
+    await dismissToasts(page);
+  });
+
+  test('Admin dashboard shows 3 tabs: Artikel, Kommentare, Regionen', async ({ page }) => {
+    await adminLogin(page, 'admin', 'euroadria2025');
+    
+    // Verify all 3 tabs are visible
+    await expect(page.getByTestId('tab-articles')).toBeVisible();
+    await expect(page.getByTestId('tab-comments')).toBeVisible();
+    await expect(page.getByTestId('tab-regions')).toBeVisible();
+    
+    // Verify Regionen tab text
+    await expect(page.getByTestId('tab-regions')).toContainText('Regionen');
+  });
+
+  test('Regionen tab shows empty state and create button', async ({ page }) => {
+    await adminLogin(page, 'admin', 'euroadria2025');
+    
+    // Click on Regionen tab
+    await page.getByTestId('tab-regions').click();
+    
+    // Verify "Neue Region" button appears in header
+    await expect(page.getByTestId('create-region-button')).toBeVisible();
+    
+    // Verify Regionen-Landingpages section
+    await expect(page.getByText('Regionen-Landingpages')).toBeVisible();
+  });
+
+  test('Regionen tab shows predefined regions info section', async ({ page }) => {
+    await adminLogin(page, 'admin', 'euroadria2025');
+    
+    // Click on Regionen tab
+    await page.getByTestId('tab-regions').click();
+    
+    // Verify predefined regions info section
+    await expect(page.getByText('Vordefinierte Regionen')).toBeVisible();
+    
+    // All 5 predefined region slugs should be listed
+    await expect(page.getByText('Skadar Lake', { exact: false })).toBeVisible();
+    await expect(page.getByText('Zabljak', { exact: false })).toBeVisible();
+    await expect(page.getByText('Budva', { exact: false })).toBeVisible();
+    await expect(page.getByText('Niksic', { exact: false })).toBeVisible();
+    await expect(page.getByText('Podgorica', { exact: false })).toBeVisible();
+  });
+
+  test('Create region form opens with slug dropdown', async ({ page }) => {
+    await adminLogin(page, 'admin', 'euroadria2025');
+    
+    // Click on Regionen tab
+    await page.getByTestId('tab-regions').click();
+    
+    // Click create region button
+    await page.getByTestId('create-region-button').click();
+    
+    // Verify region editor form is visible
+    await expect(page.getByTestId('admin-region-editor')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Neue Region' })).toBeVisible();
+    
+    // Verify slug dropdown exists
+    await expect(page.getByText('Slug (URL-Pfad)')).toBeVisible();
+    
+    // Verify Investment-Score field
+    await expect(page.getByText('Investment-Score (0-100)')).toBeVisible();
+  });
+
+  test('Create region form has Investment-Kennzahlen section', async ({ page }) => {
+    await adminLogin(page, 'admin', 'euroadria2025');
+    
+    // Navigate to region creation
+    await page.getByTestId('tab-regions').click();
+    await page.getByTestId('create-region-button').click();
+    
+    // Verify Investment-Kennzahlen section
+    await expect(page.getByText('Investment-Kennzahlen')).toBeVisible();
+    await expect(page.getByText('Preisrange')).toBeVisible();
+    await expect(page.getByText('Wertsteigerung')).toBeVisible();
+    await expect(page.getByText('Zeithorizont')).toBeVisible();
+  });
+
+  test('Create region form has WYSIWYG editor for content', async ({ page }) => {
+    await adminLogin(page, 'admin', 'euroadria2025');
+    
+    // Navigate to region creation
+    await page.getByTestId('tab-regions').click();
+    await page.getByTestId('create-region-button').click();
+    
+    // Verify WYSIWYG section
+    await expect(page.getByText('Haupttext (WYSIWYG)')).toBeVisible();
+  });
+
+  test('Create region form can be cancelled', async ({ page }) => {
+    await adminLogin(page, 'admin', 'euroadria2025');
+    
+    // Navigate to region creation
+    await page.getByTestId('tab-regions').click();
+    await page.getByTestId('create-region-button').click();
+    
+    // Verify form is open
+    await expect(page.getByTestId('admin-region-editor')).toBeVisible();
+    
+    // Click cancel/close button
+    await page.getByRole('button', { name: 'Abbrechen' }).click();
+    
+    // Should be back on dashboard
+    await expect(page.getByTestId('admin-dashboard')).toBeVisible();
+  });
+});

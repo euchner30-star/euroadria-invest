@@ -18,6 +18,7 @@ import SkadarLakePage from "./pages/immobilien/SkadarLakePage";
 import ZabljakPage from "./pages/immobilien/ZabljakPage";
 import BudvaPage from "./pages/immobilien/BudvaPage";
 import NiksicPage from "./pages/immobilien/NiksicPage";
+import PodgoricaPage from "./pages/immobilien/PodgoricaPage";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
           <Route path="/immobilien/zabljak" element={<ZabljakPage />} />
           <Route path="/immobilien/budva" element={<BudvaPage />} />
           <Route path="/immobilien/niksic" element={<NiksicPage />} />
+          <Route path="/immobilien/podgorica" element={<PodgoricaPage />} />
         </Routes>
         <Footer />
       </BrowserRouter>

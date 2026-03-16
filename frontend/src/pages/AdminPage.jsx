@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { adminApi, articlesApi, commentsApi } from '../services/api';
+import { adminApi, articlesApi, commentsApi, regionsApi } from '../services/api';
 import { 
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
   FileText, Loader2, AlertCircle, Check, MessageSquare,
-  CheckCircle, XCircle, Clock, Mail, User, HelpCircle
+  CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHtml } from '../components/admin/WYSIWYGEditor';
@@ -14,7 +14,7 @@ const AdminPage = () => {
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  // Active Tab: 'articles' or 'comments'
+  // Active Tab: 'articles', 'comments', or 'regions'
   const [activeTab, setActiveTab] = useState('articles');
   
   // Articles State
@@ -28,6 +28,12 @@ const AdminPage = () => {
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentsFilter, setCommentsFilter] = useState('pending');
   const [commentsStats, setCommentsStats] = useState({ total: 0, pending: 0, approved: 0, rejected: 0 });
+  
+  // Regions State
+  const [regions, setRegions] = useState([]);
+  const [regionsLoading, setRegionsLoading] = useState(false);
+  const [editingRegion, setEditingRegion] = useState(null);
+  const [isCreatingRegion, setIsCreatingRegion] = useState(false);
   
   const [saveStatus, setSaveStatus] = useState({ type: '', message: '' });
 
@@ -49,6 +55,7 @@ const AdminPage = () => {
         fetchArticles(creds);
         fetchComments(creds);
         fetchCommentsStats(creds);
+        fetchRegions(creds);
       } else {
         sessionStorage.removeItem('adminCredentials');
       }
@@ -70,6 +77,7 @@ const AdminPage = () => {
         fetchArticles(credentials);
         fetchComments(credentials);
         fetchCommentsStats(credentials);
+        fetchRegions(credentials);
       } else {
         setLoginError('Ungültige Zugangsdaten');
       }
@@ -125,6 +133,50 @@ const AdminPage = () => {
       }
     } catch (err) {
       console.error('Failed to fetch comment stats:', err);
+    }
+  };
+
+  const fetchRegions = async (creds) => {
+    setRegionsLoading(true);
+    try {
+      const data = await regionsApi.getAdminRegions(creds);
+      setRegions(data);
+    } catch (err) {
+      console.error('Failed to fetch regions:', err);
+    } finally {
+      setRegionsLoading(false);
+    }
+  };
+
+  const handleSaveRegion = async (regionData) => {
+    setSaveStatus({ type: 'loading', message: 'Speichern...' });
+    try {
+      if (isCreatingRegion) {
+        await regionsApi.create(regionData, credentials);
+        setSaveStatus({ type: 'success', message: 'Region erstellt!' });
+      } else {
+        await regionsApi.update(editingRegion.slug, regionData, credentials);
+        setSaveStatus({ type: 'success', message: 'Region aktualisiert!' });
+      }
+      fetchRegions(credentials);
+      setEditingRegion(null);
+      setIsCreatingRegion(false);
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: err.message });
+    }
+  };
+
+  const handleDeleteRegion = async (slug) => {
+    if (!window.confirm('Region wirklich löschen?')) return;
+    
+    try {
+      await regionsApi.delete(slug, credentials);
+      fetchRegions(credentials);
+      setSaveStatus({ type: 'success', message: 'Region gelöscht!' });
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: err.message });
     }
   };
 
@@ -322,6 +374,49 @@ const AdminPage = () => {
     );
   }
 
+  // Region Editor Form
+  if (editingRegion || isCreatingRegion) {
+    const region = editingRegion || {
+      slug: '',
+      title: '',
+      subtitle: '',
+      investmentScore: 80,
+      priceRange: '€1.000-2.000/m²',
+      potential: '+30-50%',
+      timeHorizon: '3-5 Jahre',
+      content: '',
+      bulletPoints: [],
+      imageUrls: [],
+      apartments: []
+    };
+
+    return (
+      <div className="min-h-screen pt-32 pb-20 px-6" data-testid="admin-region-editor">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-3xl font-semibold font-bold text-ea-dark">
+              {isCreatingRegion ? 'Neue Region' : 'Region bearbeiten'}
+            </h1>
+            <button
+              onClick={() => { setEditingRegion(null); setIsCreatingRegion(false); }}
+              className="text-ea-dark/70 hover:text-ea-dark transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <RegionForm
+            initialData={region}
+            onSave={handleSaveRegion}
+            onCancel={() => { setEditingRegion(null); setIsCreatingRegion(false); }}
+            saveStatus={saveStatus}
+            isCreating={isCreatingRegion}
+          />
+        </div>
+      </div>
+    );
+  }
+
   // Admin Dashboard
   return (
     <div className="min-h-screen pt-32 pb-20 px-6" data-testid="admin-dashboard">
@@ -332,7 +427,7 @@ const AdminPage = () => {
             <h1 className="text-4xl font-semibold font-bold text-ea-dark mb-2">
               Admin <span className="text-ea-gold">Dashboard</span>
             </h1>
-            <p className="text-ea-dark/70">Verwalten Sie Artikel und Kommentare</p>
+            <p className="text-ea-dark/70">Verwalten Sie Artikel, Kommentare und Regionen</p>
           </div>
           <div className="flex items-center space-x-4">
             {activeTab === 'articles' && (
@@ -343,6 +438,16 @@ const AdminPage = () => {
               >
                 <Plus className="w-5 h-5" />
                 <span>Neuer Artikel</span>
+              </button>
+            )}
+            {activeTab === 'regions' && (
+              <button
+                onClick={() => setIsCreatingRegion(true)}
+                className="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all flex items-center space-x-2"
+                data-testid="create-region-button"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Neue Region</span>
               </button>
             )}
             <button
@@ -401,6 +506,18 @@ const AdminPage = () => {
                 {commentsStats.pending}
               </span>
             )}
+          </button>
+          <button
+            onClick={() => setActiveTab('regions')}
+            className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
+              activeTab === 'regions'
+                ? 'bg-ea-gold text-ea-dark font-semibold'
+                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
+            }`}
+            data-testid="tab-regions"
+          >
+            <MapPin className="w-5 h-5" />
+            <span>Regionen ({regions.length})</span>
           </button>
         </div>
 
@@ -615,6 +732,109 @@ const AdminPage = () => {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Regions Tab */}
+        {activeTab === 'regions' && (
+          <div className="space-y-6">
+            {/* Regions Overview */}
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <MapPin className="w-5 h-5 text-ea-gold" />
+                  <span className="text-ea-dark font-medium">Regionen-Landingpages ({regions.length})</span>
+                </div>
+              </div>
+
+              {regionsLoading ? (
+                <div className="p-8 flex justify-center">
+                  <Loader2 className="w-8 h-8 text-ea-gold animate-spin" />
+                </div>
+              ) : regions.length === 0 ? (
+                <div className="p-8 text-center">
+                  <MapPin className="w-12 h-12 text-ea-gold/30 mx-auto mb-3" />
+                  <p className="text-ea-dark/50 mb-4">Noch keine Regionen erstellt.</p>
+                  <button
+                    onClick={() => setIsCreatingRegion(true)}
+                    className="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all inline-flex items-center space-x-2"
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span>Erste Region erstellen</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {regions.map((region) => (
+                    <div 
+                      key={region.slug} 
+                      className="p-4 flex items-center justify-between hover:bg-ea-light transition-colors"
+                      data-testid={`region-row-${region.slug}`}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-3 mb-1">
+                          <span className="text-lg font-semibold text-ea-gold">{region.investmentScore}/100</span>
+                          <span className="text-xs bg-ea-gold/10 text-ea-gold px-2 py-1 rounded">
+                            Score
+                          </span>
+                        </div>
+                        <h3 className="text-ea-dark font-medium">{region.title}</h3>
+                        <p className="text-ea-dark/50 text-sm">{region.subtitle} • {region.priceRange}</p>
+                        <p className="text-ea-dark/40 text-xs mt-1">
+                          /{region.slug} • {region.apartments?.length || 0} Apartments
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2 ml-4">
+                        <button
+                          onClick={() => setEditingRegion(region)}
+                          className="p-2 text-ea-dark/70 hover:text-ea-gold transition-colors"
+                          data-testid={`edit-region-${region.slug}`}
+                        >
+                          <Edit2 className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteRegion(region.slug)}
+                          className="p-2 text-ea-dark/70 hover:text-red-400 transition-colors"
+                          data-testid={`delete-region-${region.slug}`}
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Predefined Regions Info */}
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+              <h3 className="text-ea-dark font-semibold mb-4 flex items-center space-x-2">
+                <HelpCircle className="w-5 h-5 text-ea-gold" />
+                <span>Vordefinierte Regionen</span>
+              </h3>
+              <p className="text-ea-dark/70 text-sm mb-4">
+                Diese 5 Regionen haben bereits statische Landingpages. Erstellen Sie hier 
+                Einträge, um die Inhalte über das CMS zu verwalten:
+              </p>
+              <div className="grid grid-cols-5 gap-3">
+                {['skadar-lake', 'zabljak', 'budva', 'niksic', 'podgorica'].map((slug) => {
+                  const exists = regions.find(r => r.slug === slug);
+                  return (
+                    <div 
+                      key={slug}
+                      className={`p-3 rounded-lg text-center text-sm ${
+                        exists 
+                          ? 'bg-green-500/10 text-green-600 border border-green-500/30' 
+                          : 'bg-ea-light text-ea-dark/50 border border-dashed border-gray-300'
+                      }`}
+                    >
+                      <span className="capitalize">{slug.replace('-', ' ')}</span>
+                      {exists && <CheckCircle className="w-4 h-4 inline ml-1" />}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
@@ -926,6 +1146,309 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus }) => {
             <Save className="w-5 h-5" />
           )}
           <span>Speichern</span>
+        </button>
+      </div>
+    </form>
+  );
+};
+
+// Region Form Component
+const RegionForm = ({ initialData, onSave, onCancel, saveStatus, isCreating }) => {
+  const [formData, setFormData] = useState(initialData);
+  const [bulletPointInput, setBulletPointInput] = useState('');
+  const [imageUrlInput, setImageUrlInput] = useState('');
+
+  const handleChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  const addBulletPoint = () => {
+    if (bulletPointInput.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        bulletPoints: [...(prev.bulletPoints || []), { text: bulletPointInput.trim() }]
+      }));
+      setBulletPointInput('');
+    }
+  };
+
+  const removeBulletPoint = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      bulletPoints: prev.bulletPoints.filter((_, i) => i !== index)
+    }));
+  };
+
+  const addImageUrl = () => {
+    if (imageUrlInput.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        imageUrls: [...(prev.imageUrls || []), imageUrlInput.trim()]
+      }));
+      setImageUrlInput('');
+    }
+  };
+
+  const removeImageUrl = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      imageUrls: prev.imageUrls.filter((_, i) => i !== index)
+    }));
+  };
+
+  // Pre-defined slugs for Montenegro regions
+  const predefinedSlugs = [
+    { slug: 'skadar-lake', name: 'Skadar-Lake' },
+    { slug: 'zabljak', name: 'Žabljak' },
+    { slug: 'budva', name: 'Budva' },
+    { slug: 'niksic', name: 'Nikšić' },
+    { slug: 'podgorica', name: 'Podgorica' },
+  ];
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Basic Info */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
+        <h3 className="text-xl font-bold text-ea-gold flex items-center space-x-2">
+          <MapPin className="w-5 h-5" />
+          <span>Basis-Informationen</span>
+        </h3>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Slug (URL-Pfad) *</label>
+            {isCreating ? (
+              <select
+                value={formData.slug}
+                onChange={(e) => handleChange('slug', e.target.value)}
+                className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+                required
+              >
+                <option value="">Region auswählen...</option>
+                {predefinedSlugs.map(({ slug, name }) => (
+                  <option key={slug} value={slug}>{name} (/immobilien/{slug})</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={formData.slug}
+                disabled
+                className="w-full bg-gray-100 border border-gray-200 rounded-lg px-4 py-3 text-ea-dark/50"
+              />
+            )}
+          </div>
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Investment-Score (0-100) *</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={formData.investmentScore}
+              onChange={(e) => handleChange('investmentScore', parseInt(e.target.value) || 0)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              required
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-ea-dark/80 text-sm mb-2">Titel *</label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) => handleChange('title', e.target.value)}
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            placeholder="z.B. Investieren in Podgorica"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-ea-dark/80 text-sm mb-2">Untertitel *</label>
+          <input
+            type="text"
+            value={formData.subtitle}
+            onChange={(e) => handleChange('subtitle', e.target.value)}
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            placeholder="z.B. Hauptstadt & Business-Hub"
+            required
+          />
+        </div>
+      </div>
+
+      {/* Investment Metrics */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
+        <h3 className="text-xl font-bold text-ea-gold">Investment-Kennzahlen</h3>
+        
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Preisrange</label>
+            <input
+              type="text"
+              value={formData.priceRange}
+              onChange={(e) => handleChange('priceRange', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              placeholder="€1.500-3.000/m²"
+            />
+          </div>
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Wertsteigerung</label>
+            <input
+              type="text"
+              value={formData.potential}
+              onChange={(e) => handleChange('potential', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              placeholder="+35-55%"
+            />
+          </div>
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Zeithorizont</label>
+            <input
+              type="text"
+              value={formData.timeHorizon}
+              onChange={(e) => handleChange('timeHorizon', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              placeholder="2-5 Jahre"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Content (WYSIWYG) */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
+        <h3 className="text-xl font-bold text-ea-gold">Haupttext (WYSIWYG)</h3>
+        <WYSIWYGEditor
+          value={formData.content}
+          onChange={(content) => handleChange('content', content)}
+        />
+      </div>
+
+      {/* Bullet Points */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
+        <h3 className="text-xl font-bold text-ea-gold">Vorteile / Quick-Facts</h3>
+        
+        <div className="flex space-x-2">
+          <input
+            type="text"
+            value={bulletPointInput}
+            onChange={(e) => setBulletPointInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addBulletPoint())}
+            className="flex-1 bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            placeholder="z.B. Flughafen in 20 Min. erreichbar"
+          />
+          <button
+            type="button"
+            onClick={addBulletPoint}
+            className="px-4 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
+
+        {formData.bulletPoints?.length > 0 && (
+          <ul className="space-y-2">
+            {formData.bulletPoints.map((bp, index) => (
+              <li key={index} className="flex items-center justify-between bg-ea-light p-3 rounded-lg">
+                <span className="text-ea-dark">{bp.text}</span>
+                <button
+                  type="button"
+                  onClick={() => removeBulletPoint(index)}
+                  className="text-ea-dark/50 hover:text-red-400 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Image Gallery */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
+        <h3 className="text-xl font-bold text-ea-gold flex items-center space-x-2">
+          <Image className="w-5 h-5" />
+          <span>Bilder-Galerie</span>
+        </h3>
+        
+        <div className="flex space-x-2">
+          <input
+            type="url"
+            value={imageUrlInput}
+            onChange={(e) => setImageUrlInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImageUrl())}
+            className="flex-1 bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            placeholder="https://beispiel.com/bild.jpg"
+          />
+          <button
+            type="button"
+            onClick={addImageUrl}
+            className="px-4 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
+
+        {formData.imageUrls?.length > 0 && (
+          <div className="grid grid-cols-3 gap-4">
+            {formData.imageUrls.map((url, index) => (
+              <div key={index} className="relative group">
+                <img 
+                  src={url} 
+                  alt={`Bild ${index + 1}`} 
+                  className="w-full h-24 object-cover rounded-lg border border-gray-200"
+                  onError={(e) => e.target.src = 'https://via.placeholder.com/150?text=Fehler'}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeImageUrl(index)}
+                  className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Apartments Info */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 className="text-xl font-bold text-ea-gold flex items-center space-x-2">
+          <Building2 className="w-5 h-5" />
+          <span>Apartment-Listings</span>
+        </h3>
+        <p className="text-ea-dark/70 text-sm mt-2">
+          Apartments können nach dem Speichern der Region über die API hinzugefügt werden.
+          Aktuell: {formData.apartments?.length || 0} Apartments
+        </p>
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center justify-end space-x-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="bg-white border border-gray-200 rounded-xl shadow-sm px-6 py-3 text-ea-dark/70 hover:text-ea-dark transition-colors"
+        >
+          Abbrechen
+        </button>
+        <button
+          type="submit"
+          disabled={saveStatus.type === 'loading'}
+          className="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all flex items-center space-x-2"
+        >
+          {saveStatus.type === 'loading' ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <Save className="w-5 h-5" />
+          )}
+          <span>Region speichern</span>
         </button>
       </div>
     </form>

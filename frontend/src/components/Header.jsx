@@ -35,16 +35,17 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // 5 Regionen inkl. Podgorica
   const immobilienRegions = [
     { name: 'Skadar-Lake', path: '/immobilien/skadar-lake', description: 'Naturparadies am See' },
     { name: 'Žabljak', path: '/immobilien/zabljak', description: 'Bergresort Durmitor' },
     { name: 'Budva', path: '/immobilien/budva', description: 'Küstenmetropole' },
     { name: 'Nikšić', path: '/immobilien/niksic', description: 'Industriezentrum' },
+    { name: 'Podgorica', path: '/immobilien/podgorica', description: 'Hauptstadt & Business-Hub' },
   ];
 
-  const navItems = [
-    { name: 'HOME', path: '/' },
-    { name: 'INFRASTRUKTUR-RADAR', path: '/infrastruktur-radar', icon: Map, isNew: true },
+  // Sekundäre Nav-Items (rechts vom Infrastruktur-Radar)
+  const secondaryNavItems = [
     { name: 'BLOG', path: '/blog' },
     { name: 'ÜBER UNS', path: '/team' },
     { name: 'KONTAKT', path: '/contact' },
@@ -61,8 +62,8 @@ const Header = () => {
     >
       <nav className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          {/* Logo mit elegantem Abstand */}
+          <Link to="/" className="flex items-center group mr-8">
             <img 
               src="/euroadria-logo.png" 
               alt="EuroAdria Logo" 
@@ -70,14 +71,27 @@ const Header = () => {
             />
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-4">
-            {/* Immobilienangebot Dropdown */}
+          {/* Desktop Navigation - Neue logische Reihenfolge */}
+          <div className="hidden lg:flex items-center gap-1 flex-1">
+            {/* 1. HOME - Schlicht ganz links */}
+            <Link
+              to="/"
+              className={`text-sm font-semibold tracking-wider transition-colors duration-300 px-4 py-2 rounded-lg ${
+                location.pathname === '/'
+                  ? 'text-ea-gold'
+                  : 'text-ea-dark hover:text-ea-gold'
+              }`}
+              data-testid="nav-home"
+            >
+              HOME
+            </Link>
+
+            {/* 2. IMMOBILIENANGEBOT Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsImmobilienOpen(!isImmobilienOpen)}
                 onMouseEnter={() => setIsImmobilienOpen(true)}
-                className={`flex items-center gap-1.5 text-sm font-semibold tracking-wider transition-colors duration-300 px-3 py-2 rounded-lg
+                className={`flex items-center gap-1.5 text-sm font-semibold tracking-wider transition-colors duration-300 px-4 py-2 rounded-lg
                   ${location.pathname.startsWith('/immobilien') 
                     ? 'text-ea-gold bg-ea-gold/10' 
                     : 'text-ea-dark hover:text-ea-gold hover:bg-ea-gold/5'
@@ -92,7 +106,7 @@ const Header = () => {
               {/* Dropdown Menu */}
               {isImmobilienOpen && (
                 <div 
-                  className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50"
+                  className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50"
                   onMouseLeave={() => setIsImmobilienOpen(false)}
                 >
                   <div className="px-4 py-2 border-b border-gray-100">
@@ -113,30 +127,48 @@ const Header = () => {
               )}
             </div>
 
-            {navItems.map((item) => (
+            {/* 3. INFRASTRUKTUR-RADAR - Hervorgehoben */}
+            <Link
+              to="/infrastruktur-radar"
+              className={`flex items-center gap-2 text-sm font-semibold tracking-wider transition-colors duration-300 px-4 py-2 rounded-lg border border-ea-gold/30 ${
+                location.pathname === '/infrastruktur-radar'
+                  ? 'bg-ea-gold/20 text-ea-dark'
+                  : 'bg-ea-gold/10 text-ea-dark hover:bg-ea-gold/20'
+              }`}
+              data-testid="nav-infrastruktur-radar"
+            >
+              <Map className="w-4 h-4 text-ea-gold" />
+              INFRASTRUKTUR-RADAR
+              <span className="text-[10px] bg-ea-gold text-ea-dark px-1.5 py-0.5 rounded font-bold">NEU</span>
+            </Link>
+
+            {/* Flexible Lücke */}
+            <div className="flex-1"></div>
+
+            {/* Sekundäre Navigation */}
+            {secondaryNavItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`text-sm font-semibold tracking-wider transition-colors duration-300 ${
-                  item.isExclusive || item.isNew
-                    ? 'flex items-center gap-2 px-3 py-2 bg-ea-gold/10 border border-ea-gold/30 rounded-lg text-ea-dark hover:bg-ea-gold/20'
+                className={`text-sm font-semibold tracking-wider transition-colors duration-300 px-3 py-2 rounded-lg ${
+                  item.isExclusive
+                    ? 'flex items-center gap-2 bg-ea-gold/10 border border-ea-gold/30 text-ea-dark hover:bg-ea-gold/20'
                     : location.pathname === item.path
                       ? 'text-ea-gold'
                       : 'text-ea-dark hover:text-ea-gold'
                 }`}
-                data-testid={item.isExclusive ? 'nav-serbia-executive' : item.isNew ? 'nav-infrastruktur-radar' : undefined}
+                data-testid={item.isExclusive ? 'nav-serbia-executive' : undefined}
               >
                 {item.icon && <item.icon className="w-4 h-4 text-ea-gold" />}
                 {item.name}
-                {item.isNew && <span className="text-[10px] bg-ea-gold text-ea-dark px-1.5 py-0.5 rounded font-bold">NEU</span>}
               </Link>
             ))}
           </div>
 
-          {/* Desktop CTA Button - Navy wie euroadria.me */}
+          {/* Desktop CTA Button */}
           <Link
             to="/contact"
-            className="hidden lg:block px-6 py-3 bg-ea-dark text-white text-sm font-semibold rounded-lg hover:bg-ea-navy transition-all duration-300 hover:shadow-lg"
+            className="hidden lg:block ml-4 px-6 py-3 bg-ea-dark text-white text-sm font-semibold rounded-lg hover:bg-ea-navy transition-all duration-300 hover:shadow-lg"
             data-testid="header-cta-button"
           >
             Jetzt Beratung anfragen
@@ -156,11 +188,23 @@ const Header = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Gleiche logische Reihenfolge */}
         {isMobileMenuOpen && (
           <div className="lg:hidden mt-4 pt-4 border-t border-gray-200 animate-fadeIn">
             <div className="flex flex-col gap-2">
-              {/* Mobile Immobilienangebot */}
+              {/* 1. HOME */}
+              <Link
+                to="/"
+                className={`text-base font-semibold tracking-wide transition-all duration-300 rounded-lg px-4 py-3 ${
+                  location.pathname === '/'
+                    ? 'text-ea-gold bg-ea-light'
+                    : 'text-ea-dark hover:text-ea-gold hover:bg-ea-light'
+                }`}
+              >
+                HOME
+              </Link>
+
+              {/* 2. Mobile Immobilienangebot */}
               <div>
                 <button
                   onClick={() => setIsMobileImmobilienOpen(!isMobileImmobilienOpen)}
@@ -194,12 +238,23 @@ const Header = () => {
                 )}
               </div>
 
-              {navItems.map((item) => (
+              {/* 3. INFRASTRUKTUR-RADAR */}
+              <Link
+                to="/infrastruktur-radar"
+                className="flex items-center gap-3 border border-ea-gold/30 bg-ea-gold/10 text-ea-dark text-base font-semibold tracking-wide rounded-lg px-4 py-3"
+              >
+                <Map className="w-5 h-5 text-ea-gold" />
+                INFRASTRUKTUR-RADAR
+                <span className="text-[10px] bg-ea-gold text-ea-dark px-1.5 py-0.5 rounded font-bold ml-auto">NEU</span>
+              </Link>
+
+              {/* Sekundäre Nav-Items */}
+              {secondaryNavItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   className={`text-base font-semibold tracking-wide transition-all duration-300 rounded-lg px-4 py-3 ${
-                    item.isExclusive || item.isNew
+                    item.isExclusive
                       ? 'flex items-center gap-3 border border-ea-gold/30 bg-ea-gold/10 text-ea-dark'
                       : location.pathname === item.path
                         ? 'text-ea-gold bg-ea-light'
@@ -208,9 +263,9 @@ const Header = () => {
                 >
                   {item.icon && <item.icon className="w-5 h-5 text-ea-gold" />}
                   {item.name}
-                  {item.isNew && <span className="text-[10px] bg-ea-gold text-ea-dark px-1.5 py-0.5 rounded font-bold ml-auto">NEU</span>}
                 </Link>
               ))}
+
               <Link
                 to="/contact"
                 className="mt-2 px-4 py-3 bg-ea-dark text-white text-base font-semibold rounded-lg text-center hover:bg-ea-navy"

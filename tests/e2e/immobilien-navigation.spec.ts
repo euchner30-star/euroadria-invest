@@ -17,7 +17,7 @@ test.describe('Immobilienangebot Navigation', () => {
       await expect(dropdownButton).toContainText('IMMOBILIENANGEBOT');
     });
 
-    test('should open dropdown on hover and display all 4 regions', async ({ page }) => {
+    test('should open dropdown on hover and display all 5 regions including Podgorica', async ({ page }) => {
       await page.goto('/');
       await waitForAppReady(page);
       
@@ -25,11 +25,12 @@ test.describe('Immobilienangebot Navigation', () => {
       await dropdownButton.hover();
       await page.waitForTimeout(500);
       
-      // Verify dropdown is visible and contains all regions
+      // Verify dropdown is visible and contains all 5 regions (including Podgorica)
       await expect(page.getByTestId('nav-immobilien-skadar-lake')).toBeVisible();
       await expect(page.getByTestId('nav-immobilien-žabljak')).toBeVisible();
       await expect(page.getByTestId('nav-immobilien-budva')).toBeVisible();
       await expect(page.getByTestId('nav-immobilien-nikšić')).toBeVisible();
+      await expect(page.getByTestId('nav-immobilien-podgorica')).toBeVisible();
     });
 
     test('should open dropdown on click', async ({ page }) => {
@@ -112,6 +113,38 @@ test.describe('Immobilienangebot Navigation', () => {
       // Check that the dropdown has the active styling (gold color)
       await expect(dropdownButton).toHaveClass(/text-ea-gold/);
     });
+
+    test('should navigate to Podgorica page from dropdown', async ({ page }) => {
+      await page.goto('/');
+      await waitForAppReady(page);
+      
+      const dropdownButton = page.getByTestId('nav-immobilien-dropdown');
+      await dropdownButton.hover();
+      await page.waitForTimeout(500);
+      
+      await page.getByTestId('nav-immobilien-podgorica').click();
+      await waitForAppReady(page);
+      
+      await expect(page).toHaveURL(/.*\/immobilien\/podgorica/);
+      await expect(page.getByTestId('podgorica-page')).toBeVisible();
+    });
+
+    test('should display correct navigation order: HOME -> IMMOBILIENANGEBOT -> INFRASTRUKTUR-RADAR', async ({ page }) => {
+      await page.goto('/');
+      await waitForAppReady(page);
+      
+      // Verify HOME link is visible
+      await expect(page.getByTestId('nav-home')).toBeVisible();
+      await expect(page.getByTestId('nav-home')).toContainText('HOME');
+      
+      // Verify IMMOBILIENANGEBOT dropdown is visible
+      await expect(page.getByTestId('nav-immobilien-dropdown')).toBeVisible();
+      
+      // Verify INFRASTRUKTUR-RADAR is visible with NEU badge
+      await expect(page.getByTestId('nav-infrastruktur-radar')).toBeVisible();
+      await expect(page.getByTestId('nav-infrastruktur-radar')).toContainText('INFRASTRUKTUR-RADAR');
+      await expect(page.getByTestId('nav-infrastruktur-radar')).toContainText('NEU');
+    });
   });
 
   // Mobile Navigation Tests
@@ -141,7 +174,7 @@ test.describe('Immobilienangebot Navigation', () => {
       await expect(page.getByTestId('mobile-immobilien-dropdown')).toContainText('IMMOBILIENANGEBOT');
     });
 
-    test('should expand Immobilienangebot accordion and show all regions', async ({ page }) => {
+    test('should expand Immobilienangebot accordion and show all 5 regions including Podgorica', async ({ page }) => {
       await page.goto('/');
       await waitForAppReady(page);
       
@@ -153,11 +186,12 @@ test.describe('Immobilienangebot Navigation', () => {
       await page.getByTestId('mobile-immobilien-dropdown').click();
       await page.waitForTimeout(300);
       
-      // Verify all regions are visible
+      // Verify all 5 regions are visible (including Podgorica)
       await expect(page.getByText('Skadar-Lake').first()).toBeVisible();
       await expect(page.getByText('Žabljak').first()).toBeVisible();
       await expect(page.getByText('Budva').first()).toBeVisible();
       await expect(page.getByText('Nikšić').first()).toBeVisible();
+      await expect(page.getByText('Podgorica').first()).toBeVisible();
     });
 
     test('should navigate to region page from mobile accordion', async ({ page }) => {

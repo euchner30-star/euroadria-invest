@@ -245,4 +245,116 @@ export const commentsApi = {
   }
 };
 
-export default { articlesApi, adminApi, commentsApi, getRelatedArticles };
+// Regions API
+export const regionsApi = {
+  // Get all regions (public)
+  getAll: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/regions`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch regions');
+    }
+    return response.json();
+  },
+
+  // Get region by slug (public)
+  getBySlug: async (slug) => {
+    const response = await fetch(`${API_BASE_URL}/api/regions/${slug}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch region');
+    }
+    return response.json();
+  },
+
+  // Admin: Get all regions
+  getAdminRegions: async (credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/regions`, {
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch regions');
+    }
+    return response.json();
+  },
+
+  // Admin: Create region
+  create: async (regionData, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/regions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      },
+      body: JSON.stringify(regionData)
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to create region');
+    }
+    return response.json();
+  },
+
+  // Admin: Update region
+  update: async (slug, regionData, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/regions/${slug}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      },
+      body: JSON.stringify(regionData)
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to update region');
+    }
+    return response.json();
+  },
+
+  // Admin: Delete region
+  delete: async (slug, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/regions/${slug}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete region');
+    }
+    return response.json();
+  },
+
+  // Admin: Add apartment to region
+  addApartment: async (slug, apartmentData, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/regions/${slug}/apartments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      },
+      body: JSON.stringify(apartmentData)
+    });
+    if (!response.ok) {
+      throw new Error('Failed to add apartment');
+    }
+    return response.json();
+  },
+
+  // Admin: Remove apartment from region
+  removeApartment: async (slug, apartmentId, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/regions/${slug}/apartments/${apartmentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to remove apartment');
+    }
+    return response.json();
+  }
+};
+
+export default { articlesApi, adminApi, commentsApi, regionsApi, getRelatedArticles };
