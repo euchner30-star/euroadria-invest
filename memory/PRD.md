@@ -42,6 +42,17 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
   - Incentives & Subsidies
   - Executive Inquiry Formular (MOCKED)
   - ShareButtons & Kommentare integriert
+- **Infrastruktur-Radar:** `/infrastruktur-radar`
+  - Interaktive Leaflet.js Karte (iframe)
+  - Investment-Scores für 23 Standorte
+  - Lead-Magnet Exposé-Formular
+- **Immobilienangebot-Sektion:** (NEU - 16. März 2026)
+  - Dropdown-Navigation mit 4 Regionen
+  - **Skadar-Lake:** `/immobilien/skadar-lake` - Score 88/100, €800-1.500/m²
+  - **Žabljak:** `/immobilien/zabljak` - Score 91/100, €1.000-2.000/m²
+  - **Budva:** `/immobilien/budva` - Score 82/100, €2.500-5.000/m²
+  - **Nikšić:** `/immobilien/niksic` - Score 85/100, €600-1.200/m²
+  - Jede Seite mit Investment-Kennzahlen, Infrastruktur-Vorteilen, Apartments-Placeholder
 - **Rechtliche Seiten:**
   - Impressum (inkl. Niederlassung)
   - Datenschutz (DSGVO-konform)
@@ -59,7 +70,8 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
   - `GET /api/admin/verify` - Login-Verifizierung
 - **Kommentar-System:**
   - `POST /api/comments` - Kommentar erstellen
-  - `GET /api/comments/{article_id}` - Kommentare abrufen
+  - `GET /api/comments/article/{article_id}` - Kommentare nach ID
+  - `GET /api/comments/slug/{article_slug}` - Kommentare nach Slug (NEU)
   - Admin-Moderation (approve/reject)
 
 ### ✅ SEO
@@ -71,6 +83,23 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 ---
 
 ## Abgeschlossene Arbeiten
+
+### 16. März 2026 - Immobilienangebot-Sektion & Bug-Fixes
+- ✅ Dropdown-Navigation "Immobilienangebot" mit 4 Regionen implementiert
+- ✅ Desktop: Hover/Click Dropdown mit Region-Links und Beschreibungen
+- ✅ Mobile: Accordion-Style mit expandierbaren Region-Links
+- ✅ 4 neue Premium-Landing-Pages erstellt:
+  - Skadar-Lake: Naturparadies (Score 88, +40-60% Potenzial)
+  - Žabljak: Ski-Resort der Zukunft (Score 91, +50-80% Potenzial)
+  - Budva: Küstenmetropole (Score 82, 5-8% Mietrendite)
+  - Nikšić: Industriezentrum (Score 85, +80-120% Potenzial)
+- ✅ Jede Seite mit Investment-Kennzahlen, Infrastruktur-Vorteilen, Apartments-Placeholder
+- ✅ Bug-Fix: WYSIWYG-Editor schreibt Text nicht mehr rückwärts auf Mobile
+  - `handleFocus()` entfernt, Browser handelt Cursor natürlich
+- ✅ Bug-Fix: Kommentar-Funktion auf Serbia Executive Seite repariert
+  - Neuer Slug-basierter Endpoint: `/api/comments/slug/{slug}`
+  - CommentsSection verwendet Slug wenn articleId >= 900
+- ✅ 57 Frontend-Tests + 24 Backend-Tests bestanden
 
 ### 15. März 2026 - SEO & GEO Optimierung
 - ✅ Erweiterte Schema.org strukturierte Daten (Organization, ProfessionalService, InvestmentOrDeposit, FAQPage)
@@ -102,6 +131,10 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 
 ## Bekannte Issues
 
+### Behoben
+- ✅ WYSIWYG-Editor rückwärts-Text auf Mobile (handleFocus entfernt)
+- ✅ Kommentare auf Serbia Executive Seite (Slug-basierter Endpoint)
+
 ### Blockiert
 - **SMTP-Konfiguration:** Backend-Code ist bereit. Wartet auf SMTP-Zugangsdaten vom Benutzer.
 
@@ -118,12 +151,16 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 
 ## Zukünftige Aufgaben (Backlog)
 
+### P0 (Kritisch)
+- ✅ Immobilienangebot-Sektion implementiert
+
 ### P1 (Hoch)
+- Karten-Standorte vom Infrastruktur-Radar mit Immobilien-Seiten verlinken
 - Produktions-Deployment und Custom Domain Setup
 
 ### P2 (Mittel)
 - Newsletter-Integration
-- Immobilien-Sektion
+- Konkrete Immobilien-Listings in Apartments-Sektion einfügen
 
 ### P3 (Niedrig)
 - Enhanced Admin Authentication (Refactoring von Hardcoded Login)
@@ -146,7 +183,8 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 - `GET /api/articles/{slug}` - Einzelner Artikel
 - `GET /api/articles/featured` - Featured Artikel
 - `GET /api/clusters` - Themen-Cluster
-- `GET /api/comments/{article_id}` - Kommentare
+- `GET /api/comments/article/{article_id}` - Kommentare nach Artikel-ID
+- `GET /api/comments/slug/{article_slug}` - Kommentare nach Slug (NEU)
 
 ### Admin (Basic Auth erforderlich)
 - `POST /api/admin/login` - Login
