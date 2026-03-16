@@ -47,11 +47,12 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
   - Investment-Scores für 23 Standorte
   - Lead-Magnet Exposé-Formular
 - **Immobilienangebot-Sektion:** (NEU - 16. März 2026)
-  - Dropdown-Navigation mit 4 Regionen
+  - Dropdown-Navigation mit 5 Regionen
   - **Skadar-Lake:** `/immobilien/skadar-lake` - Score 88/100, €800-1.500/m²
   - **Žabljak:** `/immobilien/zabljak` - Score 91/100, €1.000-2.000/m²
   - **Budva:** `/immobilien/budva` - Score 82/100, €2.500-5.000/m²
   - **Nikšić:** `/immobilien/niksic` - Score 85/100, €600-1.200/m²
+  - **Podgorica:** `/immobilien/podgorica` - Score 90/100, €1.500-3.000/m² (NEU)
   - Jede Seite mit Investment-Kennzahlen, Infrastruktur-Vorteilen, Apartments-Placeholder
 - **Rechtliche Seiten:**
   - Impressum (inkl. Niederlassung)
@@ -100,6 +101,29 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
   - Neuer Slug-basierter Endpoint: `/api/comments/slug/{slug}`
   - CommentsSection verwendet Slug wenn articleId >= 900
 - ✅ 57 Frontend-Tests + 24 Backend-Tests bestanden
+
+### 16. März 2026 - Navigation & Admin-Panel Erweiterung
+- ✅ **Header-Navigation neu geordnet** (Benutzerfreundlich):
+  - Logo → HOME → IMMOBILIENANGEBOT (Dropdown) → INFRASTRUKTUR-RADAR (NEU Badge)
+  - BLOG, ÜBER UNS, KONTAKT, SERBIA EXECUTIVE rechts
+- ✅ **Podgorica als 5. Region** hinzugefügt:
+  - `/immobilien/podgorica` - Investment-Score 90/100
+  - KCCG, Flughafen, Verwaltung als Infrastruktur-Vorteile
+- ✅ **Admin-Panel Regionen-Tab**:
+  - Neuer "Regionen" Tab im Admin Dashboard
+  - CMS-verwaltete Regions-Landingpages
+  - Felder: Titel, Untertitel, Investment-Score, WYSIWYG-Inhalt
+  - Bullet-Points für Quick-Facts
+  - Bilder-Galerie
+  - Vordefinierte Slugs (skadar-lake, zabljak, budva, niksic, podgorica)
+- ✅ **Backend Regions API** implementiert:
+  - `GET /api/regions` - Alle Regionen
+  - `GET /api/regions/{slug}` - Region nach Slug
+  - `POST /api/admin/regions` - Region erstellen
+  - `PUT /api/admin/regions/{slug}` - Region aktualisieren
+  - `DELETE /api/admin/regions/{slug}` - Region löschen
+  - Apartments-Verwaltung pro Region
+- ✅ 73 Frontend-Tests + 36 Backend-Tests bestanden
 
 ### 15. März 2026 - SEO & GEO Optimierung
 - ✅ Erweiterte Schema.org strukturierte Daten (Organization, ProfessionalService, InvestmentOrDeposit, FAQPage)
@@ -184,7 +208,9 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 - `GET /api/articles/featured` - Featured Artikel
 - `GET /api/clusters` - Themen-Cluster
 - `GET /api/comments/article/{article_id}` - Kommentare nach Artikel-ID
-- `GET /api/comments/slug/{article_slug}` - Kommentare nach Slug (NEU)
+- `GET /api/comments/slug/{article_slug}` - Kommentare nach Slug
+- `GET /api/regions` - Alle Regionen (NEU)
+- `GET /api/regions/{slug}` - Region nach Slug (NEU)
 
 ### Admin (Basic Auth erforderlich)
 - `POST /api/admin/login` - Login
@@ -194,6 +220,11 @@ EuroAdria ist eine professionelle Website für eine Investment-, Business- und L
 - `DELETE /api/admin/articles/{id}` - Artikel löschen
 - `GET /api/admin/comments` - Kommentare moderieren
 - `PUT /api/admin/comments/{id}/status` - Kommentar-Status ändern
+- `GET /api/admin/regions` - Regionen verwalten (NEU)
+- `POST /api/admin/regions` - Region erstellen (NEU)
+- `PUT /api/admin/regions/{slug}` - Region bearbeiten (NEU)
+- `DELETE /api/admin/regions/{slug}` - Region löschen (NEU)
+- `POST /api/admin/regions/{slug}/apartments` - Apartment hinzufügen (NEU)
 
 ---
 
