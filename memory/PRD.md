@@ -3,6 +3,17 @@
 ## Projekt-Übersicht
 EuroAdria ist eine professionelle Website für eine Investment-, Business- und Lifestyle-Beratung mit Fokus auf die Adria/Balkan-Region. Die Website dient als Ergänzung zur Haupt-Website euroadria.me.
 
+---
+
+## Letzte Änderungen (16. März 2026 - Abend)
+
+### ✅ Team-Seite CMS Integration Fix
+- **Bug behoben:** Team-Mitglieder-Bilder wurden nicht vom CMS angezeigt
+- **Ursache:** Default-Bildpfade in server.py zeigten auf nicht existierende Dateien (`/uploads/team-holger.webp`)
+- **Lösung:** Bildpfade auf existierende Dateien aktualisiert (`/holger-kuhlmann.jpg`, `/milena-bubanja.jpg`)
+- **Status:** TeamSection.jsx holt Daten von `pagesApi.getBySlug('team')` - CMS funktioniert vollständig
+- **Tests:** 54/54 Backend-Tests, 54/54 Frontend-Tests bestanden
+
 ## Zielgruppe
 - DACH-Investoren (Deutschland, Österreich, Schweiz)
 - Auswanderer und Digital Nomads
