@@ -20,6 +20,11 @@ import ZabljakPage from "./pages/immobilien/ZabljakPage";
 import BudvaPage from "./pages/immobilien/BudvaPage";
 import NiksicPage from "./pages/immobilien/NiksicPage";
 import PodgoricaPage from "./pages/immobilien/PodgoricaPage";
+// Investment Intelligence Pages
+import InvestmentDashboard from "./pages/investment/InvestmentDashboard";
+import ROICalculator from "./pages/investment/ROICalculator";
+import LocationComparison from "./pages/investment/LocationComparison";
+import LocationProfile from "./pages/investment/LocationProfile";
 
 function App() {
   return (
@@ -45,6 +50,11 @@ function App() {
           <Route path="/immobilien/budva" element={<BudvaPage />} />
           <Route path="/immobilien/niksic" element={<NiksicPage />} />
           <Route path="/immobilien/podgorica" element={<PodgoricaPage />} />
+          {/* Investment Intelligence Routes */}
+          <Route path="/investment" element={<InvestmentDashboard />} />
+          <Route path="/investment/rechner" element={<ROICalculator />} />
+          <Route path="/investment/vergleich" element={<LocationComparison />} />
+          <Route path="/investment/standort/:city" element={<LocationProfile />} />
         </Routes>
         <Footer />
         <CookieConsent />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Shield, Map, Building2, ChevronDown } from 'lucide-react';
+import { Menu, X, Shield, Map, Building2, ChevronDown, TrendingUp } from 'lucide-react';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -139,7 +139,22 @@ const Header = () => {
             >
               <Map className="w-4 h-4 text-ea-gold" />
               INFRASTRUKTUR-RADAR
-              <span className="text-[10px] bg-ea-gold text-ea-dark px-1.5 py-0.5 rounded font-bold">NEU</span>
+              <span className="text-[10px] bg-ea-gold text-white px-1.5 py-0.5 rounded-full font-bold">NEU</span>
+            </Link>
+
+            {/* 4. INVESTMENT INTELLIGENCE */}
+            <Link
+              to="/investment"
+              className={`flex items-center gap-2 text-sm font-semibold tracking-wider transition-colors duration-300 px-4 py-2 rounded-lg border border-green-500/30 ${
+                location.pathname.startsWith('/investment')
+                  ? 'bg-green-500/20 text-ea-dark'
+                  : 'bg-green-500/10 text-ea-dark hover:bg-green-500/20'
+              }`}
+              data-testid="nav-investment"
+            >
+              <TrendingUp className="w-4 h-4 text-green-500" />
+              INVESTMENT
+              <span className="text-[10px] bg-green-500 text-white px-1.5 py-0.5 rounded-full font-bold">V12</span>
             </Link>
 
             {/* Flexible Lücke */}
@@ -246,6 +261,16 @@ const Header = () => {
                 <Map className="w-5 h-5 text-ea-gold" />
                 INFRASTRUKTUR-RADAR
                 <span className="text-[10px] bg-ea-gold text-ea-dark px-1.5 py-0.5 rounded font-bold ml-auto">NEU</span>
+              </Link>
+
+              {/* 4. INVESTMENT DASHBOARD */}
+              <Link
+                to="/investment"
+                className="flex items-center gap-3 border border-green-500/30 bg-green-500/10 text-ea-dark text-base font-semibold tracking-wide rounded-lg px-4 py-3"
+              >
+                <TrendingUp className="w-5 h-5 text-green-500" />
+                INVESTMENT
+                <span className="text-[10px] bg-green-500 text-white px-1.5 py-0.5 rounded font-bold ml-auto">V12</span>
               </Link>
 
               {/* Sekundäre Nav-Items */}

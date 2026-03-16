@@ -453,4 +453,199 @@ export const pagesApi = {
   }
 };
 
-export default { articlesApi, adminApi, commentsApi, regionsApi, pagesApi, getRelatedArticles };
+
+// =============================================
+// INVESTMENT INTELLIGENCE API
+// =============================================
+
+export const investmentApi = {
+  // Get all locations with investment scores
+  getLocations: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/locations`);
+    if (!response.ok) throw new Error('Failed to fetch locations');
+    return response.json();
+  },
+
+  // Get single location with related articles
+  getLocation: async (city) => {
+    const response = await fetch(`${API_BASE_URL}/api/locations/${encodeURIComponent(city)}`);
+    if (!response.ok) {
+      if (response.status === 404) return null;
+      throw new Error('Failed to fetch location');
+    }
+    return response.json();
+  },
+
+  // Compare multiple locations
+  compareLocations: async (cities) => {
+    const response = await fetch(`${API_BASE_URL}/api/locations/compare/${encodeURIComponent(cities.join(','))}`);
+    if (!response.ok) throw new Error('Failed to compare locations');
+    return response.json();
+  },
+
+  // Get all infrastructure projects
+  getInfrastructure: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/infrastructure`);
+    if (!response.ok) throw new Error('Failed to fetch infrastructure');
+    return response.json();
+  },
+
+  // Get all opportunity zones
+  getZones: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/zones`);
+    if (!response.ok) throw new Error('Failed to fetch zones');
+    return response.json();
+  },
+
+  // Calculate ROI
+  calculateROI: async (data) => {
+    const response = await fetch(`${API_BASE_URL}/api/calculator/roi`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to calculate ROI');
+    return response.json();
+  },
+
+  // Get dashboard stats
+  getDashboardStats: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/dashboard/stats`);
+    if (!response.ok) throw new Error('Failed to fetch dashboard');
+    return response.json();
+  },
+
+  // Admin: Create location
+  createLocation: async (data, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/locations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to create location');
+    return response.json();
+  },
+
+  // Admin: Update location
+  updateLocation: async (city, data, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/locations/${encodeURIComponent(city)}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to update location');
+    return response.json();
+  },
+
+  // Admin: Delete location
+  deleteLocation: async (city, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/locations/${encodeURIComponent(city)}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      }
+    });
+    if (!response.ok) throw new Error('Failed to delete location');
+    return response.json();
+  },
+
+  // Admin: Create infrastructure project
+  createInfrastructure: async (data, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/infrastructure`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to create project');
+    return response.json();
+  },
+
+  // Admin: Update infrastructure project
+  updateInfrastructure: async (id, data, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/infrastructure/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to update project');
+    return response.json();
+  },
+
+  // Admin: Delete infrastructure project
+  deleteInfrastructure: async (id, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/infrastructure/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      }
+    });
+    if (!response.ok) throw new Error('Failed to delete project');
+    return response.json();
+  },
+
+  // Admin: Create zone
+  createZone: async (data, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/zones`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to create zone');
+    return response.json();
+  },
+
+  // Admin: Update zone
+  updateZone: async (id, data, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/zones/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to update zone');
+    return response.json();
+  },
+
+  // Admin: Delete zone
+  deleteZone: async (id, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/zones/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      }
+    });
+    if (!response.ok) throw new Error('Failed to delete zone');
+    return response.json();
+  },
+
+  // Admin: Seed initial data
+  seedData: async (credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/seed-investment-data`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      }
+    });
+    if (!response.ok) throw new Error('Failed to seed data');
+    return response.json();
+  }
+};
+
+export default { articlesApi, adminApi, commentsApi, regionsApi, pagesApi, investmentApi, getRelatedArticles };

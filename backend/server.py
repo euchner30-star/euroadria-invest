@@ -1135,6 +1135,434 @@ async def delete_page(slug: str, admin: str = Depends(verify_admin)):
     return {"message": "Page deleted (reset to default)", "slug": slug}
 
 
+# =============================================
+# INVESTMENT INTELLIGENCE API
+# =============================================
+
+from investment_models import (
+    LocationBase, LocationCreate, LocationUpdate, Location,
+    InfrastructureProjectBase, InfrastructureProjectCreate, InfrastructureProjectUpdate, InfrastructureProject,
+    OpportunityZoneBase, OpportunityZoneCreate, OpportunityZoneUpdate, OpportunityZone,
+    ROICalculation, ROIResult,
+    calculate_investment_score, calculate_roi,
+    SEED_LOCATIONS, SEED_INFRASTRUCTURE, SEED_ZONES
+)
+import math
+
+
+def calculate_distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Calculate distance between two points using Haversine formula"""
+    R = 6371  # Earth's radius in km
+    lat1_rad = math.radians(lat1)
+    lat2_rad = math.radians(lat2)
+    delta_lat = math.radians(lat2 - lat1)
+    delta_lon = math.radians(lon2 - lon1)
+    
+    a = math.sin(delta_lat/2)**2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(delta_lon/2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    
+    return R * c
+
+
+async def calculate_infrastructure_boost(lat: float, lng: float) -> float:
+    """Calculate infrastructure score boost based on nearby projects"""
+    projects = await db.infrastructure_projects.find({}, {"_id": 0}).to_list(1000)
+    
+    boost = 0
+    for project in projects:
+        distance = calculate_distance_km(lat, lng, project["latitude"], project["longitude"])
+        if distance <= project["impact_radius_km"]:
+            # Closer projects have more impact
+            impact_factor = 1 - (distance / project["impact_radius_km"])
+            
+            # Status-based multiplier
+            status_multiplier = {
+                "built": 1.0,
+                "modernization": 0.8,
+                "construction": 0.6,
+                "planned": 0.3
+            }.get(project["status"], 0.5)
+            
+            # Type-based base boost
+            type_boost = {
+                "airport": 8,
+                "port": 7,
+                "rail": 6,
+                "road": 5,
+                "clinic": 4
+            }.get(project["type"], 5)
+            
+            boost += type_boost * impact_factor * status_multiplier
+    
+    return min(boost, 20)  # Cap at 20 points
+
+
+# ---- LOCATIONS API ----
+
+@api_router.get("/locations")
+async def get_all_locations():
+    """Get all investment locations with calculated scores"""
+    locations = await db.locations.find({}, {"_id": 0}).to_list(1000)
+    
+    # Recalculate scores for each location
+    for loc in locations:
+        infra_boost = await calculate_infrastructure_boost(loc["latitude"], loc["longitude"])
+        adjusted_infra = min(loc["infrastructure_score"] + infra_boost, 100)
+        
+        loc["investment_score"] = calculate_investment_score(
+            adjusted_infra,
+            loc["tourism_growth"],
+            loc["rental_yield"],
+            loc["price_growth"]
+        )
+        loc["infrastructure_boost"] = round(infra_boost, 1)
+    
+    # Sort by investment score
+    locations.sort(key=lambda x: x["investment_score"], reverse=True)
+    
+    return locations
+
+
+@api_router.get("/locations/{city}")
+async def get_location(city: str):
+    """Get a specific location by city name"""
+    location = await db.locations.find_one(
+        {"city": {"$regex": f"^{city}$", "$options": "i"}},
+        {"_id": 0}
+    )
+    
+    if not location:
+        raise HTTPException(status_code=404, detail="Location not found")
+    
+    # Calculate infrastructure boost
+    infra_boost = await calculate_infrastructure_boost(location["latitude"], location["longitude"])
+    adjusted_infra = min(location["infrastructure_score"] + infra_boost, 100)
+    
+    location["investment_score"] = calculate_investment_score(
+        adjusted_infra,
+        location["tourism_growth"],
+        location["rental_yield"],
+        location["price_growth"]
+    )
+    location["infrastructure_boost"] = round(infra_boost, 1)
+    
+    # Get related blog articles
+    related_articles = await db.articles.find(
+        {"$or": [
+            {"title": {"$regex": city, "$options": "i"}},
+            {"content": {"$regex": city, "$options": "i"}},
+            {"cluster": {"$regex": location["country"], "$options": "i"}}
+        ]},
+        {"_id": 0, "id": 1, "title": 1, "slug": 1, "excerpt": 1, "image": 1}
+    ).limit(5).to_list(5)
+    
+    location["related_articles"] = related_articles
+    
+    return location
+
+
+@api_router.get("/locations/compare/{cities}")
+async def compare_locations(cities: str):
+    """Compare multiple locations (comma-separated city names)"""
+    city_list = [c.strip() for c in cities.split(",")]
+    
+    comparisons = []
+    for city in city_list:
+        location = await db.locations.find_one(
+            {"city": {"$regex": f"^{city}$", "$options": "i"}},
+            {"_id": 0}
+        )
+        if location:
+            infra_boost = await calculate_infrastructure_boost(location["latitude"], location["longitude"])
+            adjusted_infra = min(location["infrastructure_score"] + infra_boost, 100)
+            
+            location["investment_score"] = calculate_investment_score(
+                adjusted_infra,
+                location["tourism_growth"],
+                location["rental_yield"],
+                location["price_growth"]
+            )
+            comparisons.append(location)
+    
+    return comparisons
+
+
+@api_router.post("/admin/locations")
+async def create_location(location: LocationCreate, admin: str = Depends(verify_admin)):
+    """Create a new investment location"""
+    existing = await db.locations.find_one({"city": location.city})
+    if existing:
+        raise HTTPException(status_code=400, detail="Location already exists")
+    
+    loc_dict = location.model_dump()
+    loc_dict["id"] = str(uuid.uuid4())
+    loc_dict["investment_score"] = calculate_investment_score(
+        location.infrastructure_score,
+        location.tourism_growth,
+        location.rental_yield,
+        location.price_growth
+    )
+    loc_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.locations.insert_one(loc_dict)
+    loc_dict.pop("_id", None)
+    
+    return loc_dict
+
+
+@api_router.put("/admin/locations/{city}")
+async def update_location(city: str, update: LocationUpdate, admin: str = Depends(verify_admin)):
+    """Update an investment location"""
+    update_data = {k: v for k, v in update.model_dump().items() if v is not None}
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.locations.update_one(
+        {"city": {"$regex": f"^{city}$", "$options": "i"}},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Location not found")
+    
+    updated = await db.locations.find_one(
+        {"city": {"$regex": f"^{city}$", "$options": "i"}},
+        {"_id": 0}
+    )
+    
+    # Recalculate score
+    updated["investment_score"] = calculate_investment_score(
+        updated["infrastructure_score"],
+        updated["tourism_growth"],
+        updated["rental_yield"],
+        updated["price_growth"]
+    )
+    
+    return updated
+
+
+@api_router.delete("/admin/locations/{city}")
+async def delete_location(city: str, admin: str = Depends(verify_admin)):
+    """Delete an investment location"""
+    result = await db.locations.delete_one({"city": {"$regex": f"^{city}$", "$options": "i"}})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Location not found")
+    return {"message": "Location deleted", "city": city}
+
+
+# ---- INFRASTRUCTURE API ----
+
+@api_router.get("/infrastructure")
+async def get_all_infrastructure():
+    """Get all infrastructure projects"""
+    projects = await db.infrastructure_projects.find({}, {"_id": 0}).to_list(1000)
+    return projects
+
+
+@api_router.get("/infrastructure/{project_id}")
+async def get_infrastructure_project(project_id: str):
+    """Get a specific infrastructure project"""
+    project = await db.infrastructure_projects.find_one({"id": project_id}, {"_id": 0})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return project
+
+
+@api_router.post("/admin/infrastructure")
+async def create_infrastructure(project: InfrastructureProjectCreate, admin: str = Depends(verify_admin)):
+    """Create a new infrastructure project"""
+    proj_dict = project.model_dump()
+    proj_dict["id"] = str(uuid.uuid4())
+    proj_dict["created_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.infrastructure_projects.insert_one(proj_dict)
+    proj_dict.pop("_id", None)
+    
+    return proj_dict
+
+
+@api_router.put("/admin/infrastructure/{project_id}")
+async def update_infrastructure(project_id: str, update: InfrastructureProjectUpdate, admin: str = Depends(verify_admin)):
+    """Update an infrastructure project"""
+    update_data = {k: v for k, v in update.model_dump().items() if v is not None}
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    result = await db.infrastructure_projects.update_one({"id": project_id}, {"$set": update_data})
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    updated = await db.infrastructure_projects.find_one({"id": project_id}, {"_id": 0})
+    return updated
+
+
+@api_router.delete("/admin/infrastructure/{project_id}")
+async def delete_infrastructure(project_id: str, admin: str = Depends(verify_admin)):
+    """Delete an infrastructure project"""
+    result = await db.infrastructure_projects.delete_one({"id": project_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return {"message": "Project deleted", "id": project_id}
+
+
+# ---- OPPORTUNITY ZONES API ----
+
+@api_router.get("/zones")
+async def get_all_zones():
+    """Get all opportunity zones"""
+    zones = await db.opportunity_zones.find({}, {"_id": 0}).to_list(1000)
+    return zones
+
+
+@api_router.get("/zones/{zone_id}")
+async def get_zone(zone_id: str):
+    """Get a specific opportunity zone"""
+    zone = await db.opportunity_zones.find_one({"id": zone_id}, {"_id": 0})
+    if not zone:
+        raise HTTPException(status_code=404, detail="Zone not found")
+    return zone
+
+
+@api_router.post("/admin/zones")
+async def create_zone(zone: OpportunityZoneCreate, admin: str = Depends(verify_admin)):
+    """Create a new opportunity zone"""
+    zone_dict = zone.model_dump()
+    zone_dict["id"] = str(uuid.uuid4())
+    
+    await db.opportunity_zones.insert_one(zone_dict)
+    zone_dict.pop("_id", None)
+    
+    return zone_dict
+
+
+@api_router.put("/admin/zones/{zone_id}")
+async def update_zone(zone_id: str, update: OpportunityZoneUpdate, admin: str = Depends(verify_admin)):
+    """Update an opportunity zone"""
+    update_data = {k: v for k, v in update.model_dump().items() if v is not None}
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    result = await db.opportunity_zones.update_one({"id": zone_id}, {"$set": update_data})
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Zone not found")
+    
+    updated = await db.opportunity_zones.find_one({"id": zone_id}, {"_id": 0})
+    return updated
+
+
+@api_router.delete("/admin/zones/{zone_id}")
+async def delete_zone(zone_id: str, admin: str = Depends(verify_admin)):
+    """Delete an opportunity zone"""
+    result = await db.opportunity_zones.delete_one({"id": zone_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Zone not found")
+    return {"message": "Zone deleted", "id": zone_id}
+
+
+# ---- ROI CALCULATOR API ----
+
+@api_router.post("/calculator/roi", response_model=ROIResult)
+async def calculate_property_roi(calc: ROICalculation):
+    """Calculate ROI for a property investment"""
+    return calculate_roi(calc)
+
+
+# ---- DASHBOARD API ----
+
+@api_router.get("/dashboard/stats")
+async def get_dashboard_stats():
+    """Get investment dashboard statistics"""
+    locations = await db.locations.find({}, {"_id": 0}).to_list(1000)
+    projects = await db.infrastructure_projects.find({}, {"_id": 0}).to_list(1000)
+    zones = await db.opportunity_zones.find({}, {"_id": 0}).to_list(1000)
+    
+    # Recalculate scores
+    for loc in locations:
+        infra_boost = await calculate_infrastructure_boost(loc["latitude"], loc["longitude"])
+        adjusted_infra = min(loc["infrastructure_score"] + infra_boost, 100)
+        loc["investment_score"] = calculate_investment_score(
+            adjusted_infra,
+            loc["tourism_growth"],
+            loc["rental_yield"],
+            loc["price_growth"]
+        )
+    
+    # Sort for rankings
+    by_score = sorted(locations, key=lambda x: x["investment_score"], reverse=True)
+    by_yield = sorted(locations, key=lambda x: x["rental_yield"], reverse=True)
+    by_growth = sorted(locations, key=lambda x: x["price_growth"], reverse=True)
+    
+    # Filter new infrastructure projects
+    new_projects = [p for p in projects if p["status"] in ["construction", "planned"]]
+    
+    return {
+        "total_locations": len(locations),
+        "total_infrastructure": len(projects),
+        "total_zones": len(zones),
+        "top_investment": by_score[:5],
+        "highest_yield": by_yield[:5],
+        "strongest_growth": by_growth[:5],
+        "new_infrastructure": new_projects[:5],
+        "countries": {
+            "Montenegro": len([l for l in locations if l["country"] == "Montenegro"]),
+            "Serbien": len([l for l in locations if l["country"] == "Serbien"])
+        }
+    }
+
+
+# ---- SEED DATA API ----
+
+@api_router.post("/admin/seed-investment-data")
+async def seed_investment_data(admin: str = Depends(verify_admin)):
+    """Seed the database with initial investment data"""
+    
+    # Seed Locations
+    loc_count = await db.locations.count_documents({})
+    if loc_count == 0:
+        for loc in SEED_LOCATIONS:
+            loc_dict = loc.copy()
+            loc_dict["id"] = str(uuid.uuid4())
+            loc_dict["investment_score"] = calculate_investment_score(
+                loc["infrastructure_score"],
+                loc["tourism_growth"],
+                loc["rental_yield"],
+                loc["price_growth"]
+            )
+            loc_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+            await db.locations.insert_one(loc_dict)
+    
+    # Seed Infrastructure
+    infra_count = await db.infrastructure_projects.count_documents({})
+    if infra_count == 0:
+        for proj in SEED_INFRASTRUCTURE:
+            proj_dict = proj.copy()
+            proj_dict["id"] = str(uuid.uuid4())
+            proj_dict["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.infrastructure_projects.insert_one(proj_dict)
+    
+    # Seed Zones
+    zone_count = await db.opportunity_zones.count_documents({})
+    if zone_count == 0:
+        for zone in SEED_ZONES:
+            zone_dict = zone.copy()
+            zone_dict["id"] = str(uuid.uuid4())
+            await db.opportunity_zones.insert_one(zone_dict)
+    
+    return {
+        "message": "Investment data seeded successfully",
+        "locations": len(SEED_LOCATIONS),
+        "infrastructure": len(SEED_INFRASTRUCTURE),
+        "zones": len(SEED_ZONES)
+    }
+
+
 # Include the router in the main app
 app.include_router(api_router)
 

@@ -1,33 +1,77 @@
 # EuroAdria - Product Requirements Document
 
 ## Projekt-Übersicht
-EuroAdria ist eine professionelle Website für eine Investment-, Business- und Lifestyle-Beratung mit Fokus auf die Adria/Balkan-Region. Die Website dient als Ergänzung zur Haupt-Website euroadria.me.
+EuroAdria ist eine professionelle Investment-Intelligence-Plattform für die Adria/Balkan-Region. Die Website dient als Ergänzung zur Haupt-Website euroadria.me.
 
 ---
 
-## Letzte Änderungen (16. März 2026 - Abend)
+## Letzte Änderungen (16. März 2026 - Nacht)
 
-### ✅ Team-Seite CMS Integration Fix
-- **Bug behoben:** Team-Mitglieder-Bilder wurden nicht vom CMS angezeigt
-- **Ursache:** Default-Bildpfade in server.py zeigten auf nicht existierende Dateien (`/uploads/team-holger.webp`)
-- **Lösung:** Bildpfade auf existierende Dateien aktualisiert (`/holger-kuhlmann.jpg`, `/milena-bubanja.jpg`)
-- **Status:** TeamSection.jsx holt Daten von `pagesApi.getBySlug('team')` - CMS funktioniert vollständig
-- **Tests:** 54/54 Backend-Tests, 54/54 Frontend-Tests bestanden
+### ✅ Investment Intelligence Platform V11 + V12 KOMPLETT IMPLEMENTIERT
 
-### ✅ DSGVO / Rechtliche Compliance Features
-- **Cookie-Consent Banner implementiert:**
-  - Erscheint beim ersten Besuch der Website
-  - 3 Optionen: "Alle akzeptieren", "Nur notwendige", "Einstellungen anpassen"
-  - Detaillierte Kategorien: Notwendig (immer aktiv), Analyse, Marketing
-  - Speichert Einwilligung in localStorage (`euroadria_cookie_consent`)
-  - Links zu Datenschutz & Impressum
-  - Datei: `/app/frontend/src/components/CookieConsent.jsx`
+**1. Investment-Standortdatenbank:**
+- 15 Städte (8 Montenegro, 7 Serbien) mit vollständigen Daten
+- Felder: price_per_m2, rental_yield, tourism_growth, population_growth, price_growth, infrastructure_score
+- API: `/api/locations`, `/api/locations/{city}`
 
-- **Datenschutz-Einwilligung im Kontaktformular:**
-  - Pflicht-Checkbox vor dem Absenden
-  - Button deaktiviert bis Einwilligung gegeben
-  - Link zur Datenschutzerklärung
-  - Datei: `/app/frontend/src/pages/ContactPage.jsx` aktualisiert
+**2. Automatische Investment-Score-Engine:**
+- Formel: 0.30×Infrastruktur + 0.25×Tourismus + 0.25×Mietrendite + 0.20×Preiswachstum
+- Dynamisch berechnet inkl. Infrastruktur-Boost durch nahe Projekte
+- Top-Scores: Tivat (79.3), Zlatibor (75.3), Ulcinj (75.0)
+
+**3. Dynamische Map-Daten:**
+- APIs: `/api/locations`, `/api/infrastructure`, `/api/zones`
+- 10 Infrastrukturprojekte mit Impact-Radius
+- 8 Opportunity-Zonen (5 Montenegro, 3 Serbien)
+
+**4. Infrastruktur-Impact-System:**
+- Automatische Score-Boosts basierend auf Projektnähe
+- Status-gewichtete Berechnung (built > modernization > construction > planned)
+- Typ-basierte Impact-Faktoren (Flughafen > Hafen > Bahn > Straße > Klinik)
+
+**5. Opportunity-Cluster:**
+- Montenegro: Boka Premium, Budva Core, Bar System, Ulcinj South, Northern Growth Belt
+- Serbien: Belgrade Business Core, Novi Sad Tech Corridor, Serbia Logistics Corridor
+
+**6. Standortprofile:**
+- Vollständige Profilseiten für jede Stadt
+- Kennzahlen, Score-Berechnung, Chancen/Risiken, Use-Cases
+- Blog-Integration (verwandte Artikel)
+- Route: `/investment/standort/{city}`
+
+**7. Admin-Panel Erweiterung:**
+- CRUD für Standorte, Infrastruktur, Zonen
+- Automatische Karten-Aktualisierung
+
+**8. ROI-Rechner (V12):**
+- Eingaben: Kaufpreis, Renovierung, Nebenkosten, Miete, Leerstand, laufende Kosten
+- Berechnet: Jährlicher Cashflow, ROI%, Netto-Rendite%, Break-Even-Jahre
+- Route: `/investment/rechner`
+
+**9. Standortvergleich:**
+- Bis zu 5 Städte gleichzeitig vergleichen
+- Vergleichstabelle mit Best-Value-Markierung
+- Route: `/investment/vergleich`
+
+**10. Investment-Dashboard:**
+- Top Investment-Scores, Höchste Mietrenditen, Stärkstes Preiswachstum
+- Aktuelle Infrastrukturprojekte
+- Quick-Stats und Navigation
+- Route: `/investment`
+
+**11. Navigation Update:**
+- Neuer "INVESTMENT V12" Button in der Hauptnavigation
+- Mobile Navigation aktualisiert
+
+---
+
+### ✅ DSGVO / Rechtliche Compliance (früher implementiert)
+- Cookie-Consent Banner (3 Optionen, localStorage)
+- Datenschutz-Einwilligung im Kontaktformular
+
+### ✅ Team-Seite CMS Integration (früher implementiert)
+- Team-Bilder werden vom CMS geladen
+- 54/54 Tests bestanden
 
 ## Zielgruppe
 - DACH-Investoren (Deutschland, Österreich, Schweiz)
