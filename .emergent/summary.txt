@@ -1,0 +1,156 @@
+<analysis>**original_problem_statement:**
+The user, 'EuroAdria', an investment consultancy, requires a high-end, professional website. The project has evolved from a simple CMS to a full-fledged Investment Intelligence Platform for the Balkan region.
+
+Key requirements implemented include:
+1.  **Investment Intelligence Platform (V11+V12):** A data-driven system with a database of investment locations, an automatic scoring engine, an ROI calculator, location comparison tools, and detailed profile pages for each city.
+2.  **AEO (AI Engine Optimization):** Integration of media references from n-tv and RTL, including JSON-LD schema updates, a new blog post, and a dedicated FAQ section to boost E-E-A-T signals.
+3.  **Full-Stack CMS:** An admin panel to manage site content, articles, and pages.
+4.  **Functional Contact Form:** A secure contact form that saves inquiries to the database and sends email notifications via a configured SMTP server.
+5.  **UI/UX Enhancements:** Creation of a Mega-Menu for the real estate listings, bug fixes, and general UI polish.
+
+The most recent request is to enhance the Admin Panel's Page-Builder to allow for more granular control over the homepage, specifically enabling the user to change the main hero section's background image.
+
+**User's preferred language**: German
+
+**what currently exists?**
+A comprehensive full-stack application (React/FastAPI/MongoDB) functioning as a data-driven investment platform for the Balkan region.
+- **Frontend:** Includes a dynamic Investment Dashboard, ROI Calculator, Location Comparison tool, and detailed, auto-generated profile pages for 17 investment locations. The UI features a Mega-Menu for navigation, is legally compliant (Cookie Banner, DSGVO), and is optimized for AEO with integrated media references.
+- **Backend:** A robust FastAPI server with a suite of APIs for the investment platform (, ), a full CMS, and a working contact form endpoint that sends emails via a configured Strato SMTP server.
+- **Admin Panel:** A secure admin dashboard at  allows management of articles, comments, and pages via a Seiten-Editor (Page Builder). Admin credentials have been updated to use the user's email and a new secure password.
+
+**Last working item**:
+    - Last item agent was working: The user wants to edit more of the homepage from the admin panel, starting with the hero section's background image. The agent identified the need to expand the existing Seiten-Editor in  and was about to implement the image upload functionality for the hero section and connect it to the frontend  component.
+    - Status: IN PROGRESS
+    - Agent Testing Done: N
+    - Which testing method agent to use? both.
+        1. **Backend:** Test the  endpoint to ensure it correctly saves and retrieves the new  URL for the hero section.
+        2. **Frontend:** Use the screenshot tool to verify that after uploading a new image in the admin panel, the live homepage's hero background is updated accordingly.
+    - User Testing Done: N
+
+**All Pending/In progress Issue list**:
+  Issue 1:  (P0) Enhance Admin Panel for full Home Page control.
+  Issue 2:  (P1) Implement Heatmap Visualizations on the investment map.
+  Issue 3:  (P2) Create Admin Panel UI for Investment Data (Locations, Infrastructure).
+  Issue 4:  (P3) Code Cleanup: Remove hardcoded Serbian cities from the seed data file.
+  Issue 5:  (P4) Implement Apartment-Listing functionality.
+  Issue 6:  (P5) Secure uploaded image files.
+  Issue 7:  (P6) [RECURRING] Re-verify WYSIWYG editor's backward text on mobile bug.
+  
+  Issues Detail:
+  - Issue 1: 
+     - Attempted fixes: The agent has analyzed  and planned to add an  to the existing hero section editor.
+     - Next debug checklist: 
+        1. In , ensure the  model's hero section can store a  URL.
+        2. In , add an  component to the 'hero' section within the .
+        3. In , fetch the page data from the  endpoint.
+        4. Pass the fetched  URL as a prop to the  component and use it to set the background dynamically.
+     - Why fix this issue and what will be achieved with the fix? This fulfills a direct user request, giving them more autonomy over their site's visual identity and completing the vision for the homepage CMS.
+     - Status:  IN PROGRESS
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? Both
+     - Blocked on other issue: None
+  - Issue 2: 
+     - Attempted fixes: None.
+     - Next debug checklist: 
+        1. Research and integrate a Leaflet heatmap plugin (e.g., ).
+        2. Add UI controls to the map page to toggle heatmap layers.
+        3. Fetch data from  and process it to generate heatmap data points for , , etc.
+     - Why fix this issue and what will be achieved with the fix? Completes a key data visualization feature from the V11 Investment Intelligence Platform specification.
+     - Status:  NOT STARTED
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? Frontend
+     - Blocked on other issue: None.
+  - Issue 3: 
+     - Attempted fixes: None.
+     - Next debug checklist: 
+        1. In , add new tabs for Standorte, Infrastruktur, etc.
+        2. Create new editor components (e.g., ) for each tab to provide full CRUD functionality for the investment data models.
+     - Why fix this issue and what will be achieved with the fix? Enables the user to manage the core data of the investment platform, making the application truly dynamic.
+     - Status:  NOT STARTED
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? Both
+     - Blocked on other issue: None.
+
+**In progress Task List**:
+  - Task 1: Complete the Investment Intelligence Platform feature set.
+     - Where to resume: The agent has finished the core user-facing pages. The work should resume on the admin-facing features (Issue #3) and advanced data visualizations (Issue #2).
+     - What will be achieved with this? Full completion of the user's major V11/V12 feature request.
+     - Status:  IN PROGRESS
+     - Should Test frontend/backend/both after fix? Both
+     - Blocked on something: None.
+
+**Upcoming and Future Tasks**
+- **Upcoming Tasks:**
+    - (P1) Implement Heatmap Visualizations (Issue #2).
+    - (P1) Implement Admin Panel UI for Investment Data (Issue #3).
+    - (P2) Code Cleanup: Remove old Serbian cities from seed data (Issue #4).
+- **Future Tasks:**
+    - (P2) Implement Apartment-Listing functionality (Issue #5).
+    - (P3) Secure uploaded image files (Issue #6).
+    - (P3) Newsletter Integration.
+    - (P3) Link map markers to region pages.
+
+**Completed work in this session**
+- **Investment Intelligence Platform (Core):** Implemented backend and frontend for the Dashboard, ROI Calculator, Location Comparison, and dynamic Location Profile pages.
+- **Data Expansion:** Added 7 new investment locations from user's text, updated the database, and recalculated all investment scores.
+- **AEO & Media Integration:** Injected JSON-LD schema, created a media-focused blog post, and added an FAQ section and Trust Badge to the homepage referencing n-tv and RTL.
+- **Contact Form & SMTP:** Built a fully functional contact form that sends email notifications to  using the user's Strato SMTP credentials.
+- **UI/UX Overhaul:**
+    - Reworked the real estate dropdown into a categorized Mega-Menu.
+    - Fixed UI bugs: removed the hero scroll indicator and fixed the header covering page titles.
+- **Security & Admin:** Updated admin credentials to use the user's email and a new secure password.
+- **Social Media:** Updated all social media profile links site-wide.
+- **Bug Fix:** Fixed the critical CMS bug where the Team page was not showing updated images from the admin panel.
+
+**Earlier issues found/mentioned but not fixed**
+   - **Issue 1: Image Security.** Uploaded files in  are publicly accessible. The user has previously expressed concern about site security.
+   - **Issue 2: WYSIWYG editor mobile bug.** A recurring issue where text input direction is incorrect on mobile. Needs re-verification.
+
+**Known issue recurrence from previous fork**
+  - **Issue recurrence in previous fork:** WYSIWYG editor text writing backward on mobile.
+  - **Recurrence count:** 2
+  - **Status:** TESTING PENDING
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+- **Frontend:** React, React Router, TailwindCSS, Leaflet.js
+- **Backend:** FastAPI, Pydantic, Motor (async MongoDB driver)
+- **Database:** MongoDB
+- **Key Architecture:** A data-driven platform where backend logic (e.g., automatic investment score calculation) feeds a dynamic React frontend. A monolithic admin page provides CMS capabilities.
+
+**key DB schema**
+  - **pages:** 
+  - **locations:** (New) 
+  - **infrastructure:** (New) 
+  - **contacts:** (New) 
+
+**changes in tech stack**
+- No new technologies were added in this session.
+
+**All files of reference**
+- : The monolithic admin panel file being modified for the CMS enhancement.
+- : The page that will consume the new CMS fields (hero background).
+- : The component that needs to render the dynamic background.
+- : The main backend file, where the  and  API logic resides.
+- : Contains all the seed data and models for the new investment platform.
+
+**Areas that need refactoring**:
+- ****: Now over 1900 lines, it is critically difficult to maintain. It should be broken down into sub-components for each management tab (e.g., , ).
+- ****: Now over 1600 lines, this monolith should be refactored into a standard FastAPI project structure with separate directories for routes, models, and services.
+
+**key api endpoints**
+- : (New) Handles contact form submissions and triggers email notifications.
+- : (New) Serves all investment location data for the frontend platform.
+- : The endpoint used by the Page-Builder to save content.
+- : Endpoint for admin authentication.
+
+**Critical Info for New Agent**
+- **Top Priority:** Focus on completing the user's request to make the homepage hero background editable from the admin panel. This validates the CMS concept for the user.
+- **User Persona:** The user is the business owner, deeply involved, and values features that enhance professionalism, authority (AEO), and user empowerment (CMS). They will provide large, ambitious requests.
+- **Monoliths:** Exercise extreme caution when editing  and . They are very large and fragile. Small, targeted changes are safer than large refactors unless a refactor is the main task.
+- **Credentials in :** The agent has correctly stored all credentials (DB, admin, SMTP) in  files. Ensure this practice is maintained. The user provided their SMTP password in chat; while secure now, a reminder to rotate it post-deployment is wise.
+
+**documents and test reports created in this job**
+  - : Updated multiple times to reflect completed features</analysis>

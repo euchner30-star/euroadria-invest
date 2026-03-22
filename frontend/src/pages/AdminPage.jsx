@@ -1730,6 +1730,47 @@ const SectionEditor = ({ section, onChange, onDataChange, credentials }) => {
     return (
       <div className="space-y-4">
         <h4 className="text-lg font-semibold text-ea-dark">Hero-Bereich</h4>
+        
+        {/* Background Image */}
+        <div>
+          <label className="block text-ea-dark/80 text-sm mb-2">Hintergrundbild</label>
+          <ImageUploader
+            currentImage={data.backgroundImage}
+            onImageUploaded={(url) => onDataChange('backgroundImage', url)}
+            credentials={credentials}
+            label="Hero-Hintergrund"
+          />
+          {data.backgroundImage && (
+            <div className="mt-2 relative rounded-lg overflow-hidden h-32">
+              <img 
+                src={data.backgroundImage} 
+                alt="Hero Background" 
+                className="w-full h-full object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => onDataChange('backgroundImage', '')}
+                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Overlay Opacity */}
+        <div>
+          <label className="block text-ea-dark/80 text-sm mb-2">Overlay-Stärke: {data.overlayOpacity || 60}%</label>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={data.overlayOpacity || 60}
+            onChange={(e) => onDataChange('overlayOpacity', parseInt(e.target.value))}
+            className="w-full"
+          />
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-ea-dark/80 text-sm mb-2">Haupttitel (H1)</label>
@@ -1750,6 +1791,19 @@ const SectionEditor = ({ section, onChange, onDataChange, credentials }) => {
             />
           </div>
         </div>
+        
+        {/* Tagline */}
+        <div>
+          <label className="block text-ea-dark/80 text-sm mb-2">Tagline (über dem Titel)</label>
+          <input
+            type="text"
+            value={data.tagline || ''}
+            onChange={(e) => onDataChange('tagline', e.target.value)}
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            placeholder="z.B. EuroAdria Corporate Solutions"
+          />
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-ea-dark/80 text-sm mb-2">CTA Button Text</label>
@@ -1769,6 +1823,30 @@ const SectionEditor = ({ section, onChange, onDataChange, credentials }) => {
               onChange={(e) => onDataChange('ctaLink', e.target.value)}
               className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
               placeholder="/contact"
+            />
+          </div>
+        </div>
+        
+        {/* Secondary CTA */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Zweiter Button Text (optional)</label>
+            <input
+              type="text"
+              value={data.secondaryCtaText || ''}
+              onChange={(e) => onDataChange('secondaryCtaText', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              placeholder="z.B. Mehr erfahren"
+            />
+          </div>
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Zweiter Button Link</label>
+            <input
+              type="text"
+              value={data.secondaryCtaLink || ''}
+              onChange={(e) => onDataChange('secondaryCtaLink', e.target.value)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              placeholder="/investment"
             />
           </div>
         </div>

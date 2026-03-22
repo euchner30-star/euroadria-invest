@@ -11,7 +11,7 @@ export default defineConfig({
     ['json', { outputFile: '/root/.emergent/automation_output/20260316_220221/results.json' }],
   ],
   use: {
-    baseURL: 'https://page-builder-dev-1.preview.emergentagent.com',
+    baseURL: 'https://invest-intelligence-5.preview.emergentagent.com',
     screenshot: 'only-on-failure',
     trace: 'off',
     headless: true,

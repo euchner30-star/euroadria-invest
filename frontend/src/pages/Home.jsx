@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Hero from '../components/Hero';
 import { Link } from 'react-router-dom';
-import { articlesApi } from '../services/api';
+import { articlesApi, pagesApi } from '../services/api';
 import { ArrowRight, Clock, Shield, TrendingUp, Award, Loader2, CheckCircle } from 'lucide-react';
 import SEO from '../components/SEO';
 import FAQSection from '../components/FAQSection';
@@ -10,19 +10,30 @@ import MediaBadge from '../components/MediaBadge';
 const Home = () => {
   const [featuredArticles, setFeaturedArticles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [heroData, setHeroData] = useState({});
 
   useEffect(() => {
-    const fetchFeatured = async () => {
+    const fetchData = async () => {
       try {
-        const data = await articlesApi.getFeatured(3);
-        setFeaturedArticles(data);
+        // Fetch page data for hero section
+        const pageData = await pagesApi.getBySlug('home');
+        if (pageData && pageData.sections) {
+          const heroSection = pageData.sections.find(s => s.type === 'hero');
+          if (heroSection && heroSection.data) {
+            setHeroData(heroSection.data);
+          }
+        }
+        
+        // Fetch featured articles
+        const articlesData = await articlesApi.getFeatured(3);
+        setFeaturedArticles(articlesData);
       } catch (err) {
-        console.error('Failed to fetch featured articles:', err);
+        console.error('Failed to fetch data:', err);
       } finally {
         setLoading(false);
       }
     };
-    fetchFeatured();
+    fetchData();
   }, []);
 
   return (
@@ -42,7 +53,10 @@ const Home = () => {
           }
         ]}
       />
-      <Hero />
+      <Hero 
+        backgroundImage={heroData.backgroundImage} 
+        overlayOpacity={heroData.overlayOpacity}
+      />
 
       {/* Welcome Section - wie euroadria.me */}
       <section className="py-8 bg-white border-b border-gray-100">

@@ -2,19 +2,27 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingUp, Building2, Sparkles } from 'lucide-react';
 
-const Hero = () => {
+const DEFAULT_HERO_IMAGE = 'https://images.unsplash.com/photo-1554155845-440a0ec58d3b';
+
+const Hero = ({ backgroundImage, overlayOpacity = 50 }) => {
+  const heroImage = backgroundImage || DEFAULT_HERO_IMAGE;
+  
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden" data-testid="hero-section">
       {/* Background Image with overlay like euroadria.me */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1554155845-440a0ec58d3b)',
+          backgroundImage: `url(${heroImage})`,
         }}
+        data-testid="hero-background"
       />
       
-      {/* Dark overlay - 15% like euroadria.me */}
-      <div className="absolute inset-0 bg-ea-dark/50" />
+      {/* Dark overlay - configurable opacity */}
+      <div 
+        className="absolute inset-0 bg-ea-dark" 
+        style={{ opacity: overlayOpacity / 100 }}
+      />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24">
