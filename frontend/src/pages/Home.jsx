@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { articlesApi } from '../services/api';
 import { ArrowRight, Clock, Shield, TrendingUp, Award, Loader2, CheckCircle } from 'lucide-react';
 import SEO from '../components/SEO';
+import FAQSection from '../components/FAQSection';
+import MediaBadge from '../components/MediaBadge';
 
 const Home = () => {
   const [featuredArticles, setFeaturedArticles] = useState([]);
@@ -46,8 +48,9 @@ const Home = () => {
       <section className="py-8 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
+            <div className="flex items-center gap-4">
               <span className="text-ea-dark font-semibold text-lg">EuroAdria Corporate Solutions</span>
+              <MediaBadge variant="compact" />
             </div>
             <div className="flex items-center gap-6 text-sm text-ea-dark/70">
               <a href="https://wa.me/38268559776" className="flex items-center gap-2 hover:text-ea-gold transition-colors">
@@ -199,7 +202,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { icon: Shield, title: 'Vertrauenswürdig', desc: 'Geprüfte Due Diligence' },
+              { icon: Shield, title: 'Vertrauenswürdig', desc: 'Referenziert in n-tv & RTL' },
               { icon: TrendingUp, title: 'Rendite-Fokus', desc: 'Zweistellige Zielrenditen' },
               { icon: Award, title: 'Expertise', desc: '15+ Jahre Erfahrung' },
               { icon: Shield, title: 'Sicherheit', desc: 'Asset Protection' }
@@ -212,6 +215,11 @@ const Home = () => {
                 <p className="text-ea-dark/50 text-sm">{item.desc}</p>
               </div>
             ))}
+          </div>
+          
+          {/* Media References */}
+          <div className="mt-12 flex justify-center">
+            <MediaBadge />
           </div>
         </div>
       </section>
@@ -270,6 +278,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* FAQ Section - AEO optimiert */}
+      <FAQSection />
     </main>
   );
 };
