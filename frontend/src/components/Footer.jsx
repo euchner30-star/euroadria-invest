@@ -99,7 +99,7 @@ const Footer = () => {
             {/* Social Links */}
             <div className="flex space-x-4">
               <a
-                href="https://www.facebook.com/people/EuroAdria/61578380116731/"
+                href="https://www.facebook.com/share/1Ckiys8xJw/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full flex items-center justify-center text-ea-light/70 hover:text-ea-gold transition-all"
@@ -108,7 +108,7 @@ const Footer = () => {
                 <Facebook className="w-5 h-5" />
               </a>
               <a
-                href="https://www.instagram.com/euro.adria/"
+                href="https://www.instagram.com/euroadria.me"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full flex items-center justify-center text-ea-light/70 hover:text-ea-gold transition-all"
@@ -117,7 +117,7 @@ const Footer = () => {
                 <Instagram className="w-5 h-5" />
               </a>
               <a
-                href="https://x.com/AdriaEuro"
+                href="https://x.com/adriaeuro"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full flex items-center justify-center text-ea-light/70 hover:text-ea-gold transition-all"

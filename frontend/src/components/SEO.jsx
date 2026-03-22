@@ -119,8 +119,8 @@ const SEO = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={metaDescription} />
       <meta name="twitter:image" content={metaImage} />
-      <meta name="twitter:site" content="@AdriaEuro" />
-      <meta name="twitter:creator" content="@AdriaEuro" />
+      <meta name="twitter:site" content="@adriaeuro" />
+      <meta name="twitter:creator" content="@adriaeuro" />
 
       {/* Structured Data */}
       {articleSchema && (
