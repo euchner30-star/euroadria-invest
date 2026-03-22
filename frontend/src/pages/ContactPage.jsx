@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Send, CheckSquare } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckSquare, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import SEO from '../components/SEO';
+
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -13,7 +15,8 @@ const ContactPage = () => {
     privacyConsent: false
   });
 
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState({ type: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -23,14 +26,47 @@ const ContactPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '', privacyConsent: false });
-    }, 3000);
+    setIsSubmitting(true);
+    setStatus({ type: '', message: '' });
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          subject: formData.subject,
+          message: formData.message
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setStatus({ 
+          type: 'success', 
+          message: data.message || 'Vielen Dank für Ihre Nachricht! Wir melden uns zeitnah bei Ihnen.' 
+        });
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '', privacyConsent: false });
+      } else {
+        setStatus({ 
+          type: 'error', 
+          message: 'Es gab einen Fehler. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt per E-Mail.' 
+        });
+      }
+    } catch (error) {
+      console.error('Contact form error:', error);
+      setStatus({ 
+        type: 'error', 
+        message: 'Verbindungsfehler. Bitte kontaktieren Sie uns direkt unter office@euroadria.me' 
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -122,14 +158,6 @@ const ContactPage = () => {
               <h2 className="text-2xl font-semibold text-ea-dark mb-6">
                 Senden Sie uns eine <span className="text-ea-gold">Nachricht</span>
               </h2>
-
-              {submitted && (
-                <div className="mb-6 p-4 bg-ea-gold/10 border border-ea-gold/30 rounded-lg">
-                  <p className="text-ea-dark text-sm">
-                    Vielen Dank für Ihre Nachricht! Wir melden uns in Kürze bei Ihnen.
-                  </p>
-                </div>
-              )}
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -244,17 +272,40 @@ const ContactPage = () => {
 
                 <button
                   type="submit"
-                  disabled={!formData.privacyConsent}
+                  disabled={!formData.privacyConsent || isSubmitting}
                   data-testid="contact-submit-button"
                   className={`w-full md:w-auto flex items-center justify-center space-x-2 px-8 py-4 font-semibold rounded-lg transition-all ${
-                    formData.privacyConsent 
+                    formData.privacyConsent && !isSubmitting
                       ? 'bg-ea-dark text-white hover:bg-ea-navy cursor-pointer' 
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
                 >
-                  <span>Nachricht senden</span>
-                  <Send className="w-5 h-5" />
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Wird gesendet...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Nachricht senden</span>
+                      <Send className="w-5 h-5" />
+                    </>
+                  )}
                 </button>
+
+                {/* Status Messages */}
+                {status.type === 'success' && (
+                  <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <p className="text-green-700">{status.message}</p>
+                  </div>
+                )}
+                {status.type === 'error' && (
+                  <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                    <p className="text-red-700">{status.message}</p>
+                  </div>
+                )}
               </form>
             </div>
           </div>

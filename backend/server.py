@@ -307,10 +307,94 @@ async def send_notification_email(comment_data: dict, article_title: str):
     except Exception as e:
         logger.error(f"Failed to send notification email: {e}")
 
+
+# Contact form email function
+async def send_contact_email(contact_data: dict):
+    """Send email notification for contact form submission"""
+    if not SMTP_USER or not SMTP_PASSWORD:
+        logger.warning("SMTP credentials not configured - skipping contact email")
+        return False
+    
+    try:
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = f"Neue Kontaktanfrage: {contact_data['subject']}"
+        msg['From'] = SMTP_USER
+        msg['To'] = NOTIFICATION_EMAIL
+        
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; background-color: #0A1628; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #1a2744; border-radius: 10px; padding: 30px;">
+                <h2 style="color: #c8a96a; margin-bottom: 20px;">Neue Kontaktanfrage</h2>
+                <div style="background-color: #0A1628; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="color: #ffffff; margin-bottom: 10px;"><strong>Name:</strong> {contact_data['name']}</p>
+                    <p style="color: #ffffff; margin-bottom: 10px;"><strong>E-Mail:</strong> {contact_data['email']}</p>
+                    <p style="color: #ffffff; margin-bottom: 10px;"><strong>Telefon:</strong> {contact_data.get('phone', 'Nicht angegeben')}</p>
+                    <p style="color: #ffffff; margin-bottom: 10px;"><strong>Betreff:</strong> {contact_data['subject']}</p>
+                </div>
+                <div style="background-color: #0A1628; padding: 20px; border-radius: 8px;">
+                    <p style="color: #c8a96a; margin-bottom: 10px;"><strong>Nachricht:</strong></p>
+                    <p style="color: #ffffff; white-space: pre-wrap;">{contact_data['message']}</p>
+                </div>
+                <hr style="border-color: #c8a96a; margin: 20px 0;">
+                <p style="color: #888; font-size: 12px;">Diese Nachricht wurde über das Kontaktformular auf euroadria.me gesendet.</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_content, 'html'))
+        
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.send_message(msg)
+        
+        logger.info(f"Contact email sent from {contact_data['name']}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send contact email: {e}")
+        return False
+
+
+# Contact form model
+class ContactForm(BaseModel):
+    name: str
+    email: EmailStr
+    phone: Optional[str] = None
+    subject: str
+    message: str
+
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
+
+
+# =============================================
+# CONTACT FORM ENDPOINT
+# =============================================
+
+@api_router.post("/contact")
+async def submit_contact_form(form: ContactForm):
+    """Handle contact form submissions"""
+    contact_dict = form.model_dump()
+    contact_dict["submitted_at"] = datetime.now(timezone.utc).isoformat()
+    contact_dict["status"] = "new"
+    
+    # Store in database
+    await db.contact_submissions.insert_one(contact_dict)
+    
+    # Send email notification
+    email_sent = await send_contact_email(contact_dict)
+    
+    return {
+        "success": True,
+        "message": "Vielen Dank für Ihre Nachricht! Wir melden uns zeitnah bei Ihnen.",
+        "email_sent": email_sent
+    }
+
 
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
