@@ -48,7 +48,7 @@ const InvestmentDashboard = () => {
       
       <div className="min-h-screen bg-gradient-to-b from-ea-dark via-ea-navy to-ea-dark">
         {/* Hero */}
-        <div className="relative py-16 px-4">
+        <div className="relative pt-24 pb-16 px-4">
           <div className="max-w-7xl mx-auto text-center">
             <p className="text-ea-gold text-sm font-bold tracking-widest uppercase mb-4">
               Investment Intelligence

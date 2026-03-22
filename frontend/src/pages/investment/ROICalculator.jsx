@@ -46,7 +46,7 @@ const ROICalculator = () => {
         description="Berechnen Sie die Rendite Ihrer Immobilieninvestition in Montenegro und Serbien."
       />
       
-      <div className="min-h-screen bg-gradient-to-b from-ea-dark via-ea-navy to-ea-dark py-16 px-4">
+      <div className="min-h-screen bg-gradient-to-b from-ea-dark via-ea-navy to-ea-dark pt-20 pb-16 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">

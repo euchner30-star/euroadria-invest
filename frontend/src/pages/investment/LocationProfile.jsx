@@ -75,7 +75,7 @@ const LocationProfile = () => {
       
       <div className="min-h-screen bg-gradient-to-b from-ea-dark via-ea-navy to-ea-dark">
         {/* Hero */}
-        <div className="relative py-12 px-4 border-b border-white/10">
+        <div className="relative pt-24 pb-12 px-4 border-b border-white/10">
           <div className="max-w-5xl mx-auto">
             <Link 
               to="/investment"
