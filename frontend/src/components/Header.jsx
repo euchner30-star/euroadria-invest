@@ -225,7 +225,7 @@ const Header = () => {
           {/* Desktop CTA Button */}
           <Link
             to="/contact"
-            className="hidden lg:block ml-4 px-6 py-3 bg-ea-dark text-white text-sm font-semibold rounded-lg hover:bg-ea-navy transition-all duration-300 hover:shadow-lg"
+            className="hidden lg:block ml-4 px-5 py-2.5 bg-ea-dark text-white text-sm font-medium rounded-md hover:bg-ea-navy transition-all duration-300 hover:shadow-lg"
             data-testid="header-cta-button"
           >
             Jetzt Beratung anfragen
