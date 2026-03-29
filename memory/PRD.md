@@ -1,7 +1,7 @@
 # EuroAdria - Product Requirements Document
 
 ## Original Problem Statement
-Professional "Investment Intelligence Platform" for the Balkan region with full CMS. Deployed on Render with MongoDB Atlas. Admin panel for managing articles, hero images, and PDF Exposé downloads.
+Professional "Investment Intelligence Platform" for the Balkan region with full CMS. Deployed on Render with MongoDB Atlas. Admin panel for managing articles, hero images, PDF Exposé downloads, and download URLs.
 
 ## Architecture
 - **Frontend:** React + TailwindCSS (Static Site on Render: `euroadria-invest`)
@@ -11,18 +11,25 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - **Images:** imgBB (external hosting)
 - **PDFs/Exposés:** External URLs (Google Drive, Dropbox)
 - **GitHub Repo:** `euchner30-star/euroadria-invest` (branch: `main`)
+- **GitHub Push:** Via token from CLI (`git push github main`)
 
 ## What's Been Implemented
 
 ### Core Features
 - Investment Dashboard with ROI Calculator
 - AEO-optimized Blog with Expert Tips
-- Admin Panel (Articles, Comments, Regions, Pages CMS)
+- Admin Panel (Articles, Comments, Regions, Pages CMS, Downloads)
 - Contact Form with Resend email notifications
-- Dynamic Location Profiles
+- Dynamic Location Profiles (5 Immobilien-Seiten)
 - Infrastructure Radar
 
 ### Completed Tasks (Latest First)
+- ✅ SEO Boost: Dynamic sitemap, 8 FAQ schema, LocalBusiness, BreadcrumbList, AggregateRating (29. März 2026)
+- ✅ Emergent badge completely removed from index.html (29. März 2026)
+- ✅ n-tv & RTL buttons added to article content in live DB (29. März 2026)
+- ✅ Team member titles fixed in DB + code (29. März 2026)
+- ✅ Article sorting with sortOrder field (29. März 2026)
+- ✅ Downloads tab in Admin Panel - 6 configurable URLs (29. März 2026)
 - ✅ Download URL / Exposé Feature in Admin + Article View (29. März 2026)
 - ✅ Pillow added to requirements.txt for Render deployment
 - ✅ Direct Git push to GitHub (via user token)
@@ -49,6 +56,7 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
   "image": "string (URL)",
   "readTime": "string",
   "featured": "boolean",
+  "sortOrder": "int (0=top, higher=lower)",
   "expertTip": { "author": "string", "title": "string", "content": "string" },
   "dueDiligenceBox": { "title": "string", "content": "string" },
   "downloadUrl": "string (optional, external PDF link)",
@@ -57,16 +65,28 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 }
 ```
 
+## DB Schema - Site Settings (Downloads)
+```json
+{
+  "key": "downloads",
+  "praxisleitfaden_url": "string",
+  "budva_expose_url": "string",
+  "niksic_expose_url": "string",
+  "podgorica_expose_url": "string",
+  "skadar_lake_expose_url": "string",
+  "zabljak_expose_url": "string"
+}
+```
+
 ## Prioritized Backlog
 
 ### P0 (Critical)
-- (none currently)
+- Custom Domain Setup (`invest.euroadria.me`) — CNAME at Namecheap (NEXT SESSION)
 
 ### P1 (Important)
-- Custom Domain Setup (`invest.euroadria.me`) — CNAME at Namecheap
 - Admin Panel for Investment Data (Locations, Infrastructure)
 - Heatmap Visualizations on investment map
-- Remove "Made with Emergent" watermark (re-appeared)
+- Google Search Console: Submit sitemap (`/api/sitemap.xml`)
 
 ### P2 (Nice to Have)
 - FunnelCockpit Tracking (blocked on user providing code)
@@ -76,15 +96,21 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - AdminPage.jsx / server.py refactoring (monoliths)
 
 ## Known Issues
-- "Made with Emergent" watermark re-appeared on frontend
 - WYSIWYG editor text writing backward on mobile (testing pending)
-- Render ephemeral storage: local file uploads wiped on deploy (using external URLs as workaround)
+- Render ephemeral storage: local file uploads wiped on deploy (using external URLs)
 
 ## Key API Endpoints
 - `POST /api/contact` — Resend email
 - `POST /api/calculator/roi` — ROI calculation
-- `GET/POST/PUT/DELETE /api/articles` — Article CRUD (supports downloadUrl)
+- `GET/POST/PUT/DELETE /api/articles` — Article CRUD (supports downloadUrl, sortOrder)
+- `GET /api/settings/downloads` — Public download URLs
+- `PUT /api/admin/settings/downloads` — Admin update download URLs
+- `GET /api/sitemap.xml` — Dynamic sitemap
 - `GET/POST/PUT/DELETE /api/admin/*` — Admin endpoints (HTTP Basic Auth)
+
+## Admin Credentials
+- Local: `admin` / `euroadria2025`
+- Render (live): `office@euroadria.me` / `IsTH42#HZMC4q@3A7ITfp#Ip` (set via ADMIN_USERNAME/ADMIN_PASSWORD env vars)
 
 ## 3rd Party Integrations
 - Resend API (emails) — RESEND_API_KEY in Render env
