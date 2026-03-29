@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { articlesApi, getRelatedArticles } from '../services/api';
-import { Clock, Calendar, User, ArrowLeft, ArrowRight, Loader2, Shield } from 'lucide-react';
+import { Clock, Calendar, User, ArrowLeft, ArrowRight, Loader2, Shield, Download } from 'lucide-react';
 import { DueDiligenceBox, ExpertTipBox, LeadMagnetBox } from '../components/ArticleComponents';
 import ShareButtons from '../components/ShareButtons';
 import CommentsSection from '../components/CommentsSection';
@@ -176,6 +176,31 @@ const ArticlePage = () => {
               title={article.expertTip.title}
               content={article.expertTip.content}
             />
+          )}
+
+          {/* Download / Exposé Button */}
+          {article.downloadUrl && (
+            <div className="my-8 md:my-10 p-5 md:p-8 bg-ea-navy rounded-xl border border-ea-gold/20" data-testid="article-download-section">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-ea-gold/20 rounded-lg">
+                  <Download className="w-6 h-6 text-ea-gold" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-white mb-1">Exposé herunterladen</h3>
+                  <p className="text-ea-light/70 text-sm">Laden Sie das vollständige Exposé als PDF herunter.</p>
+                </div>
+                <a
+                  href={article.downloadUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 md:px-6 md:py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all text-sm md:text-base whitespace-nowrap"
+                  data-testid="article-download-button"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download PDF</span>
+                </a>
+              </div>
+            </div>
           )}
 
           {/* Lead Magnet */}

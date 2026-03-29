@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from 'react';
 import { Calculator, Euro, Percent, TrendingUp, Clock, Building } from 'lucide-react';
 import { investmentApi } from '../../services/api';

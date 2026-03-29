@@ -109,6 +109,7 @@ class ArticleBase(BaseModel):
     relatedArticles: List[int] = []
     dueDiligenceBox: Optional[DueDiligenceBox] = None
     expertTip: Optional[ExpertTip] = None
+    downloadUrl: Optional[str] = None
 
 class ArticleCreate(ArticleBase):
     pass
@@ -130,6 +131,7 @@ class ArticleUpdate(BaseModel):
     expertTip: Optional[ExpertTip] = None
     metaTitle: Optional[str] = None
     metaDescription: Optional[str] = None
+    downloadUrl: Optional[str] = None
 
 class Article(ArticleBase):
     model_config = ConfigDict(extra="ignore")

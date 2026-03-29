@@ -393,7 +393,8 @@ const AdminPage = () => {
       author: '',
       relatedArticles: [],
       dueDiligenceBox: { title: '', content: '' },
-      expertTip: { author: '', title: '', content: '' }
+      expertTip: { author: '', title: '', content: '' },
+      downloadUrl: ''
     };
 
     return (
@@ -1244,6 +1245,26 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
               <span className="text-ea-dark/80">Featured</span>
             </label>
           </div>
+        </div>
+      </div>
+
+      {/* Download URL / Exposé */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
+        <h3 className="text-xl font-bold text-ea-gold flex items-center">
+          Download / Exposé
+          <Tooltip text="Externer Link zu einem PDF-Exposé (z.B. Google Drive, Dropbox). Wird als Download-Button im Artikel angezeigt." />
+        </h3>
+        <div>
+          <label className="block text-ea-dark/80 text-sm mb-2">Download URL</label>
+          <input
+            type="url"
+            value={formData.downloadUrl || ''}
+            onChange={(e) => handleChange('downloadUrl', e.target.value)}
+            placeholder="https://drive.google.com/file/d/... oder https://dropbox.com/..."
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            data-testid="article-download-url-input"
+          />
+          <p className="text-xs text-ea-dark/50 mt-1">Leer lassen, wenn kein Download verfügbar ist.</p>
         </div>
       </div>
 
