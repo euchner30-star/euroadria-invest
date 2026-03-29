@@ -298,7 +298,7 @@ async def send_notification_email(comment_data: dict, article_title: str):
         
         msg.attach(MIMEText(html_content, 'html'))
         
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as server:
             server.starttls()
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.send_message(msg)
@@ -345,7 +345,7 @@ async def send_contact_email(contact_data: dict):
         
         msg.attach(MIMEText(html_content, 'html'))
         
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as server:
             server.starttls()
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.send_message(msg)
