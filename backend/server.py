@@ -110,6 +110,7 @@ class ArticleBase(BaseModel):
     dueDiligenceBox: Optional[DueDiligenceBox] = None
     expertTip: Optional[ExpertTip] = None
     downloadUrl: Optional[str] = None
+    sortOrder: int = 0
 
 class ArticleCreate(ArticleBase):
     pass
@@ -132,6 +133,7 @@ class ArticleUpdate(BaseModel):
     metaTitle: Optional[str] = None
     metaDescription: Optional[str] = None
     downloadUrl: Optional[str] = None
+    sortOrder: Optional[int] = None
 
 class Article(ArticleBase):
     model_config = ConfigDict(extra="ignore")
@@ -473,7 +475,7 @@ async def get_articles_list(
     
     # Get paginated results
     skip = (page - 1) * limit
-    articles = await db.articles.find(query, BLOG_LIST_FIELDS).skip(skip).limit(limit).to_list(limit)
+    articles = await db.articles.find(query, BLOG_LIST_FIELDS).sort([("sortOrder", 1), ("date", -1)]).skip(skip).limit(limit).to_list(limit)
     
     return {
         "articles": articles,
@@ -501,7 +503,7 @@ async def get_articles(
     if category:
         query["category"] = category
     
-    cursor = db.articles.find(query, {"_id": 0})
+    cursor = db.articles.find(query, {"_id": 0}).sort([("sortOrder", 1), ("date", -1)])
     if limit:
         cursor = cursor.limit(limit)
     

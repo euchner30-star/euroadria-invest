@@ -429,7 +429,8 @@ const AdminPage = () => {
       relatedArticles: [],
       dueDiligenceBox: { title: '', content: '' },
       expertTip: { author: '', title: '', content: '' },
-      downloadUrl: ''
+      downloadUrl: '',
+      sortOrder: 0
     };
 
     return (
@@ -697,7 +698,7 @@ const AdminPage = () => {
                         )}
                       </div>
                       <h3 className="text-ea-dark font-medium mt-2 truncate">{article.title}</h3>
-                      <p className="text-ea-dark/50 text-sm">{article.category} • {article.date}</p>
+                      <p className="text-ea-dark/50 text-sm">{article.category} • {article.date} • Pos: {article.sortOrder ?? 0}</p>
                     </div>
                     <div className="flex items-center space-x-2 ml-4">
                       <button
@@ -1358,6 +1359,18 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
               />
               <span className="text-ea-dark/80">Featured</span>
             </label>
+          </div>
+          <div>
+            <label className="block text-ea-dark/80 text-sm mb-2">Sortierung</label>
+            <input
+              type="number"
+              value={formData.sortOrder ?? 0}
+              onChange={(e) => handleChange('sortOrder', parseInt(e.target.value) || 0)}
+              className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              data-testid="article-sort-order"
+              min="0"
+            />
+            <p className="text-xs text-ea-dark/50 mt-1">0 = ganz oben, höhere Zahl = weiter unten</p>
           </div>
         </div>
       </div>
