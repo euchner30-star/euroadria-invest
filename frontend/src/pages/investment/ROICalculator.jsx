@@ -17,16 +17,32 @@ const ROICalculator = () => {
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field, value) => {
+    // Allow empty string for better UX when clearing fields
+    const numValue = value === '' ? '' : parseFloat(value);
     setInputs(prev => ({
       ...prev,
-      [field]: parseFloat(value) || 0
+      [field]: numValue
     }));
+  };
+  
+  // Get display value - show empty string instead of 0 for better UX
+  const getDisplayValue = (value) => {
+    return value === '' || value === 0 ? '' : value;
   };
 
   const calculateROI = async () => {
     setLoading(true);
     try {
-      const data = await investmentApi.calculateROI(inputs);
+      // Convert empty strings to 0 for calculation
+      const cleanInputs = {
+        purchase_price: inputs.purchase_price || 0,
+        renovation_costs: inputs.renovation_costs || 0,
+        additional_costs: inputs.additional_costs || 0,
+        monthly_rent: inputs.monthly_rent || 0,
+        vacancy_rate: inputs.vacancy_rate || 0,
+        running_costs_monthly: inputs.running_costs_monthly || 0
+      };
+      const data = await investmentApi.calculateROI(cleanInputs);
       setResult(data);
     } catch (err) {
       console.error('Calculation failed:', err);
@@ -77,7 +93,7 @@ const ROICalculator = () => {
                     <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ea-gold" />
                     <input
                       type="number"
-                      value={inputs.purchase_price}
+                      value={getDisplayValue(inputs.purchase_price)}
                       onChange={(e) => handleInputChange('purchase_price', e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white focus:border-ea-gold focus:outline-none"
                       data-testid="roi-purchase-price"
@@ -92,7 +108,7 @@ const ROICalculator = () => {
                     <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ea-gold" />
                     <input
                       type="number"
-                      value={inputs.renovation_costs}
+                      value={getDisplayValue(inputs.renovation_costs)}
                       onChange={(e) => handleInputChange('renovation_costs', e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white focus:border-ea-gold focus:outline-none"
                       data-testid="roi-renovation-costs"
@@ -107,7 +123,7 @@ const ROICalculator = () => {
                     <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ea-gold" />
                     <input
                       type="number"
-                      value={inputs.additional_costs}
+                      value={getDisplayValue(inputs.additional_costs)}
                       onChange={(e) => handleInputChange('additional_costs', e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white focus:border-ea-gold focus:outline-none"
                       data-testid="roi-additional-costs"
@@ -122,7 +138,7 @@ const ROICalculator = () => {
                     <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-green-400" />
                     <input
                       type="number"
-                      value={inputs.monthly_rent}
+                      value={getDisplayValue(inputs.monthly_rent)}
                       onChange={(e) => handleInputChange('monthly_rent', e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white focus:border-ea-gold focus:outline-none"
                       data-testid="roi-monthly-rent"
@@ -137,7 +153,7 @@ const ROICalculator = () => {
                     <Percent className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-orange-400" />
                     <input
                       type="number"
-                      value={inputs.vacancy_rate}
+                      value={getDisplayValue(inputs.vacancy_rate)}
                       onChange={(e) => handleInputChange('vacancy_rate', e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white focus:border-ea-gold focus:outline-none"
                       min="0"
@@ -154,7 +170,7 @@ const ROICalculator = () => {
                     <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-red-400" />
                     <input
                       type="number"
-                      value={inputs.running_costs_monthly}
+                      value={getDisplayValue(inputs.running_costs_monthly)}
                       onChange={(e) => handleInputChange('running_costs_monthly', e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white focus:border-ea-gold focus:outline-none"
                       data-testid="roi-running-costs"
