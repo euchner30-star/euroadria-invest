@@ -17,6 +17,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from PIL import Image
 import io
+import resend
 
 
 ROOT_DIR = Path(__file__).parent
@@ -45,6 +46,9 @@ ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'euroadria2025')
 
 # Email notification settings
 NOTIFICATION_EMAIL = os.environ.get('NOTIFICATION_EMAIL', 'office@euroadria.me')
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
+
+# Legacy SMTP settings (fallback)
 SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
 SMTP_PORT = int(os.environ.get('SMTP_PORT', '587'))
 SMTP_USER = os.environ.get('SMTP_USER', '')
@@ -310,18 +314,15 @@ async def send_notification_email(comment_data: dict, article_title: str):
         logger.error(f"Failed to send notification email: {e}")
 
 
-# Contact form email function
+# Contact form email function using Resend
 async def send_contact_email(contact_data: dict):
-    """Send email notification for contact form submission"""
-    if not SMTP_USER or not SMTP_PASSWORD:
-        logger.warning("SMTP credentials not configured - skipping contact email")
+    """Send email notification for contact form submission using Resend"""
+    if not RESEND_API_KEY:
+        logger.warning("Resend API key not configured - skipping contact email")
         return False
     
     try:
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = f"Neue Kontaktanfrage: {contact_data['subject']}"
-        msg['From'] = SMTP_USER
-        msg['To'] = NOTIFICATION_EMAIL
+        resend.api_key = RESEND_API_KEY
         
         html_content = f"""
         <html>
@@ -345,14 +346,16 @@ async def send_contact_email(contact_data: dict):
         </html>
         """
         
-        msg.attach(MIMEText(html_content, 'html'))
+        params = {
+            "from": "EuroAdria Kontakt <onboarding@resend.dev>",
+            "to": [NOTIFICATION_EMAIL],
+            "subject": f"Neue Kontaktanfrage: {contact_data['subject']}",
+            "html": html_content,
+            "reply_to": contact_data['email']
+        }
         
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as server:
-            server.starttls()
-            server.login(SMTP_USER, SMTP_PASSWORD)
-            server.send_message(msg)
-        
-        logger.info(f"Contact email sent from {contact_data['name']}")
+        email = resend.Emails.send(params)
+        logger.info(f"Contact email sent via Resend from {contact_data['name']}, id: {email.get('id')}")
         return True
     except Exception as e:
         logger.error(f"Failed to send contact email: {e}")
