@@ -30,9 +30,9 @@ const TeamSection = () => {
     {
       id: 'holger',
       name: 'Holger Kuhlmann',
-      title: 'Strategic Investment Advisor',
-      subtitle: 'Asset Protection Specialist',
-      description: 'Holger bringt 20+ Jahre internationale Investment-Erfahrung mit Fokus auf Emerging Markets. Er identifiziert Off-Market Opportunities und strukturiert Deals für maximale Sicherheit und ROI.',
+      title: 'Berater & Leitung DACH',
+      subtitle: '',
+      description: '„Ich glaube daran, dass nachhaltige Projekte und solide Strukturen die beste Basis für langfristigen Erfolg sind."',
       image: '/holger-kuhlmann.jpg',
       icon: 'trending-up',
       skills: ['Investment-Strategie', 'Bankability', 'Deal-Structuring', 'Off-Market Access']
@@ -40,9 +40,9 @@ const TeamSection = () => {
     {
       id: 'milena',
       name: 'Milena Bubanja',
-      title: 'Legal & Compliance Expert',
-      subtitle: 'Local Network Lead',
-      description: 'Milena führt unsere forensische Due Diligence und stellt sicher, dass jedes Investment den höchsten rechtlichen Standards entspricht. Mit 15+ Jahren Erfahrung im montenegrinischen Immobilienrecht.',
+      title: 'Co-Founderin und Geschäftsführerin',
+      subtitle: 'Public Affairs und Balkan Relations',
+      description: '„Nachhaltige Ergebnisse entstehen dort, wo lokale Realität und europäische Standards sauber zusammengeführt werden."',
       image: '/milena-bubanja.jpg',
       icon: 'shield',
       skills: ['Due Diligence', 'Katasterprüfung', 'Restitutionsrecht', 'Compliance']
