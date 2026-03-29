@@ -124,6 +124,8 @@ class ArticleUpdate(BaseModel):
     relatedArticles: Optional[List[int]] = None
     dueDiligenceBox: Optional[DueDiligenceBox] = None
     expertTip: Optional[ExpertTip] = None
+    metaTitle: Optional[str] = None
+    metaDescription: Optional[str] = None
 
 class Article(ArticleBase):
     model_config = ConfigDict(extra="ignore")
