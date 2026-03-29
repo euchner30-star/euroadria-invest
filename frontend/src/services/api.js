@@ -648,4 +648,25 @@ export const investmentApi = {
   }
 };
 
-export default { articlesApi, adminApi, commentsApi, regionsApi, pagesApi, investmentApi, getRelatedArticles };
+// Settings API
+export const settingsApi = {
+  getDownloads: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/settings/downloads`);
+    if (!response.ok) throw new Error('Failed to fetch download settings');
+    return response.json();
+  },
+  updateDownloads: async (settings, credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/settings/downloads`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+      },
+      body: JSON.stringify(settings)
+    });
+    if (!response.ok) throw new Error('Failed to update download settings');
+    return response.json();
+  }
+};
+
+export default { articlesApi, adminApi, commentsApi, regionsApi, pagesApi, investmentApi, settingsApi, getRelatedArticles };

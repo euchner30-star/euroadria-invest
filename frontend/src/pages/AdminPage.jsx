@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { adminApi, articlesApi, commentsApi, regionsApi, pagesApi } from '../services/api';
+import { adminApi, articlesApi, commentsApi, regionsApi, pagesApi, settingsApi } from '../services/api';
 import { 
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
   FileText, Loader2, AlertCircle, Check, MessageSquare,
   CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image as ImageIcon,
-  Layout, Users, Home, Phone, Globe
+  Layout, Users, Home, Phone, Globe, Download
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHtml } from '../components/admin/WYSIWYGEditor';
@@ -41,6 +41,17 @@ const AdminPage = () => {
   const [pages, setPages] = useState([]);
   const [pagesLoading, setPagesLoading] = useState(false);
   const [editingPage, setEditingPage] = useState(null);
+
+  // Downloads State
+  const [downloadSettings, setDownloadSettings] = useState({
+    praxisleitfaden_url: '',
+    budva_expose_url: '',
+    niksic_expose_url: '',
+    podgorica_expose_url: '',
+    skadar_lake_expose_url: '',
+    zabljak_expose_url: ''
+  });
+  const [downloadsSaving, setDownloadsSaving] = useState(false);
   
   const [saveStatus, setSaveStatus] = useState({ type: '', message: '' });
 
@@ -87,6 +98,7 @@ const AdminPage = () => {
         fetchCommentsStats(credentials);
         fetchRegions(credentials);
         fetchPages(credentials);
+        fetchDownloadSettings();
       } else {
         setLoginError('Ungültige Zugangsdaten');
       }
@@ -225,6 +237,29 @@ const AdminPage = () => {
       setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
     } catch (err) {
       setSaveStatus({ type: 'error', message: err.message });
+    }
+  };
+
+  // Download Settings Functions
+  const fetchDownloadSettings = async () => {
+    try {
+      const data = await settingsApi.getDownloads();
+      setDownloadSettings(data);
+    } catch (err) {
+      console.error('Failed to fetch download settings:', err);
+    }
+  };
+
+  const handleSaveDownloads = async () => {
+    setDownloadsSaving(true);
+    try {
+      await settingsApi.updateDownloads(downloadSettings, credentials);
+      setSaveStatus({ type: 'success', message: 'Download-URLs gespeichert!' });
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: err.message });
+    } finally {
+      setDownloadsSaving(false);
     }
   };
 
@@ -613,6 +648,18 @@ const AdminPage = () => {
           >
             <Layout className="w-5 h-5" />
             <span>Seiten ({pages.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('downloads')}
+            className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
+              activeTab === 'downloads'
+                ? 'bg-ea-gold text-ea-dark font-semibold'
+                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
+            }`}
+            data-testid="tab-downloads"
+          >
+            <Download className="w-5 h-5" />
+            <span>Downloads</span>
           </button>
         </div>
 
@@ -1017,6 +1064,73 @@ const AdminPage = () => {
                 <p>• <strong>Über uns:</strong> Team-Mitglieder, Beschreibungstexte</p>
                 <p>• <strong>Kontakt:</strong> Kontaktdaten, Öffnungszeiten</p>
                 <p>• Alle Änderungen werden live auf der Website angezeigt.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Downloads Tab */}
+        {activeTab === 'downloads' && (
+          <div className="space-y-6">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-2">
+                  <Download className="w-5 h-5 text-ea-gold" />
+                  <h2 className="text-xl font-bold text-ea-dark">Download-URLs verwalten</h2>
+                </div>
+                <button
+                  onClick={handleSaveDownloads}
+                  disabled={downloadsSaving}
+                  className="flex items-center space-x-2 px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all disabled:opacity-50"
+                  data-testid="save-downloads-btn"
+                >
+                  {downloadsSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  <span>Speichern</span>
+                </button>
+              </div>
+              <p className="text-ea-dark/60 text-sm mb-6">
+                Hinterlegen Sie hier die externen Download-Links (Google Drive, Dropbox, etc.). 
+                Wenn eine URL eingetragen ist, wird der Button direkt zum Download verlinkt.
+              </p>
+
+              {/* Praxisleitfaden */}
+              <div className="mb-6 p-4 bg-ea-light rounded-xl">
+                <label className="block text-ea-dark font-semibold mb-1">Praxisleitfaden PDF</label>
+                <p className="text-ea-dark/50 text-xs mb-2">Erscheint auf Artikel-Seiten und Team-Seite ("Jetzt kostenlos herunterladen")</p>
+                <input
+                  type="url"
+                  value={downloadSettings.praxisleitfaden_url || ''}
+                  onChange={(e) => setDownloadSettings(prev => ({ ...prev, praxisleitfaden_url: e.target.value }))}
+                  placeholder="https://drive.google.com/file/d/..."
+                  className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+                  data-testid="downloads-praxisleitfaden-url"
+                />
+              </div>
+
+              <h3 className="text-lg font-semibold text-ea-dark mb-4 border-b border-gray-200 pb-2">Immobilien-Exposés</h3>
+
+              {/* Immobilien Exposés */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { key: 'budva_expose_url', label: 'Budva Exposé', page: '/immobilien/budva' },
+                  { key: 'niksic_expose_url', label: 'Nikšić Exposé', page: '/immobilien/niksic' },
+                  { key: 'podgorica_expose_url', label: 'Podgorica Exposé', page: '/immobilien/podgorica' },
+                  { key: 'skadar_lake_expose_url', label: 'Škadarsee Exposé', page: '/immobilien/skadar-lake' },
+                  { key: 'zabljak_expose_url', label: 'Žabljak Exposé', page: '/immobilien/zabljak' }
+                ].map(({ key, label, page }) => (
+                  <div key={key} className="p-4 bg-ea-light rounded-xl">
+                    <label className="block text-ea-dark font-semibold mb-1">{label}</label>
+                    <p className="text-ea-dark/50 text-xs mb-2">Seite: {page}</p>
+                    <input
+                      type="url"
+                      value={downloadSettings[key] || ''}
+                      onChange={(e) => setDownloadSettings(prev => ({ ...prev, [key]: e.target.value }))}
+                      placeholder="https://drive.google.com/file/d/..."
+                      className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+                      data-testid={`downloads-${key}`}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>

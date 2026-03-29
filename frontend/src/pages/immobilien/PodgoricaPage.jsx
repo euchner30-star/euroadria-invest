@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   MapPin, TrendingUp, Building2, Plane, Landmark, Briefcase,
@@ -10,6 +10,14 @@ const PodgoricaPage = () => {
   const [showContactForm, setShowContactForm] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [exposeUrl, setExposeUrl] = useState('');
+
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/settings/downloads`)
+      .then(res => res.json())
+      .then(data => setExposeUrl(data.podgorica_expose_url || ''))
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -66,14 +74,27 @@ const PodgoricaPage = () => {
           </p>
 
           <div className="flex flex-wrap gap-4">
-            <button
-              onClick={() => setShowContactForm(true)}
-              className="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/90 transition-all flex items-center gap-2"
-              data-testid="podgorica-contact-cta"
-            >
-              <FileText className="w-5 h-5" />
-              Exposé anfordern
-            </button>
+            {exposeUrl ? (
+              <a
+                href={exposeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/90 transition-all flex items-center gap-2"
+                data-testid="podgorica-contact-cta"
+              >
+                <FileText className="w-5 h-5" />
+                Exposé herunterladen
+              </a>
+            ) : (
+              <button
+                onClick={() => setShowContactForm(true)}
+                className="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/90 transition-all flex items-center gap-2"
+                data-testid="podgorica-contact-cta"
+              >
+                <FileText className="w-5 h-5" />
+                Exposé anfordern
+              </button>
+            )}
             <Link
               to="/infrastruktur-radar"
               className="px-6 py-3 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all flex items-center gap-2"
@@ -245,13 +266,25 @@ const PodgoricaPage = () => {
             Standort-Vergleich und Business-District-Übersicht.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <button
-              onClick={() => setShowContactForm(true)}
-              className="px-8 py-4 bg-ea-gold text-ea-dark font-semibold rounded-xl hover:bg-ea-gold/90 transition-all flex items-center gap-2"
-            >
-              <FileText className="w-5 h-5" />
-              Kostenloses Exposé anfordern
-            </button>
+            {exposeUrl ? (
+              <a
+                href={exposeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-8 py-4 bg-ea-gold text-ea-dark font-semibold rounded-xl hover:bg-ea-gold/90 transition-all flex items-center gap-2"
+              >
+                <FileText className="w-5 h-5" />
+                Kostenloses Exposé herunterladen
+              </a>
+            ) : (
+              <button
+                onClick={() => setShowContactForm(true)}
+                className="px-8 py-4 bg-ea-gold text-ea-dark font-semibold rounded-xl hover:bg-ea-gold/90 transition-all flex items-center gap-2"
+              >
+                <FileText className="w-5 h-5" />
+                Kostenloses Exposé anfordern
+              </button>
+            )}
             <Link
               to="/contact"
               className="px-8 py-4 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-all flex items-center gap-2 border border-white/20"

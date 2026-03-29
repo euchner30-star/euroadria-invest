@@ -1,5 +1,5 @@
 // DueDiligenceBox Component
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Shield } from 'lucide-react';
 
 export const DueDiligenceBox = ({ title, content }) => {
@@ -58,6 +58,19 @@ export const ExpertTipBox = ({ author, title, content }) => {
 
 // LeadMagnetBox Component  
 export const LeadMagnetBox = () => {
+  const [downloadUrl, setDownloadUrl] = useState('');
+
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/settings/downloads`)
+      .then(res => res.json())
+      .then(data => setDownloadUrl(data.praxisleitfaden_url || ''))
+      .catch(() => {});
+  }, []);
+
+  const buttonContent = (
+    <>Jetzt kostenlos herunterladen</>
+  );
+
   return (
     <div className="my-8 md:my-12 bg-ea-dark rounded-xl p-6 md:p-8 text-center">
       <h3 className="text-xl md:text-2xl lg:text-3xl font-semibold text-white mb-3 md:mb-4">
@@ -67,9 +80,24 @@ export const LeadMagnetBox = () => {
         Laden Sie unseren umfassenden „Praxisleitfaden für DACH-Investoren" herunter. 
         80+ Seiten geballtes Wissen zu Due Diligence, Bankability und rechtlichen Strukturen.
       </p>
-      <button className="px-6 py-3 md:px-8 md:py-4 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all text-sm md:text-lg">
-        Jetzt kostenlos herunterladen
-      </button>
+      {downloadUrl ? (
+        <a
+          href={downloadUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block px-6 py-3 md:px-8 md:py-4 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all text-sm md:text-lg"
+          data-testid="praxisleitfaden-download-btn"
+        >
+          {buttonContent}
+        </a>
+      ) : (
+        <button 
+          className="px-6 py-3 md:px-8 md:py-4 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all text-sm md:text-lg"
+          data-testid="praxisleitfaden-download-btn"
+        >
+          {buttonContent}
+        </button>
+      )}
       <p className="text-ea-light/50 text-xs md:text-sm mt-3 md:mt-4">
         Keine Anmeldung erforderlich • PDF • 8.5 MB
       </p>
