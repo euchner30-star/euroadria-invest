@@ -247,6 +247,7 @@ EuroAdria ist eine professionelle Investment-Intelligence-Plattform für die Adr
 
 ### P0 (Kritisch)
 - ✅ Immobilienangebot-Sektion implementiert
+- ✅ Download URL / Exposé Feature im Admin Panel (29. März 2026)
 
 ### P1 (Hoch)
 - Karten-Standorte vom Infrastruktur-Radar mit Immobilien-Seiten verlinken
@@ -315,7 +316,8 @@ EuroAdria ist eine professionelle Investment-Intelligence-Plattform für die Adr
   "readTime": "string",
   "featured": "boolean",
   "expertTip": { "author": "string", "title": "string", "content": "string" },
-  "dueDiligenceBox": { "title": "string", "content": "string" }
+  "dueDiligenceBox": { "title": "string", "content": "string" },
+  "downloadUrl": "string (optional, external PDF link)"
 }
 ```
 
