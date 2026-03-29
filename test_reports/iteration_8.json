@@ -1,0 +1,80 @@
+{
+  "summary": "Tested Download URL/Exposé feature for EuroAdria Investment Intelligence Platform. All backend and frontend tests pass. The feature allows admins to add external PDF links (Google Drive, Dropbox) to articles, which display as a download button on the article page.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Article Editor",
+        "issues": ["Console shows many 'Failed to load resource: net::ERR_NAME_NOT_RESOLVED' errors - likely due to empty REACT_APP_BACKEND_URL in .env causing some API calls to fail. Core functionality works via proxy."]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_download_url.py",
+    "/app/test_reports/pytest/download_url_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_download_url.py"
+  ],
+  "success_rate": {
+    "backend": "100% (9/9 passed)",
+    "frontend": "100% (all flows verified)"
+  },
+  "features_tested": {
+    "backend_create_article_with_downloadUrl": {
+      "status": "PASS",
+      "description": "POST /api/admin/articles with downloadUrl field creates article with downloadUrl saved"
+    },
+    "backend_update_article_downloadUrl": {
+      "status": "PASS",
+      "description": "PUT /api/admin/articles/{id} with downloadUrl field updates the downloadUrl"
+    },
+    "backend_get_article_returns_downloadUrl": {
+      "status": "PASS",
+      "description": "GET /api/articles/{slug} returns downloadUrl field when it exists"
+    },
+    "backend_get_article_null_downloadUrl": {
+      "status": "PASS",
+      "description": "GET /api/articles/{slug} returns null downloadUrl when not set"
+    },
+    "frontend_admin_download_section": {
+      "status": "PASS",
+      "description": "Article editor form shows 'Download / Exposé' section with URL input field"
+    },
+    "frontend_admin_download_shows_value": {
+      "status": "PASS",
+      "description": "downloadUrl input field shows current value when editing existing article"
+    },
+    "frontend_admin_download_persists": {
+      "status": "PASS",
+      "description": "downloadUrl can be filled, saved, and persists after reload"
+    },
+    "frontend_article_download_button_appears": {
+      "status": "PASS",
+      "description": "Download button ('Exposé herunterladen' with 'Download PDF' button) appears when article has downloadUrl"
+    },
+    "frontend_article_download_link_correct": {
+      "status": "PASS",
+      "description": "Download button links to correct external URL with target=_blank"
+    },
+    "frontend_article_no_download_section": {
+      "status": "PASS",
+      "description": "No download section appears when article has no downloadUrl"
+    }
+  },
+  "test_credentials": {
+    "admin_username": "admin",
+    "admin_password": "euroadria2025"
+  },
+  "seed_data_creation": "Test article with id=101 and slug='test-expose-download' already exists with downloadUrl set",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Download URL/Exposé feature is fully working. Test file test_download_url.py covers all API endpoints. The frontend .env has empty REACT_APP_BACKEND_URL but the app works via proxy configured in package.json."
+}
