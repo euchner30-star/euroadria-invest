@@ -1,6 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, BackgroundTasks, UploadFile, File
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import Response
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -609,6 +610,62 @@ async def delete_article(article_id: int, admin: str = Depends(verify_admin)):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Article not found")
     return {"message": "Article deleted successfully", "id": article_id}
+
+
+# =============================================
+# DYNAMIC SITEMAP
+# =============================================
+
+SITE_URL = "https://euroadria.me"
+
+STATIC_PAGES = [
+    {"loc": "/", "priority": "1.0", "changefreq": "weekly"},
+    {"loc": "/blog", "priority": "0.9", "changefreq": "daily"},
+    {"loc": "/serbia-executive", "priority": "0.9", "changefreq": "weekly"},
+    {"loc": "/contact", "priority": "0.8", "changefreq": "monthly"},
+    {"loc": "/team", "priority": "0.7", "changefreq": "monthly"},
+    {"loc": "/investment/dashboard", "priority": "0.9", "changefreq": "weekly"},
+    {"loc": "/investment/roi-calculator", "priority": "0.8", "changefreq": "monthly"},
+    {"loc": "/immobilien/budva", "priority": "0.8", "changefreq": "weekly"},
+    {"loc": "/immobilien/niksic", "priority": "0.8", "changefreq": "weekly"},
+    {"loc": "/immobilien/podgorica", "priority": "0.8", "changefreq": "weekly"},
+    {"loc": "/immobilien/skadar-lake", "priority": "0.8", "changefreq": "weekly"},
+    {"loc": "/immobilien/zabljak", "priority": "0.8", "changefreq": "weekly"},
+    {"loc": "/impressum", "priority": "0.3", "changefreq": "yearly"},
+    {"loc": "/datenschutz", "priority": "0.3", "changefreq": "yearly"},
+]
+
+@api_router.get("/sitemap.xml")
+async def generate_sitemap():
+    """Generate dynamic sitemap from database articles + static pages"""
+    from datetime import datetime
+    today = datetime.now().strftime("%Y-%m-%d")
+    
+    xml_parts = ['<?xml version="1.0" encoding="UTF-8"?>']
+    xml_parts.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+    
+    # Static pages
+    for page in STATIC_PAGES:
+        xml_parts.append(f'  <url>')
+        xml_parts.append(f'    <loc>{SITE_URL}{page["loc"]}</loc>')
+        xml_parts.append(f'    <lastmod>{today}</lastmod>')
+        xml_parts.append(f'    <changefreq>{page["changefreq"]}</changefreq>')
+        xml_parts.append(f'    <priority>{page["priority"]}</priority>')
+        xml_parts.append(f'  </url>')
+    
+    # Dynamic articles from DB
+    articles = await db.articles.find({}, {"_id": 0, "slug": 1, "date": 1}).to_list(1000)
+    for article in articles:
+        xml_parts.append(f'  <url>')
+        xml_parts.append(f'    <loc>{SITE_URL}/blog/{article["slug"]}</loc>')
+        xml_parts.append(f'    <lastmod>{article.get("date", today)}</lastmod>')
+        xml_parts.append(f'    <changefreq>monthly</changefreq>')
+        xml_parts.append(f'    <priority>0.7</priority>')
+        xml_parts.append(f'  </url>')
+    
+    xml_parts.append('</urlset>')
+    
+    return Response(content="\n".join(xml_parts), media_type="application/xml")
 
 
 # =============================================
