@@ -7,7 +7,7 @@ import requests
 import os
 import base64
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://invest-intelligence-5.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://roi-calc-preview.preview.emergentagent.com')
 ADMIN_USERNAME = "office@euroadria.me"
 ADMIN_PASSWORD = "IsTH42#HZMC4q@3A7ITfp#Ip"
 

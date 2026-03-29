@@ -1,156 +1,160 @@
 <analysis>**original_problem_statement:**
-The user, 'EuroAdria', an investment consultancy, requires a high-end, professional website. The project has evolved from a simple CMS to a full-fledged Investment Intelligence Platform for the Balkan region.
-
-Key requirements implemented include:
-1.  **Investment Intelligence Platform (V11+V12):** A data-driven system with a database of investment locations, an automatic scoring engine, an ROI calculator, location comparison tools, and detailed profile pages for each city.
-2.  **AEO (AI Engine Optimization):** Integration of media references from n-tv and RTL, including JSON-LD schema updates, a new blog post, and a dedicated FAQ section to boost E-E-A-T signals.
-3.  **Full-Stack CMS:** An admin panel to manage site content, articles, and pages.
-4.  **Functional Contact Form:** A secure contact form that saves inquiries to the database and sends email notifications via a configured SMTP server.
-5.  **UI/UX Enhancements:** Creation of a Mega-Menu for the real estate listings, bug fixes, and general UI polish.
-
-The most recent request is to enhance the Admin Panel's Page-Builder to allow for more granular control over the homepage, specifically enabling the user to change the main hero section's background image.
+The user (EuroAdria) requires a high-end, professional Investment Intelligence Platform for the Balkan region with a full CMS. The current objective is to make the platform independent (deployed on Render, using MongoDB Atlas) and fully functional, allowing the user to manage content (articles, hero images, and now PDF Exposé downloads) without losing data during deployments. PRODUCT REQUIREMENTS: A functional ROI calculator, dynamic location profiles, contact form with email notifications, AEO-optimized blog, and a CMS admin panel.
 
 **User's preferred language**: German
 
-**what currently exists?**
-A comprehensive full-stack application (React/FastAPI/MongoDB) functioning as a data-driven investment platform for the Balkan region.
-- **Frontend:** Includes a dynamic Investment Dashboard, ROI Calculator, Location Comparison tool, and detailed, auto-generated profile pages for 17 investment locations. The UI features a Mega-Menu for navigation, is legally compliant (Cookie Banner, DSGVO), and is optimized for AEO with integrated media references.
-- **Backend:** A robust FastAPI server with a suite of APIs for the investment platform (, ), a full CMS, and a working contact form endpoint that sends emails via a configured Strato SMTP server.
-- **Admin Panel:** A secure admin dashboard at  allows management of articles, comments, and pages via a Seiten-Editor (Page Builder). Admin credentials have been updated to use the user's email and a new secure password.
+**what currently exists?** 
+A full-stack application (React/FastAPI/MongoDB). The application has been successfully decoupled from the Emergent platform and is now hosted on Render with a remote MongoDB Atlas database. It features a working E2E Investment Dashboard, ROI Calculator, AEO-optimized Blog with Expert Tips, and an Admin Panel. The email system has been migrated from Strato SMTP to Resend API. The frontend and backend run as separate services.
 
 **Last working item**:
-    - Last item agent was working: The user wants to edit more of the homepage from the admin panel, starting with the hero section's background image. The agent identified the need to expand the existing Seiten-Editor in  and was about to implement the image upload functionality for the hero section and connect it to the frontend  component.
+    - Last item agent was working: Adding a Download URL (Exposé/PDF) feature to the Article Editor in the Admin Panel. Because Render uses ephemeral storage that deletes local file uploads upon deployment, the user needs a way to link external URLs (like Google Drive) for PDF downloads inside articles.
     - Status: IN PROGRESS
     - Agent Testing Done: N
-    - Which testing method agent to use? both.
-        1. **Backend:** Test the  endpoint to ensure it correctly saves and retrieves the new  URL for the hero section.
-        2. **Frontend:** Use the screenshot tool to verify that after uploading a new image in the admin panel, the live homepage's hero background is updated accordingly.
+    - Which testing method agent to use? both. (Backend: curl to ensure the new  field saves. Frontend: screenshot tool to verify the input field in  and the download button rendering in the public Article view).
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-  Issue 1:  (P0) Enhance Admin Panel for full Home Page control.
-  Issue 2:  (P1) Implement Heatmap Visualizations on the investment map.
-  Issue 3:  (P2) Create Admin Panel UI for Investment Data (Locations, Infrastructure).
-  Issue 4:  (P3) Code Cleanup: Remove hardcoded Serbian cities from the seed data file.
-  Issue 5:  (P4) Implement Apartment-Listing functionality.
-  Issue 6:  (P5) Secure uploaded image files.
-  Issue 7:  (P6) [RECURRING] Re-verify WYSIWYG editor's backward text on mobile bug.
-  
-  Issues Detail:
-  - Issue 1: 
-     - Attempted fixes: The agent has analyzed  and planned to add an  to the existing hero section editor.
+  Issue 1: (P0) Add Download URL/Exposé field to Admin Panel Article Editor.
+     - Attempted fixes: Agent started viewing  to inject the new field into the form.
      - Next debug checklist: 
-        1. In , ensure the  model's hero section can store a  URL.
-        2. In , add an  component to the 'hero' section within the .
-        3. In , fetch the page data from the  endpoint.
-        4. Pass the fetched  URL as a prop to the  component and use it to set the background dynamically.
-     - Why fix this issue and what will be achieved with the fix? This fulfills a direct user request, giving them more autonomy over their site's visual identity and completing the vision for the homepage CMS.
-     - Status:  IN PROGRESS
+        1. Update  and  Pydantic models in  to include .
+        2. In , add an input field for  in the Article Editor form.
+        3. In the public Article view component ( or similar), render a Download Button if  exists.
+     - Why fix this issue and what will be achieved with the fix? Fixes the inability to persistently host PDF Exposés due to Render's ephemeral storage.
+     - Status: IN PROGRESS
      - Is recurring issue? N
      - Should Test frontend/backend/both after fix? Both
      - Blocked on other issue: None
-  - Issue 2: 
-     - Attempted fixes: None.
-     - Next debug checklist: 
-        1. Research and integrate a Leaflet heatmap plugin (e.g., ).
-        2. Add UI controls to the map page to toggle heatmap layers.
-        3. Fetch data from  and process it to generate heatmap data points for , , etc.
-     - Why fix this issue and what will be achieved with the fix? Completes a key data visualization feature from the V11 Investment Intelligence Platform specification.
-     - Status:  NOT STARTED
+
+  Issue 2: (P1) Custom Domain Setup ()
+     - Attempted fixes: Discussed with user, but deferred until current functional bugs are fixed.
+     - Next debug checklist: Guide user to add CNAME record at Namecheap pointing to the Render frontend URL.
+     - Why fix this issue and what will be achieved with the fix? Professional branding.
+     - Status: NOT STARTED
      - Is recurring issue? N
      - Should Test frontend/backend/both after fix? Frontend
-     - Blocked on other issue: None.
-  - Issue 3: 
-     - Attempted fixes: None.
-     - Next debug checklist: 
-        1. In , add new tabs for Standorte, Infrastruktur, etc.
-        2. Create new editor components (e.g., ) for each tab to provide full CRUD functionality for the investment data models.
-     - Why fix this issue and what will be achieved with the fix? Enables the user to manage the core data of the investment platform, making the application truly dynamic.
-     - Status:  NOT STARTED
+     - Blocked on other issue: None
+
+  Issue 3: (P2) Missing Articles (54 remaining)
+     - Attempted fixes: Agent seeded 6 articles, but the user originally had 60.
+     - Next debug checklist: Provide user instructions on how to manually re-add them via Admin, or retrieve from an older backup if explicitly requested.
+     - Why fix this issue and what will be achieved with the fix? Restores full content.
+     - Status: NOT STARTED
      - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? Both
-     - Blocked on other issue: None.
+     - Should Test frontend/backend/both after fix? Backend
+     - Blocked on other issue: None
 
 **In progress Task List**:
-  - Task 1: Complete the Investment Intelligence Platform feature set.
-     - Where to resume: The agent has finished the core user-facing pages. The work should resume on the admin-facing features (Issue #3) and advanced data visualizations (Issue #2).
-     - What will be achieved with this? Full completion of the user's major V11/V12 feature request.
-     - Status:  IN PROGRESS
-     - Should Test frontend/backend/both after fix? Both
-     - Blocked on something: None.
+  Task 1: FunnelCockpit Tracking Integration
+     - Where to resume: Wait for user to finish their FunnelCockpit setup, then inject the tracking pixel script into .
+     - What will be achieved with this? Allows user to track lead conversions.
+     - Status: BLOCKED
+     - Should Test frontend/backend/both after fix? Frontend
+     - Blocked on something: User needs to provide the tracking code.
 
 **Upcoming and Future Tasks**
-- **Upcoming Tasks:**
-    - (P1) Implement Heatmap Visualizations (Issue #2).
-    - (P1) Implement Admin Panel UI for Investment Data (Issue #3).
-    - (P2) Code Cleanup: Remove old Serbian cities from seed data (Issue #4).
-- **Future Tasks:**
-    - (P2) Implement Apartment-Listing functionality (Issue #5).
-    - (P3) Secure uploaded image files (Issue #6).
-    - (P3) Newsletter Integration.
-    - (P3) Link map markers to region pages.
+    Upcoming Tasks:
+    - (P1) Implement Admin Panel UI for Investment Data (Locations, Infrastructure).
+    - (P1) Implement Heatmap Visualizations on the investment map.
+    Future Tasks:
+    - (P2) Implement Apartment-Listing functionality.
+    - (P2) Newsletter Integration.
 
 **Completed work in this session**
-- **Investment Intelligence Platform (Core):** Implemented backend and frontend for the Dashboard, ROI Calculator, Location Comparison, and dynamic Location Profile pages.
-- **Data Expansion:** Added 7 new investment locations from user's text, updated the database, and recalculated all investment scores.
-- **AEO & Media Integration:** Injected JSON-LD schema, created a media-focused blog post, and added an FAQ section and Trust Badge to the homepage referencing n-tv and RTL.
-- **Contact Form & SMTP:** Built a fully functional contact form that sends email notifications to  using the user's Strato SMTP credentials.
-- **UI/UX Overhaul:**
-    - Reworked the real estate dropdown into a categorized Mega-Menu.
-    - Fixed UI bugs: removed the hero scroll indicator and fixed the header covering page titles.
-- **Security & Admin:** Updated admin credentials to use the user's email and a new secure password.
-- **Social Media:** Updated all social media profile links site-wide.
-- **Bug Fix:** Fixed the critical CMS bug where the Team page was not showing updated images from the admin panel.
+- Migrated database from local MongoDB to MongoDB Atlas (DONE)
+- Configured Render deployments for Backend and Frontend separately (DONE)
+- Replaced  with  API for reliable contact form emails (DONE)
+- Fixed ROI Calculator input bug (clearing inputs left a '0') in  (DONE)
+- Updated Expert Tip names to Holger Kuhlmann and Milena Bubanja in seeded data (DONE)
+- Removed Made with Emergent watermark from  (DONE)
+- Added  and  to  model in  (DONE)
+- Fixed Header CSS to make the Jetzt Beratung anfragen button slimmer (DONE)
 
 **Earlier issues found/mentioned but not fixed**
-   - **Issue 1: Image Security.** Uploaded files in  are publicly accessible. The user has previously expressed concern about site security.
-   - **Issue 2: WYSIWYG editor mobile bug.** A recurring issue where text input direction is incorrect on mobile. Needs re-verification.
+   Issue 1: Render Ephemeral Storage Data Loss
+   - Debug checklist: Direct file uploads () are wiped on Render deployment. User is currently using  for images. Needs permanent integration (e.g., Cloudinary) if user wants native image uploads in the future.
+   - Why to solve this issue and what will be achieved with this? Prevents data loss.
+   - Should Test frontend/backend/both after fix: Both
+   - Is recurring issue? Y
 
 **Known issue recurrence from previous fork**
-  - **Issue recurrence in previous fork:** WYSIWYG editor text writing backward on mobile.
-  - **Recurrence count:** 2
-  - **Status:** TESTING PENDING
+  - Issue recurrence in previous fork: WYSIWYG editor text writing backward on mobile.
+  - Recurrence count: 2
+  - Status: TESTING PENDING
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Frontend:** React, React Router, TailwindCSS, Leaflet.js
-- **Backend:** FastAPI, Pydantic, Motor (async MongoDB driver)
-- **Database:** MongoDB
-- **Key Architecture:** A data-driven platform where backend logic (e.g., automatic investment score calculation) feeds a dynamic React frontend. A monolithic admin page provides CMS capabilities.
+- Frontend: React, React Router, TailwindCSS. (Uses  for API calls).
+- Backend: FastAPI, Pydantic, Motor (async MongoDB driver).
+- Database: MongoDB Atlas (Remote).
+- Hosting: Render (Code changes must be pushed to GitHub  to trigger auto-deploy).
 
 **key DB schema**
-  - **pages:** 
-  - **locations:** (New) 
-  - **infrastructure:** (New) 
-  - **contacts:** (New) 
+  - :  -> *Needs  added.*
 
 **changes in tech stack**
-- No new technologies were added in this session.
+  - Removed  dependency.
+  - Added  SDK for email delivery (Strato SMTP was blocking cloud IPs).
+  - Added  for image processing.
+  - Shifted DB from local MongoDB to remote MongoDB Atlas.
 
 **All files of reference**
-- : The monolithic admin panel file being modified for the CMS enhancement.
-- : The page that will consume the new CMS fields (hero background).
-- : The component that needs to render the dynamic background.
-- : The main backend file, where the  and  API logic resides.
-- : Contains all the seed data and models for the new investment platform.
+- : Contains Resend logic and Pydantic models (needs update for ).
+- : Monolithic admin panel (needs update for  input).
+-  (or equivalent): Needs UI update to render the download button.
 
 **Areas that need refactoring**:
-- ****: Now over 1900 lines, it is critically difficult to maintain. It should be broken down into sub-components for each management tab (e.g., , ).
-- ****: Now over 1600 lines, this monolith should be refactored into a standard FastAPI project structure with separate directories for routes, models, and services.
+-  and  are massive monoliths. Proceed with caution.
+- File upload mechanism relies on external links now; a proper Object Storage (Cloudinary/S3) integration would be cleaner long-term.
 
 **key api endpoints**
-- : (New) Handles contact form submissions and triggers email notifications.
-- : (New) Serves all investment location data for the frontend platform.
-- : The endpoint used by the Page-Builder to save content.
-- : Endpoint for admin authentication.
+- : Uses Resend API.
+- : Functional.
+- : Needs to support  read/write.
 
 **Critical Info for New Agent**
-- **Top Priority:** Focus on completing the user's request to make the homepage hero background editable from the admin panel. This validates the CMS concept for the user.
-- **User Persona:** The user is the business owner, deeply involved, and values features that enhance professionalism, authority (AEO), and user empowerment (CMS). They will provide large, ambitious requests.
-- **Monoliths:** Exercise extreme caution when editing  and . They are very large and fragile. Small, targeted changes are safer than large refactors unless a refactor is the main task.
-- **Credentials in :** The agent has correctly stored all credentials (DB, admin, SMTP) in  files. Ensure this practice is maintained. The user provided their SMTP password in chat; while secure now, a reminder to rotate it post-deployment is wise.
+- **DEPLOYMENT WORKFLOW:** The live app is on Render. Code changes made in the Emergent environment MUST be pushed to the user's GitHub repo to go live. Use:
+  On branch main
+nothing to commit, working tree clean
+- **EMAILS:** Do not use SMTP. The app relies on the  library and  environment variable.
+- **STORAGE:** Do not implement local file saving for PDFs/Images. Render deletes them on deploy. Use external URLs (imgBB for images, Google Drive for PDFs).
+- **LANGUAGE:** Always communicate with the user in **German**.
 
 **documents and test reports created in this job**
-  - : Updated multiple times to reflect completed features</analysis>
+  - 
+  - 
+
+**Last 10 User Messages and any pending HUMAN messages**
+1. User: I noticed something wrong with the admin panel... make a function in the admin panel wherever there is something to download, so I can insert the corresponding download [link].
+2. Agent: Acknowledges and starts viewing  to add a Download URL field.
+3. User: Asks if they should use the URL for images.
+4. Agent: Confirms imgBB URLs are for images, but for PDFs (Exposé) they should use Google Drive/Dropbox links.
+5. User: Asks where to put Exposé PDFs for download.
+6. Agent: Explains Render deletes files, suggests Github or Google Drive.
+7. User: Asks if texts stay in DB on redeploy.
+8. Agent: Confirms text stays in MongoDB Atlas.
+9. User: Shows screenshot confirming imgBB works.
+10. Agent: Explains Render ephemeral storage problem.
+
+**Project Health Check:**
+- Broken: Native file uploads (due to Render ephemeral storage).
+- Mocked: None. All data is now live in MongoDB Atlas.
+
+**3rd Party Integrations**
+- Resend API (Emails) — requires User API Key ( in Render env).
+- MongoDB Atlas (Database) — requires User credentials ( in Render env).
+- imgBB (Image hosting) — Managed by user externally.
+
+**Testing status**
+  - Testing agent used after significant changes: YES (Iteration 7 passed).
+  - Troubleshoot agent used after agent stuck in loop: NO.
+  - Test files created: None.
+  - Known regressions: Admin panel WYSIWYG mobile bug needs verification.
+
+**Credentials to test flow:**
+- Admin Panel:  / 
+
+**What agent forgot to execute**
+- The agent started viewing  to add the PDF download link functionality but did not implement the Pydantic model changes in  or the UI changes in  before the context window ended. This is the immediate P0 task.</analysis>

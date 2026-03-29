@@ -4,7 +4,7 @@
  */
 import { test, expect, Page } from '@playwright/test';
 
-const BASE_URL = process.env.REACT_APP_BACKEND_URL || 'https://invest-intelligence-5.preview.emergentagent.com';
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || 'https://roi-calc-preview.preview.emergentagent.com';
 const COOKIE_CONSENT_KEY = 'euroadria_cookie_consent';
 
 test.describe('Cookie Consent Banner', () => {
