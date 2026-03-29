@@ -1364,8 +1364,9 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
             <label className="block text-ea-dark/80 text-sm mb-2">Sortierung</label>
             <input
               type="number"
-              value={formData.sortOrder ?? 0}
-              onChange={(e) => handleChange('sortOrder', parseInt(e.target.value) || 0)}
+              value={formData.sortOrder ?? ''}
+              onChange={(e) => handleChange('sortOrder', e.target.value === '' ? '' : parseInt(e.target.value))}
+              onBlur={(e) => { if (e.target.value === '') handleChange('sortOrder', 0); }}
               className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
               data-testid="article-sort-order"
               min="0"
