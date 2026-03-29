@@ -1106,16 +1106,17 @@ DEFAULT_PAGES = {
                         {
                             "id": "holger",
                             "name": "Holger Kuhlmann",
-                            "title": "Geschäftsführer & Senior Berater",
-                            "description": "Über 20 Jahre Erfahrung in internationaler Unternehmensberatung. Spezialisiert auf Markteintrittsstrategien und M&A in Südosteuropa.",
+                            "title": "Berater & Leitung DACH",
+                            "description": "Ich glaube daran, dass nachhaltige Projekte und solide Strukturen die beste Basis für langfristigen Erfolg sind.",
                             "image": "/holger-kuhlmann.jpg",
                             "email": "holger@euroadria.me"
                         },
                         {
                             "id": "milena",
                             "name": "Milena Bubanja",
-                            "title": "Partnerin & Lokale Expertin",
-                            "description": "Gebürtige Montenegrinerin mit juristischem Hintergrund. Expertin für Immobilienrecht und Unternehmensgründungen in Montenegro.",
+                            "title": "Co-Founderin und Geschäftsführerin",
+                            "subtitle": "Public Affairs und Balkan Relations",
+                            "description": "Nachhaltige Ergebnisse entstehen dort, wo lokale Realität und europäische Standards sauber zusammengeführt werden.",
                             "image": "/milena-bubanja.jpg",
                             "email": "milena@euroadria.me"
                         }
