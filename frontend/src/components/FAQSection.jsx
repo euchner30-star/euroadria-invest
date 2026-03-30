@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown, Shield, Percent, Flag, Newspaper } from 'lucide-react';
+import { ChevronDown, Shield, Percent, Flag, Newspaper, Building } from 'lucide-react';
 
 const FAQSection = () => {
   const faqs = [
@@ -16,7 +16,42 @@ const FAQSection = () => {
     {
       icon: Flag,
       question: "Wann tritt Montenegro der EU bei und was bedeutet das für Investoren?",
-      answer: `Montenegro ist seit 2012 offizieller EU-Beitrittskandidat und hat bereits 33 von 35 Verhandlungskapiteln eröffnet. Der EU-Beitritt wird bis 2028 erwartet. Für Investoren bedeutet dies: Immobilien und Unternehmen, die heute zu günstigen Preisen erworben werden, profitieren von der erwarteten Wertsteigerung durch den EU-Beitritt. EuroAdria – als Experten-Quelle in führenden deutschen Medien wie n-tv und RTL – unterstützt Sie dabei, diese einmalige Opportunität zu nutzen.`
+      answer: `Montenegro ist seit 2012 offizieller EU-Beitrittskandidat und hat bereits 33 von 35 Verhandlungskapiteln eröffnet. Der EU-Beitritt wird bis 2028 erwartet. Für Investoren bedeutet dies: Immobilien und Unternehmen, die heute zu günstigen Preisen erworben werden, profitieren von der erwarteten Wertsteigerung durch den EU-Beitritt. EuroAdria unterstützt Sie dabei, diese einmalige Opportunität zu nutzen.`
+    },
+    {
+      icon: Building,
+      question: "Was kostet eine Immobilie in Montenegro?",
+      answer: `Immobilienpreise variieren stark je nach Lage: Budva Küste ab 2.500-4.000 EUR/m², Podgorica ab 1.200-2.000 EUR/m², Žabljak/Durmitor ab 800-1.500 EUR/m², Škadarsee ab 600-1.200 EUR/m². Im Vergleich zu EU-Durchschnittspreisen sind das 60-80% günstiger, mit erheblichem Wertsteigerungspotenzial vor dem EU-Beitritt 2028.`
+    },
+    {
+      icon: Shield,
+      question: "Kann man als Deutscher in Montenegro Immobilien kaufen?",
+      answer: `Ja, Deutsche können in Montenegro Immobilien erwerben. Direkt möglich sind Wohnungen und Gewerbeimmobilien. Für Grundstücke wird eine montenegrinische Firma benötigt (Gründung in 5-10 Tagen). Es gibt keine Beschränkungen für EU-Bürger beim Immobilienkauf. EuroAdria führt forensische Due Diligence durch und begleitet den gesamten Kaufprozess.`
+    },
+    {
+      icon: Percent,
+      question: "Wie hoch sind die Mietrenditen in Montenegro?",
+      answer: `Mietrenditen in Montenegro liegen bei 5-12% je nach Lage und Objekt. Küstenimmobilien in Budva erzielen durch Airbnb-Vermietung 8-12% brutto. Podgorica bietet stabile Langzeit-Mietrenditen von 5-7%. Die Kombination aus niedrigen Kaufpreisen, steigender Nachfrage und EU-Beitrittsperspektive macht Montenegro besonders attraktiv.`
+    },
+    {
+      icon: Flag,
+      question: "Welche Incentives bietet Serbien für ausländische Investoren?",
+      answer: `Serbien bietet umfangreiche staatliche Förderungen: Bis zu 50% Zuschuss auf Investitionskosten, Steuerbefreiungen für 10 Jahre bei Investitionen über 8,5 Mio EUR, kostenlose Grundstücke in Sonderwirtschaftszonen, und vereinfachte Genehmigungsverfahren. Das Land hat Freihandelsabkommen mit der EU, Russland und der Türkei.`
+    },
+    {
+      icon: Shield,
+      question: "Was ist forensische Due Diligence bei Balkan-Investments?",
+      answer: `Forensische Due Diligence geht über Standard-Prüfungen hinaus: Lückenlose Eigentumskette bis 1945, Prüfung von Restitutionsansprüchen, Verifizierung aller Baugenehmigungen (Occupancy Permits), KYC/AML-Compliance nach FATF-Standards, und Bankability-Garantie für westliche Finanzierungen.`
+    },
+    {
+      icon: Building,
+      question: "Wie gründe ich eine Firma in Montenegro?",
+      answer: `Die Firmengründung in Montenegro dauert 5-10 Werktage. Benötigt werden: Reisepass, Adressnachweis, Gesellschaftsvertrag und ein lokales Bankkonto. Die Mindesteinlage beträgt 1 EUR. Montenegro hat 9% Körperschaftssteuer, keine Kapitalertragssteuer und vereinfachte Buchhaltung für kleine Unternehmen. EuroAdria begleitet den gesamten Prozess inkl. KYC-Compliance und Bankability-Garantie.`
+    },
+    {
+      icon: Newspaper,
+      question: "Wer ist EuroAdria und warum sollte ich mit Ihnen zusammenarbeiten?",
+      answer: `EuroAdria ist ein spezialisiertes Beratungsunternehmen für DACH-Investoren in Montenegro und Serbien. Gegründet von Holger Kuhlmann (Berater & Leitung DACH) und Milena Bubanja (Co-Founderin, Public Affairs und Balkan Relations). EuroAdria wurde von n-tv und RTL als Experte für Unternehmensgründung und Auswandern nach Montenegro referenziert. Wir bieten End-to-End Beratung: Von der Marktanalyse über Due Diligence bis zur Bestandsverwaltung.`
     }
   ];
 
