@@ -604,42 +604,42 @@ const AdminPage = () => {
 
   // Admin Dashboard
   return (
-    <div className="min-h-screen pt-32 pb-20 px-6" data-testid="admin-dashboard">
+    <div className="min-h-screen pt-24 sm:pt-32 pb-20 px-4 sm:px-6" data-testid="admin-dashboard">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-4xl font-semibold font-bold text-ea-dark mb-2">
+            <h1 className="text-2xl sm:text-4xl font-semibold font-bold text-ea-dark mb-1 sm:mb-2">
               Admin <span className="text-ea-gold">Dashboard</span>
             </h1>
-            <p className="text-ea-dark/70">Verwalten Sie Artikel, Kommentare und Regionen</p>
+            <p className="text-ea-dark/70 text-sm sm:text-base">Verwalten Sie Artikel, Kommentare und Regionen</p>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {activeTab === 'articles' && (
               <button
                 onClick={() => setIsCreating(true)}
-                className="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all flex items-center space-x-2"
+                className="px-4 sm:px-6 py-2 sm:py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all flex items-center space-x-2 text-sm sm:text-base"
                 data-testid="create-article-button"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span>Neuer Artikel</span>
               </button>
             )}
             {activeTab === 'regions' && (
               <button
                 onClick={() => setIsCreatingRegion(true)}
-                className="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all flex items-center space-x-2"
+                className="px-4 sm:px-6 py-2 sm:py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all flex items-center space-x-2 text-sm sm:text-base"
                 data-testid="create-region-button"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span>Neue Region</span>
               </button>
             )}
             <button
               onClick={handleLogout}
-              className="bg-white border border-gray-200 rounded-xl shadow-sm px-4 py-2 text-ea-dark/70 hover:text-ea-dark transition-colors flex items-center space-x-2"
+              className="bg-white border border-gray-200 rounded-xl shadow-sm px-3 sm:px-4 py-2 text-ea-dark/70 hover:text-ea-dark transition-colors flex items-center space-x-2 text-sm sm:text-base"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Abmelden</span>
             </button>
           </div>
@@ -662,29 +662,29 @@ const AdminPage = () => {
         )}
 
         {/* Tabs */}
-        <div className="flex space-x-4 mb-6">
+        <div className="flex gap-2 sm:gap-4 mb-6 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
           <button
             onClick={() => setActiveTab('articles')}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
+            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
               activeTab === 'articles'
                 ? 'bg-ea-gold text-ea-dark font-semibold'
                 : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
             }`}
             data-testid="tab-articles"
           >
-            <FileText className="w-5 h-5" />
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Artikel ({articles.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('comments')}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
+            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
               activeTab === 'comments'
                 ? 'bg-ea-gold text-ea-dark font-semibold'
                 : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
             }`}
             data-testid="tab-comments"
           >
-            <MessageSquare className="w-5 h-5" />
+            <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Kommentare</span>
             {commentsStats.pending > 0 && (
               <span className="ml-1 px-2 py-0.5 bg-red-500 text-ea-dark text-xs rounded-full">
@@ -694,50 +694,50 @@ const AdminPage = () => {
           </button>
           <button
             onClick={() => setActiveTab('regions')}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
+            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
               activeTab === 'regions'
                 ? 'bg-ea-gold text-ea-dark font-semibold'
                 : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
             }`}
             data-testid="tab-regions"
           >
-            <MapPin className="w-5 h-5" />
+            <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Regionen ({regions.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('pages')}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
+            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
               activeTab === 'pages'
                 ? 'bg-ea-gold text-ea-dark font-semibold'
                 : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
             }`}
             data-testid="tab-pages"
           >
-            <Layout className="w-5 h-5" />
+            <Layout className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Seiten ({pages.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('downloads')}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
+            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
               activeTab === 'downloads'
                 ? 'bg-ea-gold text-ea-dark font-semibold'
                 : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
             }`}
             data-testid="tab-downloads"
           >
-            <Download className="w-5 h-5" />
+            <Download className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Downloads</span>
           </button>
           <button
             onClick={() => setActiveTab('investment')}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
+            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
               activeTab === 'investment'
                 ? 'bg-ea-gold text-ea-dark font-semibold'
                 : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
             }`}
             data-testid="tab-investment"
           >
-            <BarChart3 className="w-5 h-5" />
+            <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Investment ({investLocations.length})</span>
           </button>
         </div>
@@ -805,27 +805,27 @@ const AdminPage = () => {
         {activeTab === 'comments' && (
           <div className="space-y-6">
             {/* Comments Stats */}
-            <div className="grid grid-cols-4 gap-4">
-              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 text-center">
-                <p className="text-3xl font-bold text-ea-dark">{commentsStats.total}</p>
-                <p className="text-ea-dark/60 text-sm">Gesamt</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-3 sm:p-4 text-center">
+                <p className="text-2xl sm:text-3xl font-bold text-ea-dark">{commentsStats.total}</p>
+                <p className="text-ea-dark/60 text-xs sm:text-sm">Gesamt</p>
               </div>
-              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 text-center border-yellow-500/30">
-                <p className="text-3xl font-bold text-yellow-400">{commentsStats.pending}</p>
-                <p className="text-ea-dark/60 text-sm">Ausstehend</p>
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-3 sm:p-4 text-center border-yellow-500/30">
+                <p className="text-2xl sm:text-3xl font-bold text-yellow-400">{commentsStats.pending}</p>
+                <p className="text-ea-dark/60 text-xs sm:text-sm">Ausstehend</p>
               </div>
-              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 text-center border-green-500/30">
-                <p className="text-3xl font-bold text-green-400">{commentsStats.approved}</p>
-                <p className="text-ea-dark/60 text-sm">Freigegeben</p>
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-3 sm:p-4 text-center border-green-500/30">
+                <p className="text-2xl sm:text-3xl font-bold text-green-400">{commentsStats.approved}</p>
+                <p className="text-ea-dark/60 text-xs sm:text-sm">Freigegeben</p>
               </div>
-              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 text-center border-red-500/30">
-                <p className="text-3xl font-bold text-red-400">{commentsStats.rejected}</p>
-                <p className="text-ea-dark/60 text-sm">Abgelehnt</p>
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-3 sm:p-4 text-center border-red-500/30">
+                <p className="text-2xl sm:text-3xl font-bold text-red-400">{commentsStats.rejected}</p>
+                <p className="text-ea-dark/60 text-xs sm:text-sm">Abgelehnt</p>
               </div>
             </div>
 
             {/* Comments Filter */}
-            <div className="flex space-x-2">
+            <div className="flex space-x-2 overflow-x-auto scrollbar-hide pb-1">
               {['pending', 'approved', 'rejected', 'all'].map((filter) => (
                 <button
                   key={filter}
@@ -1152,15 +1152,15 @@ const AdminPage = () => {
         {activeTab === 'downloads' && (
           <div className="space-y-6">
             <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
                 <div className="flex items-center space-x-2">
                   <Download className="w-5 h-5 text-ea-gold" />
-                  <h2 className="text-xl font-bold text-ea-dark">Download-URLs verwalten</h2>
+                  <h2 className="text-lg sm:text-xl font-bold text-ea-dark">Download-URLs verwalten</h2>
                 </div>
                 <button
                   onClick={handleSaveDownloads}
                   disabled={downloadsSaving}
-                  className="flex items-center space-x-2 px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all disabled:opacity-50"
+                  className="flex items-center justify-center space-x-2 px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all disabled:opacity-50 w-full sm:w-auto"
                   data-testid="save-downloads-btn"
                 >
                   {downloadsSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -1213,7 +1213,7 @@ const AdminPage = () => {
               </div>
 
               {/* Eigene Exposés */}
-              <h3 className="text-lg font-semibold text-ea-dark mt-8 mb-4 border-b border-gray-200 pb-2 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-ea-dark mt-8 mb-4 border-b border-gray-200 pb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <span>Eigene Exposés</span>
                 <button
                   onClick={() => setDownloadSettings(prev => ({
@@ -1302,16 +1302,16 @@ const AdminPage = () => {
           <div className="space-y-6">
             {/* Location Editor */}
             {editingLocation !== null ? (
-              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-ea-dark">
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <h2 className="text-lg sm:text-xl font-bold text-ea-dark">
                     {editingLocation ? `${editingLocation} bearbeiten` : 'Neuer Standort'}
                   </h2>
                   <button onClick={() => { setEditingLocation(null); }} className="text-ea-dark/50 hover:text-ea-dark">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm text-ea-dark/70 mb-1">Stadt</label>
                     <input type="text" value={locationFormData.city} onChange={e => setLocationFormData(p => ({...p, city: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-city" />
@@ -1371,14 +1371,14 @@ const AdminPage = () => {
               </div>
             ) : (
               <>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
                     <BarChart3 className="w-5 h-5 text-ea-gold" />
-                    <h2 className="text-xl font-bold text-ea-dark">Investment-Standorte</h2>
+                    <h2 className="text-lg sm:text-xl font-bold text-ea-dark">Investment-Standorte</h2>
                   </div>
                   <button
                     onClick={() => { setEditingLocation(''); setLocationFormData({ city: '', country: 'Montenegro', region: '', latitude: 0, longitude: 0, population: 0, price_per_m2: 0, rental_yield: 0, price_growth: 0, investment_score: 0, description: '', highlights: [] }); }}
-                    className="flex items-center gap-2 px-4 py-2 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all"
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all w-full sm:w-auto"
                     data-testid="add-location-btn"
                   >
                     <Plus className="w-4 h-4" /> Neuer Standort
@@ -1390,17 +1390,17 @@ const AdminPage = () => {
                 ) : (
                   <div className="grid gap-3">
                     {investLocations.sort((a, b) => (b.investment_score || 0) - (a.investment_score || 0)).map(loc => (
-                      <div key={loc.city} className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 flex items-center justify-between" data-testid={`invest-loc-${loc.city.toLowerCase()}`}>
-                        <div className="flex items-center gap-4 flex-1">
-                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm ${loc.investment_score >= 80 ? 'bg-green-500' : loc.investment_score >= 60 ? 'bg-yellow-500' : 'bg-orange-500'}`}>
+                      <div key={loc.city} className="bg-white border border-gray-200 rounded-xl shadow-sm p-3 sm:p-4 flex items-start sm:items-center justify-between gap-2" data-testid={`invest-loc-${loc.city.toLowerCase()}`}>
+                        <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                          <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm shrink-0 ${loc.investment_score >= 80 ? 'bg-green-500' : loc.investment_score >= 60 ? 'bg-yellow-500' : 'bg-orange-500'}`}>
                             {Math.round(loc.investment_score)}
                           </div>
-                          <div className="flex-1">
+                          <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-bold text-ea-dark">{loc.city}</h3>
-                              <span className="text-xs text-ea-dark/40">{loc.country}</span>
+                              <h3 className="font-bold text-ea-dark text-sm sm:text-base truncate">{loc.city}</h3>
+                              <span className="text-xs text-ea-dark/40 shrink-0">{loc.country}</span>
                             </div>
-                            <div className="flex gap-4 text-sm text-ea-dark/60 mt-0.5">
+                            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs sm:text-sm text-ea-dark/60 mt-0.5">
                               <span>{loc.price_per_m2?.toLocaleString('de-DE')} €/m²</span>
                               <span>{loc.rental_yield}% Rendite</span>
                               <span>+{loc.price_growth}%/Jahr</span>

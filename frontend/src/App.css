@@ -490,3 +490,13 @@ img {
   font-size: 20px;
   padding: 6px 8px 0 0;
 }
+
+
+/* Hide scrollbar for tab navigation */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
