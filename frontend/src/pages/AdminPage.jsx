@@ -281,11 +281,37 @@ const AdminPage = () => {
   };
 
   // Homepage Content Functions
+  const HOMEPAGE_DEFAULTS = {
+    hero_title: 'Firmengründung, Aufenthalt & Investments in Montenegro und Serbien',
+    hero_subtitle: 'EuroAdria ist Ihre Brücke zu erfolgreichen Investitionen, rechtssicherer Auswanderung und internationaler Unternehmensstrukturierung, sowohl in der Adria-Region als auch in Asien. Wir sind Ihr Trusted Advisor für alle unternehmerischen und privaten Vorhaben im Ausland.',
+    hero_cta_text: 'Jetzt Beratung anfragen',
+    testimonial_image: '',
+    testimonial_image_position: 50,
+    testimonial_quote: 'Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen.',
+    testimonial_author: 'Maximilian R., Unternehmer aus Deutschland',
+    cta_title: 'Bereit für Ihre Investition?',
+    cta_subtitle: 'Vereinbaren Sie ein unverbindliches Erstgespräch mit unseren Experten und entdecken Sie die Möglichkeiten am Balkan.',
+    trust_items: [
+      { title: 'Vertrauenswürdig', desc: 'Referenziert in n-tv & RTL' },
+      { title: 'Rendite-Fokus', desc: 'Zweistellige Zielrenditen' },
+      { title: 'Expertise', desc: '15+ Jahre Erfahrung' },
+      { title: 'Sicherheit', desc: 'Asset Protection' }
+    ]
+  };
+
   const fetchHomepageContent = async () => {
     try {
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/settings/homepage`);
-      if (res.ok) setHomepageContent(await res.json());
-    } catch (err) { console.error('Failed to fetch homepage content:', err); }
+      if (res.ok) {
+        const data = await res.json();
+        setHomepageContent({ ...HOMEPAGE_DEFAULTS, ...data });
+      } else {
+        setHomepageContent(HOMEPAGE_DEFAULTS);
+      }
+    } catch (err) {
+      console.error('Failed to fetch homepage content:', err);
+      setHomepageContent(HOMEPAGE_DEFAULTS);
+    }
   };
 
   const handleSaveHomepage = async () => {
