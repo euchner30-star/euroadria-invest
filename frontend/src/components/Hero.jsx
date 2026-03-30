@@ -1,24 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingUp, Building2, Sparkles } from 'lucide-react';
 
-const DEFAULT_HERO_IMAGE = '';
-
 const Hero = ({ backgroundImage, overlayOpacity = 50 }) => {
   const heroImage = backgroundImage || '';
-  
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!heroImage) return;
+    const img = new Image();
+    img.onload = () => setImageLoaded(true);
+    img.src = heroImage;
+    if (img.complete) setImageLoaded(true);
+  }, [heroImage]);
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden" data-testid="hero-section">
-      {/* Background Image with overlay like euroadria.me */}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-ea-dark" data-testid="hero-section">
+      {/* Background Image - fades in when loaded */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-700"
         style={{
-          backgroundImage: `url(${heroImage})`,
+          backgroundImage: heroImage ? `url(${heroImage})` : 'none',
+          opacity: imageLoaded ? 1 : 0,
         }}
         data-testid="hero-background"
       />
       
-      {/* Dark overlay - configurable opacity */}
+      {/* Dark overlay */}
       <div 
         className="absolute inset-0 bg-ea-dark" 
         style={{ opacity: overlayOpacity / 100 }}
@@ -26,7 +34,6 @@ const Hero = ({ backgroundImage, overlayOpacity = 50 }) => {
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24">
-        {/* Logo Section - Weißes Logo für Hauptseite */}
         <div className="flex justify-center mb-10">
           <img 
             src="/euroadria-logo-white.png" 
@@ -35,7 +42,6 @@ const Hero = ({ backgroundImage, overlayOpacity = 50 }) => {
           />
         </div>
 
-        {/* Main Headline - wie euroadria.me */}
         <div className="text-center max-w-4xl mx-auto mb-12">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-white mb-8 leading-tight">
             Firmengründung, Aufenthalt & Investments in Montenegro und Serbien
@@ -45,7 +51,6 @@ const Hero = ({ backgroundImage, overlayOpacity = 50 }) => {
           </p>
         </div>
 
-        {/* CTA Button - Navy wie euroadria.me */}
         <div className="flex justify-center mb-16">
           <Link 
             to="/contact" 
@@ -57,7 +62,6 @@ const Hero = ({ backgroundImage, overlayOpacity = 50 }) => {
           </Link>
         </div>
 
-        {/* Feature Pills */}
         <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-6 py-3 flex items-center space-x-2">
             <TrendingUp className="w-5 h-5 text-ea-gold" />
