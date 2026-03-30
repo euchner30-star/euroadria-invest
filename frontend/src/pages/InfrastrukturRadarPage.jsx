@@ -199,6 +199,62 @@ const InfrastrukturRadarPage = () => {
               </Link>
             </div>
           </div>
+
+          {/* Entfernungstabelle */}
+          <div className="mt-16">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">Entfernungen & Fahrzeiten</h2>
+            <p className="text-ea-light/60 text-sm mb-6">Alle Verbindungen zwischen den wichtigsten Standorten in Montenegro</p>
+            <div className="overflow-x-auto rounded-2xl border border-white/10">
+              <table className="w-full text-sm" data-testid="distance-table">
+                <thead>
+                  <tr className="bg-white/5 border-b border-white/10">
+                    <th className="text-left text-ea-gold font-semibold px-4 py-3">Von</th>
+                    <th className="text-left text-ea-gold font-semibold px-4 py-3">Nach</th>
+                    <th className="text-right text-ea-gold font-semibold px-4 py-3">Entfernung</th>
+                    <th className="text-right text-ea-gold font-semibold px-4 py-3">Fahrzeit</th>
+                  </tr>
+                </thead>
+                <tbody className="text-ea-light/80">
+                  {[
+                    ['Podgorica','Danilovgrad','18 km','20 min'],
+                    ['Podgorica','Zeta','12 km','12 min'],
+                    ['Podgorica','Smokovac','8 km','10 min'],
+                    ['Podgorica','Bar','53 km','50 min'],
+                    ['Podgorica','Bijelo Polje','130 km','1h 50min'],
+                    ['Danilovgrad','Nikšić','42 km','35 min'],
+                    ['Smokovac','Mateševo','41 km','35 min'],
+                    ['Mateševo','Kolašin','20 km','20 min'],
+                    ['Kolašin','Andrijevica','60 km','1h 10min'],
+                    ['Andrijevica','Berane','15 km','20 min'],
+                    ['Berane','Bijelo Polje','30 km','35 min'],
+                    ['Bijelo Polje','Pljevlja','55 km','50 min'],
+                    ['Bijelo Polje','Boljare (Grenze SRB)','48 km','45 min'],
+                    ['Nikšić','Žabljak','80 km','1h 30min'],
+                    ['Žabljak','Šavnik','40 km','50 min'],
+                    ['Pljevlja','Žabljak','70 km','1h 20min'],
+                    ['Budva','Kotor','22 km','30 min'],
+                    ['Budva','Sutomore','35 km','35 min'],
+                    ['Budva','Herceg Novi','55 km','1h'],
+                    ['Kotor','Tivat','9 km','15 min'],
+                    ['Tivat','Herceg Novi','30 km','40 min'],
+                    ['Bar','Ulcinj','26 km','30 min'],
+                    ['Bar','Sutomore','8 km','10 min'],
+                    ['Bar','Zaljevo','5 km','8 min'],
+                    ['Ulcinj','Sukobin (Grenze ALB)','15 km','15 min'],
+                    ['Sutomore','Virpazar','18 km','20 min'],
+                    ['Virpazar','Zeta','35 km','30 min'],
+                  ].map(([von, nach, km, zeit], i) => (
+                    <tr key={i} className={`border-b border-white/5 ${i % 2 === 0 ? 'bg-white/[0.02]' : ''}`}>
+                      <td className="px-4 py-2.5 font-medium text-white">{von}</td>
+                      <td className="px-4 py-2.5">{nach}</td>
+                      <td className="px-4 py-2.5 text-right font-semibold text-ea-gold">{km}</td>
+                      <td className="px-4 py-2.5 text-right">{zeit}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </section>
 
