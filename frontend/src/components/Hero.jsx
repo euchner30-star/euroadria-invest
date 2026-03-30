@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingUp, Building2, Sparkles } from 'lucide-react';
 
-const DEFAULT_HERO_IMAGE = 'https://images.unsplash.com/photo-1554155845-440a0ec58d3b';
+const DEFAULT_HERO_IMAGE = '';
 
 const Hero = ({ backgroundImage, overlayOpacity = 50 }) => {
-  const heroImage = backgroundImage || DEFAULT_HERO_IMAGE;
+  const heroImage = backgroundImage || '';
   
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden" data-testid="hero-section">
