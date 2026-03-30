@@ -1831,6 +1831,18 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
               onImageUploaded={(url) => handleChange('image', url || '')}
               credentials={credentials}
             />
+            {formData.image && (
+              <div className="mt-2">
+                <label className="block text-ea-dark/80 text-xs mb-1">Bildposition</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-ea-dark/40">Oben</span>
+                  <input type="range" min="0" max="100" value={formData.imagePosition ?? 50}
+                    onChange={(e) => handleChange('imagePosition', parseInt(e.target.value))}
+                    className="flex-1 accent-[#C8A96A]" />
+                  <span className="text-xs text-ea-dark/40">Unten</span>
+                </div>
+              </div>
+            )}
           </div>
           <div>
             <label className="block text-ea-dark/80 text-sm mb-2">Autor *</label>
@@ -2405,19 +2417,33 @@ const SectionEditor = ({ section, onChange, onDataChange, credentials }) => {
             label="Hero-Hintergrund"
           />
           {data.backgroundImage && (
-            <div className="mt-2 relative rounded-lg overflow-hidden h-32">
-              <img 
-                src={data.backgroundImage} 
-                alt="Hero Background" 
-                className="w-full h-full object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => onDataChange('backgroundImage', '')}
-                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
-              >
-                <X className="w-4 h-4" />
-              </button>
+            <div className="mt-2 space-y-3">
+              <div className="relative rounded-lg overflow-hidden h-32">
+                <img 
+                  src={data.backgroundImage} 
+                  alt="Hero Background" 
+                  className="w-full h-full object-cover"
+                  style={{ objectPosition: `center ${data.backgroundImagePosition ?? 50}%` }}
+                />
+                <button
+                  type="button"
+                  onClick={() => onDataChange('backgroundImage', '')}
+                  className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+                <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">Position: {data.backgroundImagePosition ?? 50}%</div>
+              </div>
+              <div>
+                <label className="block text-ea-dark/80 text-sm mb-1">Bildposition (vertikal)</label>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-ea-dark/50 w-10">Oben</span>
+                  <input type="range" min="0" max="100" value={data.backgroundImagePosition ?? 50}
+                    onChange={(e) => onDataChange('backgroundImagePosition', parseInt(e.target.value))}
+                    className="flex-1 accent-[#C8A96A]" />
+                  <span className="text-xs text-ea-dark/50 w-10 text-right">Unten</span>
+                </div>
+              </div>
             </div>
           )}
         </div>

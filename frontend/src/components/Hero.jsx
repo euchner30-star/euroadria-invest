@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingUp, Building2, Sparkles } from 'lucide-react';
 
-const Hero = ({ backgroundImage, overlayOpacity = 50, title, subtitle, ctaText }) => {
+const Hero = ({ backgroundImage, overlayOpacity = 50, title, subtitle, ctaText, backgroundImagePosition }) => {
   const heroImage = backgroundImage || '';
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -18,9 +18,10 @@ const Hero = ({ backgroundImage, overlayOpacity = 50, title, subtitle, ctaText }
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-ea-dark" data-testid="hero-section">
       {/* Background Image - fades in when loaded */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-700"
+        className="absolute inset-0 bg-cover bg-no-repeat transition-opacity duration-700"
         style={{
           backgroundImage: heroImage ? `url(${heroImage})` : 'none',
+          backgroundPosition: `center ${backgroundImagePosition ?? 50}%`,
           opacity: imageLoaded ? 1 : 0,
         }}
         data-testid="hero-background"

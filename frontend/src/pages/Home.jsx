@@ -64,6 +64,7 @@ const Home = () => {
       <Hero 
         backgroundImage={heroData.backgroundImage} 
         overlayOpacity={heroData.overlayOpacity}
+        backgroundImagePosition={heroData.backgroundImagePosition}
         title={homeContent.hero_title}
         subtitle={homeContent.hero_subtitle}
         ctaText={homeContent.hero_cta_text}

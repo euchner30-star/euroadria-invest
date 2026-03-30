@@ -112,6 +112,7 @@ class ArticleBase(BaseModel):
     expertTip: Optional[ExpertTip] = None
     downloadUrl: Optional[str] = None
     sortOrder: int = 0
+    imagePosition: Optional[int] = 50
 
 class ArticleCreate(ArticleBase):
     pass
@@ -135,6 +136,7 @@ class ArticleUpdate(BaseModel):
     metaDescription: Optional[str] = None
     downloadUrl: Optional[str] = None
     sortOrder: Optional[int] = None
+    imagePosition: Optional[int] = None
 
 class Article(ArticleBase):
     model_config = ConfigDict(extra="ignore")

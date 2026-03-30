@@ -6,7 +6,7 @@ import { Clock, ArrowRight, Search, Loader2, ChevronRight, RefreshCw } from 'luc
 import SEO from '../components/SEO';
 
 // Lazy-loaded image component
-const LazyImage = ({ src, alt, className }) => {
+const LazyImage = ({ src, alt, className, imagePosition }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const imgRef = React.useRef();
@@ -38,6 +38,7 @@ const LazyImage = ({ src, alt, className }) => {
           className={`w-full h-full object-cover transition-opacity duration-300 ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
+          style={{ objectPosition: `center ${imagePosition ?? 50}%` }}
           onLoad={() => setIsLoaded(true)}
           loading="lazy"
         />
@@ -283,6 +284,7 @@ const BlogPage = () => {
                             src={article.image}
                             alt={article.title}
                             className="w-full h-full relative"
+                            imagePosition={article.imagePosition}
                           />
                           <div className="absolute top-3 left-3">
                             <span className="bg-white/90 backdrop-blur-sm text-xs text-ea-dark px-2.5 py-1 rounded-full font-medium">
