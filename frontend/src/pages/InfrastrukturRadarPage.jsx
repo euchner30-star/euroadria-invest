@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Map, FileText, ArrowRight, Shield, TrendingUp, Building2, Plane } from 'lucide-react';
 import SEO from '../components/SEO';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const InfrastrukturRadarPage = () => {
   const [showRequestForm, setShowRequestForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -13,16 +15,34 @@ const InfrastrukturRadarPage = () => {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Exposé Request:', formData);
-    setSubmitted(true);
-    setTimeout(() => {
-      setShowRequestForm(false);
-      setSubmitted(false);
-      setFormData({ name: '', email: '', phone: '', region: '', message: '' });
-    }, 3000);
+    setSending(true);
+    try {
+      await fetch(`${API_URL}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          subject: `Standort-Exposé Anfrage: ${formData.region}`,
+          message: `Region: ${formData.region}\n\n${formData.message || 'Keine weitere Nachricht.'}`
+        })
+      });
+      setSubmitted(true);
+      setTimeout(() => {
+        setShowRequestForm(false);
+        setSubmitted(false);
+        setFormData({ name: '', email: '', phone: '', region: '', message: '' });
+      }, 3000);
+    } catch (err) {
+      console.error('Fehler:', err);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -321,17 +341,18 @@ const InfrastrukturRadarPage = () => {
                     value={formData.region}
                     onChange={(e) => setFormData({...formData, region: e.target.value})}
                     className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-ea-gold focus:outline-none"
+                    style={{ colorScheme: 'dark' }}
                   >
-                    <option value="">Region auswählen...</option>
-                    <option value="bar">Bar (Score: 92)</option>
-                    <option value="andrijevica">Andrijevica (Score: 94)</option>
-                    <option value="podgorica">Podgorica (Score: 90)</option>
-                    <option value="budva">Budva</option>
-                    <option value="kotor">Kotor</option>
-                    <option value="herceg-novi">Herceg Novi</option>
-                    <option value="tivat">Tivat</option>
-                    <option value="niksic">Nikšić</option>
-                    <option value="andere">Andere Region</option>
+                    <option value="" className="bg-[#0a1628] text-white">Region auswählen...</option>
+                    <option value="bar" className="bg-[#0a1628] text-white">Bar (Score: 92)</option>
+                    <option value="andrijevica" className="bg-[#0a1628] text-white">Andrijevica (Score: 94)</option>
+                    <option value="podgorica" className="bg-[#0a1628] text-white">Podgorica (Score: 90)</option>
+                    <option value="budva" className="bg-[#0a1628] text-white">Budva</option>
+                    <option value="kotor" className="bg-[#0a1628] text-white">Kotor</option>
+                    <option value="herceg-novi" className="bg-[#0a1628] text-white">Herceg Novi</option>
+                    <option value="tivat" className="bg-[#0a1628] text-white">Tivat</option>
+                    <option value="niksic" className="bg-[#0a1628] text-white">Nikšić</option>
+                    <option value="andere" className="bg-[#0a1628] text-white">Andere Region</option>
                   </select>
                 </div>
                 <div>
@@ -354,9 +375,10 @@ const InfrastrukturRadarPage = () => {
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 px-6 py-3 bg-ea-gold text-ea-dark font-bold rounded-lg hover:bg-ea-gold/90 transition-all"
+                    disabled={sending}
+                    className="flex-1 px-6 py-3 bg-ea-gold text-ea-dark font-bold rounded-lg hover:bg-ea-gold/90 transition-all disabled:opacity-50"
                   >
-                    Exposé anfordern
+                    {sending ? 'Wird gesendet...' : 'Exposé anfordern'}
                   </button>
                 </div>
               </form>
