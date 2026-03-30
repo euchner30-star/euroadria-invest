@@ -672,34 +672,41 @@ async def generate_sitemap():
 # SITE SETTINGS ENDPOINTS
 # =============================================
 
-SETTINGS_DEFAULTS = {
-    "praxisleitfaden_url": "",
-    "budva_expose_url": "",
-    "niksic_expose_url": "",
-    "podgorica_expose_url": "",
-    "skadar_lake_expose_url": "",
-    "zabljak_expose_url": ""
-}
+SETTINGS_FIXED_KEYS = [
+    "praxisleitfaden_url",
+    "budva_expose_url",
+    "niksic_expose_url",
+    "podgorica_expose_url",
+    "skadar_lake_expose_url",
+    "zabljak_expose_url"
+]
 
 @api_router.get("/settings/downloads")
 async def get_download_settings():
     """Get all download URL settings (public)"""
     settings = await db.site_settings.find_one({"key": "downloads"}, {"_id": 0})
     if not settings:
-        return SETTINGS_DEFAULTS
-    return {k: settings.get(k, "") for k in SETTINGS_DEFAULTS}
+        result = {k: "" for k in SETTINGS_FIXED_KEYS}
+        result["custom_exposes"] = []
+        return result
+    result = {k: settings.get(k, "") for k in SETTINGS_FIXED_KEYS}
+    result["custom_exposes"] = settings.get("custom_exposes", [])
+    return result
 
 @api_router.put("/admin/settings/downloads")
 async def update_download_settings(settings: dict, admin: str = Depends(verify_admin)):
     """Update download URL settings (Admin only)"""
-    update_data = {k: settings.get(k, "") for k in SETTINGS_DEFAULTS}
+    update_data = {k: settings.get(k, "") for k in SETTINGS_FIXED_KEYS}
+    update_data["custom_exposes"] = settings.get("custom_exposes", [])
     update_data["key"] = "downloads"
     await db.site_settings.update_one(
         {"key": "downloads"},
         {"$set": update_data},
         upsert=True
     )
-    return {k: update_data[k] for k in SETTINGS_DEFAULTS}
+    result = {k: update_data[k] for k in SETTINGS_FIXED_KEYS}
+    result["custom_exposes"] = update_data["custom_exposes"]
+    return result
 
 
 # =============================================

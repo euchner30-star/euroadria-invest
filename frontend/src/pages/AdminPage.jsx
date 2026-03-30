@@ -49,7 +49,8 @@ const AdminPage = () => {
     niksic_expose_url: '',
     podgorica_expose_url: '',
     skadar_lake_expose_url: '',
-    zabljak_expose_url: ''
+    zabljak_expose_url: '',
+    custom_exposes: []
   });
   const [downloadsSaving, setDownloadsSaving] = useState(false);
 
@@ -1187,7 +1188,7 @@ const AdminPage = () => {
 
               <h3 className="text-lg font-semibold text-ea-dark mb-4 border-b border-gray-200 pb-2">Immobilien-Exposés</h3>
 
-              {/* Immobilien Exposés */}
+              {/* Feste Immobilien Exposés */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                   { key: 'budva_expose_url', label: 'Budva Exposé', page: '/immobilien/budva' },
@@ -1210,6 +1211,88 @@ const AdminPage = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Eigene Exposés */}
+              <h3 className="text-lg font-semibold text-ea-dark mt-8 mb-4 border-b border-gray-200 pb-2 flex items-center justify-between">
+                <span>Eigene Exposés</span>
+                <button
+                  onClick={() => setDownloadSettings(prev => ({
+                    ...prev,
+                    custom_exposes: [...(prev.custom_exposes || []), { name: '', url: '', description: '' }]
+                  }))}
+                  className="flex items-center space-x-1 px-4 py-2 bg-ea-gold text-ea-dark text-sm font-semibold rounded-lg hover:bg-ea-gold/80 transition-all"
+                  data-testid="add-custom-expose-btn"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Neues Exposé</span>
+                </button>
+              </h3>
+
+              {(!downloadSettings.custom_exposes || downloadSettings.custom_exposes.length === 0) ? (
+                <p className="text-ea-dark/40 text-sm py-4 text-center">Noch keine eigenen Exposés angelegt. Klicken Sie auf "Neues Exposé" um eines hinzuzufügen.</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {downloadSettings.custom_exposes.map((expose, idx) => (
+                    <div key={idx} className="p-4 bg-ea-light rounded-xl relative">
+                      <button
+                        onClick={() => setDownloadSettings(prev => ({
+                          ...prev,
+                          custom_exposes: prev.custom_exposes.filter((_, i) => i !== idx)
+                        }))}
+                        className="absolute top-2 right-2 text-red-400 hover:text-red-600 transition-colors"
+                        data-testid={`remove-custom-expose-${idx}`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      <div className="mb-3">
+                        <label className="block text-ea-dark font-semibold text-sm mb-1">Name</label>
+                        <input
+                          type="text"
+                          value={expose.name || ''}
+                          onChange={(e) => {
+                            const updated = [...downloadSettings.custom_exposes];
+                            updated[idx] = { ...updated[idx], name: e.target.value };
+                            setDownloadSettings(prev => ({ ...prev, custom_exposes: updated }));
+                          }}
+                          placeholder="z.B. Tivat Exposé"
+                          className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2 text-ea-dark focus:outline-none focus:border-ea-gold text-sm"
+                          data-testid={`custom-expose-name-${idx}`}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="block text-ea-dark font-semibold text-sm mb-1">Beschreibung <span className="font-normal text-ea-dark/40">(optional)</span></label>
+                        <input
+                          type="text"
+                          value={expose.description || ''}
+                          onChange={(e) => {
+                            const updated = [...downloadSettings.custom_exposes];
+                            updated[idx] = { ...updated[idx], description: e.target.value };
+                            setDownloadSettings(prev => ({ ...prev, custom_exposes: updated }));
+                          }}
+                          placeholder="z.B. Premium-Standort an der Küste"
+                          className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2 text-ea-dark focus:outline-none focus:border-ea-gold text-sm"
+                          data-testid={`custom-expose-desc-${idx}`}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-ea-dark font-semibold text-sm mb-1">Download-URL</label>
+                        <input
+                          type="url"
+                          value={expose.url || ''}
+                          onChange={(e) => {
+                            const updated = [...downloadSettings.custom_exposes];
+                            updated[idx] = { ...updated[idx], url: e.target.value };
+                            setDownloadSettings(prev => ({ ...prev, custom_exposes: updated }));
+                          }}
+                          placeholder="https://drive.google.com/file/d/..."
+                          className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2 text-ea-dark focus:outline-none focus:border-ea-gold text-sm"
+                          data-testid={`custom-expose-url-${idx}`}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
