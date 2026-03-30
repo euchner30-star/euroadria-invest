@@ -6,16 +6,22 @@ import {
 } from 'lucide-react';
 import { investmentApi } from '../../services/api';
 import SEO from '../../components/SEO';
+import InvestmentHeatmap from '../../components/InvestmentHeatmap';
 
 const InvestmentDashboard = () => {
   const [stats, setStats] = useState(null);
+  const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const data = await investmentApi.getDashboardStats();
-        setStats(data);
+        const [statsData, locsData] = await Promise.all([
+          investmentApi.getDashboardStats(),
+          investmentApi.getLocations()
+        ]);
+        setStats(statsData);
+        setLocations(locsData);
       } catch (err) {
         console.error('Failed to fetch stats:', err);
       } finally {
@@ -95,6 +101,17 @@ const InvestmentDashboard = () => {
               <p className="text-xs text-ea-light/40 mt-1">Montenegro & Serbien</p>
             </div>
           </div>
+
+          {/* Investment Heatmap */}
+          {locations.length > 0 && (
+            <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 mb-8">
+              <div className="flex items-center space-x-2 mb-6">
+                <BarChart3 className="w-5 h-5 text-ea-gold" />
+                <h2 className="text-xl font-bold text-white">Investment Heatmap</h2>
+              </div>
+              <InvestmentHeatmap locations={locations} />
+            </div>
+          )}
 
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Top Investment Scores */}

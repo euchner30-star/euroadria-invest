@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { adminApi, articlesApi, commentsApi, regionsApi, pagesApi, settingsApi } from '../services/api';
+import { adminApi, articlesApi, commentsApi, regionsApi, pagesApi, settingsApi, investmentApi } from '../services/api';
 import { 
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
   FileText, Loader2, AlertCircle, Check, MessageSquare,
   CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image as ImageIcon,
-  Layout, Users, Home, Phone, Globe, Download
+  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHtml } from '../components/admin/WYSIWYGEditor';
@@ -52,6 +52,16 @@ const AdminPage = () => {
     zabljak_expose_url: ''
   });
   const [downloadsSaving, setDownloadsSaving] = useState(false);
+
+  // Investment Data State
+  const [investLocations, setInvestLocations] = useState([]);
+  const [investLoading, setInvestLoading] = useState(false);
+  const [editingLocation, setEditingLocation] = useState(null);
+  const [locationFormData, setLocationFormData] = useState({
+    city: '', country: 'Montenegro', region: '', latitude: 0, longitude: 0,
+    population: 0, price_per_m2: 0, rental_yield: 0, price_growth: 0,
+    investment_score: 0, description: '', highlights: []
+  });
   
   const [saveStatus, setSaveStatus] = useState({ type: '', message: '' });
 
@@ -99,6 +109,7 @@ const AdminPage = () => {
         fetchRegions(credentials);
         fetchPages(credentials);
         fetchDownloadSettings();
+        fetchInvestLocations();
       } else {
         setLoginError('Ungültige Zugangsdaten');
       }
@@ -260,6 +271,60 @@ const AdminPage = () => {
       setSaveStatus({ type: 'error', message: err.message });
     } finally {
       setDownloadsSaving(false);
+    }
+  };
+
+  // Investment Location Functions
+  const fetchInvestLocations = async () => {
+    setInvestLoading(true);
+    try {
+      const data = await investmentApi.getLocations();
+      setInvestLocations(data);
+    } catch (err) {
+      console.error('Failed to fetch locations:', err);
+    } finally {
+      setInvestLoading(false);
+    }
+  };
+
+  const handleSaveLocation = async () => {
+    try {
+      if (editingLocation) {
+        await investmentApi.updateLocation(editingLocation, locationFormData, credentials);
+      } else {
+        await investmentApi.createLocation(locationFormData, credentials);
+      }
+      fetchInvestLocations();
+      setEditingLocation(null);
+      setLocationFormData({ city: '', country: 'Montenegro', region: '', latitude: 0, longitude: 0, population: 0, price_per_m2: 0, rental_yield: 0, price_growth: 0, investment_score: 0, description: '', highlights: [] });
+      setSaveStatus({ type: 'success', message: 'Standort gespeichert!' });
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: err.message });
+    }
+  };
+
+  const handleEditLocation = (loc) => {
+    setEditingLocation(loc.city);
+    setLocationFormData({
+      city: loc.city, country: loc.country, region: loc.region || '',
+      latitude: loc.latitude || 0, longitude: loc.longitude || 0,
+      population: loc.population || 0, price_per_m2: loc.price_per_m2 || 0,
+      rental_yield: loc.rental_yield || 0, price_growth: loc.price_growth || 0,
+      investment_score: loc.investment_score || 0, description: loc.description || '',
+      highlights: loc.highlights || []
+    });
+  };
+
+  const handleDeleteLocation = async (city) => {
+    if (!window.confirm(`Standort "${city}" wirklich löschen?`)) return;
+    try {
+      await investmentApi.deleteLocation(city, credentials);
+      fetchInvestLocations();
+      setSaveStatus({ type: 'success', message: 'Standort gelöscht!' });
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: err.message });
     }
   };
 
@@ -661,6 +726,18 @@ const AdminPage = () => {
           >
             <Download className="w-5 h-5" />
             <span>Downloads</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('investment')}
+            className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all ${
+              activeTab === 'investment'
+                ? 'bg-ea-gold text-ea-dark font-semibold'
+                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
+            }`}
+            data-testid="tab-investment"
+          >
+            <BarChart3 className="w-5 h-5" />
+            <span>Investment ({investLocations.length})</span>
           </button>
         </div>
 
@@ -1134,6 +1211,134 @@ const AdminPage = () => {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Investment Tab */}
+        {activeTab === 'investment' && (
+          <div className="space-y-6">
+            {/* Location Editor */}
+            {editingLocation !== null ? (
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-ea-dark">
+                    {editingLocation ? `${editingLocation} bearbeiten` : 'Neuer Standort'}
+                  </h2>
+                  <button onClick={() => { setEditingLocation(null); }} className="text-ea-dark/50 hover:text-ea-dark">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm text-ea-dark/70 mb-1">Stadt</label>
+                    <input type="text" value={locationFormData.city} onChange={e => setLocationFormData(p => ({...p, city: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-city" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-ea-dark/70 mb-1">Land</label>
+                    <select value={locationFormData.country} onChange={e => setLocationFormData(p => ({...p, country: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-country">
+                      <option value="Montenegro">Montenegro</option>
+                      <option value="Serbien">Serbien</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-ea-dark/70 mb-1">Region</label>
+                    <input type="text" value={locationFormData.region} onChange={e => setLocationFormData(p => ({...p, region: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-region" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-ea-dark/70 mb-1">Preis/m² (EUR)</label>
+                    <input type="number" value={locationFormData.price_per_m2 || ''} onChange={e => setLocationFormData(p => ({...p, price_per_m2: parseFloat(e.target.value) || 0}))} onBlur={e => { if(!e.target.value) setLocationFormData(p => ({...p, price_per_m2: 0})); }} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-price" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-ea-dark/70 mb-1">Mietrendite (%)</label>
+                    <input type="number" step="0.1" value={locationFormData.rental_yield || ''} onChange={e => setLocationFormData(p => ({...p, rental_yield: parseFloat(e.target.value) || 0}))} onBlur={e => { if(!e.target.value) setLocationFormData(p => ({...p, rental_yield: 0})); }} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-yield" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-ea-dark/70 mb-1">Preiswachstum (%/Jahr)</label>
+                    <input type="number" step="0.1" value={locationFormData.price_growth || ''} onChange={e => setLocationFormData(p => ({...p, price_growth: parseFloat(e.target.value) || 0}))} onBlur={e => { if(!e.target.value) setLocationFormData(p => ({...p, price_growth: 0})); }} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-growth" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-ea-dark/70 mb-1">Investment Score (0-100)</label>
+                    <input type="number" value={locationFormData.investment_score || ''} onChange={e => setLocationFormData(p => ({...p, investment_score: parseFloat(e.target.value) || 0}))} onBlur={e => { if(!e.target.value) setLocationFormData(p => ({...p, investment_score: 0})); }} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-score" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-ea-dark/70 mb-1">Bevölkerung</label>
+                    <input type="number" value={locationFormData.population || ''} onChange={e => setLocationFormData(p => ({...p, population: parseInt(e.target.value) || 0}))} onBlur={e => { if(!e.target.value) setLocationFormData(p => ({...p, population: 0})); }} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-population" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-ea-dark/70 mb-1">Breitengrad</label>
+                    <input type="number" step="0.01" value={locationFormData.latitude || ''} onChange={e => setLocationFormData(p => ({...p, latitude: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-ea-dark/70 mb-1">Längengrad</label>
+                    <input type="number" step="0.01" value={locationFormData.longitude || ''} onChange={e => setLocationFormData(p => ({...p, longitude: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <label className="block text-sm text-ea-dark/70 mb-1">Beschreibung</label>
+                  <textarea value={locationFormData.description} onChange={e => setLocationFormData(p => ({...p, description: e.target.value}))} rows={3} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-description" />
+                </div>
+                <div className="mt-4 flex gap-3">
+                  <button onClick={handleSaveLocation} className="flex items-center gap-2 px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all" data-testid="save-location-btn">
+                    <Save className="w-4 h-4" /> Speichern
+                  </button>
+                  <button onClick={() => setEditingLocation(null)} className="px-6 py-3 bg-gray-100 text-ea-dark rounded-lg hover:bg-gray-200 transition-all">
+                    Abbrechen
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-ea-gold" />
+                    <h2 className="text-xl font-bold text-ea-dark">Investment-Standorte</h2>
+                  </div>
+                  <button
+                    onClick={() => { setEditingLocation(''); setLocationFormData({ city: '', country: 'Montenegro', region: '', latitude: 0, longitude: 0, population: 0, price_per_m2: 0, rental_yield: 0, price_growth: 0, investment_score: 0, description: '', highlights: [] }); }}
+                    className="flex items-center gap-2 px-4 py-2 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all"
+                    data-testid="add-location-btn"
+                  >
+                    <Plus className="w-4 h-4" /> Neuer Standort
+                  </button>
+                </div>
+
+                {investLoading ? (
+                  <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-ea-gold" /></div>
+                ) : (
+                  <div className="grid gap-3">
+                    {investLocations.sort((a, b) => (b.investment_score || 0) - (a.investment_score || 0)).map(loc => (
+                      <div key={loc.city} className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 flex items-center justify-between" data-testid={`invest-loc-${loc.city.toLowerCase()}`}>
+                        <div className="flex items-center gap-4 flex-1">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm ${loc.investment_score >= 80 ? 'bg-green-500' : loc.investment_score >= 60 ? 'bg-yellow-500' : 'bg-orange-500'}`}>
+                            {Math.round(loc.investment_score)}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-ea-dark">{loc.city}</h3>
+                              <span className="text-xs text-ea-dark/40">{loc.country}</span>
+                            </div>
+                            <div className="flex gap-4 text-sm text-ea-dark/60 mt-0.5">
+                              <span>{loc.price_per_m2?.toLocaleString('de-DE')} €/m²</span>
+                              <span>{loc.rental_yield}% Rendite</span>
+                              <span>+{loc.price_growth}%/Jahr</span>
+                              {loc.population > 0 && <span>{loc.population?.toLocaleString('de-DE')} Einwohner</span>}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => handleEditLocation(loc)} className="p-2 text-ea-dark/50 hover:text-ea-gold transition-all" data-testid={`edit-invest-${loc.city.toLowerCase()}`}>
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDeleteLocation(loc.city)} className="p-2 text-ea-dark/50 hover:text-red-500 transition-all">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
           </div>
         )}
       </div>
