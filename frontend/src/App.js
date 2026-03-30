@@ -28,11 +28,11 @@ import LocationProfile from "./pages/investment/LocationProfile";
 
 function App() {
   return (
-    <div className="App min-h-screen">
+    <div className="App min-h-screen flex flex-col">
       <BrowserRouter>
         <ScrollToTop />
         <Header />
-        <Routes>
+        <main className="flex-1"><Routes>
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<ArticlePage />} />
@@ -56,6 +56,7 @@ function App() {
           <Route path="/investment/vergleich" element={<LocationComparison />} />
           <Route path="/investment/standort/:city" element={<LocationProfile />} />
         </Routes>
+        </main>
         <Footer />
         <CookieConsent />
       </BrowserRouter>
