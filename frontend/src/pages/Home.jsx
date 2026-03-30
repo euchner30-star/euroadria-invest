@@ -6,6 +6,7 @@ import { ArrowRight, Clock, Shield, TrendingUp, Award, Loader2, CheckCircle } fr
 import SEO from '../components/SEO';
 import FAQSection from '../components/FAQSection';
 import MediaBadge from '../components/MediaBadge';
+import TrustBar from '../components/TrustBar';
 
 const Home = () => {
   const [featuredArticles, setFeaturedArticles] = useState([]);
@@ -57,6 +58,8 @@ const Home = () => {
         backgroundImage={heroData.backgroundImage} 
         overlayOpacity={heroData.overlayOpacity}
       />
+
+      <TrustBar />
 
       {/* Balkan vs EU Section - GEO-optimiert mit Fakten */}
       <section className="py-20 bg-ea-light" itemScope itemType="https://schema.org/Article">
