@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Euro, Percent, TrendingUp, MapPin, ExternalLink } from 'lucide-react';
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
@@ -35,58 +35,29 @@ const FitBounds = ({ locations }) => {
   useEffect(() => {
     if (locations.length > 0) {
       const bounds = locations.map(l => [l.latitude, l.longitude]);
-      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
+      map.fitBounds(bounds, { padding: [30, 30], maxZoom: 9 });
     }
   }, [locations, map]);
   return null;
 };
 
-const InvestmentHeatmap = ({ locations }) => {
-  const [activeView, setActiveView] = useState('price');
-  const mapRef = useRef(null);
+const CountryMap = ({ locs, title, allMin, allMax, activeView, getRadius }) => {
+  if (locs.length === 0) return null;
 
-  const allValues = useMemo(() =>
-    locations.map(l => getValue(l, activeView)), [locations, activeView]);
-
-  const minVal = Math.min(...allValues);
-  const maxVal = Math.max(...allValues);
-  const viewConfig = VIEWS.find(v => v.key === activeView);
-
-  const center = [43.5, 20.3];
-
-  const getRadius = (value) => {
-    const ratio = maxVal === minVal ? 0.5 : (value - minVal) / (maxVal - minVal);
-    return 8 + ratio * 14;
-  };
+  const avgLat = locs.reduce((s, l) => s + l.latitude, 0) / locs.length;
+  const avgLng = locs.reduce((s, l) => s + l.longitude, 0) / locs.length;
 
   return (
-    <div className="heatmap-container relative" data-testid="investment-heatmap">
-      {/* View Selector */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {VIEWS.map(view => (
-          <button
-            key={view.key}
-            onClick={() => setActiveView(view.key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-              activeView === view.key
-                ? 'bg-ea-gold text-ea-dark'
-                : 'bg-white/5 text-ea-light/70 hover:bg-white/10 border border-white/10'
-            }`}
-            data-testid={`heatmap-view-${view.key}`}
-          >
-            <view.icon className="w-4 h-4" />
-            {view.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Leaflet Map */}
-      <div className="rounded-2xl overflow-hidden border border-white/10" style={{ height: '480px' }}>
+    <div>
+      <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+        <MapPin className="w-4 h-4 text-ea-gold" />
+        {title}
+      </h3>
+      <div className="rounded-2xl overflow-hidden border border-white/10" style={{ height: '380px' }}>
         <MapContainer
-          center={center}
+          center={[avgLat, avgLng]}
           zoom={7}
           className="w-full h-full"
-          ref={mapRef}
           scrollWheelZoom={true}
           zoomControl={true}
           style={{ background: '#0a1628' }}
@@ -95,11 +66,11 @@ const InvestmentHeatmap = ({ locations }) => {
             attribution='&copy; <a href="https://carto.com/">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           />
-          <FitBounds locations={locations} />
+          <FitBounds locations={locs} />
 
-          {locations.map(loc => {
+          {locs.map(loc => {
             const value = getValue(loc, activeView);
-            const color = getColor(value, minVal, maxVal, activeView);
+            const color = getColor(value, allMin, allMax, activeView);
             const radius = getRadius(value);
 
             return (
@@ -113,7 +84,6 @@ const InvestmentHeatmap = ({ locations }) => {
                   color: 'rgba(255,255,255,0.4)',
                   weight: 2,
                 }}
-                data-testid={`heatmap-${loc.city.toLowerCase()}`}
               >
                 <Popup className="ea-popup">
                   <div className="min-w-[200px]" style={{ fontFamily: 'inherit' }}>
@@ -149,6 +119,71 @@ const InvestmentHeatmap = ({ locations }) => {
             );
           })}
         </MapContainer>
+      </div>
+    </div>
+  );
+};
+
+const InvestmentHeatmap = ({ locations }) => {
+  const [activeView, setActiveView] = useState('price');
+
+  const montenegroLocs = useMemo(() =>
+    locations.filter(l => l.country === 'Montenegro'), [locations]);
+
+  const serbiaLocs = useMemo(() =>
+    locations.filter(l => l.country === 'Serbien'), [locations]);
+
+  const allValues = useMemo(() =>
+    locations.map(l => getValue(l, activeView)), [locations, activeView]);
+
+  const minVal = Math.min(...allValues);
+  const maxVal = Math.max(...allValues);
+  const viewConfig = VIEWS.find(v => v.key === activeView);
+
+  const getRadius = (value) => {
+    const ratio = maxVal === minVal ? 0.5 : (value - minVal) / (maxVal - minVal);
+    return 8 + ratio * 14;
+  };
+
+  return (
+    <div className="heatmap-container relative" data-testid="investment-heatmap">
+      {/* View Selector */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {VIEWS.map(view => (
+          <button
+            key={view.key}
+            onClick={() => setActiveView(view.key)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+              activeView === view.key
+                ? 'bg-ea-gold text-ea-dark'
+                : 'bg-white/5 text-ea-light/70 hover:bg-white/10 border border-white/10'
+            }`}
+            data-testid={`heatmap-view-${view.key}`}
+          >
+            <view.icon className="w-4 h-4" />
+            {view.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Two Maps Side by Side */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        <CountryMap
+          locs={montenegroLocs}
+          title="Montenegro"
+          allMin={minVal}
+          allMax={maxVal}
+          activeView={activeView}
+          getRadius={getRadius}
+        />
+        <CountryMap
+          locs={serbiaLocs}
+          title="Serbien"
+          allMin={minVal}
+          allMax={maxVal}
+          activeView={activeView}
+          getRadius={getRadius}
+        />
       </div>
 
       {/* Legend */}
