@@ -238,7 +238,7 @@ const Home = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{
-            backgroundImage: `url(${homeContent.testimonial_image || 'https://images.unsplash.com/photo-1554155845-440a0ec58d3b'})`
+            backgroundImage: homeContent.testimonial_image ? `url(${homeContent.testimonial_image})` : 'none'
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">

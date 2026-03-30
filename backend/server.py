@@ -717,7 +717,7 @@ HOMEPAGE_DEFAULTS = {
     "hero_title": "Firmengründung, Aufenthalt & Investments in Montenegro und Serbien",
     "hero_subtitle": "EuroAdria ist Ihre Brücke zu erfolgreichen Investitionen, rechtssicherer Auswanderung und internationaler Unternehmensstrukturierung, sowohl in der Adria-Region als auch in Asien. Wir sind Ihr Trusted Advisor für alle unternehmerischen und privaten Vorhaben im Ausland.",
     "hero_cta_text": "Jetzt Beratung anfragen",
-    "testimonial_image": "https://images.unsplash.com/photo-1554155845-440a0ec58d3b",
+    "testimonial_image": "",
     "testimonial_quote": "Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen. Ich habe mich bestens betreut gefühlt und kann EuroAdria jedem Unternehmer und Investor wärmstens empfehlen.",
     "testimonial_author": "Maximilian R., Unternehmer aus Deutschland",
     "cta_title": "Bereit für Ihre Investition?",
