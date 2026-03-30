@@ -12,11 +12,11 @@ const Home = () => {
   const [featuredArticles, setFeaturedArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [heroData, setHeroData] = useState({});
+  const [homeContent, setHomeContent] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch page data for hero section
         const pageData = await pagesApi.getBySlug('home');
         if (pageData && pageData.sections) {
           const heroSection = pageData.sections.find(s => s.type === 'hero');
@@ -25,7 +25,14 @@ const Home = () => {
           }
         }
         
-        // Fetch featured articles
+        // Fetch homepage content settings
+        const API_URL = process.env.REACT_APP_BACKEND_URL;
+        const homeRes = await fetch(`${API_URL}/api/settings/homepage`);
+        if (homeRes.ok) {
+          const homeData = await homeRes.json();
+          setHomeContent(homeData);
+        }
+        
         const articlesData = await articlesApi.getFeatured(3);
         setFeaturedArticles(articlesData);
       } catch (err) {
@@ -57,6 +64,9 @@ const Home = () => {
       <Hero 
         backgroundImage={heroData.backgroundImage} 
         overlayOpacity={heroData.overlayOpacity}
+        title={homeContent.hero_title}
+        subtitle={homeContent.hero_subtitle}
+        ctaText={homeContent.hero_cta_text}
       />
 
       <TrustBar />
@@ -196,20 +206,24 @@ const Home = () => {
       <section className="py-16 bg-ea-light border-y border-gray-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { icon: Shield, title: 'Vertrauenswürdig', desc: 'Referenziert in n-tv & RTL' },
-              { icon: TrendingUp, title: 'Rendite-Fokus', desc: 'Zweistellige Zielrenditen' },
-              { icon: Award, title: 'Expertise', desc: '15+ Jahre Erfahrung' },
-              { icon: Shield, title: 'Sicherheit', desc: 'Asset Protection' }
-            ].map((item, idx) => (
-              <div key={idx} className="text-center">
-                <div className="w-14 h-14 bg-ea-gold/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-7 h-7 text-ea-gold" />
+            {(homeContent.trust_items || [
+              { title: 'Vertrauenswürdig', desc: 'Referenziert in n-tv & RTL' },
+              { title: 'Rendite-Fokus', desc: 'Zweistellige Zielrenditen' },
+              { title: 'Expertise', desc: '15+ Jahre Erfahrung' },
+              { title: 'Sicherheit', desc: 'Asset Protection' }
+            ]).map((item, idx) => {
+              const icons = [Shield, TrendingUp, Award, Shield];
+              const Icon = icons[idx % icons.length];
+              return (
+                <div key={idx} className="text-center">
+                  <div className="w-14 h-14 bg-ea-gold/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <Icon className="w-7 h-7 text-ea-gold" />
+                  </div>
+                  <h3 className="text-ea-dark font-semibold mb-1">{item.title}</h3>
+                  <p className="text-ea-dark/50 text-sm">{item.desc}</p>
                 </div>
-                <h3 className="text-ea-dark font-semibold mb-1">{item.title}</h3>
-                <p className="text-ea-dark/50 text-sm">{item.desc}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
           
           {/* Media References */}
@@ -219,12 +233,12 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonial Section - wie euroadria.me */}
+      {/* Testimonial Section */}
       <section className="py-20 bg-ea-dark relative overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1554155845-440a0ec58d3b)'
+            backgroundImage: `url(${homeContent.testimonial_image || 'https://images.unsplash.com/photo-1554155845-440a0ec58d3b'})`
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
@@ -236,10 +250,10 @@ const Home = () => {
             ))}
           </div>
           <blockquote className="text-xl md:text-2xl text-ea-light font-semibold leading-relaxed mb-6">
-            „Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen. Ich habe mich bestens betreut gefühlt und kann EuroAdria jedem Unternehmer und Investor wärmstens empfehlen."
+            „{homeContent.testimonial_quote || 'Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen. Ich habe mich bestens betreut gefühlt und kann EuroAdria jedem Unternehmer und Investor wärmstens empfehlen.'}"
           </blockquote>
           <p className="text-ea-light/70">
-            Maximilian R., Unternehmer aus Deutschland
+            {homeContent.testimonial_author || 'Maximilian R., Unternehmer aus Deutschland'}
           </p>
         </div>
       </section>
@@ -248,11 +262,10 @@ const Home = () => {
       <section className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-semibold text-ea-dark mb-6">
-            Bereit für Ihre <span className="text-ea-gold">Investition</span>?
+            {homeContent.cta_title || <>Bereit für Ihre <span className="text-ea-gold">Investition</span>?</>}
           </h2>
           <p className="text-ea-dark/70 text-lg mb-8 max-w-2xl mx-auto">
-            Vereinbaren Sie ein unverbindliches Erstgespräch mit unseren Experten und 
-            entdecken Sie die Möglichkeiten am Balkan.
+            {homeContent.cta_subtitle || 'Vereinbaren Sie ein unverbindliches Erstgespräch mit unseren Experten und entdecken Sie die Möglichkeiten am Balkan.'}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link

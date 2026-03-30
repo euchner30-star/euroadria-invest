@@ -16,9 +16,13 @@ const AdminPage = () => {
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  // Active Tab: 'articles', 'comments', 'regions', or 'pages'
+  // Active Tab: 'articles', 'comments', 'regions', 'pages', 'downloads', 'investment', 'homepage'
   const [activeTab, setActiveTab] = useState('articles');
   
+  // Homepage Content State
+  const [homepageContent, setHomepageContent] = useState({});
+  const [homepageSaving, setHomepageSaving] = useState(false);
+
   // Articles State
   const [articles, setArticles] = useState([]);
   const [articlesLoading, setArticlesLoading] = useState(false);
@@ -111,6 +115,7 @@ const AdminPage = () => {
         fetchPages(credentials);
         fetchDownloadSettings();
         fetchInvestLocations();
+        fetchHomepageContent();
       } else {
         setLoginError('Ungültige Zugangsdaten');
       }
@@ -274,6 +279,31 @@ const AdminPage = () => {
       setDownloadsSaving(false);
     }
   };
+
+  // Homepage Content Functions
+  const fetchHomepageContent = async () => {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/settings/homepage`);
+      if (res.ok) setHomepageContent(await res.json());
+    } catch (err) { console.error('Failed to fetch homepage content:', err); }
+  };
+
+  const handleSaveHomepage = async () => {
+    setHomepageSaving(true);
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/settings/homepage`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) },
+        body: JSON.stringify(homepageContent)
+      });
+      if (res.ok) {
+        setSaveStatus({ type: 'success', message: 'Homepage-Inhalte gespeichert!' });
+        setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+      }
+    } catch (err) { setSaveStatus({ type: 'error', message: err.message }); }
+    finally { setHomepageSaving(false); }
+  };
+
 
   // Investment Location Functions
   const fetchInvestLocations = async () => {
@@ -727,6 +757,18 @@ const AdminPage = () => {
           >
             <Download className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Downloads</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('homepage')}
+            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
+              activeTab === 'homepage'
+                ? 'bg-ea-gold text-ea-dark font-semibold'
+                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
+            }`}
+            data-testid="tab-homepage"
+          >
+            <Layout className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span>Homepage</span>
           </button>
           <button
             onClick={() => setActiveTab('investment')}
@@ -1293,6 +1335,165 @@ const AdminPage = () => {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+
+        {/* Homepage Tab */}
+        {activeTab === 'homepage' && (
+          <div className="space-y-6">
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 sm:p-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                <div className="flex items-center space-x-2">
+                  <Layout className="w-5 h-5 text-ea-gold" />
+                  <h2 className="text-lg sm:text-xl font-bold text-ea-dark">Homepage-Inhalte bearbeiten</h2>
+                </div>
+                <button
+                  onClick={handleSaveHomepage}
+                  disabled={homepageSaving}
+                  className="flex items-center justify-center space-x-2 px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all disabled:opacity-50 w-full sm:w-auto"
+                  data-testid="save-homepage-btn"
+                >
+                  <Save className="w-5 h-5" />
+                  <span>{homepageSaving ? 'Speichern...' : 'Speichern'}</span>
+                </button>
+              </div>
+
+              {/* Hero Section */}
+              <h3 className="text-lg font-semibold text-ea-dark mb-4 border-b border-gray-200 pb-2">Hero-Bereich (Startbild)</h3>
+              <div className="space-y-4 mb-8">
+                <div>
+                  <label className="block text-ea-dark font-semibold text-sm mb-1">Überschrift</label>
+                  <input
+                    type="text"
+                    value={homepageContent.hero_title || ''}
+                    onChange={(e) => setHomepageContent(p => ({ ...p, hero_title: e.target.value }))}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+                    data-testid="homepage-hero-title"
+                  />
+                </div>
+                <div>
+                  <label className="block text-ea-dark font-semibold text-sm mb-1">Untertitel</label>
+                  <textarea
+                    rows={3}
+                    value={homepageContent.hero_subtitle || ''}
+                    onChange={(e) => setHomepageContent(p => ({ ...p, hero_subtitle: e.target.value }))}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+                    data-testid="homepage-hero-subtitle"
+                  />
+                </div>
+                <div>
+                  <label className="block text-ea-dark font-semibold text-sm mb-1">Button-Text</label>
+                  <input
+                    type="text"
+                    value={homepageContent.hero_cta_text || ''}
+                    onChange={(e) => setHomepageContent(p => ({ ...p, hero_cta_text: e.target.value }))}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+                    data-testid="homepage-hero-cta"
+                  />
+                </div>
+              </div>
+
+              {/* Testimonial Section */}
+              <h3 className="text-lg font-semibold text-ea-dark mb-4 border-b border-gray-200 pb-2">Kundenbewertung</h3>
+              <div className="space-y-4 mb-8">
+                <div>
+                  <label className="block text-ea-dark font-semibold text-sm mb-1">Hintergrundbild-URL</label>
+                  <input
+                    type="url"
+                    value={homepageContent.testimonial_image || ''}
+                    onChange={(e) => setHomepageContent(p => ({ ...p, testimonial_image: e.target.value }))}
+                    placeholder="https://images.unsplash.com/..."
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+                    data-testid="homepage-testimonial-image"
+                  />
+                  {homepageContent.testimonial_image && (
+                    <div className="mt-2 rounded-lg overflow-hidden h-24 bg-ea-light">
+                      <img src={homepageContent.testimonial_image} alt="Vorschau" className="w-full h-full object-cover opacity-50" />
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-ea-dark font-semibold text-sm mb-1">Zitat</label>
+                  <textarea
+                    rows={3}
+                    value={homepageContent.testimonial_quote || ''}
+                    onChange={(e) => setHomepageContent(p => ({ ...p, testimonial_quote: e.target.value }))}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+                    data-testid="homepage-testimonial-quote"
+                  />
+                </div>
+                <div>
+                  <label className="block text-ea-dark font-semibold text-sm mb-1">Autor</label>
+                  <input
+                    type="text"
+                    value={homepageContent.testimonial_author || ''}
+                    onChange={(e) => setHomepageContent(p => ({ ...p, testimonial_author: e.target.value }))}
+                    placeholder="z.B. Max Müller, Unternehmer aus Deutschland"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+                    data-testid="homepage-testimonial-author"
+                  />
+                </div>
+              </div>
+
+              {/* CTA Section */}
+              <h3 className="text-lg font-semibold text-ea-dark mb-4 border-b border-gray-200 pb-2">Call-to-Action Bereich</h3>
+              <div className="space-y-4 mb-8">
+                <div>
+                  <label className="block text-ea-dark font-semibold text-sm mb-1">Titel</label>
+                  <input
+                    type="text"
+                    value={homepageContent.cta_title || ''}
+                    onChange={(e) => setHomepageContent(p => ({ ...p, cta_title: e.target.value }))}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+                    data-testid="homepage-cta-title"
+                  />
+                </div>
+                <div>
+                  <label className="block text-ea-dark font-semibold text-sm mb-1">Untertitel</label>
+                  <textarea
+                    rows={2}
+                    value={homepageContent.cta_subtitle || ''}
+                    onChange={(e) => setHomepageContent(p => ({ ...p, cta_subtitle: e.target.value }))}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+                    data-testid="homepage-cta-subtitle"
+                  />
+                </div>
+              </div>
+
+              {/* Trust Indicators */}
+              <h3 className="text-lg font-semibold text-ea-dark mb-4 border-b border-gray-200 pb-2">Vertrauens-Badges</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {(homepageContent.trust_items || [{title:'',desc:''},{title:'',desc:''},{title:'',desc:''},{title:'',desc:''}]).map((item, idx) => (
+                  <div key={idx} className="p-4 bg-ea-light rounded-xl">
+                    <label className="block text-ea-dark font-semibold text-sm mb-1">Badge {idx + 1} — Titel</label>
+                    <input
+                      type="text"
+                      value={item.title || ''}
+                      onChange={(e) => {
+                        const updated = [...(homepageContent.trust_items || [{title:'',desc:''},{title:'',desc:''},{title:'',desc:''},{title:'',desc:''}])];
+                        updated[idx] = { ...updated[idx], title: e.target.value };
+                        setHomepageContent(p => ({ ...p, trust_items: updated }));
+                      }}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2 text-ea-dark focus:outline-none focus:border-ea-gold text-sm mb-2"
+                      data-testid={`homepage-trust-title-${idx}`}
+                    />
+                    <label className="block text-ea-dark font-semibold text-sm mb-1">Beschreibung</label>
+                    <input
+                      type="text"
+                      value={item.desc || ''}
+                      onChange={(e) => {
+                        const updated = [...(homepageContent.trust_items || [{title:'',desc:''},{title:'',desc:''},{title:'',desc:''},{title:'',desc:''}])];
+                        updated[idx] = { ...updated[idx], desc: e.target.value };
+                        setHomepageContent(p => ({ ...p, trust_items: updated }));
+                      }}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2 text-ea-dark focus:outline-none focus:border-ea-gold text-sm"
+                      data-testid={`homepage-trust-desc-${idx}`}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}

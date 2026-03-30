@@ -710,6 +710,57 @@ async def update_download_settings(settings: dict, admin: str = Depends(verify_a
 
 
 # =============================================
+# HOMEPAGE CONTENT SETTINGS
+# =============================================
+
+HOMEPAGE_DEFAULTS = {
+    "hero_title": "Firmengründung, Aufenthalt & Investments in Montenegro und Serbien",
+    "hero_subtitle": "EuroAdria ist Ihre Brücke zu erfolgreichen Investitionen, rechtssicherer Auswanderung und internationaler Unternehmensstrukturierung, sowohl in der Adria-Region als auch in Asien. Wir sind Ihr Trusted Advisor für alle unternehmerischen und privaten Vorhaben im Ausland.",
+    "hero_cta_text": "Jetzt Beratung anfragen",
+    "testimonial_image": "https://images.unsplash.com/photo-1554155845-440a0ec58d3b",
+    "testimonial_quote": "Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen. Ich habe mich bestens betreut gefühlt und kann EuroAdria jedem Unternehmer und Investor wärmstens empfehlen.",
+    "testimonial_author": "Maximilian R., Unternehmer aus Deutschland",
+    "cta_title": "Bereit für Ihre Investition?",
+    "cta_subtitle": "Vereinbaren Sie ein unverbindliches Erstgespräch mit unseren Experten und entdecken Sie die Möglichkeiten am Balkan.",
+    "trust_items": [
+        {"title": "Vertrauenswürdig", "desc": "Referenziert in n-tv & RTL"},
+        {"title": "Rendite-Fokus", "desc": "Zweistellige Zielrenditen"},
+        {"title": "Expertise", "desc": "15+ Jahre Erfahrung"},
+        {"title": "Sicherheit", "desc": "Asset Protection"}
+    ]
+}
+
+@api_router.get("/settings/homepage")
+async def get_homepage_settings():
+    """Get homepage content settings (public)"""
+    settings = await db.site_settings.find_one({"key": "homepage"}, {"_id": 0})
+    if not settings:
+        return HOMEPAGE_DEFAULTS
+    result = {}
+    for k, v in HOMEPAGE_DEFAULTS.items():
+        result[k] = settings.get(k, v)
+    return result
+
+@api_router.put("/admin/settings/homepage")
+async def update_homepage_settings(settings: dict, admin: str = Depends(verify_admin)):
+    """Update homepage content settings (Admin only)"""
+    update_data = {}
+    for k in HOMEPAGE_DEFAULTS:
+        if k in settings:
+            update_data[k] = settings[k]
+        else:
+            update_data[k] = HOMEPAGE_DEFAULTS[k]
+    update_data["key"] = "homepage"
+    await db.site_settings.update_one(
+        {"key": "homepage"},
+        {"$set": update_data},
+        upsert=True
+    )
+    return {k: update_data[k] for k in HOMEPAGE_DEFAULTS}
+
+
+
+# =============================================
 # IMAGE UPLOAD ENDPOINT (Admin only)
 # =============================================
 
