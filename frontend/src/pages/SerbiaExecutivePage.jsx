@@ -8,6 +8,8 @@ import ShareButtons from '../components/ShareButtons';
 import CommentsSection from '../components/CommentsSection';
 import SEO from '../components/SEO';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const SerbiaExecutivePage = () => {
   const [inquiryForm, setInquiryForm] = useState({
     name: '', company: '', email: '', phone: '', interest: '', message: ''
@@ -18,9 +20,24 @@ const SerbiaExecutivePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setSubmitted(true);
-    setSubmitting(false);
+    try {
+      await fetch(`${API_URL}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: inquiryForm.name,
+          email: inquiryForm.email,
+          phone: inquiryForm.phone,
+          subject: `Serbia Executive Inquiry: ${inquiryForm.interest || 'Allgemein'}${inquiryForm.company ? ' – ' + inquiryForm.company : ''}`,
+          message: `Unternehmen: ${inquiryForm.company || '-'}\nInteresse: ${inquiryForm.interest || '-'}\n\n${inquiryForm.message || 'Keine weitere Nachricht.'}`
+        })
+      });
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Fehler:', err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleChange = (field, value) => {

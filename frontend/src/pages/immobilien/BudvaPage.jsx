@@ -19,9 +19,19 @@ const BudvaPage = () => {
       .catch(() => {});
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Contact Request:', formData);
+    try {
+      await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name, email: formData.email, phone: formData.phone,
+          subject: 'Immobilien-Anfrage: Budva',
+          message: formData.message || 'Interesse an Immobilien in Budva.'
+        })
+      });
+    } catch (err) { console.error(err); }
     setSubmitted(true);
     setTimeout(() => {
       setShowContactForm(false);
