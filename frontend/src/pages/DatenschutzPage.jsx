@@ -54,7 +54,7 @@ const DatenschutzPage = () => {
                   <Phone className="w-5 h-5 text-ea-gold group-hover:scale-110 transition-transform" />
                   <span>+382 68 559 776</span>
                 </a>
-                <a href="mailto:office@euroadria.me" className="flex items-center gap-2 text-ea-dark/70 hover:text-ea-gold transition-colors group">
+                <a href="mailto:office@euroadria.me" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-ea-dark/70 hover:text-ea-gold transition-colors group">
                   <Mail className="w-5 h-5 text-ea-gold group-hover:scale-110 transition-transform" />
                   <span>office@euroadria.me</span>
                 </a>

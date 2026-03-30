@@ -16,7 +16,7 @@ const TrustBar = () => {
             <a href="https://wa.me/38268559776" className="hover:text-ea-gold transition-colors">
               <span>WhatsApp</span>
             </a>
-            <a href="mailto:office@euroadria.me" className="flex items-center gap-2 hover:text-ea-gold transition-colors">
+            <a href="mailto:office@euroadria.me" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-ea-gold transition-colors">
               <span className="text-white font-medium">office@euroadria.me</span>
             </a>
             <span className="text-ea-light/40 hidden lg:inline">Ihr direkter Draht ins Office</span>

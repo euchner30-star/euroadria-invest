@@ -97,7 +97,7 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h3 className="text-ea-dark font-semibold mb-1">Email</h3>
-                  <a href="mailto:office@euroadria.me" className="text-ea-dark/70 hover:text-ea-gold transition-colors text-sm">
+                  <a href="mailto:office@euroadria.me" target="_blank" rel="noopener noreferrer" className="text-ea-dark/70 hover:text-ea-gold transition-colors text-sm">
                     office@euroadria.me
                   </a>
                 </div>
