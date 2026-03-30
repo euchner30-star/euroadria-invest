@@ -2,6 +2,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import TrustBar from "./components/TrustBar";
 import ScrollToTop from "./components/ScrollToTop";
 import CookieConsent from "./components/CookieConsent";
 import Home from "./pages/Home.jsx";
@@ -57,6 +58,7 @@ function App() {
           <Route path="/investment/standort/:city" element={<LocationProfile />} />
         </Routes>
         </main>
+        <TrustBar />
         <Footer />
         <CookieConsent />
       </BrowserRouter>
