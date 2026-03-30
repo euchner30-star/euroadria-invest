@@ -10,7 +10,7 @@ const TrustBar = () => {
             <span className="text-xs text-ea-gold bg-ea-gold/10 border border-ea-gold/30 px-3 py-1 rounded-full font-medium">Referenziert in n-tv & RTL</span>
           </div>
           <div className="flex items-center gap-6 text-sm text-ea-light/70">
-            <a href="tel:+38268559776" className="flex items-center gap-2 hover:text-ea-gold transition-colors">
+            <a href="https://wa.me/38268559776" className="flex items-center gap-2 hover:text-ea-gold transition-colors">
               <span className="text-white font-medium">+382 68 559 776</span>
             </a>
             <a href="https://wa.me/38268559776" className="hover:text-ea-gold transition-colors">
