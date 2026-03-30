@@ -45,7 +45,7 @@ const ImpressumPage = () => {
               </p>
               
               <div className="flex flex-wrap gap-6 pt-6 border-t border-gray-200">
-                <a href="https://wa.me/38268559776" className="flex items-center gap-2 text-ea-dark/70 hover:text-ea-gold transition-colors group">
+                <a href="https://wa.me/38268559776" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-ea-dark/70 hover:text-ea-gold transition-colors group">
                   <Phone className="w-5 h-5 text-ea-gold group-hover:scale-110 transition-transform" />
                   <span>+382 68 559 776</span>
                 </a>

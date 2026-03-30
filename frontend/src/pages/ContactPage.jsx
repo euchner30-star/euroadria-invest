@@ -111,7 +111,7 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h3 className="text-ea-dark font-semibold mb-1">WhatsApp</h3>
-                  <a href="https://wa.me/38268559776" className="text-ea-dark/70 hover:text-ea-gold transition-colors text-sm">
+                  <a href="https://wa.me/38268559776" target="_blank" rel="noopener noreferrer" className="text-ea-dark/70 hover:text-ea-gold transition-colors text-sm">
                     +382 68 559 776
                   </a>
                 </div>
