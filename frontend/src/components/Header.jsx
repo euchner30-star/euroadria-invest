@@ -92,7 +92,7 @@ const Header = () => {
             <img 
               src="/euroadria-logo.png" 
               alt="EuroAdria Logo" 
-              className="h-10 w-auto object-contain"
+              className="h-14 w-auto object-contain transition-transform duration-300 ease-in-out group-hover:scale-110"
             />
           </Link>
 
