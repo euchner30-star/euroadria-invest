@@ -24,6 +24,7 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - Infrastructure Radar
 
 ### Completed Tasks (Latest First)
+- ✅ Trust Bar global auf allen Seiten eingebunden (über Footer), Duplikat aus Home.jsx entfernt, weißer Gap behoben (Feb 2026)
 - ✅ SEO Boost: Dynamic sitemap, 8 FAQ schema, LocalBusiness, BreadcrumbList, AggregateRating (29. März 2026)
 - ✅ Emergent badge completely removed from index.html (29. März 2026)
 - ✅ n-tv & RTL buttons added to article content in live DB (29. März 2026)
