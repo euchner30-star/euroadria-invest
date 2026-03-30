@@ -236,9 +236,10 @@ const Home = () => {
       {/* Testimonial Section */}
       <section className="py-20 bg-ea-dark relative overflow-hidden">
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-30"
+          className="absolute inset-0 bg-cover bg-no-repeat opacity-30"
           style={{
-            backgroundImage: homeContent.testimonial_image ? `url(${homeContent.testimonial_image})` : 'none'
+            backgroundImage: homeContent.testimonial_image ? `url(${homeContent.testimonial_image})` : 'none',
+            backgroundPosition: `center ${homeContent.testimonial_image_position ?? 50}%`
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">

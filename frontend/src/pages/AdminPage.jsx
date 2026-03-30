@@ -1409,8 +1409,34 @@ const AdminPage = () => {
                     data-testid="homepage-testimonial-image"
                   />
                   {homepageContent.testimonial_image && (
-                    <div className="mt-2 rounded-lg overflow-hidden h-24 bg-ea-light">
-                      <img src={homepageContent.testimonial_image} alt="Vorschau" className="w-full h-full object-cover opacity-50" />
+                    <div className="mt-2 space-y-3">
+                      <div className="rounded-lg overflow-hidden h-32 bg-ea-light relative">
+                        <img 
+                          src={homepageContent.testimonial_image} 
+                          alt="Vorschau" 
+                          className="w-full h-full object-cover opacity-50"
+                          style={{ objectPosition: `center ${homepageContent.testimonial_image_position ?? 50}%` }}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="bg-black/60 text-white text-xs px-3 py-1 rounded-full">Vorschau — Position: {homepageContent.testimonial_image_position ?? 50}%</span>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-ea-dark font-semibold text-sm mb-1">Bildposition (vertikal verschieben)</label>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-ea-dark/50 w-10">Oben</span>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={homepageContent.testimonial_image_position ?? 50}
+                            onChange={(e) => setHomepageContent(p => ({ ...p, testimonial_image_position: parseInt(e.target.value) }))}
+                            className="flex-1 accent-[#C8A96A]"
+                            data-testid="homepage-testimonial-position"
+                          />
+                          <span className="text-xs text-ea-dark/50 w-10 text-right">Unten</span>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
