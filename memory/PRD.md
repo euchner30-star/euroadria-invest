@@ -24,6 +24,9 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - Infrastructure Radar
 
 ### Completed Tasks (Latest First)
+- ✅ Admin Panel Mobile-Optimierung: responsive Header, scrollbare Tabs, responsive Grids (Feb 2026)
+- ✅ Dynamische Eigene Exposés im Admin Panel - beliebig viele mit Name/Beschreibung/URL (Feb 2026)
+- ✅ Investment Heatmap: 2 getrennte Leaflet/OpenStreetMap Karten für Montenegro und Serbien (Feb 2026)
 - ✅ Trust Bar global auf allen Seiten eingebunden (über Footer), Duplikat aus Home.jsx entfernt, weißer Gap behoben (Feb 2026)
 - ✅ SEO Boost: Dynamic sitemap, 8 FAQ schema, LocalBusiness, BreadcrumbList, AggregateRating (29. März 2026)
 - ✅ Emergent badge completely removed from index.html (29. März 2026)
