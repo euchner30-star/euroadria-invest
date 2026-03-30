@@ -39,8 +39,9 @@
     .popup-title{font-size:15px;font-weight:800;color:var(--gold);margin-bottom:6px}.popup-meta{font-size:12px;color:#d7e2ee;margin-bottom:6px}.popup-text{font-size:12px;line-height:1.45;color:#f1f5f9}
     .leaflet-control-layers-expanded{background:rgba(8,20,32,.94);color:#fff;border-radius:12px;border:1px solid rgba(255,255,255,.08)}
     .legend-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .dist-label{background:rgba(8,20,32,.88);color:#fff;border:1px solid rgba(200,169,106,.4);border-radius:8px;padding:3px 7px;font-size:11px;font-weight:600;white-space:nowrap;text-align:center;line-height:1.3}
-    .dist-label .km{color:var(--gold)}.dist-label .time{color:var(--muted);font-weight:400;font-size:10px}
+    .dist-label{background:rgba(8,20,32,.88);color:#fff;border:1px solid rgba(200,169,106,.4);border-radius:8px;padding:2px 6px;font-size:10px;font-weight:600;white-space:nowrap;text-align:center;line-height:1.3}
+    .dist-label .km{color:var(--gold)}.dist-label .time{color:var(--muted);font-weight:400;font-size:9px}
+    @media(max-width:600px){.dist-label{font-size:9px;padding:2px 4px}.dist-label .time{font-size:8px}}
     @media(max-width:980px){#app{grid-template-columns:1fr;grid-template-rows:50% 50%}}
   </style>
 </head>
@@ -287,6 +288,7 @@ const distances = [
   {from:'hercegNovi',to:'budva',km:55,min:60}
 ];
 
+const distLabels = [];
 distances.forEach(d => {
   const p1 = places[d.from], p2 = places[d.to];
   if (!p1 || !p2) return;
@@ -299,12 +301,25 @@ distances.forEach(d => {
   const icon = L.divIcon({
     className: '',
     html: `<div class="dist-label"><span class="km">${d.km} km</span><br><span class="time">${timeStr}</span></div>`,
-    iconSize: [70, 30],
-    iconAnchor: [35, 15]
+    iconSize: [60, 26],
+    iconAnchor: [30, 13]
   });
-  L.marker([midLat, midLng], {icon: icon, interactive: false}).addTo(layers.distances);
+  const marker = L.marker([midLat, midLng], {icon: icon, interactive: false}).addTo(layers.distances);
+  distLabels.push(marker);
   line.bindPopup(`<div class="popup-title">${p1.name} ↔ ${p2.name}</div><div class="popup-meta">Entfernung: ${d.km} km · Fahrzeit: ${timeStr}</div>`);
 });
+
+// Hide labels at low zoom, show at higher zoom
+function updateDistLabels() {
+  const z = map.getZoom();
+  distLabels.forEach(m => {
+    const el = m.getElement();
+    if (el) el.style.display = z >= 9 ? '' : 'none';
+  });
+}
+map.on('zoomend', updateDistLabels);
+map.on('layeradd', () => setTimeout(updateDistLabels, 100));
+setTimeout(updateDistLabels, 500);
 
 Object.values(layers).forEach(l=>l.addTo(map));
 
