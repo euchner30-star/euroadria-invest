@@ -31,7 +31,7 @@ const Hero = ({ backgroundImage, overlayOpacity = 50 }) => {
           <img 
             src="/euroadria-logo-white.png" 
             alt="EuroAdria - Shaping the Adriatic's Future" 
-            className="h-40 md:h-52 w-auto"
+            className="h-52 md:h-72 w-auto cursor-pointer transition-transform duration-500 ease-in-out hover:scale-110"
           />
         </div>
 
