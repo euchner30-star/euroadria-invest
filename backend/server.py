@@ -741,7 +741,12 @@ async def get_homepage_settings():
         return HOMEPAGE_DEFAULTS
     result = {}
     for k, v in HOMEPAGE_DEFAULTS.items():
-        result[k] = settings.get(k, v)
+        saved = settings.get(k)
+        # Use default if not saved or empty string
+        if saved is None or saved == "":
+            result[k] = v
+        else:
+            result[k] = saved
     return result
 
 @api_router.put("/admin/settings/homepage")

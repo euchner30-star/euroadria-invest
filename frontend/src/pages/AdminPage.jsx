@@ -297,6 +297,8 @@ const AdminPage = () => {
         body: JSON.stringify(homepageContent)
       });
       if (res.ok) {
+        const saved = await res.json();
+        setHomepageContent(saved);
         setSaveStatus({ type: 'success', message: 'Homepage-Inhalte gespeichert!' });
         setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
       }
