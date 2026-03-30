@@ -50,7 +50,7 @@ const DatenschutzPage = () => {
               </div>
               
               <div className="flex flex-wrap gap-6 pt-4">
-                <a href="tel:+38268559776" className="flex items-center gap-2 text-ea-dark/70 hover:text-ea-gold transition-colors group">
+                <a href="https://wa.me/38268559776" className="flex items-center gap-2 text-ea-dark/70 hover:text-ea-gold transition-colors group">
                   <Phone className="w-5 h-5 text-ea-gold group-hover:scale-110 transition-transform" />
                   <span>+382 68 559 776</span>
                 </a>
