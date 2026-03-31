@@ -1,7 +1,7 @@
 # EuroAdria - Product Requirements Document
 
 ## Original Problem Statement
-Professional "Investment Intelligence Platform" for the Balkan region with full CMS. Deployed on Render with MongoDB Atlas. Admin panel for managing articles, hero images, PDF Exposé downloads, and download URLs.
+Professional "Investment Intelligence Platform" for the Balkan region with full CMS. Deployed on Render with MongoDB Atlas. Admin panel for managing articles, hero images, PDF Exposé downloads, and download URLs. Custom domain: `invest.euroadria.me`.
 
 ## Architecture
 - **Frontend:** React + TailwindCSS (Static Site on Render: `euroadria-invest`)
@@ -10,40 +10,61 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - **Email:** Resend API
 - **Images:** imgBB (external hosting)
 - **PDFs/Exposés:** External URLs (Google Drive, Dropbox)
+- **Maps:** Leaflet + OpenStreetMap
+- **Tracking:** FunnelCockpit Conversion Pixel
 - **GitHub Repo:** `euchner30-star/euroadria-invest` (branch: `main`)
-- **GitHub Push:** Via token from CLI (`git push github main`)
+- **Custom Domain:** `invest.euroadria.me` (via Strato DNS → Render)
+- **Main Domain:** `euroadria.me` (separate site, links to invest subdomain under "Leistungen")
 
 ## What's Been Implemented
 
 ### Core Features
 - Investment Dashboard with ROI Calculator
 - AEO-optimized Blog with Expert Tips
-- Admin Panel (Articles, Comments, Regions, Pages CMS, Downloads)
+- Admin Panel (Articles, Comments, Regions, Pages CMS, Downloads, Homepage CMS)
 - Contact Form with Resend email notifications
 - Dynamic Location Profiles (5 Immobilien-Seiten)
-- Infrastructure Radar
+- Infrastructure Radar with interactive Leaflet maps
+- Interactive Leaflet/OpenStreetMap maps for Montenegro & Serbia
+- Trust Bar (global, all pages)
+- Floating WhatsApp Button with pulse animation
+- Homepage CMS (Hero text, Testimonials, CTA, Trust Badges)
+- Image Position Sliders for Hero, Testimonial, and Article images
 
 ### Completed Tasks (Latest First)
-- ✅ Admin Panel Mobile-Optimierung: responsive Header, scrollbare Tabs, responsive Grids (Feb 2026)
-- ✅ Dynamische Eigene Exposés im Admin Panel - beliebig viele mit Name/Beschreibung/URL (Feb 2026)
-- ✅ Investment Heatmap: 2 getrennte Leaflet/OpenStreetMap Karten für Montenegro und Serbien (Feb 2026)
-- ✅ Trust Bar global auf allen Seiten eingebunden (über Footer), Duplikat aus Home.jsx entfernt, weißer Gap behoben (Feb 2026)
-- ✅ SEO Boost: Dynamic sitemap, 8 FAQ schema, LocalBusiness, BreadcrumbList, AggregateRating (29. März 2026)
-- ✅ Emergent badge completely removed from index.html (29. März 2026)
-- ✅ n-tv & RTL buttons added to article content in live DB (29. März 2026)
-- ✅ Team member titles fixed in DB + code (29. März 2026)
-- ✅ Article sorting with sortOrder field (29. März 2026)
-- ✅ Downloads tab in Admin Panel - 6 configurable URLs (29. März 2026)
-- ✅ Download URL / Exposé Feature in Admin + Article View (29. März 2026)
-- ✅ Pillow added to requirements.txt for Render deployment
-- ✅ Direct Git push to GitHub (via user token)
-- ✅ Migration to MongoDB Atlas
-- ✅ Render deployment (Frontend + Backend)
-- ✅ Resend API email integration
-- ✅ ROI Calculator input fix
-- ✅ Expert Tip names updated
-- ✅ Header CTA button slimmed
-- ✅ metaTitle/metaDescription added to ArticleUpdate
+- SEO: Alle Domain-Referenzen auf `invest.euroadria.me` korrigiert (Sitemap, Canonical, JSON-LD, robots.txt, OG) (31. März 2026)
+- Artikel-Bild Positionsregler mit Live-Vorschau im Admin Panel (März 2026)
+- Grüner WhatsApp-Button unten rechts mit Puls-Animation (März 2026)
+- Alle Telefon/WhatsApp/E-Mail-Links öffnen in neuem Tab (März 2026)
+- Homepage CMS komplett im Admin Panel (Hero, Testimonials, CTA, Trust Badges) (März 2026)
+- FunnelCockpit Tracking Pixel integriert (März 2026)
+- Hero-Bild Fade-In gegen graue Blitze (März 2026)
+- Custom Domain `invest.euroadria.me` eingerichtet (März 2026)
+- EuroAdria Logos vergrößert mit Hover-Animationen (März 2026)
+- 7 Kontaktformulare auf Resend API umgestellt (März 2026)
+- Dynamische Distanzen (km) und Fahrzeiten (min) auf Infrastructure Map (März 2026)
+- 10 FAQ-Fragen auf Homepage mit Schema-Markup (März 2026)
+- Admin Panel Mobile-Optimierung (Feb 2026)
+- Dynamische Exposés im Admin Panel (Feb 2026)
+- Investment Heatmap: 2 Leaflet/OpenStreetMap Karten (Feb 2026)
+- Trust Bar global eingebunden (Feb 2026)
+- Download URL / Exposé Feature in Admin + Article View
+- Article sorting with sortOrder field
+- Downloads tab in Admin Panel
+- SEO: Dynamic sitemap, FAQ schema, LocalBusiness, BreadcrumbList, AggregateRating
+- Migration to MongoDB Atlas
+- Render deployment (Frontend + Backend)
+- Resend API email integration
+- ROI Calculator input fix
+- Expert Tip names updated
+- Header CTA button slimmed
+
+## SEO Status
+- 7 JSON-LD Structured Data Schemas (Organization, NewsArticle x2, ProfessionalService, ItemList, FAQPage, LocalBusiness, BreadcrumbList)
+- Dynamic Sitemap at `/api/sitemap.xml` with all pages + blog articles
+- robots.txt with allowed bots (Google, Bing, GPT, Claude)
+- Canonical, OG, Twitter meta tags → all pointing to `invest.euroadria.me`
+- **Next:** User submitting sitemap to Google Search Console
 
 ## DB Schema - Articles
 ```json
@@ -58,6 +79,7 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
   "author": "string",
   "date": "string",
   "image": "string (URL)",
+  "imagePosition": "int (0-100, vertical position)",
   "readTime": "string",
   "featured": "boolean",
   "sortOrder": "int (0=top, higher=lower)",
@@ -69,54 +91,53 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 }
 ```
 
-## DB Schema - Site Settings (Downloads)
+## DB Schema - Site Settings
 ```json
 {
-  "key": "downloads",
-  "praxisleitfaden_url": "string",
-  "budva_expose_url": "string",
-  "niksic_expose_url": "string",
-  "podgorica_expose_url": "string",
-  "skadar_lake_expose_url": "string",
-  "zabljak_expose_url": "string"
+  "key": "homepage_settings",
+  "hero_title": "string",
+  "hero_subtitle": "string",
+  "hero_cta_text": "string",
+  "testimonial_image": "string (URL)",
+  "testimonial_image_position": "int (0-100)",
+  "testimonial_quote": "string",
+  "testimonial_author": "string",
+  "cta_title": "string",
+  "cta_subtitle": "string"
 }
 ```
 
 ## Prioritized Backlog
 
-### P0 (Critical)
-- Custom Domain Setup (`invest.euroadria.me`) — CNAME at Namecheap (NEXT SESSION)
-
 ### P1 (Important)
-- Admin Panel for Investment Data (Locations, Infrastructure)
-- Heatmap Visualizations on investment map
-- Google Search Console: Submit sitemap (`/api/sitemap.xml`)
+- Google Search Console: Submit sitemap (USER ACTION - in progress)
 
 ### P2 (Nice to Have)
-- FunnelCockpit Tracking (blocked on user providing code)
-- Missing 54 articles (user to manually re-add)
+- Video Background for Hero Section (user mentioned interest)
 - Apartment-Listing functionality
 - Newsletter Integration
 - AdminPage.jsx / server.py refactoring (monoliths)
 
 ## Known Issues
-- WYSIWYG editor text writing backward on mobile (testing pending)
-- Render ephemeral storage: local file uploads wiped on deploy (using external URLs)
+- Render ephemeral storage: local file uploads wiped on deploy (using external URLs as workaround)
+- Render Deployment Desync: Frontend may deploy faster than Backend, causing temporary API 404s
 
 ## Key API Endpoints
 - `POST /api/contact` — Resend email
 - `POST /api/calculator/roi` — ROI calculation
-- `GET/POST/PUT/DELETE /api/articles` — Article CRUD (supports downloadUrl, sortOrder)
+- `GET/POST/PUT/DELETE /api/articles` — Article CRUD
 - `GET /api/settings/downloads` — Public download URLs
 - `PUT /api/admin/settings/downloads` — Admin update download URLs
-- `GET /api/sitemap.xml` — Dynamic sitemap
-- `GET/POST/PUT/DELETE /api/admin/*` — Admin endpoints (HTTP Basic Auth)
+- `GET/PUT /api/settings/homepage` — Homepage CMS
+- `GET /api/sitemap.xml` — Dynamic sitemap (domain: invest.euroadria.me)
 
 ## Admin Credentials
 - Local: `admin` / `euroadria2025`
-- Render (live): `office@euroadria.me` / `IsTH42#HZMC4q@3A7ITfp#Ip` (set via ADMIN_USERNAME/ADMIN_PASSWORD env vars)
+- Render (live): `office@euroadria.me` / `IsTH42#HZMC4q@3A7ITfp#Ip`
 
 ## 3rd Party Integrations
 - Resend API (emails) — RESEND_API_KEY in Render env
 - MongoDB Atlas — MONGO_URL in Render env
 - imgBB (image hosting) — managed by user externally
+- FunnelCockpit (tracking) — Conversion Pixel ID injected
+- OpenStreetMap/Leaflet — Free open-source map tiles
