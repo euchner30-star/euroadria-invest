@@ -618,7 +618,7 @@ async def delete_article(article_id: int, admin: str = Depends(verify_admin)):
 # DYNAMIC SITEMAP
 # =============================================
 
-SITE_URL = "https://euroadria.me"
+SITE_URL = "https://invest.euroadria.me"
 
 STATIC_PAGES = [
     {"loc": "/", "priority": "1.0", "changefreq": "weekly"},

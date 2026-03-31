@@ -1,5 +1,5 @@
 # EuroAdria Corporate Solutions - robots.txt
-# https://euroadria.me
+# https://invest.euroadria.me
 
 User-agent: *
 Allow: /
@@ -15,7 +15,7 @@ Allow: /impressum
 Allow: /datenschutz
 
 # Sitemaps
-Sitemap: https://euroadria.me/api/sitemap.xml
+Sitemap: https://invest.euroadria.me/api/sitemap.xml
 
 # Crawl-Delay for polite crawling
 Crawl-delay: 1
@@ -43,4 +43,4 @@ User-agent: ClaudeBot
 Allow: /
 
 # Host directive
-Host: https://euroadria.me
+Host: https://invest.euroadria.me
