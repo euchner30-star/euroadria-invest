@@ -769,6 +769,34 @@ async def update_homepage_settings(settings: dict, admin: str = Depends(verify_a
     return {k: update_data[k] for k in HOMEPAGE_DEFAULTS}
 
 
+# =============================================
+# LEGAL PAGES (Impressum & Datenschutz)
+# =============================================
+
+@api_router.get("/settings/legal/{page_type}")
+async def get_legal_page(page_type: str):
+    """Get legal page content (public). page_type: impressum or datenschutz"""
+    if page_type not in ("impressum", "datenschutz"):
+        raise HTTPException(status_code=404, detail="Page not found")
+    doc = await db.site_settings.find_one({"key": f"legal_{page_type}"}, {"_id": 0})
+    if not doc or not doc.get("content"):
+        return {"content": ""}
+    return {"content": doc["content"]}
+
+@api_router.put("/admin/settings/legal/{page_type}")
+async def update_legal_page(page_type: str, data: dict, admin: str = Depends(verify_admin)):
+    """Update legal page content (Admin only)"""
+    if page_type not in ("impressum", "datenschutz"):
+        raise HTTPException(status_code=404, detail="Page not found")
+    content = data.get("content", "")
+    await db.site_settings.update_one(
+        {"key": f"legal_{page_type}"},
+        {"$set": {"key": f"legal_{page_type}", "content": content}},
+        upsert=True
+    )
+    return {"content": content}
+
+
 
 # =============================================
 # IMAGE UPLOAD ENDPOINT (Admin only)

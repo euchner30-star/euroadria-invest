@@ -4,7 +4,7 @@ import {
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
   FileText, Loader2, AlertCircle, Check, MessageSquare,
   CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image as ImageIcon,
-  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3
+  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHtml } from '../components/admin/WYSIWYGEditor';
@@ -16,12 +16,18 @@ const AdminPage = () => {
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  // Active Tab: 'articles', 'comments', 'regions', 'pages', 'downloads', 'investment', 'homepage'
+  // Active Tab: 'articles', 'comments', 'regions', 'pages', 'downloads', 'investment', 'homepage', 'legal'
   const [activeTab, setActiveTab] = useState('articles');
   
   // Homepage Content State
   const [homepageContent, setHomepageContent] = useState({});
   const [homepageSaving, setHomepageSaving] = useState(false);
+
+  // Legal Pages State
+  const [impressumContent, setImpressumContent] = useState('');
+  const [datenschutzContent, setDatenschutzContent] = useState('');
+  const [legalSaving, setLegalSaving] = useState(false);
+  const [activeLegalPage, setActiveLegalPage] = useState('impressum');
 
   // Articles State
   const [articles, setArticles] = useState([]);
@@ -90,6 +96,11 @@ const AdminPage = () => {
         fetchCommentsStats(creds);
         fetchRegions(creds);
         fetchPages(creds);
+        fetchDownloadSettings();
+        fetchInvestLocations();
+        fetchHomepageContent();
+        fetchLegalContent('impressum');
+        fetchLegalContent('datenschutz');
       } else {
         sessionStorage.removeItem('adminCredentials');
       }
@@ -116,6 +127,8 @@ const AdminPage = () => {
         fetchDownloadSettings();
         fetchInvestLocations();
         fetchHomepageContent();
+        fetchLegalContent('impressum');
+        fetchLegalContent('datenschutz');
       } else {
         setLoginError('Ungültige Zugangsdaten');
       }
@@ -332,6 +345,37 @@ const AdminPage = () => {
       }
     } catch (err) { setSaveStatus({ type: 'error', message: err.message }); }
     finally { setHomepageSaving(false); }
+  };
+
+  // Legal Pages Functions
+  const fetchLegalContent = async (pageType) => {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/settings/legal/${pageType}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (pageType === 'impressum') setImpressumContent(data.content || '');
+        else setDatenschutzContent(data.content || '');
+      }
+    } catch (err) {
+      console.error(`Failed to fetch ${pageType}:`, err);
+    }
+  };
+
+  const handleSaveLegal = async (pageType) => {
+    setLegalSaving(true);
+    const content = pageType === 'impressum' ? impressumContent : datenschutzContent;
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/settings/legal/${pageType}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) },
+        body: JSON.stringify({ content })
+      });
+      if (res.ok) {
+        setSaveStatus({ type: 'success', message: `${pageType === 'impressum' ? 'Impressum' : 'Datenschutz'} gespeichert!` });
+        setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+      }
+    } catch (err) { setSaveStatus({ type: 'error', message: err.message }); }
+    finally { setLegalSaving(false); }
   };
 
 
@@ -811,6 +855,18 @@ const AdminPage = () => {
           >
             <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Investment ({investLocations.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('legal')}
+            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
+              activeTab === 'legal'
+                ? 'bg-ea-gold text-ea-dark font-semibold'
+                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
+            }`}
+            data-testid="tab-legal"
+          >
+            <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span>Rechtliches</span>
           </button>
         </div>
 
@@ -1729,6 +1785,84 @@ const AdminPage = () => {
           </div>
         )}
       </div>
+
+        {/* Legal Tab */}
+        {activeTab === 'legal' && (
+          <div className="space-y-6">
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 sm:p-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                <div className="flex items-center space-x-2">
+                  <Shield className="w-5 h-5 text-ea-gold" />
+                  <h2 className="text-lg sm:text-xl font-bold text-ea-dark">Rechtliche Seiten bearbeiten</h2>
+                </div>
+                <button
+                  onClick={() => handleSaveLegal(activeLegalPage)}
+                  disabled={legalSaving}
+                  className="flex items-center justify-center space-x-2 px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all disabled:opacity-50 w-full sm:w-auto"
+                  data-testid="save-legal-btn"
+                >
+                  <Save className="w-5 h-5" />
+                  <span>{legalSaving ? 'Speichern...' : 'Speichern'}</span>
+                </button>
+              </div>
+
+              {/* Sub-Tabs for Impressum / Datenschutz */}
+              <div className="flex gap-2 mb-6">
+                <button
+                  onClick={() => setActiveLegalPage('impressum')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    activeLegalPage === 'impressum'
+                      ? 'bg-ea-dark text-white'
+                      : 'bg-gray-100 text-ea-dark/70 hover:bg-gray-200'
+                  }`}
+                  data-testid="legal-tab-impressum"
+                >
+                  Impressum
+                </button>
+                <button
+                  onClick={() => setActiveLegalPage('datenschutz')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    activeLegalPage === 'datenschutz'
+                      ? 'bg-ea-dark text-white'
+                      : 'bg-gray-100 text-ea-dark/70 hover:bg-gray-200'
+                  }`}
+                  data-testid="legal-tab-datenschutz"
+                >
+                  Datenschutz
+                </button>
+              </div>
+
+              {/* Editor */}
+              {activeLegalPage === 'impressum' && (
+                <div>
+                  <label className="block text-ea-dark font-semibold text-sm mb-2">Impressum-Inhalt (HTML)</label>
+                  <WYSIWYGEditor
+                    key="impressum-editor"
+                    value={impressumContent}
+                    onChange={setImpressumContent}
+                    placeholder="Impressum-Text hier eingeben..."
+                  />
+                </div>
+              )}
+              {activeLegalPage === 'datenschutz' && (
+                <div>
+                  <label className="block text-ea-dark font-semibold text-sm mb-2">Datenschutz-Inhalt (HTML)</label>
+                  <WYSIWYGEditor
+                    key="datenschutz-editor"
+                    value={datenschutzContent}
+                    onChange={setDatenschutzContent}
+                    placeholder="Datenschutzerkl&auml;rung hier eingeben..."
+                  />
+                </div>
+              )}
+
+              <p className="text-ea-dark/40 text-xs mt-4">
+                Tipp: Nutze die Toolbar f&uuml;r &Uuml;berschriften, Listen und Links. Der Inhalt wird als HTML gespeichert und auf der &ouml;ffentlichen Seite angezeigt.
+              </p>
+            </div>
+          </div>
+        )}
+
     </div>
   );
 };
