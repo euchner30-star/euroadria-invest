@@ -111,11 +111,12 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 
 ### P1 (Important)
 - Google Search Console: Submit sitemap (USER ACTION - in progress)
+- Lead-Generierung bei Exposé-Downloads (Name + E-Mail Formular vor Download)
+- Newsletter Integration (Variante noch offen: Resend einfach vs. Brevo professionell)
 
 ### P2 (Nice to Have)
 - Video Background for Hero Section (user mentioned interest)
 - Apartment-Listing functionality
-- Newsletter Integration
 - AdminPage.jsx / server.py refactoring (monoliths)
 
 ## Known Issues
