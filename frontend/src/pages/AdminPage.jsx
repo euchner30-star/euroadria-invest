@@ -1860,14 +1860,27 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
               credentials={credentials}
             />
             {formData.image && (
-              <div className="mt-2">
-                <label className="block text-ea-dark/80 text-xs mb-1">Bildposition</label>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-ea-dark/40">Oben</span>
-                  <input type="range" min="0" max="100" value={formData.imagePosition ?? 50}
-                    onChange={(e) => handleChange('imagePosition', parseInt(e.target.value))}
-                    className="flex-1 accent-[#C8A96A]" />
-                  <span className="text-xs text-ea-dark/40">Unten</span>
+              <div className="mt-2 space-y-2">
+                <div className="rounded-lg overflow-hidden h-32 relative">
+                  <img 
+                    src={formData.image} 
+                    alt="Vorschau" 
+                    className="w-full h-full object-cover"
+                    style={{ objectPosition: `center ${formData.imagePosition ?? 50}%` }}
+                  />
+                  <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
+                    Position: {formData.imagePosition ?? 50}%
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-ea-dark/80 text-xs mb-1">Bildposition (vertikal)</label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-ea-dark/40">Oben</span>
+                    <input type="range" min="0" max="100" value={formData.imagePosition ?? 50}
+                      onChange={(e) => handleChange('imagePosition', parseInt(e.target.value))}
+                      className="flex-1 accent-[#C8A96A]" />
+                    <span className="text-xs text-ea-dark/40">Unten</span>
+                  </div>
                 </div>
               </div>
             )}
