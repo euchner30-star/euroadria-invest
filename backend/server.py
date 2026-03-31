@@ -723,6 +723,8 @@ HOMEPAGE_DEFAULTS = {
     "testimonial_image_position": 50,
     "testimonial_quote": "Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen. Ich habe mich bestens betreut gefühlt und kann EuroAdria jedem Unternehmer und Investor wärmstens empfehlen.",
     "testimonial_author": "Maximilian R., Unternehmer aus Deutschland",
+    "stats_image": "https://images.unsplash.com/photo-1517048676732-d65bc937f952",
+    "stats_image_position": 50,
     "cta_title": "Bereit für Ihre Investition?",
     "cta_subtitle": "Vereinbaren Sie ein unverbindliches Erstgespräch mit unseren Experten und entdecken Sie die Möglichkeiten am Balkan.",
     "trust_items": [

@@ -113,9 +113,10 @@ const Home = () => {
               </div>
               <figure className="relative">
                 <img
-                  src="https://images.unsplash.com/photo-1517048676732-d65bc937f952"
+                  src={homeContent.stats_image || "https://images.unsplash.com/photo-1517048676732-d65bc937f952"}
                   alt="Investment-Beratung für Balkan-Märkte - EuroAdria Team Meeting"
                   className="rounded-xl shadow-lg"
+                  style={{ objectPosition: `center ${homeContent.stats_image_position ?? 50}%` }}
                   itemProp="image"
                 />
                 <figcaption className="absolute -bottom-6 -left-6 bg-white border border-gray-200 rounded-xl p-6 shadow-lg max-w-xs">

@@ -289,6 +289,8 @@ const AdminPage = () => {
     testimonial_image_position: 50,
     testimonial_quote: 'Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen.',
     testimonial_author: 'Maximilian R., Unternehmer aus Deutschland',
+    stats_image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952',
+    stats_image_position: 50,
     cta_title: 'Bereit für Ihre Investition?',
     cta_subtitle: 'Vereinbaren Sie ein unverbindliches Erstgespräch mit unseren Experten und entdecken Sie die Möglichkeiten am Balkan.',
     trust_items: [
@@ -1488,6 +1490,53 @@ const AdminPage = () => {
                     className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
                     data-testid="homepage-testimonial-author"
                   />
+                </div>
+              </div>
+
+              {/* Stats Image Section (60-80%) */}
+              <h3 className="text-lg font-semibold text-ea-dark mb-4 border-b border-gray-200 pb-2">Statistik-Bild (60-80% Sektion)</h3>
+              <div className="space-y-4 mb-8">
+                <div>
+                  <label className="block text-ea-dark font-semibold text-sm mb-1">Bild-URL</label>
+                  <input
+                    type="url"
+                    value={homepageContent.stats_image || ''}
+                    onChange={(e) => setHomepageContent(p => ({ ...p, stats_image: e.target.value }))}
+                    placeholder="https://images.unsplash.com/... oder imgBB-Link"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+                    data-testid="homepage-stats-image"
+                  />
+                  {homepageContent.stats_image && (
+                    <div className="mt-2 space-y-3">
+                      <div className="rounded-lg overflow-hidden h-32 bg-ea-light relative">
+                        <img 
+                          src={homepageContent.stats_image} 
+                          alt="Vorschau Statistik-Bild" 
+                          className="w-full h-full object-cover opacity-50"
+                          style={{ objectPosition: `center ${homepageContent.stats_image_position ?? 50}%` }}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="bg-black/60 text-white text-xs px-3 py-1 rounded-full">Vorschau — Position: {homepageContent.stats_image_position ?? 50}%</span>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-ea-dark font-semibold text-sm mb-1">Bildposition (vertikal verschieben)</label>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-ea-dark/50 w-10">Oben</span>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={homepageContent.stats_image_position ?? 50}
+                            onChange={(e) => setHomepageContent(p => ({ ...p, stats_image_position: parseInt(e.target.value) }))}
+                            className="flex-1 accent-[#C8A96A]"
+                            data-testid="homepage-stats-position"
+                          />
+                          <span className="text-xs text-ea-dark/50 w-10 text-right">Unten</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
