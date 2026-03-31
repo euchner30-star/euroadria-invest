@@ -4,6 +4,7 @@ import {
   MapPin, TrendingUp, Building2, Plane, Landmark, Briefcase,
   ArrowRight, CheckCircle, Clock, Euro, FileText, Phone, Shield
 } from 'lucide-react';
+import ExposeLeadGate from '../../components/ExposeLeadGate';
 import SEO from '../../components/SEO';
 
 const PodgoricaPage = () => {
@@ -85,16 +86,13 @@ const PodgoricaPage = () => {
 
           <div className="flex flex-wrap gap-4">
             {exposeUrl ? (
-              <a
-                href={exposeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/90 transition-all flex items-center gap-2"
-                data-testid="podgorica-contact-cta"
-              >
-                <FileText className="w-5 h-5" />
-                Exposé herunterladen
-              </a>
+              <ExposeLeadGate
+                exposeUrl={exposeUrl}
+                exposeName="Podgorica Exposé"
+                sourceId="podgorica_expose"
+                buttonText="Exposé herunterladen"
+                buttonClass="px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/90 transition-all flex items-center gap-2"
+              />
             ) : (
               <button
                 onClick={() => setShowContactForm(true)}
@@ -277,15 +275,13 @@ const PodgoricaPage = () => {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             {exposeUrl ? (
-              <a
-                href={exposeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-8 py-4 bg-ea-gold text-ea-dark font-semibold rounded-xl hover:bg-ea-gold/90 transition-all flex items-center gap-2"
-              >
-                <FileText className="w-5 h-5" />
-                Kostenloses Exposé herunterladen
-              </a>
+              <ExposeLeadGate
+                exposeUrl={exposeUrl}
+                exposeName="Podgorica Exposé"
+                sourceId="podgorica_expose"
+                buttonText="Kostenloses Exposé herunterladen"
+                buttonClass="px-8 py-4 bg-ea-gold text-ea-dark font-semibold rounded-xl hover:bg-ea-gold/90 transition-all flex items-center gap-2"
+              />
             ) : (
               <button
                 onClick={() => setShowContactForm(true)}

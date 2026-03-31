@@ -377,6 +377,14 @@ class ContactForm(BaseModel):
     subject: str
     message: str
 
+# Lead form model (for Exposé downloads)
+class LeadForm(BaseModel):
+    name: str
+    email: EmailStr
+    phone: Optional[str] = None
+    source: str  # e.g. "budva_expose", "niksic_expose"
+    expose_name: Optional[str] = None
+
 
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
@@ -406,6 +414,63 @@ async def submit_contact_form(form: ContactForm):
         "message": "Vielen Dank für Ihre Nachricht! Wir melden uns zeitnah bei Ihnen.",
         "email_sent": email_sent
     }
+
+
+# =============================================
+# LEAD CAPTURE ENDPOINT (Exposé Downloads)
+# =============================================
+
+@api_router.post("/leads")
+async def capture_lead(lead: LeadForm):
+    """Capture lead data before Exposé download"""
+    lead_dict = lead.model_dump()
+    lead_dict["submitted_at"] = datetime.now(timezone.utc).isoformat()
+    lead_dict["type"] = "expose_download"
+    
+    # Store in database
+    await db.leads.insert_one(lead_dict)
+    
+    # Send email notification
+    email_sent = False
+    if RESEND_API_KEY:
+        try:
+            resend.api_key = RESEND_API_KEY
+            html_content = f"""
+            <html>
+            <body style="font-family: Arial, sans-serif; background-color: #0A1628; padding: 20px;">
+                <div style="max-width: 600px; margin: 0 auto; background-color: #1a2744; border-radius: 10px; padding: 30px;">
+                    <h2 style="color: #c8a96a; margin-bottom: 20px;">Neuer Exposé-Download Lead</h2>
+                    <div style="background-color: #0A1628; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <p style="color: #ffffff; margin-bottom: 10px;"><strong>Name:</strong> {lead_dict['name']}</p>
+                        <p style="color: #ffffff; margin-bottom: 10px;"><strong>E-Mail:</strong> {lead_dict['email']}</p>
+                        <p style="color: #ffffff; margin-bottom: 10px;"><strong>Telefon:</strong> {lead_dict.get('phone', 'Nicht angegeben')}</p>
+                        <p style="color: #ffffff; margin-bottom: 10px;"><strong>Exposé:</strong> {lead_dict.get('expose_name', lead_dict['source'])}</p>
+                    </div>
+                    <hr style="border-color: #c8a96a; margin: 20px 0;">
+                    <p style="color: #888; font-size: 12px;">Dieser Lead wurde über den Exposé-Download auf invest.euroadria.me generiert.</p>
+                </div>
+            </body>
+            </html>
+            """
+            params = {
+                "from": "EuroAdria Leads <onboarding@resend.dev>",
+                "to": [NOTIFICATION_EMAIL],
+                "subject": f"Neuer Lead: {lead_dict.get('expose_name', lead_dict['source'])} - {lead_dict['name']}",
+                "html": html_content,
+                "reply_to": lead_dict['email']
+            }
+            resend.Emails.send(params)
+            email_sent = True
+        except Exception as e:
+            logger.error(f"Failed to send lead email: {e}")
+    
+    return {"success": True, "email_sent": email_sent}
+
+@api_router.get("/admin/leads")
+async def get_leads(admin: str = Depends(verify_admin)):
+    """Get all collected leads (Admin only)"""
+    leads = await db.leads.find({}, {"_id": 0}).sort("submitted_at", -1).to_list(500)
+    return leads
 
 
 @api_router.post("/status", response_model=StatusCheck)
