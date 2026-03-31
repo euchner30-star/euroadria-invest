@@ -32,7 +32,10 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - Image Position Sliders for Hero, Testimonial, and Article images
 
 ### Completed Tasks (Latest First)
-- SEO: Alle Domain-Referenzen auf `invest.euroadria.me` korrigiert (Sitemap, Canonical, JSON-LD, robots.txt, OG) (31. März 2026)
+- Lead-Generierung: Exposé-Downloads nur mit Name+E-Mail, Leads in DB + E-Mail (31. März 2026)
+- Admin Panel: Rechtliches Tab - Impressum & Datenschutz editierbar mit WYSIWYG-Editor (31. März 2026)
+- Admin Panel: Statistik-Bild (60-80%) editierbar mit Vorschau und Positions-Slider (31. März 2026)
+- SEO: Alle Domain-Referenzen auf `invest.euroadria.me` korrigiert (31. März 2026)
 - Artikel-Bild Positionsregler mit Live-Vorschau im Admin Panel (März 2026)
 - Grüner WhatsApp-Button unten rechts mit Puls-Animation (März 2026)
 - Alle Telefon/WhatsApp/E-Mail-Links öffnen in neuem Tab (März 2026)
