@@ -681,7 +681,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
             <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
                 <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <div style="background: #04151F; padding: 24px 32px; text-align: center;">
-                        <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 40px;">
+                        <img src="https://invest.euroadria.me/euroadria-logo-white.png" alt="EuroAdria" style="height: 40px;">
                     </div>
                     <div style="padding: 32px; color: #333; font-size: 15px; line-height: 1.7;">
                         <h2 style="color: #04151F; font-size: 22px; margin-bottom: 16px;">Willkommen bei EuroAdria!</h2>
@@ -774,7 +774,7 @@ async def send_newsletter(data: dict, admin: str = Depends(verify_admin)):
     <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
         <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
             <div style="background: #04151F; padding: 24px 32px; text-align: center;">
-                <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 40px;">
+                <img src="https://invest.euroadria.me/euroadria-logo-white.png" alt="EuroAdria" style="height: 40px;">
             </div>
             <div style="padding: 32px; color: #333; font-size: 15px; line-height: 1.7;">
                 {content}

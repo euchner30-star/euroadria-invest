@@ -171,7 +171,7 @@ const NewsletterAdmin = ({ credentials }) => {
             <div className="border border-gray-200 rounded-xl overflow-hidden bg-gray-100">
               {/* Header */}
               <div className="bg-[#04151F] py-5 px-8 text-center">
-                <img src="/euroadria-logo.png" alt="EuroAdria" className="h-9 mx-auto" />
+                <img src="/euroadria-logo-white.png" alt="EuroAdria" className="h-9 mx-auto" />
               </div>
               {/* Content */}
               <div className="bg-white px-8 py-6 text-sm text-ea-dark/80 leading-relaxed min-h-[80px]">
