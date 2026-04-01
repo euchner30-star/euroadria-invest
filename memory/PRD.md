@@ -32,6 +32,7 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - Image Position Sliders for Hero, Testimonial, and Article images
 
 ### Completed Tasks (Latest First)
+- Analytics Dashboard: KPIs, Charts, Page-View Tracking, Lead-Tabelle mit CSV-Export (1. April 2026)
 - Lead-Generierung: Exposé-Downloads nur mit Name+E-Mail, Leads in DB + E-Mail (31. März 2026)
 - Admin Panel: Rechtliches Tab - Impressum & Datenschutz editierbar mit WYSIWYG-Editor (31. März 2026)
 - Admin Panel: Statistik-Bild (60-80%) editierbar mit Vorschau und Positions-Slider (31. März 2026)
