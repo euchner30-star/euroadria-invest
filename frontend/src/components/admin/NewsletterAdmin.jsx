@@ -170,8 +170,8 @@ const NewsletterAdmin = ({ credentials }) => {
             <label className="block text-ea-dark font-semibold text-sm mb-1.5">Vorschau der E-Mail</label>
             <div className="border border-gray-200 rounded-xl overflow-hidden bg-gray-100">
               {/* Header */}
-              <div className="bg-[#04151F] py-5 px-8 text-center">
-                <img src="/euroadria-logo-white.png" alt="EuroAdria" className="h-9 mx-auto" />
+              <div className="bg-white py-6 px-8 text-center border-b-2 border-ea-gold">
+                <img src="/euroadria-logo.png" alt="EuroAdria" className="h-12 mx-auto" />
               </div>
               {/* Content */}
               <div className="bg-white px-8 py-6 text-sm text-ea-dark/80 leading-relaxed min-h-[80px]">
