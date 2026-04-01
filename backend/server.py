@@ -48,6 +48,8 @@ ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'euroadria2025')
 # Email notification settings
 NOTIFICATION_EMAIL = os.environ.get('NOTIFICATION_EMAIL', 'office@euroadria.me')
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
+BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '')
+BREVO_LIST_ID = 3  # EuroAdria Newsletter list
 
 # Legacy SMTP settings (fallback)
 SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
@@ -621,6 +623,182 @@ async def get_status_checks():
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
     
     return status_checks
+
+
+# =============================================
+# NEWSLETTER ENDPOINTS (Brevo)
+# =============================================
+
+import requests as http_requests
+
+class NewsletterSubscribe(BaseModel):
+    email: EmailStr
+    name: Optional[str] = None
+
+def brevo_request(method: str, endpoint: str, data: dict = None):
+    """Make a request to Brevo API"""
+    url = f"https://api.brevo.com/v3/{endpoint}"
+    headers = {"api-key": BREVO_API_KEY, "content-type": "application/json"}
+    if method == "GET":
+        r = http_requests.get(url, headers=headers, params=data)
+    elif method == "POST":
+        r = http_requests.post(url, headers=headers, json=data)
+    elif method == "PUT":
+        r = http_requests.put(url, headers=headers, json=data)
+    else:
+        raise ValueError(f"Unsupported method: {method}")
+    return r
+
+@api_router.post("/newsletter/subscribe")
+async def newsletter_subscribe(sub: NewsletterSubscribe):
+    """Subscribe to newsletter via Brevo"""
+    if not BREVO_API_KEY:
+        raise HTTPException(status_code=500, detail="Newsletter nicht konfiguriert")
+    
+    # Create/update contact in Brevo with list assignment
+    payload = {
+        "email": sub.email,
+        "updateEnabled": True,
+        "listIds": [BREVO_LIST_ID],
+    }
+    if sub.name:
+        payload["attributes"] = {"VORNAME": sub.name}
+    
+    r = brevo_request("POST", "contacts", payload)
+    
+    if r.status_code in (200, 201, 204):
+        # Also save locally for analytics
+        await db.newsletter_subscribers.update_one(
+            {"email": sub.email},
+            {"$set": {"email": sub.email, "name": sub.name or "", "subscribed_at": datetime.now(timezone.utc).isoformat(), "active": True}},
+            upsert=True
+        )
+        
+        # Send welcome email via Brevo transactional
+        try:
+            welcome_html = f"""
+            <html>
+            <body style="font-family: Arial, sans-serif; background-color: #04151F; padding: 30px;">
+                <div style="max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0a1e2f 0%, #1a3045 100%); border-radius: 16px; padding: 40px; border: 1px solid #C8A96A22;">
+                    <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 40px; margin-bottom: 24px;">
+                    <h1 style="color: #C8A96A; font-size: 24px; margin-bottom: 16px;">Willkommen bei EuroAdria!</h1>
+                    <p style="color: #ffffff; font-size: 16px; line-height: 1.6;">
+                        Hallo{(' ' + sub.name) if sub.name else ''},<br><br>
+                        vielen Dank für Ihre Anmeldung zum EuroAdria Newsletter! 
+                        Sie erhalten ab sofort exklusive Investment-Insights, Marktanalysen 
+                        und Neuigkeiten zu Immobilien-Projekten am Balkan.
+                    </p>
+                    <hr style="border-color: #C8A96A33; margin: 24px 0;">
+                    <p style="color: #888; font-size: 13px;">
+                        EuroAdria Corporate Solutions | <a href="https://invest.euroadria.me" style="color: #C8A96A;">invest.euroadria.me</a>
+                    </p>
+                </div>
+            </body>
+            </html>
+            """
+            brevo_request("POST", "smtp/email", {
+                "to": [{"email": sub.email, "name": sub.name or sub.email}],
+                "sender": {"email": "office@euroadria.me", "name": "EuroAdria"},
+                "subject": "Willkommen beim EuroAdria Newsletter!",
+                "htmlContent": welcome_html
+            })
+        except Exception as e:
+            logger.error(f"Welcome email failed: {e}")
+        
+        return {"success": True, "message": "Erfolgreich zum Newsletter angemeldet!"}
+    
+    elif r.status_code == 400 and "already exist" in r.text.lower():
+        return {"success": True, "message": "Sie sind bereits angemeldet!"}
+    else:
+        logger.error(f"Brevo subscribe error: {r.status_code} {r.text}")
+        raise HTTPException(status_code=400, detail="Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.")
+
+@api_router.get("/admin/newsletter/subscribers")
+async def get_newsletter_subscribers(admin: str = Depends(verify_admin)):
+    """Get all newsletter subscribers"""
+    # Get from Brevo
+    r = brevo_request("GET", f"contacts/lists/{BREVO_LIST_ID}/contacts?limit=500")
+    brevo_contacts = []
+    if r.ok:
+        data = r.json()
+        brevo_contacts = [{"email": c["email"], "name": c.get("attributes", {}).get("VORNAME", ""), "subscribed": True} for c in data.get("contacts", [])]
+    
+    # Get local count
+    local_count = await db.newsletter_subscribers.count_documents({"active": True})
+    
+    return {
+        "subscribers": brevo_contacts,
+        "total": len(brevo_contacts),
+        "local_count": local_count
+    }
+
+@api_router.post("/admin/newsletter/send")
+async def send_newsletter(data: dict, admin: str = Depends(verify_admin)):
+    """Send a newsletter campaign via Brevo"""
+    if not BREVO_API_KEY:
+        raise HTTPException(status_code=500, detail="Brevo nicht konfiguriert")
+    
+    subject = data.get("subject", "")
+    content = data.get("content", "")
+    
+    if not subject or not content:
+        raise HTTPException(status_code=400, detail="Betreff und Inhalt sind erforderlich")
+    
+    # Wrap content in branded template
+    html_body = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+        <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="background: #04151F; padding: 24px 32px; text-align: center;">
+                <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 36px;">
+            </div>
+            <div style="padding: 32px;">
+                {content}
+            </div>
+            <div style="background: #04151F; padding: 20px 32px; text-align: center;">
+                <p style="color: #888; font-size: 12px; margin: 0;">
+                    EuroAdria Corporate Solutions | <a href="https://invest.euroadria.me" style="color: #C8A96A;">invest.euroadria.me</a><br>
+                    <a href="{{{{unsubscribe}}}}" style="color: #666; font-size: 11px;">Newsletter abbestellen</a>
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    # Create campaign in Brevo
+    campaign_data = {
+        "name": f"Newsletter: {subject} ({datetime.now(timezone.utc).strftime('%d.%m.%Y')})",
+        "sender": {"email": "office@euroadria.me", "name": "EuroAdria"},
+        "subject": subject,
+        "htmlContent": html_body,
+        "recipients": {"listIds": [BREVO_LIST_ID]},
+        "type": "classic"
+    }
+    
+    r = brevo_request("POST", "emailCampaigns", campaign_data)
+    
+    if not r.ok:
+        logger.error(f"Brevo campaign create error: {r.status_code} {r.text}")
+        raise HTTPException(status_code=400, detail=f"Kampagne konnte nicht erstellt werden: {r.text}")
+    
+    campaign_id = r.json().get("id")
+    
+    # Send immediately
+    r2 = brevo_request("POST", f"emailCampaigns/{campaign_id}/sendNow", {})
+    
+    if r2.status_code in (200, 204):
+        # Log in DB
+        await db.newsletter_campaigns.insert_one({
+            "campaign_id": campaign_id,
+            "subject": subject,
+            "sent_at": datetime.now(timezone.utc).isoformat(),
+            "list_id": BREVO_LIST_ID
+        })
+        return {"success": True, "campaign_id": campaign_id, "message": "Newsletter wurde versendet!"}
+    else:
+        logger.error(f"Brevo send error: {r2.status_code} {r2.text}")
+        raise HTTPException(status_code=400, detail=f"Newsletter konnte nicht gesendet werden: {r2.text}")
 
 
 # =============================================

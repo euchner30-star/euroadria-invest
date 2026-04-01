@@ -7,6 +7,7 @@ import SEO from '../components/SEO';
 import FAQSection from '../components/FAQSection';
 import MediaBadge from '../components/MediaBadge';
 import TrustBar from '../components/TrustBar';
+import NewsletterSignup from '../components/NewsletterSignup';
 
 const Home = () => {
   const [featuredArticles, setFeaturedArticles] = useState([]);
@@ -287,6 +288,13 @@ const Home = () => {
               Serbia Executive Access
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="py-16 px-6">
+        <div className="max-w-5xl mx-auto">
+          <NewsletterSignup variant="section" />
         </div>
       </section>
 

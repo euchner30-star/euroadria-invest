@@ -4,12 +4,13 @@ import {
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
   FileText, Loader2, AlertCircle, Check, MessageSquare,
   CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image as ImageIcon,
-  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield
+  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield, Send
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHtml } from '../components/admin/WYSIWYGEditor';
 import ImageUploader, { ImageGalleryUploader } from '../components/admin/ImageUploader';
 import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
+import NewsletterAdmin from '../components/admin/NewsletterAdmin';
 
 const AdminPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -880,6 +881,18 @@ const AdminPage = () => {
           >
             <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Rechtliches</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('newsletter')}
+            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
+              activeTab === 'newsletter'
+                ? 'bg-ea-gold text-ea-dark font-semibold'
+                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
+            }`}
+            data-testid="tab-newsletter"
+          >
+            <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span>Newsletter</span>
           </button>
         </div>
 
@@ -1879,6 +1892,11 @@ const AdminPage = () => {
               </p>
             </div>
           </div>
+        )}
+
+        {/* Newsletter Tab */}
+        {activeTab === 'newsletter' && (
+          <NewsletterAdmin credentials={credentials} />
         )}
 
     </div>
