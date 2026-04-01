@@ -9,6 +9,7 @@ import {
 import SEO from '../components/SEO';
 import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHtml } from '../components/admin/WYSIWYGEditor';
 import ImageUploader, { ImageGalleryUploader } from '../components/admin/ImageUploader';
+import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
 
 const AdminPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -16,8 +17,8 @@ const AdminPage = () => {
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  // Active Tab: 'articles', 'comments', 'regions', 'pages', 'downloads', 'investment', 'homepage', 'legal'
-  const [activeTab, setActiveTab] = useState('articles');
+  // Active Tab: 'dashboard', 'articles', 'comments', 'regions', 'pages', 'downloads', 'investment', 'homepage', 'legal'
+  const [activeTab, setActiveTab] = useState('dashboard');
   
   // Homepage Content State
   const [homepageContent, setHomepageContent] = useState({});
@@ -768,6 +769,18 @@ const AdminPage = () => {
         {/* Tabs */}
         <div className="flex gap-2 sm:gap-4 mb-6 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
           <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
+              activeTab === 'dashboard'
+                ? 'bg-ea-gold text-ea-dark font-semibold'
+                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
+            }`}
+            data-testid="tab-dashboard"
+          >
+            <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span>Dashboard</span>
+          </button>
+          <button
             onClick={() => setActiveTab('articles')}
             className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
               activeTab === 'articles'
@@ -853,7 +866,7 @@ const AdminPage = () => {
             }`}
             data-testid="tab-investment"
           >
-            <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
+            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Investment ({investLocations.length})</span>
           </button>
           <button
@@ -869,6 +882,11 @@ const AdminPage = () => {
             <span>Rechtliches</span>
           </button>
         </div>
+
+        {/* Dashboard Tab */}
+        {activeTab === 'dashboard' && (
+          <AnalyticsDashboard credentials={credentials} />
+        )}
 
         {/* Articles Tab */}
         {activeTab === 'articles' && (

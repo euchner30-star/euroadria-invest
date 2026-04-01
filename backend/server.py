@@ -473,6 +473,131 @@ async def get_leads(admin: str = Depends(verify_admin)):
     return leads
 
 
+# =============================================
+# ANALYTICS & TRACKING ENDPOINTS
+# =============================================
+
+class PageViewEvent(BaseModel):
+    path: str
+    referrer: Optional[str] = None
+    user_agent: Optional[str] = None
+
+@api_router.post("/track/pageview")
+async def track_pageview(event: PageViewEvent):
+    """Track a page view (called from frontend)"""
+    doc = {
+        "path": event.path,
+        "referrer": event.referrer or "",
+        "device": parse_device_type(event.user_agent or ""),
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+    await db.page_views.insert_one(doc)
+    return {"ok": True}
+
+@api_router.post("/track/calculator")
+async def track_calculator_usage():
+    """Track ROI calculator usage"""
+    doc = {"timestamp": datetime.now(timezone.utc).isoformat(), "type": "roi_calculator"}
+    await db.calculator_usage.insert_one(doc)
+    return {"ok": True}
+
+@api_router.get("/admin/analytics/overview")
+async def get_analytics_overview(days: int = 30, admin: str = Depends(verify_admin)):
+    """Get analytics overview data for dashboard"""
+    from datetime import timedelta
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    
+    # Total page views in period
+    total_views = await db.page_views.count_documents({"timestamp": {"$gte": cutoff}})
+    
+    # Views per day (for chart)
+    pipeline_daily = [
+        {"$match": {"timestamp": {"$gte": cutoff}}},
+        {"$addFields": {"date": {"$substr": ["$timestamp", 0, 10]}}},
+        {"$group": {"_id": "$date", "views": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
+    ]
+    daily_views = await db.page_views.aggregate(pipeline_daily).to_list(60)
+    
+    # Top pages
+    pipeline_pages = [
+        {"$match": {"timestamp": {"$gte": cutoff}}},
+        {"$group": {"_id": "$path", "views": {"$sum": 1}}},
+        {"$sort": {"views": -1}},
+        {"$limit": 10}
+    ]
+    top_pages = await db.page_views.aggregate(pipeline_pages).to_list(10)
+    
+    # Device breakdown
+    pipeline_devices = [
+        {"$match": {"timestamp": {"$gte": cutoff}}},
+        {"$group": {"_id": "$device", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    devices = await db.page_views.aggregate(pipeline_devices).to_list(5)
+    
+    # Referrer breakdown (traffic sources)
+    pipeline_referrers = [
+        {"$match": {"timestamp": {"$gte": cutoff}, "referrer": {"$ne": ""}}},
+        {"$addFields": {
+            "source": {
+                "$switch": {
+                    "branches": [
+                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "google"}}, "then": "Google"},
+                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "linkedin"}}, "then": "LinkedIn"},
+                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "facebook|fb.com"}}, "then": "Facebook"},
+                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "instagram"}}, "then": "Instagram"},
+                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "twitter|x.com"}}, "then": "Twitter/X"},
+                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "euroadria"}}, "then": "EuroAdria.me"},
+                    ],
+                    "default": "Andere"
+                }
+            }
+        }},
+        {"$group": {"_id": "$source", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 8}
+    ]
+    referrers = await db.page_views.aggregate(pipeline_referrers).to_list(8)
+    
+    # Total leads in period
+    total_leads = await db.leads.count_documents({"submitted_at": {"$gte": cutoff}})
+    
+    # Leads by source
+    pipeline_lead_sources = [
+        {"$match": {"submitted_at": {"$gte": cutoff}}},
+        {"$group": {"_id": "$source", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    lead_sources = await db.leads.aggregate(pipeline_lead_sources).to_list(10)
+    
+    # Calculator usage count
+    calc_usage = await db.calculator_usage.count_documents({"timestamp": {"$gte": cutoff}})
+    
+    # Contact form submissions count
+    total_contacts = await db.contact_submissions.count_documents({"submitted_at": {"$gte": cutoff}})
+    
+    # Recent leads
+    recent_leads = await db.leads.find({}, {"_id": 0}).sort("submitted_at", -1).to_list(20)
+    
+    # Conversion rate
+    conversion_rate = round((total_leads / total_views * 100), 2) if total_views > 0 else 0
+    
+    return {
+        "total_views": total_views,
+        "total_leads": total_leads,
+        "total_contacts": total_contacts,
+        "calculator_usage": calc_usage,
+        "conversion_rate": conversion_rate,
+        "daily_views": [{"date": d["_id"], "views": d["views"]} for d in daily_views],
+        "top_pages": [{"path": p["_id"], "views": p["views"]} for p in top_pages],
+        "devices": [{"device": d["_id"], "count": d["count"]} for d in devices],
+        "referrers": [{"source": r["_id"], "count": r["count"]} for r in referrers],
+        "lead_sources": [{"source": l["_id"], "count": l["count"]} for l in lead_sources],
+        "recent_leads": recent_leads
+    }
+
+
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
     status_dict = input.model_dump()
@@ -684,6 +809,15 @@ async def delete_article(article_id: int, admin: str = Depends(verify_admin)):
 # =============================================
 
 SITE_URL = "https://invest.euroadria.me"
+
+# User-Agent parsing helper
+def parse_device_type(user_agent: str) -> str:
+    ua = user_agent.lower()
+    if any(x in ua for x in ['mobile', 'android', 'iphone', 'ipod']):
+        return 'mobile'
+    if any(x in ua for x in ['ipad', 'tablet']):
+        return 'tablet'
+    return 'desktop'
 
 STATIC_PAGES = [
     {"loc": "/", "priority": "1.0", "changefreq": "weekly"},

@@ -1,5 +1,6 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import usePageTracker from "./hooks/usePageTracker";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
@@ -27,10 +28,16 @@ import ROICalculator from "./pages/investment/ROICalculator";
 import LocationComparison from "./pages/investment/LocationComparison";
 import LocationProfile from "./pages/investment/LocationProfile";
 
+function PageTracker() {
+  usePageTracker();
+  return null;
+}
+
 function App() {
   return (
     <div className="App min-h-screen flex flex-col">
       <BrowserRouter>
+        <PageTracker />
         <ScrollToTop />
         <Header />
         <main className="flex-1"><Routes>

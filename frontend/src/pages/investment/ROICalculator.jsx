@@ -34,6 +34,8 @@ const ROICalculator = () => {
   const calculateROI = async () => {
     setLoading(true);
     try {
+      // Track calculator usage
+      fetch(`${process.env.REACT_APP_BACKEND_URL}/api/track/calculator`, { method: 'POST' }).catch(() => {});
       // Convert empty strings to 0 for calculation
       const cleanInputs = {
         purchase_price: inputs.purchase_price || 0,
