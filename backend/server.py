@@ -667,15 +667,20 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
     r = brevo_request("POST", "contacts", payload)
     
     if r.status_code in (200, 201, 204):
-        # Also save locally for analytics
+        # Check if already subscribed locally (to avoid duplicate welcome emails)
+        existing = await db.newsletter_subscribers.find_one({"email": sub.email})
+        is_new = existing is None
+        
+        # Save/update locally for analytics
         await db.newsletter_subscribers.update_one(
             {"email": sub.email},
             {"$set": {"email": sub.email, "name": sub.name or "", "subscribed_at": datetime.now(timezone.utc).isoformat(), "active": True}},
             upsert=True
         )
         
-        # Send welcome email via Brevo transactional
-        try:
+        # Send welcome email ONLY for new subscribers
+        if is_new:
+            try:
             welcome_html = f"""
             <html>
             <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
@@ -730,7 +735,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
         except Exception as e:
             logger.error(f"Welcome email failed: {e}")
         
-        return {"success": True, "message": "Erfolgreich zum Newsletter angemeldet!"}
+        return {"success": True, "message": "Erfolgreich zum Newsletter angemeldet!" if is_new else "Sie sind bereits angemeldet!"}
     
     elif r.status_code == 400 and "already exist" in r.text.lower():
         return {"success": True, "message": "Sie sind bereits angemeldet!"}
