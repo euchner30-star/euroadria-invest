@@ -681,7 +681,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
         # Send welcome email ONLY for new subscribers
         if is_new:
             try:
-            welcome_html = f"""
+                welcome_html = f"""
             <html>
             <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
                 <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
@@ -734,14 +734,14 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
             </body>
             </html>
             """
-            brevo_request("POST", "smtp/email", {
-                "to": [{"email": sub.email, "name": sub.name or sub.email}],
-                "sender": {"email": "office@euroadria.me", "name": "EuroAdria"},
-                "subject": "Willkommen beim EuroAdria Newsletter!",
-                "htmlContent": welcome_html
-            })
-        except Exception as e:
-            logger.error(f"Welcome email failed: {e}")
+                brevo_request("POST", "smtp/email", {
+                    "to": [{"email": sub.email, "name": sub.name or sub.email}],
+                    "sender": {"email": "office@euroadria.me", "name": "EuroAdria"},
+                    "subject": "Willkommen beim EuroAdria Newsletter!",
+                    "htmlContent": welcome_html
+                })
+            except Exception as e:
+                logger.error(f"Welcome email failed: {e}")
         
         return {"success": True, "message": "Erfolgreich zum Newsletter angemeldet!" if is_new else "Sie sind bereits angemeldet!"}
     

@@ -32,6 +32,9 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - Image Position Sliders for Hero, Testimonial, and Article images
 
 ### Completed Tasks (Latest First)
+- Newsletter Abmelde-Seite (/newsletter/abmelden) mit Brevo-Integration (1. April 2026)
+- Brevo Domain-Authentifizierung (DKIM/SPF) erfolgreich (1. April 2026)
+- Newsletter-System komplett: Anmeldung, Willkommens-E-Mail, Kampagnen, Abmeldung (1. April 2026)
 - Analytics Dashboard: KPIs, Charts, Page-View Tracking, Lead-Tabelle mit CSV-Export (1. April 2026)
 - Lead-Generierung: Exposé-Downloads nur mit Name+E-Mail, Leads in DB + E-Mail (31. März 2026)
 - Admin Panel: Rechtliches Tab - Impressum & Datenschutz editierbar mit WYSIWYG-Editor (31. März 2026)
@@ -115,8 +118,6 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 
 ### P1 (Important)
 - Google Search Console: Submit sitemap (USER ACTION - in progress)
-- Lead-Generierung bei Exposé-Downloads (Name + E-Mail Formular vor Download)
-- Newsletter Integration (Variante noch offen: Resend einfach vs. Brevo professionell)
 
 ### P2 (Nice to Have)
 - Video Background for Hero Section (user mentioned interest)
