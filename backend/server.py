@@ -681,7 +681,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
             <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
                 <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <div style="background: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #C8A96A;">
-                        <img src="https://invest.euroadria.me/euroadria-logo-email.png" alt="EuroAdria" style="height: 80px;">
+                        <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 50px;">
                     </div>
                     <div style="padding: 32px; color: #333; font-size: 15px; line-height: 1.7;">
                         <h2 style="color: #04151F; font-size: 22px; margin-bottom: 16px;">Willkommen bei EuroAdria!</h2>
@@ -697,7 +697,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
                         <table style="width: 100%;">
                             <tr>
                                 <td style="vertical-align: top; padding-right: 20px; width: 130px;">
-                                    <img src="https://invest.euroadria.me/euroadria-logo-email.png" alt="EuroAdria" style="width: 120px;">
+                                    <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width: 110px;">
                                 </td>
                                 <td style="vertical-align: top; font-size: 12px; color: #555; line-height: 1.6;">
                                     <p style="margin: 0 0 2px; font-size: 14px; font-weight: bold; color: #04151F;">EuroAdria</p>
@@ -775,7 +775,7 @@ async def send_newsletter(data: dict, admin: str = Depends(verify_admin)):
     <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
         <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
             <div style="background: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #C8A96A;">
-                <img src="https://invest.euroadria.me/euroadria-logo-email.png" alt="EuroAdria" style="height: 80px;">
+                <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 50px;">
             </div>
             <div style="padding: 32px; color: #333; font-size: 15px; line-height: 1.7;">
                 {content}
@@ -784,7 +784,7 @@ async def send_newsletter(data: dict, admin: str = Depends(verify_admin)):
                 <table style="width: 100%;">
                     <tr>
                         <td style="vertical-align: top; padding-right: 20px; width: 130px;">
-                            <img src="https://invest.euroadria.me/euroadria-logo-email.png" alt="EuroAdria" style="width: 120px;">
+                            <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width: 110px;">
                         </td>
                         <td style="vertical-align: top; font-size: 12px; color: #555; line-height: 1.6;">
                             <p style="margin: 0 0 2px; font-size: 14px; font-weight: bold; color: #04151F;">EuroAdria</p>
