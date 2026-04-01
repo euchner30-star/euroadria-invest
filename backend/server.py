@@ -678,20 +678,44 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
         try:
             welcome_html = f"""
             <html>
-            <body style="font-family: Arial, sans-serif; background-color: #04151F; padding: 30px;">
-                <div style="max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0a1e2f 0%, #1a3045 100%); border-radius: 16px; padding: 40px; border: 1px solid #C8A96A22;">
-                    <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 40px; margin-bottom: 24px;">
-                    <h1 style="color: #C8A96A; font-size: 24px; margin-bottom: 16px;">Willkommen bei EuroAdria!</h1>
-                    <p style="color: #ffffff; font-size: 16px; line-height: 1.6;">
-                        Hallo{(' ' + sub.name) if sub.name else ''},<br><br>
-                        vielen Dank für Ihre Anmeldung zum EuroAdria Newsletter! 
+            <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
+                <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="background: #04151F; padding: 24px 32px; text-align: center;">
+                        <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 40px;">
+                    </div>
+                    <div style="padding: 32px; color: #333; font-size: 15px; line-height: 1.7;">
+                        <h2 style="color: #04151F; font-size: 22px; margin-bottom: 16px;">Willkommen bei EuroAdria!</h2>
+                        <p>Hallo{(' ' + sub.name) if sub.name else ''},</p>
+                        <p>vielen Dank für Ihre Anmeldung zum EuroAdria Newsletter! 
                         Sie erhalten ab sofort exklusive Investment-Insights, Marktanalysen 
-                        und Neuigkeiten zu Immobilien-Projekten am Balkan.
-                    </p>
-                    <hr style="border-color: #C8A96A33; margin: 24px 0;">
-                    <p style="color: #888; font-size: 13px;">
-                        EuroAdria Corporate Solutions | <a href="https://invest.euroadria.me" style="color: #C8A96A;">invest.euroadria.me</a>
-                    </p>
+                        und Neuigkeiten zu Immobilien-Projekten am Balkan.</p>
+                        <p style="margin-top: 20px;">
+                            <a href="https://invest.euroadria.me" style="display: inline-block; background: #C8A96A; color: #04151F; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">Zur Plattform</a>
+                        </p>
+                    </div>
+                    <div style="padding: 0 32px 32px; border-top: 1px solid #e5e7eb;">
+                        <table style="width: 100%; margin-top: 24px;">
+                            <tr>
+                                <td style="vertical-align: top; padding-right: 20px; width: 120px;">
+                                    <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width: 100px;">
+                                </td>
+                                <td style="vertical-align: top; font-size: 12px; color: #555; line-height: 1.6;">
+                                    <p style="margin: 0 0 4px; font-size: 11px; color: #888;">a brand of <strong style="color: #333;">Montaris &amp; Co. d.o.o.</strong></p>
+                                    <p style="margin: 0; color: #555;">Montaris &amp; Co. d.o.o.<br>Marka Miljanova 12, 21000 Novi Sad, Serbia</p>
+                                    <p style="margin: 8px 0 0;">
+                                        Tel.: <a href="tel:+38268559776" style="color: #C8A96A; text-decoration: none;">+382 68 559 776</a><br>
+                                        E-mail: <a href="mailto:office@euroadria.me" style="color: #C8A96A; text-decoration: none;">office@euroadria.me</a><br>
+                                        Web: <a href="https://www.euroadria.me" style="color: #C8A96A; text-decoration: none;">www.euroadria.me</a>
+                                    </p>
+                                    <p style="margin: 8px 0 0; font-size: 10px; color: #999;">
+                                        Company registration no.: 22147382<br>
+                                        Tax ID (PIB): 115356237<br>
+                                        Director: Milena Bubanja
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </body>
             </html>
@@ -747,18 +771,40 @@ async def send_newsletter(data: dict, admin: str = Depends(verify_admin)):
     # Wrap content in branded template
     html_body = f"""
     <html>
-    <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+    <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
         <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
             <div style="background: #04151F; padding: 24px 32px; text-align: center;">
-                <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 36px;">
+                <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 40px;">
             </div>
-            <div style="padding: 32px;">
+            <div style="padding: 32px; color: #333; font-size: 15px; line-height: 1.7;">
                 {content}
             </div>
-            <div style="background: #04151F; padding: 20px 32px; text-align: center;">
-                <p style="color: #888; font-size: 12px; margin: 0;">
-                    EuroAdria Corporate Solutions | <a href="https://invest.euroadria.me" style="color: #C8A96A;">invest.euroadria.me</a><br>
-                    <a href="{{{{unsubscribe}}}}" style="color: #666; font-size: 11px;">Newsletter abbestellen</a>
+            <div style="padding: 0 32px 32px; border-top: 1px solid #e5e7eb;">
+                <table style="width: 100%; margin-top: 24px;">
+                    <tr>
+                        <td style="vertical-align: top; padding-right: 20px; width: 120px;">
+                            <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width: 100px;">
+                        </td>
+                        <td style="vertical-align: top; font-size: 12px; color: #555; line-height: 1.6;">
+                            <p style="margin: 0 0 4px; font-size: 11px; color: #888;">a brand of <strong style="color: #333;">Montaris &amp; Co. d.o.o.</strong></p>
+                            <p style="margin: 0; color: #555;">Montaris &amp; Co. d.o.o.<br>Marka Miljanova 12, 21000 Novi Sad, Serbia</p>
+                            <p style="margin: 8px 0 0;">
+                                Tel.: <a href="tel:+38268559776" style="color: #C8A96A; text-decoration: none;">+382 68 559 776</a><br>
+                                E-mail: <a href="mailto:office@euroadria.me" style="color: #C8A96A; text-decoration: none;">office@euroadria.me</a><br>
+                                Web: <a href="https://www.euroadria.me" style="color: #C8A96A; text-decoration: none;">www.euroadria.me</a>
+                            </p>
+                            <p style="margin: 8px 0 0; font-size: 10px; color: #999;">
+                                Company registration no.: 22147382<br>
+                                Tax ID (PIB): 115356237<br>
+                                Director: Milena Bubanja
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div style="background: #04151F; padding: 16px 32px; text-align: center;">
+                <p style="color: #888; font-size: 11px; margin: 0;">
+                    <a href="{{{{unsubscribe}}}}" style="color: #666;">Newsletter abbestellen</a>
                 </p>
             </div>
         </div>
