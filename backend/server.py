@@ -698,6 +698,14 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
                             <a href="https://invest.euroadria.me" style="display: inline-block; background: #C8A96A; color: #04151F; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">Zur Plattform</a>
                         </p>
                     </div>
+                    <div style="padding: 16px 32px; background: #f8f8f8; border-top: 1px solid #eee; border-bottom: 1px solid #eee;">
+                        <p style="color: #999; font-size: 12px; margin: 0; text-align: center;">
+                            Sie erhalten diese E-Mail, weil Sie sich für den EuroAdria Newsletter angemeldet haben.<br>
+                            Sie können sich jederzeit mit einem Klick 
+                            <a href="https://invest.euroadria.me/newsletter/abmelden?email={sub.email}" style="color: #C8A96A;">hier abmelden</a> 
+                            — unkompliziert und sofort wirksam.
+                        </p>
+                    </div>
                     <div style="padding: 24px 32px; border-top: 1px solid #e5e7eb; background: #fafafa;">
                         <table style="width: 100%;">
                             <tr>
@@ -742,6 +750,28 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
     else:
         logger.error(f"Brevo subscribe error: {r.status_code} {r.text}")
         raise HTTPException(status_code=400, detail="Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.")
+
+@api_router.post("/newsletter/unsubscribe")
+async def newsletter_unsubscribe(data: dict):
+    """Unsubscribe from newsletter"""
+    email = data.get("email", "")
+    if not email:
+        raise HTTPException(status_code=400, detail="E-Mail erforderlich")
+    
+    # Remove from Brevo list
+    if BREVO_API_KEY:
+        try:
+            brevo_request("POST", f"contacts/lists/{BREVO_LIST_ID}/contacts/remove", {"emails": [email]})
+        except Exception as e:
+            logger.error(f"Brevo unsubscribe error: {e}")
+    
+    # Mark as inactive locally
+    await db.newsletter_subscribers.update_one(
+        {"email": email},
+        {"$set": {"active": False, "unsubscribed_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"success": True, "message": "Sie wurden erfolgreich abgemeldet."}
 
 @api_router.get("/admin/newsletter/subscribers")
 async def get_newsletter_subscribers(admin: str = Depends(verify_admin)):
