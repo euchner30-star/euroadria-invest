@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Mail, CheckCircle, Loader2, ArrowRight } from 'lucide-react';
 
 const NewsletterSignup = ({ variant = 'inline' }) => {
@@ -6,6 +6,7 @@ const NewsletterSignup = ({ variant = 'inline' }) => {
   const [name, setName] = useState('');
   const [status, setStatus] = useState('idle'); // idle | loading | success | error
   const [message, setMessage] = useState('');
+  const sectionRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,6 +23,9 @@ const NewsletterSignup = ({ variant = 'inline' }) => {
         setMessage(data.message);
         setEmail('');
         setName('');
+        setTimeout(() => {
+          sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
       } else {
         setStatus('error');
         setMessage(data.detail || 'Fehler bei der Anmeldung');
@@ -34,7 +38,7 @@ const NewsletterSignup = ({ variant = 'inline' }) => {
 
   if (status === 'success') {
     return (
-      <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-6 py-4" data-testid="newsletter-success">
+      <div ref={sectionRef} className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-6 py-4" data-testid="newsletter-success">
         <CheckCircle className="w-6 h-6 text-green-500 shrink-0" />
         <p className="text-green-700 font-medium">{message}</p>
       </div>
