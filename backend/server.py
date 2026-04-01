@@ -722,7 +722,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
             """
             brevo_request("POST", "smtp/email", {
                 "to": [{"email": sub.email, "name": sub.name or sub.email}],
-                "sender": {"email": "office@euroadria.me", "name": "EuroAdria"},
+                "sender": {"email": "euchner25@gmail.com", "name": "EuroAdria"},
                 "subject": "Willkommen beim EuroAdria Newsletter!",
                 "htmlContent": welcome_html
             })
@@ -815,7 +815,7 @@ async def send_newsletter(data: dict, admin: str = Depends(verify_admin)):
     # Create campaign in Brevo
     campaign_data = {
         "name": f"Newsletter: {subject} ({datetime.now(timezone.utc).strftime('%d.%m.%Y')})",
-        "sender": {"email": "office@euroadria.me", "name": "EuroAdria"},
+        "sender": {"email": "euchner25@gmail.com", "name": "EuroAdria"},
         "subject": subject,
         "htmlContent": html_body,
         "recipients": {"listIds": [BREVO_LIST_ID]},

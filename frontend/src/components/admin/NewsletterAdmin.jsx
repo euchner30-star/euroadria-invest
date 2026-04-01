@@ -164,6 +164,47 @@ const NewsletterAdmin = ({ credentials }) => {
               placeholder="Newsletter-Inhalt hier eingeben..."
             />
           </div>
+
+          {/* Email Preview */}
+          <div>
+            <label className="block text-ea-dark font-semibold text-sm mb-1.5">Vorschau der E-Mail</label>
+            <div className="border border-gray-200 rounded-xl overflow-hidden bg-gray-100">
+              {/* Header */}
+              <div className="bg-[#04151F] py-5 px-8 text-center">
+                <img src="/euroadria-logo.png" alt="EuroAdria" className="h-9 mx-auto" />
+              </div>
+              {/* Content */}
+              <div className="bg-white px-8 py-6 text-sm text-ea-dark/80 leading-relaxed min-h-[80px]">
+                {content ? (
+                  <div dangerouslySetInnerHTML={{ __html: content }} />
+                ) : (
+                  <p className="text-ea-dark/30 italic">Dein Newsletter-Inhalt erscheint hier...</p>
+                )}
+              </div>
+              {/* Signature */}
+              <div className="bg-white px-8 pb-6 border-t border-gray-100">
+                <div className="flex gap-4 pt-4">
+                  <img src="/euroadria-logo.png" alt="EuroAdria" className="w-20 h-auto object-contain shrink-0" />
+                  <div className="text-[11px] text-gray-500 leading-relaxed">
+                    <p className="text-[10px] text-gray-400 mb-0.5">a brand of <strong className="text-gray-600">Montaris & Co. d.o.o.</strong></p>
+                    <p className="mb-1">Montaris & Co. d.o.o.<br/>Marka Miljanova 12, 21000 Novi Sad, Serbia</p>
+                    <p className="mb-1">
+                      Tel.: <span className="text-ea-gold">+382 68 559 776</span><br/>
+                      E-mail: <span className="text-ea-gold">office@euroadria.me</span><br/>
+                      Web: <span className="text-ea-gold">www.euroadria.me</span>
+                    </p>
+                    <p className="text-[9px] text-gray-400">
+                      Company registration no.: 22147382 | Tax ID (PIB): 115356237 | Director: Milena Bubanja
+                    </p>
+                  </div>
+                </div>
+              </div>
+              {/* Footer */}
+              <div className="bg-[#04151F] py-3 px-8 text-center">
+                <span className="text-gray-500 text-[10px]">Newsletter abbestellen</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
