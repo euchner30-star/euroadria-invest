@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import { 
   Eye, Users, Calculator, Mail, TrendingUp, Monitor, Smartphone, Tablet,
-  Download, ArrowUpRight, ArrowDownRight, FileText
+  Download, ArrowUpRight, ArrowDownRight, FileText, Share2, Megaphone
 } from 'lucide-react';
 
 const COLORS = ['#C8A96A', '#04151F', '#6B7280', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
@@ -284,7 +284,7 @@ const AnalyticsDashboard = ({ credentials }) => {
       {/* Leads by Source */}
       {data.lead_sources.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-          <h3 className="text-base font-semibold text-ea-dark mb-4">Leads nach Exposé</h3>
+          <h3 className="text-base font-semibold text-ea-dark mb-4">Leads nach Expose</h3>
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.lead_sources.map(l => ({ ...l, label: l.source.replace('_expose', '').replace('_', ' ') }))}>
@@ -294,6 +294,73 @@ const AnalyticsDashboard = ({ credentials }) => {
                 <Bar dataKey="count" fill="#C8A96A" radius={[6, 6, 0, 0]} name="Leads" />
               </BarChart>
             </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* UTM Kampagnen Tracking */}
+      {(data.utm_sources?.length > 0 || data.utm_campaigns?.length > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* UTM Sources Overview */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <Share2 className="w-4 h-4 text-ea-gold" />
+              <h3 className="text-base font-semibold text-ea-dark">Traffic nach UTM-Quelle</h3>
+            </div>
+            <p className="text-xs text-ea-dark/40 mb-4">Besucher mit utm_source Parameter (z.B. TikTok, Instagram)</p>
+            {data.utm_sources?.length > 0 ? (
+              <div className="space-y-3">
+                {data.utm_sources.map((u, i) => {
+                  const maxCount = data.utm_sources[0]?.count || 1;
+                  return (
+                    <div key={i} className="flex items-center gap-3">
+                      <span className="text-sm font-semibold text-ea-dark w-24 truncate capitalize">{u.source}</span>
+                      <div className="flex-1 bg-gray-100 rounded-full h-2.5">
+                        <div className="bg-ea-gold rounded-full h-2.5 transition-all" style={{ width: `${(u.count / maxCount) * 100}%` }}></div>
+                      </div>
+                      <span className="text-sm font-bold text-ea-dark w-10 text-right">{u.count}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-ea-dark/40 text-sm">Noch keine UTM-Daten</p>
+            )}
+          </div>
+
+          {/* UTM Campaigns Detail */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <Megaphone className="w-4 h-4 text-ea-gold" />
+              <h3 className="text-base font-semibold text-ea-dark">Kampagnen-Details</h3>
+            </div>
+            <p className="text-xs text-ea-dark/40 mb-4">Aufschlüsselung nach Quelle, Medium und Kampagne</p>
+            {data.utm_campaigns?.length > 0 ? (
+              <div className="overflow-x-auto -mx-6 px-6">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-100">
+                      <th className="text-left py-2 text-ea-dark/50 font-medium">Quelle</th>
+                      <th className="text-left py-2 text-ea-dark/50 font-medium">Medium</th>
+                      <th className="text-left py-2 text-ea-dark/50 font-medium">Kampagne</th>
+                      <th className="text-right py-2 text-ea-dark/50 font-medium">Besuche</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.utm_campaigns.map((c, i) => (
+                      <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50">
+                        <td className="py-2 font-medium text-ea-dark capitalize">{c.source}</td>
+                        <td className="py-2 text-ea-dark/70">{c.medium}</td>
+                        <td className="py-2 text-ea-dark/70">{c.campaign}</td>
+                        <td className="py-2 text-right font-semibold text-ea-dark">{c.count}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-ea-dark/40 text-sm">Noch keine Kampagnendaten</p>
+            )}
           </div>
         </div>
       )}

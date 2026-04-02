@@ -515,6 +515,9 @@ class PageViewEvent(BaseModel):
     path: str
     referrer: Optional[str] = None
     user_agent: Optional[str] = None
+    utm_source: Optional[str] = None
+    utm_medium: Optional[str] = None
+    utm_campaign: Optional[str] = None
 
 @api_router.post("/track/pageview")
 async def track_pageview(event: PageViewEvent):
@@ -523,6 +526,9 @@ async def track_pageview(event: PageViewEvent):
         "path": event.path,
         "referrer": event.referrer or "",
         "device": parse_device_type(event.user_agent or ""),
+        "utm_source": event.utm_source or "",
+        "utm_medium": event.utm_medium or "",
+        "utm_campaign": event.utm_campaign or "",
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
     await db.page_views.insert_one(doc)
@@ -582,6 +588,8 @@ async def get_analytics_overview(days: int = 30, admin: str = Depends(verify_adm
                         {"case": {"$regexMatch": {"input": "$referrer", "regex": "facebook|fb.com"}}, "then": "Facebook"},
                         {"case": {"$regexMatch": {"input": "$referrer", "regex": "instagram"}}, "then": "Instagram"},
                         {"case": {"$regexMatch": {"input": "$referrer", "regex": "twitter|x.com"}}, "then": "Twitter/X"},
+                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "tiktok"}}, "then": "TikTok"},
+                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "youtube"}}, "then": "YouTube"},
                         {"case": {"$regexMatch": {"input": "$referrer", "regex": "euroadria"}}, "then": "EuroAdria.me"},
                     ],
                     "default": "Andere"
@@ -617,6 +625,31 @@ async def get_analytics_overview(days: int = 30, admin: str = Depends(verify_adm
     # Conversion rate
     conversion_rate = round((total_leads / total_views * 100), 2) if total_views > 0 else 0
     
+    # UTM Campaign / Source tracking
+    pipeline_utm = [
+        {"$match": {"timestamp": {"$gte": cutoff}, "utm_source": {"$nin": ["", None]}}},
+        {"$group": {
+            "_id": {
+                "source": "$utm_source",
+                "medium": "$utm_medium",
+                "campaign": "$utm_campaign"
+            },
+            "count": {"$sum": 1}
+        }},
+        {"$sort": {"count": -1}},
+        {"$limit": 15}
+    ]
+    utm_data = await db.page_views.aggregate(pipeline_utm).to_list(15)
+    
+    # UTM sources summary (grouped by source only)
+    pipeline_utm_sources = [
+        {"$match": {"timestamp": {"$gte": cutoff}, "utm_source": {"$nin": ["", None]}}},
+        {"$group": {"_id": "$utm_source", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10}
+    ]
+    utm_sources = await db.page_views.aggregate(pipeline_utm_sources).to_list(10)
+    
     return {
         "total_views": total_views,
         "total_leads": total_leads,
@@ -628,7 +661,9 @@ async def get_analytics_overview(days: int = 30, admin: str = Depends(verify_adm
         "devices": [{"device": d["_id"], "count": d["count"]} for d in devices],
         "referrers": [{"source": r["_id"], "count": r["count"]} for r in referrers],
         "lead_sources": [{"source": l["_id"], "count": l["count"]} for l in lead_sources],
-        "recent_leads": recent_leads
+        "recent_leads": recent_leads,
+        "utm_sources": [{"source": u["_id"], "count": u["count"]} for u in utm_sources],
+        "utm_campaigns": [{"source": u["_id"].get("source", "-"), "medium": u["_id"].get("medium", "") or "-", "campaign": u["_id"].get("campaign", "") or "-", "count": u["count"]} for u in utm_data]
     }
 
 
