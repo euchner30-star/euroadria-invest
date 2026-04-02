@@ -182,3 +182,17 @@ export const ExpertTipBox = ({ expertTip }) => {
 };
 
 export default LeadMagnetBox;
+
+// Due Diligence Box Component
+export const DueDiligenceBox = ({ title, content }) => {
+  if (!content) return null;
+  return (
+    <div className="my-8 md:my-12 bg-gradient-to-br from-ea-dark to-ea-dark/90 rounded-xl p-6 md:p-8 border border-ea-gold/20" data-testid="due-diligence-box">
+      <h3 className="text-ea-gold text-lg md:text-xl font-semibold mb-4">{title || 'Due Diligence Checkliste'}</h3>
+      <div
+        className="text-ea-light/80 text-sm md:text-base leading-relaxed"
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    </div>
+  );
+};
