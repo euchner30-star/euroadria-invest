@@ -11,12 +11,40 @@ const SEO = ({
   service = null,
   faq = null
 }) => {
-  const siteUrl = 'https://euroadria.me';
+  const siteUrl = 'https://invest.euroadria.me';
   const fullUrl = `${siteUrl}${url}`;
-  const fullTitle = title ? `${title} | EuroAdria` : 'EuroAdria | Investment & Business Beratung für Adria & Balkan';
-  const defaultDescription = 'Premium Investment & Lifestyle Partner für die Adria-Region. Exklusive Beratung für DACH-Investoren: Immobilien, Firmengründung, Relocation nach Montenegro & Serbien.';
+  const fullTitle = title ? `${title} | EuroAdria Corporate Solutions` : 'EuroAdria Corporate Solutions | Investment Intelligence für Adria & Balkan';
+  const defaultDescription = 'Premium Investment Intelligence Platform für die Adria-Region. Exklusive Beratung für DACH-Investoren: Immobilien, Firmengründung, Relocation nach Montenegro & Serbien.';
   const metaDescription = description || defaultDescription;
-  const metaImage = image || `${siteUrl}/og-image.jpg`;
+  const metaImage = image || `${siteUrl}/euroadria-logo.png`;
+
+  // Organization schema (shown on all pages)
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "EuroAdria Corporate Solutions",
+    "alternateName": "Montaris & Co. d.o.o.",
+    "url": siteUrl,
+    "logo": `${siteUrl}/euroadria-logo.png`,
+    "description": defaultDescription,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Marka Miljanova 12",
+      "addressLocality": "Novi Sad",
+      "postalCode": "21000",
+      "addressCountry": "RS"
+    },
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+382-68-559-776",
+      "contactType": "customer service",
+      "email": "office@euroadria.me",
+      "availableLanguage": ["German", "English", "Serbian"]
+    },
+    "sameAs": [
+      "https://www.euroadria.me"
+    ]
+  };
 
   // Generate Article structured data
   const articleSchema = article ? {
@@ -101,7 +129,7 @@ const SEO = ({
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:locale" content="de_DE" />
-      <meta property="og:site_name" content="EuroAdria" />
+      <meta property="og:site_name" content="EuroAdria Corporate Solutions" />
       
       {/* Article specific OG tags */}
       {article && (
@@ -123,6 +151,9 @@ const SEO = ({
       <meta name="twitter:creator" content="@adriaeuro" />
 
       {/* Structured Data */}
+      <script type="application/ld+json">
+        {JSON.stringify(orgSchema)}
+      </script>
       {articleSchema && (
         <script type="application/ld+json">
           {JSON.stringify(articleSchema)}
