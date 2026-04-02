@@ -168,6 +168,12 @@ const CookieConsent = () => {
             >
               Impressum
             </Link>
+            <Link 
+              to="/agb" 
+              className="text-ea-gold hover:underline"
+            >
+              AGB
+            </Link>
           </div>
 
           {/* Buttons */}

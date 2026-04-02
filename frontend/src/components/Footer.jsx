@@ -70,6 +70,11 @@ const Footer = () => {
                   Datenschutz
                 </Link>
               </li>
+              <li>
+                <Link to="/agb" className="text-ea-light/70 hover:text-ea-gold transition-colors text-sm">
+                  AGB
+                </Link>
+              </li>
             </ul>
           </div>
 

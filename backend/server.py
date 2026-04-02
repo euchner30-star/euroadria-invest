@@ -1131,6 +1131,7 @@ STATIC_PAGES = [
     {"loc": "/immobilien/zabljak", "priority": "0.8", "changefreq": "weekly"},
     {"loc": "/impressum", "priority": "0.3", "changefreq": "yearly"},
     {"loc": "/datenschutz", "priority": "0.3", "changefreq": "yearly"},
+    {"loc": "/agb", "priority": "0.3", "changefreq": "yearly"},
 ]
 
 @api_router.get("/sitemap.xml")
@@ -1275,8 +1276,8 @@ async def update_homepage_settings(settings: dict, admin: str = Depends(verify_a
 
 @api_router.get("/settings/legal/{page_type}")
 async def get_legal_page(page_type: str):
-    """Get legal page content (public). page_type: impressum or datenschutz"""
-    if page_type not in ("impressum", "datenschutz"):
+    """Get legal page content (public). page_type: impressum, datenschutz or agb"""
+    if page_type not in ("impressum", "datenschutz", "agb"):
         raise HTTPException(status_code=404, detail="Page not found")
     doc = await db.site_settings.find_one({"key": f"legal_{page_type}"}, {"_id": 0})
     if not doc or not doc.get("content"):
@@ -1286,7 +1287,7 @@ async def get_legal_page(page_type: str):
 @api_router.put("/admin/settings/legal/{page_type}")
 async def update_legal_page(page_type: str, data: dict, admin: str = Depends(verify_admin)):
     """Update legal page content (Admin only)"""
-    if page_type not in ("impressum", "datenschutz"):
+    if page_type not in ("impressum", "datenschutz", "agb"):
         raise HTTPException(status_code=404, detail="Page not found")
     content = data.get("content", "")
     await db.site_settings.update_one(

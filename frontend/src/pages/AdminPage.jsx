@@ -28,6 +28,7 @@ const AdminPage = () => {
   // Legal Pages State
   const [impressumContent, setImpressumContent] = useState('');
   const [datenschutzContent, setDatenschutzContent] = useState('');
+  const [agbContent, setAgbContent] = useState('');
   const [legalSaving, setLegalSaving] = useState(false);
   const [activeLegalPage, setActiveLegalPage] = useState('impressum');
 
@@ -103,6 +104,7 @@ const AdminPage = () => {
         fetchHomepageContent();
         fetchLegalContent('impressum');
         fetchLegalContent('datenschutz');
+        fetchLegalContent('agb');
       } else {
         sessionStorage.removeItem('adminCredentials');
       }
@@ -131,6 +133,7 @@ const AdminPage = () => {
         fetchHomepageContent();
         fetchLegalContent('impressum');
         fetchLegalContent('datenschutz');
+        fetchLegalContent('agb');
       } else {
         setLoginError('Ungültige Zugangsdaten');
       }
@@ -356,7 +359,8 @@ const AdminPage = () => {
       if (res.ok) {
         const data = await res.json();
         if (pageType === 'impressum') setImpressumContent(data.content || '');
-        else setDatenschutzContent(data.content || '');
+        else if (pageType === 'datenschutz') setDatenschutzContent(data.content || '');
+        else if (pageType === 'agb') setAgbContent(data.content || '');
       }
     } catch (err) {
       console.error(`Failed to fetch ${pageType}:`, err);
@@ -365,7 +369,7 @@ const AdminPage = () => {
 
   const handleSaveLegal = async (pageType) => {
     setLegalSaving(true);
-    const content = pageType === 'impressum' ? impressumContent : datenschutzContent;
+    const content = pageType === 'impressum' ? impressumContent : pageType === 'datenschutz' ? datenschutzContent : agbContent;
     try {
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/settings/legal/${pageType}`, {
         method: 'PUT',
@@ -373,7 +377,8 @@ const AdminPage = () => {
         body: JSON.stringify({ content })
       });
       if (res.ok) {
-        setSaveStatus({ type: 'success', message: `${pageType === 'impressum' ? 'Impressum' : 'Datenschutz'} gespeichert!` });
+        const labels = { impressum: 'Impressum', datenschutz: 'Datenschutz', agb: 'AGB' };
+        setSaveStatus({ type: 'success', message: `${labels[pageType]} gespeichert!` });
         setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
       }
     } catch (err) { setSaveStatus({ type: 'error', message: err.message }); }
@@ -1862,6 +1867,17 @@ const AdminPage = () => {
                 >
                   Datenschutz
                 </button>
+                <button
+                  onClick={() => setActiveLegalPage('agb')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    activeLegalPage === 'agb'
+                      ? 'bg-ea-dark text-white'
+                      : 'bg-gray-100 text-ea-dark/70 hover:bg-gray-200'
+                  }`}
+                  data-testid="legal-tab-agb"
+                >
+                  AGB
+                </button>
               </div>
 
               {/* Editor */}
@@ -1887,6 +1903,17 @@ const AdminPage = () => {
                   />
                 </div>
               )}
+              {activeLegalPage === 'agb' && (
+                <div>
+                  <label className="block text-ea-dark font-semibold text-sm mb-2">AGB-Inhalt</label>
+                  <WYSIWYGEditor
+                    key="agb-editor"
+                    value={agbContent}
+                    onChange={setAgbContent}
+                    placeholder="Allgemeine Gesch&auml;ftsbedingungen hier eingeben..."
+                  />
+                </div>
+              )}
 
               <p className="text-ea-dark/40 text-xs mt-4">
                 Tipp: Nutze die Toolbar f&uuml;r &Uuml;berschriften, Listen und Links. Der Inhalt wird als HTML gespeichert und auf der &ouml;ffentlichen Seite angezeigt.
@@ -1898,19 +1925,19 @@ const AdminPage = () => {
               <div className="flex items-center space-x-2 mb-6">
                 <Eye className="w-5 h-5 text-ea-gold" />
                 <h2 className="text-lg sm:text-xl font-bold text-ea-dark">
-                  Vorschau: {activeLegalPage === 'impressum' ? 'Impressum' : 'Datenschutz'}
+                  Vorschau: {activeLegalPage === 'impressum' ? 'Impressum' : activeLegalPage === 'datenschutz' ? 'Datenschutz' : 'AGB'}
                 </h2>
               </div>
               <div className="border border-gray-100 rounded-xl p-6 bg-gray-50/50">
                 <div className="text-center mb-8">
                   <p className="text-ea-gold text-xs font-semibold tracking-wider uppercase mb-2">Rechtliches</p>
                   <h3 className="font-semibold text-2xl text-ea-dark">
-                    {activeLegalPage === 'impressum' ? 'Impressum' : 'Datenschutzerkl\u00e4rung'}
+                    {activeLegalPage === 'impressum' ? 'Impressum' : activeLegalPage === 'datenschutz' ? 'Datenschutzerkl\u00e4rung' : 'Allgemeine Gesch\u00e4ftsbedingungen'}
                   </h3>
                 </div>
                 <div 
                   className="legal-preview"
-                  dangerouslySetInnerHTML={{ __html: activeLegalPage === 'impressum' ? impressumContent : datenschutzContent }}
+                  dangerouslySetInnerHTML={{ __html: activeLegalPage === 'impressum' ? impressumContent : activeLegalPage === 'datenschutz' ? datenschutzContent : agbContent }}
                 />
                 <style>{`
                   .legal-preview h2 {

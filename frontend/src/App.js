@@ -13,6 +13,7 @@ import ContactPage from "./pages/ContactPage";
 import TeamPage from "./pages/TeamPage";
 import ImpressumPage from "./pages/ImpressumPage";
 import DatenschutzPage from "./pages/DatenschutzPage";
+import AGBPage from "./pages/AGBPage";
 import AdminPage from "./pages/AdminPage";
 import NewsletterUnsubscribe from "./pages/NewsletterUnsubscribe";
 import SerbiaExecutivePage from "./pages/SerbiaExecutivePage";
@@ -52,6 +53,7 @@ function App() {
           <Route path="/investments" element={<Home />} />
           <Route path="/impressum" element={<ImpressumPage />} />
           <Route path="/datenschutz" element={<DatenschutzPage />} />
+          <Route path="/agb" element={<AGBPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/newsletter/abmelden" element={<NewsletterUnsubscribe />} />
           <Route path="/serbia-executive" element={<SerbiaExecutivePage />} />
