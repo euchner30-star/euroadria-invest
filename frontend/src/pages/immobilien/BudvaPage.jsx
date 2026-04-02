@@ -175,7 +175,7 @@ const BudvaPage = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-ea-dark mb-1">Lifestyle-Destination</h3>
-                    <p className="text-ea-dark/70 text-sm">Nachtleben, Restaurants, Yachthäfen – "Monaco des Balkans".</p>
+                    <p className="text-ea-dark/70 text-sm">Nachtleben, Restaurants, Yachthäfen: das "Monaco des Balkans".</p>
                   </div>
                 </div>
               </div>
@@ -186,7 +186,7 @@ const BudvaPage = () => {
                   "Budva bietet die beste Kombination aus Mietrendite und Wertstabilität 
                   an der montenegrinischen Küste. Ideal für ertragsorientierte Investoren."
                 </blockquote>
-                <p className="text-ea-dark/50 text-sm mt-3">— EuroAdria Research Team</p>
+                <p className="text-ea-dark/50 text-sm mt-3">EuroAdria Research Team</p>
               </div>
             </div>
 

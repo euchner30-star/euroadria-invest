@@ -11,7 +11,7 @@ const CryptoBankingPage = () => {
     <div className="min-h-screen bg-white" data-testid="crypto-banking-page">
       <SEO 
         title="Crypto-Banking & Treasury in Serbien"
-        description="Internationale Liquidität und Datensouveränität – sicher strukturiert außerhalb der EU-Regularien. Krypto-Banking, Treasury und Non-Resident-Konten in Serbien."
+        description="Internationale Liquidität und Datensouveränität, sicher strukturiert außerhalb der EU-Regularien. Krypto-Banking, Treasury und Non-Resident-Konten in Serbien."
         url="/serbia-executive/crypto-banking"
         faq={[
           {
@@ -172,7 +172,7 @@ const CryptoBankingPage = () => {
                     Sie wandeln Krypto-Kapital in handfeste Assets um. Durch den Kauf von Immobilien 
                     (die Mieteinnahmen generieren) oder den Erwerb liquider Wertpapiere (wie US T-Bills 
                     über serbische Broker) erschaffen Sie eine völlig neue, saubere Fiat-Mittelherkunft 
-                    („Source of Funds") — aus Immobiliengeschäften statt aus Krypto-Trading.
+                    („Source of Funds"), aus Immobiliengeschäften statt aus Krypto-Trading.
                   </p>
                   <div className="flex flex-wrap gap-3">
                     <span className="text-xs bg-ea-gold/10 text-ea-gold font-medium px-3 py-1 rounded-full">Real Estate</span>

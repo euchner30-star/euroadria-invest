@@ -185,7 +185,7 @@ const SkadarLakePage = () => {
                   "Skadar-Lake ist das Hidden Gem Montenegros. Während die Küste überlaufen ist, 
                   bietet der See vergleichbare Natur zu einem Bruchteil der Preise."
                 </blockquote>
-                <p className="text-ea-dark/50 text-sm mt-3">— EuroAdria Research Team</p>
+                <p className="text-ea-dark/50 text-sm mt-3">EuroAdria Research Team</p>
               </div>
             </div>
 

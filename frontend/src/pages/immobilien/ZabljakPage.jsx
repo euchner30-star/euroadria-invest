@@ -175,7 +175,7 @@ const ZabljakPage = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-ea-dark mb-1">Ganzjahres-Destination</h3>
-                    <p className="text-ea-dark/70 text-sm">Ski im Winter, Wandern/MTB im Sommer – 12 Monate Vermietungspotenzial.</p>
+                    <p className="text-ea-dark/70 text-sm">Ski im Winter, Wandern/MTB im Sommer: 12 Monate Vermietungspotenzial.</p>
                   </div>
                 </div>
               </div>
@@ -186,7 +186,7 @@ const ZabljakPage = () => {
                   "Žabljak bietet Ski-Immobilien zu Preisen, die in den Alpen vor 20 Jahren galten. 
                   Mit der EU-Konvergenz und geplanten Infrastruktur-Investments ein klarer Buy."
                 </blockquote>
-                <p className="text-ea-dark/50 text-sm mt-3">— EuroAdria Research Team</p>
+                <p className="text-ea-dark/50 text-sm mt-3">EuroAdria Research Team</p>
               </div>
             </div>
 

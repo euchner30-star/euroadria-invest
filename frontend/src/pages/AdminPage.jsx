@@ -1536,7 +1536,7 @@ const AdminPage = () => {
                           style={{ objectPosition: `center ${homepageContent.testimonial_image_position ?? 50}%` }}
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="bg-black/60 text-white text-xs px-3 py-1 rounded-full">Vorschau — Position: {homepageContent.testimonial_image_position ?? 50}%</span>
+                          <span className="bg-black/60 text-white text-xs px-3 py-1 rounded-full">Vorschau, Position: {homepageContent.testimonial_image_position ?? 50}%</span>
                         </div>
                       </div>
                       <div>
@@ -1604,7 +1604,7 @@ const AdminPage = () => {
                           style={{ objectPosition: `center ${homepageContent.stats_image_position ?? 50}%` }}
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="bg-black/60 text-white text-xs px-3 py-1 rounded-full">Vorschau — Position: {homepageContent.stats_image_position ?? 50}%</span>
+                          <span className="bg-black/60 text-white text-xs px-3 py-1 rounded-full">Vorschau, Position: {homepageContent.stats_image_position ?? 50}%</span>
                         </div>
                       </div>
                       <div>
@@ -1658,7 +1658,7 @@ const AdminPage = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {(homepageContent.trust_items || [{title:'',desc:''},{title:'',desc:''},{title:'',desc:''},{title:'',desc:''}]).map((item, idx) => (
                   <div key={idx} className="p-4 bg-ea-light rounded-xl">
-                    <label className="block text-ea-dark font-semibold text-sm mb-1">Badge {idx + 1} — Titel</label>
+                    <label className="block text-ea-dark font-semibold text-sm mb-1">Badge {idx + 1}, Titel</label>
                     <input
                       type="text"
                       value={item.title || ''}

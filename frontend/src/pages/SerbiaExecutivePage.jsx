@@ -28,7 +28,7 @@ const SerbiaExecutivePage = () => {
           name: inquiryForm.name,
           email: inquiryForm.email,
           phone: inquiryForm.phone,
-          subject: `Serbia Executive Inquiry: ${inquiryForm.interest || 'Allgemein'}${inquiryForm.company ? ' – ' + inquiryForm.company : ''}`,
+          subject: `Serbia Executive Inquiry: ${inquiryForm.interest || 'Allgemein'}${inquiryForm.company ? ', ' + inquiryForm.company : ''}`,
           message: `Unternehmen: ${inquiryForm.company || '-'}\nInteresse: ${inquiryForm.interest || '-'}\n\n${inquiryForm.message || 'Keine weitere Nachricht.'}`
         })
       });
@@ -252,10 +252,10 @@ const SerbiaExecutivePage = () => {
                 <div className="md:col-span-2 space-y-4">
                   <p className="text-white/80 leading-relaxed">
                     Über unsere Partnerbanken in Serbien strukturieren wir Krypto-, Treasury- und 
-                    Banking-Lösungen — rechtssicher, diskret und außerhalb der EU-Regularien.
+                    Banking-Lösungen, rechtssicher, diskret und außerhalb der EU-Regularien.
                   </p>
                   <ul className="grid md:grid-cols-2 gap-3">
-                    {['Fiat-Krypto-Brücke & Non-Resident Banking', 'Capital Extraction durch reale Werte', 'Corporate Treasury für Zahlungsverkehr', 'Compliance by Design — 100% lizenziert'].map((item, idx) => (
+                    {['Fiat-Krypto-Brücke & Non-Resident Banking', 'Capital Extraction durch reale Werte', 'Corporate Treasury für Zahlungsverkehr', 'Compliance by Design, 100% lizenziert'].map((item, idx) => (
                       <li key={idx} className="flex items-center space-x-2 text-white/70">
                         <CheckCircle className="w-4 h-4 text-ea-gold flex-shrink-0" />
                         <span>{item}</span>
@@ -284,7 +284,7 @@ const SerbiaExecutivePage = () => {
                 Warum <span className="text-ea-gold">Executive Access</span>?
               </h2>
               <p className="text-ea-dark/70 mb-8 leading-relaxed">
-                Der serbische Markt bietet enorme Chancen – aber der Zugang zu den richtigen 
+                Der serbische Markt bietet enorme Chancen, aber der Zugang zu den richtigen 
                 Entscheidungsträgern macht den Unterschied.
               </p>
               <div className="space-y-4">

@@ -175,7 +175,7 @@ const PodgoricaPage = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-ea-dark mb-1">Wachsende Wirtschaft</h3>
-                    <p className="text-ea-dark/70 text-sm">IT-Hub, Banken, internationale Konzerne – stabiler Arbeitsmarkt.</p>
+                    <p className="text-ea-dark/70 text-sm">IT-Hub, Banken, internationale Konzerne: stabiler Arbeitsmarkt.</p>
                   </div>
                 </div>
               </div>
@@ -186,7 +186,7 @@ const PodgoricaPage = () => {
                   "Podgorica bietet als Hauptstadt die stabilsten Mietrenditen und die geringste 
                   Volatilität. Ideal für konservative Investoren mit Fokus auf langfristige Wertsicherung."
                 </blockquote>
-                <p className="text-ea-dark/50 text-sm mt-3">— EuroAdria Research Team</p>
+                <p className="text-ea-dark/50 text-sm mt-3">EuroAdria Research Team</p>
               </div>
             </div>
 

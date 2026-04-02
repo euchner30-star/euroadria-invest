@@ -170,7 +170,7 @@ const TeamSection = () => {
               <div className="text-ea-gold text-4xl font-bold mb-3">01</div>
               <h4 className="text-xl font-semibold text-white mb-3">Keine Interessenskonflikte</h4>
               <p className="text-ea-light/70">
-                Wir sind keine Verkäufer. Unser Erfolg ist Ihr Erfolg – nur wenn der Deal sicher 
+                Wir sind keine Verkäufer. Unser Erfolg ist Ihr Erfolg, nur wenn der Deal sicher 
                 und rentabel ist, verdienen wir unsere Provision.
               </p>
             </div>

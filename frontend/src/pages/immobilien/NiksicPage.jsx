@@ -155,7 +155,7 @@ const NiksicPage = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-ea-dark mb-1">Industrieller Hub</h3>
-                    <p className="text-ea-dark/70 text-sm">Stahlwerk, Brauerei, Aluminiumverarbeitung – stabile Arbeitsplätze.</p>
+                    <p className="text-ea-dark/70 text-sm">Stahlwerk, Brauerei, Aluminiumverarbeitung: stabile Arbeitsplätze.</p>
                   </div>
                 </div>
                 
@@ -187,7 +187,7 @@ const NiksicPage = () => {
                   Wer langfristig denkt und Geduld mitbringt, findet hier 
                   die höchsten Aufwertungspotenziale des Landes."
                 </blockquote>
-                <p className="text-ea-dark/50 text-sm mt-3">— EuroAdria Research Team</p>
+                <p className="text-ea-dark/50 text-sm mt-3">EuroAdria Research Team</p>
               </div>
             </div>
 

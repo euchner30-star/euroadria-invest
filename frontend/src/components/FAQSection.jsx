@@ -6,12 +6,12 @@ const FAQSection = () => {
     {
       icon: Shield,
       question: "Wie sicher ist eine Firmengründung oder Immobilien-Investment in Montenegro?",
-      answer: `Montenegro bietet ein stabiles Rechtssystem nach europäischem Vorbild. Als EU-Beitrittskandidat hat das Land bereits zahlreiche EU-Richtlinien übernommen. Bei EuroAdria – referenziert in deutschen Wirtschaftsmedien wie n-tv und RTL – führen wir für jeden Mandanten eine umfassende Due Diligence durch, um maximale Rechtssicherheit zu gewährleisten. Unser Team aus deutschen und montenegrinischen Experten begleitet Sie durch den gesamten Prozess.`
+      answer: `Montenegro bietet ein stabiles Rechtssystem nach europäischem Vorbild. Als EU-Beitrittskandidat hat das Land bereits zahlreiche EU-Richtlinien übernommen. Bei EuroAdria, referenziert in deutschen Wirtschaftsmedien wie n-tv und RTL, führen wir für jeden Mandanten eine umfassende Due Diligence durch, um maximale Rechtssicherheit zu gewährleisten. Unser Team aus deutschen und montenegrinischen Experten begleitet Sie durch den gesamten Prozess.`
     },
     {
       icon: Percent,
       question: "Welche Steuervorteile bietet Montenegro für Unternehmer und Investoren?",
-      answer: `Montenegro hat mit nur 9% eine der niedrigsten Körperschaftsteuern in Europa – verglichen mit 15-30% in Deutschland. Zusätzlich gibt es keine Erbschaftsteuer, niedrige Sozialabgaben und attraktive Abschreibungsmodelle für Immobilien. Als von n-tv und RTL referenzierte Experten beraten wir Sie individuell zu Ihrer optimalen Steuerstruktur unter Berücksichtigung von DBA-Abkommen und EU-Regularien.`
+      answer: `Montenegro hat mit nur 9% eine der niedrigsten Körperschaftsteuern in Europa, verglichen mit 15-30% in Deutschland. Zusätzlich gibt es keine Erbschaftsteuer, niedrige Sozialabgaben und attraktive Abschreibungsmodelle für Immobilien. Als von n-tv und RTL referenzierte Experten beraten wir Sie individuell zu Ihrer optimalen Steuerstruktur unter Berücksichtigung von DBA-Abkommen und EU-Regularien.`
     },
     {
       icon: Flag,
@@ -66,7 +66,7 @@ const FAQSection = () => {
             Häufige Fragen
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-ea-dark mb-4">
-            Ihre Fragen – Unsere Expertise
+            Ihre Fragen, unsere Expertise
           </h2>
           <p className="text-ea-dark/60 max-w-2xl mx-auto">
             Antworten von den Experten, die von deutschen Wirtschaftsmedien referenziert werden

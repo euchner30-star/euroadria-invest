@@ -26,7 +26,7 @@ const CryptoCompliancePage = () => {
           name: form.name,
           email: form.email,
           phone: form.phone,
-          subject: `Crypto Executive Assessment${form.company ? ' – ' + form.company : ''}`,
+          subject: `Crypto Executive Assessment${form.company ? ', ' + form.company : ''}`,
           message: `Unternehmen: ${form.company || '-'}\nVolumen: ${form.volume || '-'}\n\n${form.message || 'Keine weitere Nachricht.'}`
         })
       });
@@ -187,10 +187,10 @@ const CryptoCompliancePage = () => {
                 <select value={form.volume} onChange={(e) => setForm(p => ({...p, volume: e.target.value}))} 
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ea-gold/20 focus:border-ea-gold transition-colors bg-white" data-testid="assess-volume">
                   <option value="">Bitte wählen...</option>
-                  <option value="100k-500k">€100.000 – €500.000</option>
-                  <option value="500k-1m">€500.000 – €1.000.000</option>
-                  <option value="1m-5m">€1.000.000 – €5.000.000</option>
-                  <option value="5m+">€5.000.000+</option>
+                  <option value="100k-500k">100.000 bis 500.000 Euro</option>
+                  <option value="500k-1m">500.000 bis 1.000.000 Euro</option>
+                  <option value="1m-5m">1.000.000 bis 5.000.000 Euro</option>
+                  <option value="5m+">Über 5.000.000 Euro</option>
                 </select>
               </div>
               <div>
