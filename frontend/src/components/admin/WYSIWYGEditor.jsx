@@ -163,6 +163,8 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
 
   // Handle content change - preserve cursor position naturally
   const handleInput = () => {
+    // Mark as initialized on first user input to prevent useEffect overwriting content
+    isInitialized.current = true;
     if (editorRef.current) {
       const newContent = editorRef.current.innerHTML;
       notifyParent(newContent);
