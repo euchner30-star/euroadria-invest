@@ -689,7 +689,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
                         <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 50px;">
                     </div>
                     <div style="padding: 32px; color: #333; font-size: 15px; line-height: 1.7;">
-                        <h2 style="color: #04151F; font-size: 22px; margin-bottom: 16px;">Willkommen bei EuroAdria!</h2>
+                        <h2 style="color: #04151F; font-size: 22px; margin-bottom: 16px;">Willkommen bei EuroAdria Corporate Solutions!</h2>
                         <p>Hallo{(' ' + sub.name) if sub.name else ''},</p>
                         <p>vielen Dank für Ihre Anmeldung zum EuroAdria Newsletter! 
                         Sie erhalten ab sofort exklusive Investment-Insights, Marktanalysen 
