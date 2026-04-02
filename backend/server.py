@@ -807,6 +807,17 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
             upsert=True
         )
         
+        # Also count as lead
+        if is_new:
+            await db.leads.insert_one({
+                "name": sub.name or "",
+                "email": sub.email,
+                "source": "newsletter",
+                "expose_name": "Newsletter-Anmeldung",
+                "type": "newsletter",
+                "submitted_at": datetime.now(timezone.utc).isoformat()
+            })
+        
         # Send welcome email ONLY for new subscribers
         if is_new:
             try:
