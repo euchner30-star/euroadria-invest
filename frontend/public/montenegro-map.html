@@ -43,6 +43,15 @@
     .dist-label .route{color:var(--gold);font-weight:700;font-size:13px}.dist-label .info{color:#d0dae6;font-size:12px;font-weight:600}
     @media(max-width:600px){.dist-label{font-size:12px;padding:4px 10px}.dist-label .route{font-size:12px}.dist-label .info{font-size:11px}}
     @media(max-width:980px){#app{grid-template-columns:1fr;grid-template-rows:50% 50%}}
+    #map{position:relative}
+    .cat-bar{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;gap:6px;padding:6px 10px;background:rgba(8,20,32,.92);border:1px solid rgba(200,169,106,.35);border-radius:14px;backdrop-filter:blur(12px);box-shadow:0 4px 20px rgba(0,0,0,.5)}
+    .cat-btn{padding:7px 14px;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .25s;white-space:nowrap;font-family:Inter,Arial,sans-serif;letter-spacing:.02em}
+    .cat-btn:hover{background:rgba(200,169,106,.12);color:var(--text);border-color:rgba(200,169,106,.3)}
+    .cat-btn.active{background:rgba(200,169,106,.2);color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(200,169,106,.15)}
+    .cat-marker{background:rgba(8,20,32,.92);color:#fff;border:1px solid rgba(200,169,106,.45);border-radius:10px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;text-align:center;line-height:1.4;box-shadow:0 2px 10px rgba(0,0,0,.45)}
+    .cat-marker .cat-name{color:var(--gold);font-weight:700;font-size:12px}
+    .cat-marker .cat-sub{color:var(--muted);font-size:10px;font-weight:500}
+    @media(max-width:980px){.cat-bar{top:8px;gap:4px;padding:5px 8px;flex-wrap:wrap;justify-content:center;max-width:95%}.cat-btn{padding:5px 10px;font-size:11px}}
   </style>
 </head>
 <body>
@@ -129,7 +138,17 @@
       Rot bis Orange steht für aggressive Aufwertungschancen. Gelb markiert starke, aber selektivere Chancen. Grün zeigt etablierte oder stabilisierte Standorte. Linienfarben trennen Bestand, Modernisierung, Bau und Planung. Für Webinar-Folien solltest du primär Score, Zone und Zeithorizont sprechen, nicht alle Segmente im Detail.
     </div>
   </aside>
-  <div id="map"></div>
+  <div id="map">
+    <div class="cat-bar" id="catBar">
+      <button class="cat-btn" data-cat="airports" onclick="toggleCat('airports',this)">Flughaefen</button>
+      <button class="cat-btn" data-cat="municipalities" onclick="toggleCat('municipalities',this)">Gemeinden</button>
+      <button class="cat-btn" data-cat="rivieras" onclick="toggleCat('rivieras',this)">Rivieras</button>
+      <button class="cat-btn" data-cat="parks" onclick="toggleCat('parks',this)">Nationalparks</button>
+      <button class="cat-btn" data-cat="mountains" onclick="toggleCat('mountains',this)">Berge</button>
+      <button class="cat-btn" data-cat="lakes" onclick="toggleCat('lakes',this)">Seen</button>
+      <button class="cat-btn" data-cat="ski" onclick="toggleCat('ski',this)">Skizentren</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -344,6 +363,131 @@ document.querySelectorAll('[data-layer]').forEach(el=>el.addEventListener('chang
 document.querySelectorAll('[data-use],[data-horizon]').forEach(el=>el.addEventListener('change',applyFilters));
 applyFilters();
 updateInfo('V5 bereit','Top-Logik für Webinar und Exposé','Neu bewertet wurden insbesondere Šavnik, Žabljak und Herceg Novi. Die Karte kombiniert Score, Zeithorizont, Opportunitätszonen und segmentierte Infrastruktur.' );
+
+// === CATEGORY TABS (Entdecken) ===
+const catData = {
+  airports: [
+    {name:'Flughafen Podgorica',sub:'TGD, International',lat:42.3594,lng:19.2519},
+    {name:'Flughafen Tivat',sub:'TIV, International',lat:42.4047,lng:18.7233},
+    {name:'Flughafen Berane',sub:'Reaktivierung geplant',lat:42.839,lng:19.861},
+    {name:'Kapino Polje Nikšić',sub:'Allgemeine Luftfahrt',lat:42.786,lng:18.939},
+    {name:'Flugfeld Žabljak',sub:'Alpine Perspektive',lat:43.149,lng:19.098}
+  ],
+  municipalities: [
+    {name:'Podgorica',sub:'Hauptstadt, 200.000 Ew.',lat:42.441,lng:19.263},
+    {name:'Nikšić',sub:'75.000 Ew.',lat:42.773,lng:18.944},
+    {name:'Herceg Novi',sub:'33.000 Ew.',lat:42.454,lng:18.531},
+    {name:'Bijelo Polje',sub:'46.000 Ew.',lat:43.038,lng:19.747},
+    {name:'Bar',sub:'42.000 Ew.',lat:42.095,lng:19.100},
+    {name:'Berane',sub:'34.000 Ew.',lat:42.846,lng:19.873},
+    {name:'Cetinje',sub:'Alte Hauptstadt, 16.000 Ew.',lat:42.390,lng:18.924},
+    {name:'Kotor',sub:'UNESCO, 22.000 Ew.',lat:42.425,lng:18.771},
+    {name:'Budva',sub:'Tourismuszentrum, 20.000 Ew.',lat:42.286,lng:18.840},
+    {name:'Ulcinj',sub:'20.000 Ew.',lat:41.929,lng:19.223},
+    {name:'Tivat',sub:'15.000 Ew.',lat:42.430,lng:18.695},
+    {name:'Pljevlja',sub:'30.000 Ew.',lat:43.356,lng:19.359},
+    {name:'Kolašin',sub:'9.000 Ew.',lat:42.822,lng:19.518},
+    {name:'Žabljak',sub:'4.000 Ew.',lat:43.154,lng:19.123},
+    {name:'Danilovgrad',sub:'18.000 Ew.',lat:42.553,lng:19.146},
+    {name:'Mojkovac',sub:'8.500 Ew.',lat:42.964,lng:19.581},
+    {name:'Šavnik',sub:'2.000 Ew.',lat:42.956,lng:19.096},
+    {name:'Plužine',sub:'3.200 Ew.',lat:43.154,lng:18.840},
+    {name:'Andrijevica',sub:'5.000 Ew.',lat:42.733,lng:19.792},
+    {name:'Tuzi',sub:'14.000 Ew.',lat:42.365,lng:19.331},
+    {name:'Zeta',sub:'10.000 Ew.',lat:42.402,lng:19.198},
+    {name:'Rožaje',sub:'23.000 Ew.',lat:42.841,lng:20.167},
+    {name:'Petnjica',sub:'6.000 Ew.',lat:42.932,lng:20.020},
+    {name:'Gusinje',sub:'4.000 Ew.',lat:42.561,lng:19.832}
+  ],
+  rivieras: [
+    {name:'Hercegnovska Rivijera',sub:'Herceg Novi, Igalo, Bijela',lat:42.456,lng:18.540},
+    {name:'Kotorska Rivijera',sub:'Kotor, Perast, Risan',lat:42.430,lng:18.770},
+    {name:'Tivatska Rivijera',sub:'Tivat, Luštica',lat:42.420,lng:18.700},
+    {name:'Budvanska Rivijera',sub:'Budva, Bečići, Sveti Stefan',lat:42.280,lng:18.850},
+    {name:'Barska Rivijera',sub:'Bar, Sutomore, Čanj',lat:42.100,lng:19.080},
+    {name:'Ulcinjska Rivijera',sub:'Ulcinj, Velika Plaža, Ada Bojana',lat:41.935,lng:19.210}
+  ],
+  parks: [
+    {name:'Durmitor',sub:'UNESCO, 390 km²',lat:43.150,lng:19.020},
+    {name:'Biogradska Gora',sub:'Urwald, 56 km²',lat:42.894,lng:19.598},
+    {name:'Lovćen',sub:'Mausoleum, 62 km²',lat:42.397,lng:18.835},
+    {name:'Skadarsko jezero',sub:'Groesster Balkansee, 400 km²',lat:42.210,lng:19.100},
+    {name:'Prokletije',sub:'Verwunschene Berge, 166 km²',lat:42.530,lng:19.870}
+  ],
+  mountains: [
+    {name:'Durmitor',sub:'Bobotov Kuk, 2.523 m',lat:43.150,lng:19.020},
+    {name:'Bjelasica',sub:'Crna Glava, 2.137 m',lat:42.880,lng:19.670},
+    {name:'Komovi',sub:'Kom Vasojevički, 2.487 m',lat:42.690,lng:19.680},
+    {name:'Orjen',sub:'Zubački Kabao, 1.894 m',lat:42.530,lng:18.560},
+    {name:'Lovćen',sub:'Štirovnik, 1.749 m',lat:42.410,lng:18.830},
+    {name:'Prokletije',sub:'Zla Kolata, 2.534 m',lat:42.530,lng:19.870},
+    {name:'Visitor',sub:'2.211 m',lat:42.770,lng:19.720},
+    {name:'Sinjajevina',sub:'2.277 m',lat:42.920,lng:19.250}
+  ],
+  lakes: [
+    {name:'Skadarsko jezero',sub:'Groesster See Südeuropas',lat:42.210,lng:19.130},
+    {name:'Pivsko jezero',sub:'Piva-Stausee, 188 m tief',lat:43.060,lng:18.850},
+    {name:'Crno jezero',sub:'Schwarzer See, Durmitor',lat:43.148,lng:19.090},
+    {name:'Biogradsko jezero',sub:'Gletschersee, 1.094 m',lat:42.894,lng:19.600},
+    {name:'Krupac',sub:'Nikšić, Wasserreservoir',lat:42.780,lng:18.870},
+    {name:'Plavsko jezero',sub:'Gletschersee, 906 m',lat:42.600,lng:19.920},
+    {name:'Šasko jezero',sub:'Ulcinj, Vogelreservat',lat:41.990,lng:19.310},
+    {name:'Slano jezero',sub:'Nikšić',lat:42.815,lng:18.910}
+  ],
+  ski: [
+    {name:'Kolašin 1600',sub:'12 Lifte, 30 km Pisten',lat:42.812,lng:19.560},
+    {name:'Kolašin 1450',sub:'Bjelasica',lat:42.835,lng:19.540},
+    {name:'Savin Kuk',sub:'Žabljak, Durmitor',lat:43.140,lng:19.070},
+    {name:'Vučje',sub:'Nikšić',lat:42.760,lng:18.980},
+    {name:'Hajla',sub:'Rožaje, 2.403 m',lat:42.810,lng:20.100},
+    {name:'Cmiljača',sub:'Kolašin, neu geplant',lat:42.780,lng:19.500}
+  ]
+};
+
+const catLayers = {};
+Object.keys(catData).forEach(k => { catLayers[k] = L.layerGroup(); });
+
+function makeCatMarker(item, layerGroup) {
+  const icon = L.divIcon({
+    className: '',
+    html: '<div class="cat-marker"><span class="cat-name">' + item.name + '</span><br><span class="cat-sub">' + item.sub + '</span></div>',
+    iconSize: [180, 36],
+    iconAnchor: [90, 18]
+  });
+  const m = L.marker([item.lat, item.lng], {icon: icon});
+  m.bindPopup('<div class="popup-title">' + item.name + '</div><div class="popup-meta">' + item.sub + '</div>');
+  m.addTo(layerGroup);
+
+  const dot = L.circleMarker([item.lat, item.lng], {
+    radius: 5, color: '#0b1629', weight: 2, fillColor: '#c8a96a', fillOpacity: 0.9
+  });
+  dot.addTo(layerGroup);
+}
+
+Object.keys(catData).forEach(k => {
+  catData[k].forEach(item => makeCatMarker(item, catLayers[k]));
+});
+
+let activeCat = null;
+
+function toggleCat(cat, btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+
+  if (activeCat === cat) {
+    map.removeLayer(catLayers[cat]);
+    activeCat = null;
+    return;
+  }
+
+  if (activeCat) map.removeLayer(catLayers[activeCat]);
+
+  btn.classList.add('active');
+  catLayers[cat].addTo(map);
+  activeCat = cat;
+
+  const bounds = catLayers[cat].getBounds();
+  if (bounds.isValid()) map.fitBounds(bounds, {padding: [60, 60], maxZoom: 11});
+}
 </script>
 </body>
 </html>
