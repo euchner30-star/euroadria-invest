@@ -246,22 +246,28 @@ const SerbiaExecutivePage = () => {
                   <div className="w-16 h-16 bg-ea-gold/20 rounded-xl flex items-center justify-center mb-4">
                     <Coins className="w-8 h-8 text-ea-gold" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Crypto-Immobilien</h3>
-                  <p className="text-ea-gold font-medium">Immobilienkauf via Krypto</p>
+                  <h3 className="text-2xl font-bold text-white mb-2">Crypto-Banking & Treasury</h3>
+                  <p className="text-ea-gold font-medium">Krypto-Strukturierung in Serbien</p>
                 </div>
                 <div className="md:col-span-2 space-y-4">
                   <p className="text-white/80 leading-relaxed">
-                    Über unsere Partnerbanken in Serbien wickeln wir Immobiliengeschäfte auch via 
-                    Kryptowährungen ab — rechtssicher, diskret und effizient.
+                    Über unsere Partnerbanken in Serbien strukturieren wir Krypto-, Treasury- und 
+                    Banking-Lösungen — rechtssicher, diskret und außerhalb der EU-Regularien.
                   </p>
                   <ul className="grid md:grid-cols-2 gap-3">
-                    {['Legale Abwicklung über regulierte Partnerbanken', 'Bitcoin, Ethereum & weitere Kryptowährungen', 'Vollständige rechtliche Dokumentation', 'Steueroptimierte Strukturierung', 'Schnelle Transaktionsabwicklung', 'Diskrete & vertrauliche Beratung'].map((item, idx) => (
+                    {['Fiat-Krypto-Brücke & Non-Resident Banking', 'Capital Extraction durch reale Werte', 'Corporate Treasury für Zahlungsverkehr', 'Compliance by Design — 100% lizenziert'].map((item, idx) => (
                       <li key={idx} className="flex items-center space-x-2 text-white/70">
                         <CheckCircle className="w-4 h-4 text-ea-gold flex-shrink-0" />
                         <span>{item}</span>
                       </li>
                     ))}
                   </ul>
+                  <div className="pt-4">
+                    <Link to="/serbia-executive/crypto-banking" className="inline-flex items-center gap-2 px-6 py-3 bg-ea-gold text-white font-semibold rounded-lg hover:bg-ea-gold/80 transition-all" data-testid="crypto-banking-link">
+                      Mehr erfahren
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>

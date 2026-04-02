@@ -16,6 +16,8 @@ import DatenschutzPage from "./pages/DatenschutzPage";
 import AdminPage from "./pages/AdminPage";
 import NewsletterUnsubscribe from "./pages/NewsletterUnsubscribe";
 import SerbiaExecutivePage from "./pages/SerbiaExecutivePage";
+import CryptoBankingPage from "./pages/CryptoBankingPage";
+import CryptoCompliancePage from "./pages/CryptoCompliancePage";
 import InfrastrukturRadarPage from "./pages/InfrastrukturRadarPage";
 // Immobilien Region Pages
 import SkadarLakePage from "./pages/immobilien/SkadarLakePage";
@@ -53,6 +55,8 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/newsletter/abmelden" element={<NewsletterUnsubscribe />} />
           <Route path="/serbia-executive" element={<SerbiaExecutivePage />} />
+          <Route path="/serbia-executive/crypto-banking" element={<CryptoBankingPage />} />
+          <Route path="/serbia-executive/crypto-compliance" element={<CryptoCompliancePage />} />
           <Route path="/infrastruktur-radar" element={<InfrastrukturRadarPage />} />
           {/* Immobilien Region Routes */}
           <Route path="/immobilien/skadar-lake" element={<SkadarLakePage />} />

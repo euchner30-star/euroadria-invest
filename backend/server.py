@@ -1119,6 +1119,8 @@ STATIC_PAGES = [
     {"loc": "/", "priority": "1.0", "changefreq": "weekly"},
     {"loc": "/blog", "priority": "0.9", "changefreq": "daily"},
     {"loc": "/serbia-executive", "priority": "0.9", "changefreq": "weekly"},
+    {"loc": "/serbia-executive/crypto-banking", "priority": "0.8", "changefreq": "weekly"},
+    {"loc": "/serbia-executive/crypto-compliance", "priority": "0.8", "changefreq": "weekly"},
     {"loc": "/infrastruktur-radar", "priority": "0.8", "changefreq": "weekly"},
     {"loc": "/investment", "priority": "0.9", "changefreq": "weekly"},
     {"loc": "/investment/rechner", "priority": "0.8", "changefreq": "monthly"},
