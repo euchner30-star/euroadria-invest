@@ -4,7 +4,7 @@ import {
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
   FileText, Loader2, AlertCircle, Check, MessageSquare,
   CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image as ImageIcon,
-  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield, Send
+  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield, Send, Eye
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHtml } from '../components/admin/WYSIWYGEditor';
@@ -1867,7 +1867,7 @@ const AdminPage = () => {
               {/* Editor */}
               {activeLegalPage === 'impressum' && (
                 <div>
-                  <label className="block text-ea-dark font-semibold text-sm mb-2">Impressum-Inhalt (HTML)</label>
+                  <label className="block text-ea-dark font-semibold text-sm mb-2">Impressum-Inhalt</label>
                   <WYSIWYGEditor
                     key="impressum-editor"
                     value={impressumContent}
@@ -1878,7 +1878,7 @@ const AdminPage = () => {
               )}
               {activeLegalPage === 'datenschutz' && (
                 <div>
-                  <label className="block text-ea-dark font-semibold text-sm mb-2">Datenschutz-Inhalt (HTML)</label>
+                  <label className="block text-ea-dark font-semibold text-sm mb-2">Datenschutz-Inhalt</label>
                   <WYSIWYGEditor
                     key="datenschutz-editor"
                     value={datenschutzContent}
@@ -1892,8 +1892,66 @@ const AdminPage = () => {
                 Tipp: Nutze die Toolbar f&uuml;r &Uuml;berschriften, Listen und Links. Der Inhalt wird als HTML gespeichert und auf der &ouml;ffentlichen Seite angezeigt.
               </p>
             </div>
-          </div>
-        )}
+
+            {/* Live Preview */}
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 sm:p-8">
+              <div className="flex items-center space-x-2 mb-6">
+                <Eye className="w-5 h-5 text-ea-gold" />
+                <h2 className="text-lg sm:text-xl font-bold text-ea-dark">
+                  Vorschau: {activeLegalPage === 'impressum' ? 'Impressum' : 'Datenschutz'}
+                </h2>
+              </div>
+              <div className="border border-gray-100 rounded-xl p-6 bg-gray-50/50">
+                <div className="text-center mb-8">
+                  <p className="text-ea-gold text-xs font-semibold tracking-wider uppercase mb-2">Rechtliches</p>
+                  <h3 className="font-semibold text-2xl text-ea-dark">
+                    {activeLegalPage === 'impressum' ? 'Impressum' : 'Datenschutzerkl\u00e4rung'}
+                  </h3>
+                </div>
+                <div 
+                  className="legal-preview"
+                  dangerouslySetInnerHTML={{ __html: activeLegalPage === 'impressum' ? impressumContent : datenschutzContent }}
+                />
+                <style>{`
+                  .legal-preview h2 {
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                    color: #04151F;
+                    margin-top: 2rem;
+                    margin-bottom: 0.75rem;
+                    padding-bottom: 0.5rem;
+                    border-bottom: 2px solid #C8A96A;
+                  }
+                  .legal-preview h2:first-child { margin-top: 0; }
+                  .legal-preview h3 {
+                    font-size: 1rem;
+                    font-weight: 600;
+                    color: #04151F;
+                    margin-top: 1.25rem;
+                    margin-bottom: 0.5rem;
+                  }
+                  .legal-preview p {
+                    color: rgba(4, 21, 31, 0.7);
+                    line-height: 1.8;
+                    margin-bottom: 0.75rem;
+                    font-size: 0.875rem;
+                  }
+                  .legal-preview ul, .legal-preview ol {
+                    color: rgba(4, 21, 31, 0.7);
+                    line-height: 1.8;
+                    margin-bottom: 0.75rem;
+                    padding-left: 1.5rem;
+                    font-size: 0.875rem;
+                  }
+                  .legal-preview li { margin-bottom: 0.25rem; }
+                  .legal-preview a { color: #C8A96A; text-decoration: underline; }
+                  .legal-preview strong { color: #04151F; }
+                `}</style>
+                {!(activeLegalPage === 'impressum' ? impressumContent : datenschutzContent) && (
+                  <p className="text-ea-dark/30 text-center text-sm italic">Noch kein Inhalt eingegeben. Schreiben Sie oben im Editor.</p>
+                )}
+              </div>
+            </div>
 
         {/* Newsletter Tab */}
         {activeTab === 'newsletter' && (
