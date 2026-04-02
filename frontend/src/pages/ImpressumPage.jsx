@@ -63,20 +63,36 @@ const FallbackImpressum = () => (
   <div className="space-y-6 animate-slideUp">
     <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
       <h2 className="text-2xl font-semibold text-ea-dark mb-4">EuroAdria Corporate Solutions</h2>
+      <p className="text-ea-dark/60 text-sm mb-4">a brand of Montaris & Co. d.o.o.</p>
       <div className="bg-ea-light rounded-xl p-6 space-y-4">
         <p className="text-ea-dark/80 leading-relaxed">
           <strong className="text-ea-gold block mb-2">Firmensitz:</strong>
-          Montaris & Co. d.o.o. Novi Sad<br />
-          NOVI SAD, MARKA MILJANOVA 12<br />
-          NOVI SAD, Serbien
+          Montaris & Co. d.o.o.<br />
+          Marka Miljanova 12<br />
+          21000 Novi Sad, Serbien
         </p>
-        <div className="flex flex-wrap gap-6 pt-6 border-t border-gray-200">
-          <a href="https://wa.me/38268559776" target="_blank" rel="noopener noreferrer" className="text-ea-dark/70 hover:text-ea-gold transition-colors">
-            +382 68 559 776
-          </a>
-          <a href="mailto:office@euroadria.me" target="_blank" rel="noopener noreferrer" className="text-ea-dark/70 hover:text-ea-gold transition-colors">
-            office@euroadria.me
-          </a>
+        <div className="pt-4 border-t border-gray-200 space-y-2">
+          <p className="text-ea-dark/70">
+            <strong>Telefon:</strong>{' '}
+            <a href="tel:+38268559776" className="text-ea-gold hover:underline">+382 68 559 776</a>
+          </p>
+          <p className="text-ea-dark/70">
+            <strong>E-Mail:</strong>{' '}
+            <a href="mailto:office@euroadria.me" className="text-ea-gold hover:underline">office@euroadria.me</a>
+          </p>
+          <p className="text-ea-dark/70">
+            <strong>Web:</strong>{' '}
+            <a href="https://www.euroadria.me" className="text-ea-gold hover:underline">www.euroadria.me</a>
+          </p>
+          <p className="text-ea-dark/70">
+            <strong>Investment-Plattform:</strong>{' '}
+            <a href="https://invest.euroadria.me" className="text-ea-gold hover:underline">invest.euroadria.me</a>
+          </p>
+        </div>
+        <div className="pt-4 border-t border-gray-200 space-y-1">
+          <p className="text-ea-dark/70"><strong>Registrierungsnummer:</strong> 22147382</p>
+          <p className="text-ea-dark/70"><strong>Steuer-ID (PIB):</strong> 115356237</p>
+          <p className="text-ea-dark/70"><strong>Geschäftsführerin:</strong> Milena Bubanja</p>
         </div>
       </div>
     </section>
@@ -89,9 +105,26 @@ const FallbackImpressum = () => (
     </section>
     <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
       <h2 className="text-2xl font-semibold text-ea-dark mb-4">Haftungsausschluss</h2>
-      <p className="text-ea-dark/70 leading-relaxed">
+      <h3 className="text-lg font-semibold text-ea-dark mb-2">Haftung für Inhalte</h3>
+      <p className="text-ea-dark/70 leading-relaxed mb-4">
         Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, 
         Vollständigkeit und Aktualität der Inhalte übernehmen wir jedoch keine Gewähr.
+        Als Diensteanbieter sind wir für eigene Inhalte auf diesen Seiten nach den allgemeinen 
+        Gesetzen verantwortlich.
+      </p>
+      <h3 className="text-lg font-semibold text-ea-dark mb-2">Haftung für Links</h3>
+      <p className="text-ea-dark/70 leading-relaxed mb-4">
+        Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen 
+        Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen.
+        Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber 
+        der Seiten verantwortlich.
+      </p>
+      <h3 className="text-lg font-semibold text-ea-dark mb-2">Urheberrecht</h3>
+      <p className="text-ea-dark/70 leading-relaxed">
+        Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen 
+        dem Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung 
+        außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen 
+        Autors bzw. Erstellers.
       </p>
     </section>
   </div>

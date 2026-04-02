@@ -68,27 +68,102 @@ const FallbackDatenschutz = () => (
           Verantwortlich für die Verarbeitung personenbezogener Daten auf dieser Website ist:
         </p>
         <div className="border-l-4 border-ea-gold pl-4 mt-4">
-          <p className="text-ea-dark font-semibold mb-1">EuroAdria</p>
+          <p className="text-ea-dark font-semibold mb-1">EuroAdria Corporate Solutions</p>
           <p className="text-ea-dark/70 leading-relaxed">
-            Montaris & Co. d.o.o. Novi Sad<br />
-            NOVI SAD, MARKA MILJANOVA 12<br />
-            NOVI SAD, Serbien
+            Montaris & Co. d.o.o.<br />
+            Marka Miljanova 12<br />
+            21000 Novi Sad, Serbien
+          </p>
+          <p className="text-ea-dark/70 leading-relaxed mt-2">
+            Telefon: <a href="tel:+38268559776" className="text-ea-gold hover:underline">+382 68 559 776</a><br />
+            E-Mail: <a href="mailto:office@euroadria.me" className="text-ea-gold hover:underline">office@euroadria.me</a><br />
+            Website: <a href="https://invest.euroadria.me" className="text-ea-gold hover:underline">invest.euroadria.me</a>
           </p>
         </div>
       </div>
     </section>
     <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
       <h2 className="text-2xl font-semibold text-ea-dark mb-4">2. Erhebung und Speicherung personenbezogener Daten</h2>
-      <p className="text-ea-dark/70 leading-relaxed">
+      <h3 className="text-lg font-semibold text-ea-dark mb-2">a) Beim Besuch der Website</h3>
+      <p className="text-ea-dark/70 leading-relaxed mb-4">
         Beim Aufrufen unserer Website werden durch den auf Ihrem Endgerät zum Einsatz 
-        kommenden Browser automatisch Informationen an den Server unserer Website gesendet.
+        kommenden Browser automatisch Informationen an den Server unserer Website gesendet. 
+        Diese Informationen werden temporär in einem sog. Logfile gespeichert. Folgende Informationen werden dabei 
+        ohne Ihr Zutun erfasst und bis zur automatisierten Löschung gespeichert:
+      </p>
+      <ul className="list-disc list-inside text-ea-dark/70 leading-relaxed mb-4 space-y-1">
+        <li>IP-Adresse des anfragenden Rechners (anonymisiert)</li>
+        <li>Datum und Uhrzeit des Zugriffs</li>
+        <li>Name und URL der abgerufenen Datei</li>
+        <li>Website, von der aus der Zugriff erfolgt (Referrer-URL)</li>
+        <li>Verwendeter Browser und ggf. das Betriebssystem Ihres Rechners</li>
+      </ul>
+      <h3 className="text-lg font-semibold text-ea-dark mb-2">b) Bei Nutzung unseres Kontaktformulars</h3>
+      <p className="text-ea-dark/70 leading-relaxed">
+        Bei Fragen jeglicher Art bieten wir Ihnen die Möglichkeit, mit uns über ein auf der Website bereitgestelltes 
+        Formular Kontakt aufzunehmen. Dabei sind die Angabe Ihres Namens und einer gültigen E-Mail-Adresse erforderlich, 
+        damit wir wissen, von wem die Anfrage stammt und um diese beantworten zu können. 
+        Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+      </p>
+    </section>
+    <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+      <h2 className="text-2xl font-semibold text-ea-dark mb-4">3. Cookies und Tracking</h2>
+      <p className="text-ea-dark/70 leading-relaxed mb-4">
+        Unsere Website verwendet Cookies. Cookies sind kleine Textdateien, die auf Ihrem Endgerät gespeichert werden 
+        und die Ihr Browser speichert. Sie dienen dazu, unser Angebot nutzerfreundlicher und effektiver zu gestalten.
+      </p>
+      <p className="text-ea-dark/70 leading-relaxed">
+        Wir verwenden sogenannte „Session-Cookies", die nach Ende Ihres Besuchs automatisch gelöscht werden, 
+        sowie technisch notwendige Cookies für die Grundfunktionen der Website. Sie können Ihre Browser-Einstellung 
+        entsprechend Ihren Wünschen konfigurieren und z.B. die Annahme von Cookies ablehnen.
+      </p>
+    </section>
+    <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+      <h2 className="text-2xl font-semibold text-ea-dark mb-4">4. Newsletter</h2>
+      <p className="text-ea-dark/70 leading-relaxed mb-4">
+        Mit Ihrer Einwilligung können Sie unseren Newsletter abonnieren, mit dem wir Sie über aktuelle 
+        Investment-Chancen und Neuigkeiten informieren. Für die Anmeldung verwenden wir das sog. Double-Opt-In-Verfahren. 
+        Die von Ihnen angegebene E-Mail-Adresse wird über den Dienst Brevo (Sendinblue GmbH) verarbeitet.
+      </p>
+      <p className="text-ea-dark/70 leading-relaxed">
+        Sie können den Newsletter jederzeit über den in jeder Newsletter-Mail enthaltenen Abmeldelink 
+        oder über unsere <a href="/newsletter/abmelden" className="text-ea-gold hover:underline">Abmeldeseite</a> abbestellen. 
+        Rechtsgrundlage ist Ihre Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO.
       </p>
     </section>
     <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
       <h2 className="text-2xl font-semibold text-ea-dark mb-4">5. Ihre Rechte</h2>
+      <p className="text-ea-dark/70 leading-relaxed mb-4">
+        Sie haben gegenüber uns folgende Rechte hinsichtlich der Sie betreffenden personenbezogenen Daten:
+      </p>
+      <ul className="list-disc list-inside text-ea-dark/70 leading-relaxed mb-4 space-y-1">
+        <li>Recht auf Auskunft (Art. 15 DSGVO)</li>
+        <li>Recht auf Berichtigung (Art. 16 DSGVO)</li>
+        <li>Recht auf Löschung (Art. 17 DSGVO)</li>
+        <li>Recht auf Einschränkung der Verarbeitung (Art. 18 DSGVO)</li>
+        <li>Recht auf Datenübertragbarkeit (Art. 20 DSGVO)</li>
+        <li>Recht auf Widerspruch gegen die Verarbeitung (Art. 21 DSGVO)</li>
+      </ul>
       <p className="text-ea-dark/70 leading-relaxed">
-        Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung,
-        Datenübertragbarkeit und Widerspruch gemäß DSGVO.
+        Sie haben zudem das Recht, sich bei einer Datenschutz-Aufsichtsbehörde über die Verarbeitung 
+        Ihrer personenbezogenen Daten durch uns zu beschweren.
+      </p>
+    </section>
+    <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+      <h2 className="text-2xl font-semibold text-ea-dark mb-4">6. Datensicherheit</h2>
+      <p className="text-ea-dark/70 leading-relaxed">
+        Wir verwenden innerhalb des Website-Besuchs das verbreitete SSL-Verfahren (Secure Socket Layer) 
+        in Verbindung mit der jeweils höchsten Verschlüsselungsstufe, die von Ihrem Browser unterstützt wird. 
+        Ob eine einzelne Seite unseres Internetauftrittes verschlüsselt übertragen wird, erkennen Sie an der 
+        geschlossenen Darstellung des Schlüssel- beziehungsweise Schloss-Symbols in der Statusleiste Ihres Browsers.
+      </p>
+    </section>
+    <section className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+      <h2 className="text-2xl font-semibold text-ea-dark mb-4">7. Aktualität und Änderung dieser Datenschutzerklärung</h2>
+      <p className="text-ea-dark/70 leading-relaxed">
+        Diese Datenschutzerklärung ist aktuell gültig und hat den Stand April 2026. 
+        Durch die Weiterentwicklung unserer Website oder aufgrund geänderter gesetzlicher bzw. behördlicher 
+        Vorgaben kann es notwendig werden, diese Datenschutzerklärung zu ändern.
       </p>
     </section>
   </div>
