@@ -97,6 +97,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+# Health check endpoint (keeps Render server awake)
+@api_router.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
+
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
     """Verify admin credentials"""
     correct_username = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
