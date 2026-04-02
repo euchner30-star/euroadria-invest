@@ -265,6 +265,11 @@ const SerbiaExecutivePage = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Executive Access */}
       <section className="py-20 px-6 bg-ea-light">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
