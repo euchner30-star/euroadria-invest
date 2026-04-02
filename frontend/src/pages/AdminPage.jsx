@@ -715,6 +715,7 @@ const AdminPage = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
+            <img src="/euroadria-logo.png" alt="EuroAdria" className="h-10 mb-2" />
             <h1 className="text-2xl sm:text-4xl font-semibold font-bold text-ea-dark mb-1 sm:mb-2">
               Admin <span className="text-ea-gold">Dashboard</span>
             </h1>

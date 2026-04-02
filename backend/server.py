@@ -19,6 +19,7 @@ from email.mime.multipart import MIMEMultipart
 from PIL import Image
 import io
 import resend
+import requests as http_requests
 
 
 ROOT_DIR = Path(__file__).parent
@@ -26,6 +27,40 @@ UPLOAD_DIR = ROOT_DIR.parent / "frontend" / "public" / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 load_dotenv(ROOT_DIR / '.env')
+
+# Object Storage
+STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
+EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY")
+APP_NAME = "euroadria"
+storage_key = None
+
+def init_storage():
+    global storage_key
+    if storage_key:
+        return storage_key
+    resp = http_requests.post(f"{STORAGE_URL}/init", json={"emergent_key": EMERGENT_KEY}, timeout=30)
+    resp.raise_for_status()
+    storage_key = resp.json()["storage_key"]
+    return storage_key
+
+def put_object(path: str, data: bytes, content_type: str) -> dict:
+    key = init_storage()
+    resp = http_requests.put(
+        f"{STORAGE_URL}/objects/{path}",
+        headers={"X-Storage-Key": key, "Content-Type": content_type},
+        data=data, timeout=120
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+def get_object(path: str):
+    key = init_storage()
+    resp = http_requests.get(
+        f"{STORAGE_URL}/objects/{path}",
+        headers={"X-Storage-Key": key}, timeout=60
+    )
+    resp.raise_for_status()
+    return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
@@ -713,7 +748,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
                                     <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width: 110px;">
                                 </td>
                                 <td style="vertical-align: top; font-size: 12px; color: #555; line-height: 1.6;">
-                                    <p style="margin: 0 0 2px; font-size: 14px; font-weight: bold; color: #04151F;">EuroAdria</p>
+                                    <p style="margin: 0 0 2px; font-size: 14px; font-weight: bold; color: #04151F;">EuroAdria Corporate Solutions</p>
                                     <p style="margin: 0 0 8px; font-size: 11px; color: #888;">a brand of <strong style="color: #333;">Montaris &amp; Co. d.o.o.</strong></p>
                                     <p style="margin: 0 0 8px; color: #555;">Montaris &amp; Co. d.o.o.<br>Marka Miljanova 12<br>21000 Novi Sad, Serbia</p>
                                     <p style="margin: 0 0 8px;">
@@ -822,7 +857,7 @@ async def send_newsletter(data: dict, admin: str = Depends(verify_admin)):
                             <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width: 110px;">
                         </td>
                         <td style="vertical-align: top; font-size: 12px; color: #555; line-height: 1.6;">
-                            <p style="margin: 0 0 2px; font-size: 14px; font-weight: bold; color: #04151F;">EuroAdria</p>
+                            <p style="margin: 0 0 2px; font-size: 14px; font-weight: bold; color: #04151F;">EuroAdria Corporate Solutions</p>
                             <p style="margin: 0 0 8px; font-size: 11px; color: #888;">a brand of <strong style="color: #333;">Montaris &amp; Co. d.o.o.</strong></p>
                             <p style="margin: 0 0 8px; color: #555;">Montaris &amp; Co. d.o.o.<br>Marka Miljanova 12<br>21000 Novi Sad, Serbia</p>
                             <p style="margin: 0 0 8px;">
@@ -2304,6 +2339,56 @@ async def seed_investment_data(admin: str = Depends(verify_admin)):
     }
 
 
+# ─── File Upload (Object Storage) ───────────────────────────────────────
+@api_router.post("/admin/storage/upload")
+async def admin_upload_file(file: UploadFile = File(...), admin: str = Depends(verify_admin)):
+    """Upload image or file to object storage, returns public serve URL"""
+    allowed_ext = {"jpg", "jpeg", "png", "gif", "webp", "pdf", "csv", "txt"}
+    ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
+    if ext not in allowed_ext:
+        raise HTTPException(status_code=400, detail=f"Dateityp .{ext} nicht erlaubt")
+    
+    mime_map = {
+        "jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png",
+        "gif": "image/gif", "webp": "image/webp", "pdf": "application/pdf",
+        "csv": "text/csv", "txt": "text/plain"
+    }
+    content_type = file.content_type or mime_map.get(ext, "application/octet-stream")
+    file_id = str(uuid.uuid4())
+    storage_path = f"{APP_NAME}/uploads/{file_id}.{ext}"
+    
+    data = await file.read()
+    result = put_object(storage_path, data, content_type)
+    
+    await db.uploaded_files.insert_one({
+        "file_id": file_id,
+        "storage_path": result["path"],
+        "original_filename": file.filename,
+        "content_type": content_type,
+        "size": result.get("size", len(data)),
+        "ext": ext,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {
+        "success": True,
+        "file_id": file_id,
+        "filename": file.filename,
+        "url": f"/api/files/{result['path']}",
+        "content_type": content_type
+    }
+
+@api_router.get("/files/{path:path}")
+async def serve_file(path: str):
+    """Serve uploaded file from object storage"""
+    record = await db.uploaded_files.find_one({"storage_path": path}, {"_id": 0})
+    if not record:
+        raise HTTPException(status_code=404, detail="Datei nicht gefunden")
+    data, ct = get_object(path)
+    return Response(content=data, media_type=record.get("content_type", ct))
+
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
@@ -2325,3 +2410,11 @@ logger = logging.getLogger(__name__)
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+
+@app.on_event("startup")
+async def startup_storage():
+    try:
+        init_storage()
+        logger.info("Object storage initialized")
+    except Exception as e:
+        logger.warning(f"Object storage init deferred: {e}")

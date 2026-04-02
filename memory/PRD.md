@@ -32,6 +32,9 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - Image Position Sliders for Hero, Testimonial, and Article images
 
 ### Completed Tasks (Latest First)
+- Object Storage Upload: Bilder + Dateien im Newsletter-Admin mit persistentem Speicher (2. April 2026)
+- E-Mail-Signatur: "EuroAdria Corporate Solutions" in allen E-Mail-Templates (2. April 2026)
+- Admin Panel Logo: euroadria-logo.png im Dashboard-Header (2. April 2026)
 - Newsletter Abmelde-Seite (/newsletter/abmelden) mit Brevo-Integration (1. April 2026)
 - Brevo Domain-Authentifizierung (DKIM/SPF) erfolgreich (1. April 2026)
 - Newsletter-System komplett: Anmeldung, Willkommens-E-Mail, Kampagnen, Abmeldung (1. April 2026)

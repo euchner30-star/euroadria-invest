@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Users, Mail, Loader2, CheckCircle, Download, AlertCircle } from 'lucide-react';
+import { Send, Users, Mail, Loader2, CheckCircle, Download, AlertCircle, Image, Paperclip, Copy, X } from 'lucide-react';
 import WYSIWYGEditor from './WYSIWYGEditor';
 
 const NewsletterAdmin = ({ credentials }) => {
@@ -10,6 +10,8 @@ const NewsletterAdmin = ({ credentials }) => {
   const [content, setContent] = useState('');
   const [sending, setSending] = useState(false);
   const [sendStatus, setSendStatus] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
 
   useEffect(() => {
     fetchSubscribers();
@@ -82,6 +84,42 @@ const NewsletterAdmin = ({ credentials }) => {
     a.download = `newsletter-abonnenten-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/storage/upload`, {
+        method: 'POST',
+        headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) },
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        const fullUrl = `${process.env.REACT_APP_BACKEND_URL}${data.url}`;
+        setUploadedFiles(prev => [...prev, { ...data, fullUrl }]);
+        // Auto-insert image into content
+        if (data.content_type?.startsWith('image/')) {
+          setContent(prev => prev + `<img src="${fullUrl}" alt="${data.filename}" style="max-width:100%;border-radius:8px;margin:12px 0;" />`);
+        }
+      } else {
+        setSendStatus({ type: 'error', message: data.detail || 'Upload fehlgeschlagen' });
+      }
+    } catch (err) {
+      setSendStatus({ type: 'error', message: 'Upload-Fehler: ' + err.message });
+    }
+    setUploading(false);
+    e.target.value = '';
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    setSendStatus({ type: 'success', message: 'URL kopiert!' });
+    setTimeout(() => setSendStatus(null), 2000);
   };
 
   return (
@@ -165,6 +203,48 @@ const NewsletterAdmin = ({ credentials }) => {
             />
           </div>
 
+          {/* File Upload Section */}
+          <div className="border border-dashed border-gray-300 rounded-xl p-4 bg-gray-50/50">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <label className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-all text-sm font-medium text-ea-dark">
+                <Image className="w-4 h-4 text-ea-gold" />
+                Bild hochladen
+                <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" data-testid="upload-image" />
+              </label>
+              <label className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-all text-sm font-medium text-ea-dark">
+                <Paperclip className="w-4 h-4 text-ea-gold" />
+                Datei hochladen
+                <input type="file" accept=".pdf,.csv,.txt" onChange={handleFileUpload} className="hidden" data-testid="upload-file" />
+              </label>
+              {uploading && (
+                <div className="flex items-center gap-2 text-sm text-ea-dark/60">
+                  <Loader2 className="w-4 h-4 animate-spin" /> Wird hochgeladen...
+                </div>
+              )}
+            </div>
+            {uploadedFiles.length > 0 && (
+              <div className="mt-3 space-y-2">
+                <p className="text-xs font-semibold text-ea-dark/50 uppercase">Hochgeladene Dateien</p>
+                {uploadedFiles.map((f, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-gray-100 text-sm">
+                    {f.content_type?.startsWith('image/') ? (
+                      <img src={f.fullUrl} alt="" className="w-8 h-8 rounded object-cover" />
+                    ) : (
+                      <Paperclip className="w-4 h-4 text-gray-400" />
+                    )}
+                    <span className="text-ea-dark truncate flex-1">{f.filename}</span>
+                    <button onClick={() => copyToClipboard(f.fullUrl)} className="p-1 hover:bg-gray-100 rounded" title="URL kopieren">
+                      <Copy className="w-3.5 h-3.5 text-gray-400" />
+                    </button>
+                    <button onClick={() => setUploadedFiles(prev => prev.filter((_, j) => j !== i))} className="p-1 hover:bg-red-50 rounded" title="Entfernen">
+                      <X className="w-3.5 h-3.5 text-red-400" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Email Preview */}
           <div>
             <label className="block text-ea-dark font-semibold text-sm mb-1.5">Vorschau der E-Mail</label>
@@ -186,7 +266,7 @@ const NewsletterAdmin = ({ credentials }) => {
                 <div className="flex gap-4 pt-4">
                   <img src="/euroadria-logo-email.png" alt="EuroAdria" className="w-24 h-auto object-contain shrink-0" />
                   <div className="text-[11px] text-gray-500 leading-relaxed">
-                    <p className="text-sm font-bold text-ea-dark mb-0.5">EuroAdria</p>
+                    <p className="text-sm font-bold text-ea-dark mb-0.5">EuroAdria Corporate Solutions</p>
                     <p className="text-[10px] text-gray-400 mb-1">a brand of <strong className="text-gray-600">Montaris & Co. d.o.o.</strong></p>
                     <p className="mb-1">Montaris & Co. d.o.o.<br/>Marka Miljanova 12<br/>21000 Novi Sad, Serbia</p>
                     <p className="mb-1">
