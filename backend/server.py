@@ -738,7 +738,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
                             Sie erhalten diese E-Mail, weil Sie sich für den EuroAdria Newsletter angemeldet haben.<br>
                             Sie können sich jederzeit mit einem Klick 
                             <a href="https://invest.euroadria.me/newsletter/abmelden?email={sub.email}" style="color: #C8A96A;">hier abmelden</a> 
-                            — unkompliziert und sofort wirksam.
+                            , unkompliziert und sofort wirksam.
                         </p>
                     </div>
                     <div style="padding: 24px 32px; border-top: 1px solid #e5e7eb; background: #fafafa;">
