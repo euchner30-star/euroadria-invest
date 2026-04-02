@@ -1952,6 +1952,8 @@ const AdminPage = () => {
                 )}
               </div>
             </div>
+          </div>
+        )}
 
         {/* Newsletter Tab */}
         {activeTab === 'newsletter' && (

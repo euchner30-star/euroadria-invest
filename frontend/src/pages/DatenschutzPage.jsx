@@ -90,7 +90,6 @@ const DatenschutzPage = () => {
               .legal-content strong { color: #04151F; }
             `}</style>
           </>
-        )
         ) : (
           <FallbackDatenschutz />
         )}
