@@ -31,6 +31,13 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
   const isUndoRedo = useRef(false);
   const saveTimeout = useRef(null);
   const isInitialized = useRef(false);
+  const onChangeRef = useRef(onChange);
+  const onChangeTimer = useRef(null);
+
+  // Keep onChange ref in sync without causing re-renders
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   // Initialize editor with value only once
   useEffect(() => {
@@ -40,6 +47,14 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
       isInitialized.current = true;
     }
   }, [value]);
+
+  // Debounced onChange - prevents React re-renders from disrupting cursor
+  const notifyParent = useCallback((content) => {
+    if (onChangeTimer.current) clearTimeout(onChangeTimer.current);
+    onChangeTimer.current = setTimeout(() => {
+      if (onChangeRef.current) onChangeRef.current(content);
+    }, 300);
+  }, []);
 
   // Save to history (debounced)
   const saveToHistory = useCallback((content) => {
@@ -133,13 +148,13 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
   const execCommand = useCallback((command, value = null) => {
     document.execCommand(command, false, value);
     editorRef.current?.focus();
-    // Trigger onChange with new content
-    if (onChange && editorRef.current) {
+    // Trigger onChange with new content (debounced)
+    if (editorRef.current) {
       const newContent = editorRef.current.innerHTML;
-      onChange(newContent);
+      notifyParent(newContent);
       saveToHistory(newContent);
     }
-  }, [onChange, saveToHistory]);
+  }, [notifyParent, saveToHistory]);
 
   // Format as heading
   const formatHeading = (level) => {
@@ -148,9 +163,9 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
 
   // Handle content change - preserve cursor position naturally
   const handleInput = () => {
-    if (onChange && editorRef.current) {
+    if (editorRef.current) {
       const newContent = editorRef.current.innerHTML;
-      onChange(newContent);
+      notifyParent(newContent);
       saveToHistory(newContent);
     }
   };
@@ -186,9 +201,9 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
       }
       
       // Update content after Enter
-      if (onChange && editorRef.current) {
+      if (editorRef.current) {
         const newContent = editorRef.current.innerHTML;
-        onChange(newContent);
+        notifyParent(newContent);
         saveToHistory(newContent);
       }
     }
