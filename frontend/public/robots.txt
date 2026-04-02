@@ -15,7 +15,7 @@ Allow: /impressum
 Allow: /datenschutz
 
 # Sitemaps
-Sitemap: https://invest.euroadria.me/api/sitemap.xml
+Sitemap: https://invest-euroadria.onrender.com/api/sitemap.xml
 
 # Crawl-Delay for polite crawling
 Crawl-delay: 1

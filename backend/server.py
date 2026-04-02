@@ -1162,7 +1162,11 @@ async def generate_sitemap():
     
     xml_parts.append('</urlset>')
     
-    return Response(content="\n".join(xml_parts), media_type="application/xml")
+    return Response(
+        content="\n".join(xml_parts), 
+        media_type="application/xml",
+        headers={"Content-Type": "application/xml; charset=utf-8"}
+    )
 
 
 # =============================================
