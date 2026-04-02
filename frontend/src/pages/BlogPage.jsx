@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { articlesApi } from '../services/api';
-import { themeClusters } from '../data/clusters';
 import { Clock, ArrowRight, Search, Loader2, ChevronRight, RefreshCw } from 'lucide-react';
 import SEO from '../components/SEO';
 
@@ -66,6 +65,7 @@ const BlogPage = () => {
     hasMore: false
   });
   const [clusterCounts, setClusterCounts] = useState({});
+  const [categories, setCategories] = useState([]);
 
   // Debounced search
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -85,8 +85,9 @@ const BlogPage = () => {
         if (response.ok) {
           const data = await response.json();
           const counts = {};
-          data.forEach(c => { counts[c.id] = c.count; });
+          data.forEach(c => { counts[c.name || c.id] = c.count; });
           setClusterCounts(counts);
+          setCategories(data.map(c => ({ id: c.name || c.id, name: c.name || c.id, count: c.count })));
         }
       } catch (err) {
         console.error('Failed to fetch cluster counts');
@@ -183,18 +184,18 @@ const BlogPage = () => {
             >
               Alle ({pagination.total || Object.values(clusterCounts).reduce((a, b) => a + b, 0)})
             </button>
-            {themeClusters.map((cluster) => (
+            {categories.map((cat) => (
               <button
-                key={cluster.id}
-                onClick={() => setSelectedCluster(cluster.id)}
-                data-testid={`cluster-filter-${cluster.id}`}
+                key={cat.id}
+                onClick={() => setSelectedCluster(cat.id)}
+                data-testid={`cluster-filter-${cat.id}`}
                 className={`px-4 py-2 rounded-lg text-sm transition-all ${
-                  selectedCluster === cluster.id
+                  selectedCluster === cat.id
                     ? 'bg-ea-dark text-white font-medium'
                     : 'bg-ea-light text-ea-dark hover:bg-ea-gold/20'
                 }`}
               >
-                {cluster.name} ({clusterCounts[cluster.id] || 0})
+                {cat.name} ({cat.count})
               </button>
             ))}
           </div>

@@ -1068,7 +1068,7 @@ async def get_articles_list(
     """Get paginated article list for blog page (lightweight - no content)"""
     query = {}
     if cluster and cluster != "All":
-        query["cluster"] = cluster
+        query["category"] = cluster
     if category:
         query["category"] = category
     if search:
@@ -1138,13 +1138,13 @@ async def get_article_by_id(article_id: int):
 
 @api_router.get("/clusters")
 async def get_clusters():
-    """Get all unique clusters with article counts"""
+    """Get all unique categories with article counts"""
     pipeline = [
-        {"$group": {"_id": "$cluster", "count": {"$sum": 1}, "category": {"$first": "$category"}}},
-        {"$sort": {"_id": 1}}
+        {"$group": {"_id": "$category", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
     ]
     clusters = await db.articles.aggregate(pipeline).to_list(100)
-    return [{"id": c["_id"], "cluster": c["_id"], "count": c["count"], "category": c["category"]} for c in clusters]
+    return [{"id": c["_id"], "name": c["_id"], "count": c["count"]} for c in clusters if c["_id"]]
 
 
 @api_router.get("/categories")
