@@ -13,10 +13,6 @@ from typing import List, Optional, Literal
 import uuid
 from datetime import datetime, timezone
 import secrets
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from PIL import Image
 import io
 import resend
 import requests as http_requests
@@ -62,9 +58,9 @@ def get_object(path: str):
     resp.raise_for_status()
     return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
 
-# MongoDB connection
+# MongoDB connection (optimized pool for Render Free Tier)
 mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
+client = AsyncIOMotorClient(mongo_url, maxPoolSize=10, minPoolSize=1, serverSelectionTimeoutMS=5000)
 db = client[os.environ['DB_NAME']]
 
 # Create the main app without a prefix
@@ -86,21 +82,19 @@ RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
 BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '')
 BREVO_LIST_ID = 3  # EuroAdria Newsletter list
 
-# Legacy SMTP settings (fallback)
-SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
-SMTP_PORT = int(os.environ.get('SMTP_PORT', '587'))
-SMTP_USER = os.environ.get('SMTP_USER', '')
-SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
-
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-# Health check endpoint (keeps Render server awake)
+# Health check endpoint (keeps Render server awake + verifies DB)
 @api_router.get("/health")
 async def health_check():
-    return {"status": "ok"}
+    try:
+        await client.admin.command('ping')
+        return {"status": "ok", "db": "connected"}
+    except Exception:
+        return {"status": "ok", "db": "reconnecting"}
 
 
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
@@ -314,16 +308,13 @@ class Region(RegionBase):
 
 # Email notification function
 async def send_notification_email(comment_data: dict, article_title: str):
-    """Send email notification for new comment"""
-    if not SMTP_USER or not SMTP_PASSWORD:
-        logger.warning("SMTP credentials not configured - skipping email notification")
+    """Send email notification for new comment using Resend"""
+    if not RESEND_API_KEY:
+        logger.warning("Resend API key not configured - skipping comment email notification")
         return
     
     try:
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = f'Neuer Kommentar auf EuroAdria: {article_title[:50]}'
-        msg['From'] = SMTP_USER
-        msg['To'] = NOTIFICATION_EMAIL
+        resend.api_key = RESEND_API_KEY
         
         html_content = f"""
         <html>
@@ -343,7 +334,7 @@ async def send_notification_email(comment_data: dict, article_title: str):
                     Dieser Kommentar wartet auf Freigabe im Admin-Panel.
                 </p>
                 
-                <a href="https://roi-calc-preview.preview.emergentagent.com/admin" 
+                <a href="https://invest.euroadria.me/admin" 
                    style="display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #D4AF37; color: #002147; text-decoration: none; border-radius: 5px; font-weight: bold;">
                     Zum Admin-Panel
                 </a>
@@ -352,12 +343,12 @@ async def send_notification_email(comment_data: dict, article_title: str):
         </html>
         """
         
-        msg.attach(MIMEText(html_content, 'html'))
-        
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as server:
-            server.starttls()
-            server.login(SMTP_USER, SMTP_PASSWORD)
-            server.send_message(msg)
+        resend.Emails.send({
+            "from": "EuroAdria Corporate Solutions <noreply@euroadria.me>",
+            "to": [NOTIFICATION_EMAIL],
+            "subject": f"Neuer Kommentar auf EuroAdria: {article_title[:50]}",
+            "html": html_content
+        })
         
         logger.info(f"Notification email sent for comment by {comment_data['name']}")
     except Exception as e:
@@ -1317,6 +1308,7 @@ MAX_IMAGE_DIMENSION = 1920  # Max width/height for optimization
 
 def optimize_image(image_data: bytes, max_dimension: int = MAX_IMAGE_DIMENSION, quality: int = 85) -> bytes:
     """Optimize image: resize if too large, convert to WebP for better compression"""
+    from PIL import Image
     img = Image.open(io.BytesIO(image_data))
     
     # Convert to RGB if necessary (for PNG with transparency)
@@ -2426,9 +2418,5 @@ async def shutdown_db_client():
     client.close()
 
 @app.on_event("startup")
-async def startup_storage():
-    try:
-        init_storage()
-        logger.info("Object storage initialized")
-    except Exception as e:
-        logger.warning(f"Object storage init deferred: {e}")
+async def startup_log():
+    logger.info("Server started - Object storage will init on first use")
