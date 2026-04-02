@@ -644,12 +644,27 @@ async def get_analytics_overview(days: int = 30, admin: str = Depends(verify_adm
     # Conversion rate
     conversion_rate = round((total_leads / total_views * 100), 2) if total_views > 0 else 0
     
-    # UTM Campaign / Source tracking
+    # UTM Campaign / Source tracking (normalized)
     pipeline_utm = [
         {"$match": {"timestamp": {"$gte": cutoff}, "utm_source": {"$nin": ["", None]}}},
+        {"$addFields": {
+            "norm_source": {
+                "$switch": {
+                    "branches": [
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "tiktok|^tt$|^tik$", "options": "i"}}, "then": "TikTok"},
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "^instagram$|^ig$|^insta$|^lg$", "options": "i"}}, "then": "Instagram"},
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "facebook|^fb$", "options": "i"}}, "then": "Facebook"},
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "youtube|^yt$", "options": "i"}}, "then": "YouTube"},
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "linkedin", "options": "i"}}, "then": "LinkedIn"},
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "google", "options": "i"}}, "then": "Google"},
+                    ],
+                    "default": "$utm_source"
+                }
+            }
+        }},
         {"$group": {
             "_id": {
-                "source": "$utm_source",
+                "source": "$norm_source",
                 "medium": "$utm_medium",
                 "campaign": "$utm_campaign"
             },
