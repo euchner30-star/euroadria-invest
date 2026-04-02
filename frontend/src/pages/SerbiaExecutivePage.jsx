@@ -66,6 +66,10 @@ const SerbiaExecutivePage = () => {
             answer: "Serbien bietet bis zu 50% Zuschuss auf Investitionskosten, 10 Jahre Steuerbefreiung bei Investitionen über 8,5 Mio EUR, kostenlose Grundstücke in Sonderwirtschaftszonen, und Lohnkostenzuschüsse von €3.000-10.000 pro Arbeitsplatz."
           },
           {
+            question: "Kann man in Serbien Immobilien mit Kryptowährungen kaufen?",
+            answer: "Ja, über unsere regulierten Partnerbanken in Serbien können Immobiliengeschäfte auch via Kryptowährungen wie Bitcoin und Ethereum abgewickelt werden. Die Transaktionen sind vollständig legal, steuerlich dokumentiert und werden diskret und effizient durchgeführt."
+          },
+          {
             question: "Für wen ist Serbia Executive Access geeignet?",
             answer: "Das Programm richtet sich an DACH-Investoren mit einem Mindestinvestitionsvolumen von €500.000, die Zugang zu Off-Market Opportunities und direkten Regierungskontakten in Serbien suchen."
           }
@@ -189,7 +193,7 @@ const SerbiaExecutivePage = () => {
                     {[
                       { title: 'Verkehr & Logistik', items: ['Autobahn-Netzwerk', 'Hochgeschwindigkeitsbahn', 'Flughafen-Expansionen'] },
                       { title: 'Energie & Utilities', items: ['Erneuerbare Energien', 'Smart Grid', 'Wasserwirtschaft'] },
-                      { title: 'Immobilien', items: ['Belgrade Waterfront', 'Innovation Districts', 'Logistikparks'] },
+                      { title: 'Immobilien', items: ['Belgrade Waterfront', 'Innovation Districts', 'Logistikparks', 'Crypto-Abwicklung via Partnerbanken'] },
                       { title: 'Technologie', items: ['IT-Parks', 'E-Government', '5G Infrastruktur'] }
                     ].map((cat, idx) => (
                       <div key={idx} className="bg-ea-light rounded-xl p-4">
@@ -234,11 +238,33 @@ const SerbiaExecutivePage = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Why Executive Access */}
+            {/* Crypto Real Estate */}
+            <div className="bg-gradient-to-br from-ea-dark to-ea-dark/95 border border-ea-gold/30 rounded-2xl p-8 md:p-10 shadow-sm hover:shadow-md transition-shadow" data-testid="service-crypto">
+              <div className="grid md:grid-cols-3 gap-8">
+                <div>
+                  <div className="w-16 h-16 bg-ea-gold/20 rounded-xl flex items-center justify-center mb-4">
+                    <Coins className="w-8 h-8 text-ea-gold" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Crypto-Immobilien</h3>
+                  <p className="text-ea-gold font-medium">Immobilienkauf via Krypto</p>
+                </div>
+                <div className="md:col-span-2 space-y-4">
+                  <p className="text-white/80 leading-relaxed">
+                    Über unsere Partnerbanken in Serbien wickeln wir Immobiliengeschäfte auch via 
+                    Kryptowährungen ab — rechtssicher, diskret und effizient.
+                  </p>
+                  <ul className="grid md:grid-cols-2 gap-3">
+                    {['Legale Abwicklung über regulierte Partnerbanken', 'Bitcoin, Ethereum & weitere Kryptowährungen', 'Vollständige rechtliche Dokumentation', 'Steueroptimierte Strukturierung', 'Schnelle Transaktionsabwicklung', 'Diskrete & vertrauliche Beratung'].map((item, idx) => (
+                      <li key={idx} className="flex items-center space-x-2 text-white/70">
+                        <CheckCircle className="w-4 h-4 text-ea-gold flex-shrink-0" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
       <section className="py-20 px-6 bg-ea-light">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -340,6 +366,7 @@ const SerbiaExecutivePage = () => {
                   <option value="government">Government Relations</option>
                   <option value="infrastructure">Infrastructure & PPP</option>
                   <option value="incentives">Incentives & Subsidies</option>
+                  <option value="crypto">Crypto-Immobilienkauf</option>
                   <option value="other">Anderes</option>
                 </select>
               </div>
