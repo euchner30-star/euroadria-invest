@@ -38,6 +38,7 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - AGB-Seite mit Admin Panel Editor (April 2026)
 
 ### Completed Tasks (Latest First)
+- Kategorie-Tabs auf Infrastruktur-Karte: 7 Tabs (Flughäfen, Gemeinden, Rivièras, Nationalparks, Berge, Seen, Skizentren) mit automatischem Zoom und Premium-Design (2. April 2026)
 - AGB-Seite (/agb) mit 11 Paragraphen, Admin Panel WYSIWYG-Editor, Footer + Cookie-Banner Links, Sitemap (2. April 2026)
 - Backend-Optimierung: ~43 MB RAM gespart durch Entfernung ungenutzter Deps (pandas, numpy, boto3), Lazy PIL Import, MongoDB Pool Limits (2. April 2026)
 - Karten-Labels vergroessert: Entfernungen/Fahrzeiten von 9-10px auf 12-13px (2. April 2026)
