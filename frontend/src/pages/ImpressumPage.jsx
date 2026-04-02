@@ -47,10 +47,49 @@ const ImpressumPage = () => {
             <div className="w-8 h-8 border-2 border-ea-gold border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : content ? (
-          <div 
-            className="legal-content prose prose-lg max-w-none animate-slideUp"
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
+          <>
+            <div 
+              className="legal-content animate-slideUp"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+            <style>{`
+              .legal-content h2 {
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: #04151F;
+                margin-top: 2.5rem;
+                margin-bottom: 1rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 2px solid #C8A96A;
+              }
+              .legal-content h2:first-child { margin-top: 0; }
+              .legal-content h3 {
+                font-size: 1.125rem;
+                font-weight: 600;
+                color: #04151F;
+                margin-top: 1.5rem;
+                margin-bottom: 0.5rem;
+              }
+              .legal-content p {
+                color: rgba(4, 21, 31, 0.7);
+                line-height: 1.8;
+                margin-bottom: 1rem;
+              }
+              .legal-content ul, .legal-content ol {
+                color: rgba(4, 21, 31, 0.7);
+                line-height: 1.8;
+                margin-bottom: 1rem;
+                padding-left: 1.5rem;
+              }
+              .legal-content li { margin-bottom: 0.25rem; }
+              .legal-content a {
+                color: #C8A96A;
+                text-decoration: underline;
+              }
+              .legal-content a:hover { opacity: 0.8; }
+              .legal-content strong { color: #04151F; }
+            `}</style>
+          </>
         ) : (
           <FallbackImpressum />
         )}
