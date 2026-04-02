@@ -440,6 +440,16 @@ async def submit_contact_form(form: ContactForm):
     # Store in database
     await db.contact_submissions.insert_one(contact_dict)
     
+    # Also count as lead
+    await db.leads.insert_one({
+        "name": contact_dict.get("name", ""),
+        "email": contact_dict.get("email", ""),
+        "source": "kontaktformular",
+        "expose_name": f"Kontakt: {contact_dict.get('subject', 'Allgemein')}",
+        "type": "contact",
+        "submitted_at": contact_dict["submitted_at"]
+    })
+    
     # Send email notification
     email_sent = await send_contact_email(contact_dict)
     
