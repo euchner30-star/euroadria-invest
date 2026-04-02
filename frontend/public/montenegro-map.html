@@ -15,9 +15,13 @@
       --shadow:0 20px 42px rgba(0,0,0,.28);
     }
     html,body{height:100%;margin:0;font-family:Inter,Arial,sans-serif;background:#06111c;color:var(--text)}
-    #app{display:grid;grid-template-columns:430px 1fr;height:100%}
-    #sidebar{background:linear-gradient(180deg,rgba(11,27,43,.98),rgba(19,43,67,.98));padding:22px;overflow:auto;border-right:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow)}
+    #app{height:100%;position:relative}
+    #sidebar{position:fixed;left:0;top:0;bottom:0;width:360px;background:linear-gradient(180deg,rgba(11,27,43,.97),rgba(19,43,67,.97));padding:20px;overflow:auto;border-right:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow);z-index:1100;transform:translateX(-100%);transition:transform .35s ease}
+    #sidebar.open{transform:translateX(0)}
     #map{height:100%;width:100%}
+    .sidebar-toggle{position:fixed;top:12px;left:12px;z-index:1200;width:40px;height:40px;border-radius:10px;border:1px solid rgba(200,169,106,.4);background:rgba(8,20,32,.92);color:var(--gold);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);box-shadow:0 2px 12px rgba(0,0,0,.4);transition:all .25s}
+    .sidebar-toggle:hover{background:rgba(200,169,106,.2);border-color:var(--gold)}
+    .sidebar-toggle.shifted{left:372px}
     .brand{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
     h1{font-size:26px;line-height:1.12;margin:4px 0 10px}
     .lead{color:var(--muted);font-size:14px;line-height:1.55;margin:0 0 14px}
@@ -51,7 +55,7 @@
     .cat-marker{background:rgba(8,20,32,.92);color:#fff;border:1px solid rgba(200,169,106,.45);border-radius:10px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;text-align:center;line-height:1.4;box-shadow:0 2px 10px rgba(0,0,0,.45)}
     .cat-marker .cat-name{color:var(--gold);font-weight:700;font-size:12px}
     .cat-marker .cat-sub{color:var(--muted);font-size:10px;font-weight:500}
-    @media(max-width:980px){.cat-bar{top:8px;gap:4px;padding:5px 8px;flex-wrap:wrap;justify-content:center;max-width:95%}.cat-btn{padding:5px 10px;font-size:11px}}
+    @media(max-width:980px){#sidebar{width:280px}.sidebar-toggle.shifted{left:292px}.cat-bar{top:8px;gap:4px;padding:5px 8px;flex-wrap:wrap;justify-content:center;max-width:90%}.cat-btn{padding:5px 10px;font-size:11px}}
   </style>
 </head>
 <body>
@@ -138,6 +142,7 @@
       Rot bis Orange steht für aggressive Aufwertungschancen. Gelb markiert starke, aber selektivere Chancen. Grün zeigt etablierte oder stabilisierte Standorte. Linienfarben trennen Bestand, Modernisierung, Bau und Planung. Für Webinar-Folien solltest du primär Score, Zone und Zeithorizont sprechen, nicht alle Segmente im Detail.
     </div>
   </aside>
+  <button class="sidebar-toggle" id="sidebarToggle" onclick="var s=document.getElementById('sidebar');s.classList.toggle('open');this.classList.toggle('shifted')" title="Legende ein/ausblenden">&#9776;</button>
   <div id="map">
     <div class="cat-bar" id="catBar">
       <button class="cat-btn" data-cat="airports" onclick="toggleCat('airports',this)">Flughaefen</button>
@@ -469,6 +474,7 @@ Object.keys(catData).forEach(k => {
 });
 
 let activeCat = null;
+const infraLayerKeys = ['roads','rails','air','ports','health','zones','distances','places'];
 
 function toggleCat(cat, btn) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
@@ -476,10 +482,16 @@ function toggleCat(cat, btn) {
   if (activeCat === cat) {
     map.removeLayer(catLayers[cat]);
     activeCat = null;
+    infraLayerKeys.forEach(k => {
+      const cb = document.querySelector('[data-layer="'+k+'"]');
+      if (cb && cb.checked) map.addLayer(layers[k]);
+    });
     return;
   }
 
   if (activeCat) map.removeLayer(catLayers[activeCat]);
+
+  infraLayerKeys.forEach(k => map.removeLayer(layers[k]));
 
   btn.classList.add('active');
   catLayers[cat].addTo(map);
