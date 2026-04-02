@@ -576,31 +576,49 @@ async def get_analytics_overview(days: int = 30, admin: str = Depends(verify_adm
     ]
     devices = await db.page_views.aggregate(pipeline_devices).to_list(5)
     
-    # Referrer breakdown (traffic sources)
+    # Referrer breakdown (traffic sources) - combined with UTM data
     pipeline_referrers = [
-        {"$match": {"timestamp": {"$gte": cutoff}, "referrer": {"$ne": ""}}},
+        {"$match": {"timestamp": {"$gte": cutoff}}},
+        {"$addFields": {
+            "has_utm": {"$and": [
+                {"$ne": [{"$ifNull": ["$utm_source", ""]}, ""]},
+                {"$ne": [{"$ifNull": ["$utm_source", ""]}, None]}
+            ]},
+            "has_ref": {"$and": [
+                {"$ne": [{"$ifNull": ["$referrer", ""]}, ""]},
+                {"$ne": [{"$ifNull": ["$referrer", ""]}, None]}
+            ]}
+        }},
         {"$addFields": {
             "source": {
                 "$switch": {
                     "branches": [
-                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "google"}}, "then": "Google"},
-                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "linkedin"}}, "then": "LinkedIn"},
-                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "facebook|fb.com"}}, "then": "Facebook"},
-                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "instagram"}}, "then": "Instagram"},
-                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "twitter|x.com"}}, "then": "Twitter/X"},
-                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "tiktok"}}, "then": "TikTok"},
-                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "youtube"}}, "then": "YouTube"},
-                        {"case": {"$regexMatch": {"input": "$referrer", "regex": "euroadria"}}, "then": "EuroAdria.me"},
+                        {"case": {"$and": ["$has_utm", {"$regexMatch": {"input": {"$ifNull": ["$utm_source", ""]}, "regex": "tiktok", "options": "i"}}]}, "then": "TikTok"},
+                        {"case": {"$and": ["$has_utm", {"$regexMatch": {"input": {"$ifNull": ["$utm_source", ""]}, "regex": "instagram", "options": "i"}}]}, "then": "Instagram"},
+                        {"case": {"$and": ["$has_utm", {"$regexMatch": {"input": {"$ifNull": ["$utm_source", ""]}, "regex": "facebook", "options": "i"}}]}, "then": "Facebook"},
+                        {"case": {"$and": ["$has_utm", {"$regexMatch": {"input": {"$ifNull": ["$utm_source", ""]}, "regex": "youtube", "options": "i"}}]}, "then": "YouTube"},
+                        {"case": {"$and": ["$has_utm", {"$regexMatch": {"input": {"$ifNull": ["$utm_source", ""]}, "regex": "linkedin", "options": "i"}}]}, "then": "LinkedIn"},
+                        {"case": {"$and": ["$has_utm", {"$regexMatch": {"input": {"$ifNull": ["$utm_source", ""]}, "regex": "google", "options": "i"}}]}, "then": "Google"},
+                        {"case": "$has_utm", "then": "Andere (UTM)"},
+                        {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "google"}}]}, "then": "Google"},
+                        {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "linkedin"}}]}, "then": "LinkedIn"},
+                        {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "facebook|fb.com"}}]}, "then": "Facebook"},
+                        {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "instagram"}}]}, "then": "Instagram"},
+                        {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "twitter|x.com"}}]}, "then": "Twitter/X"},
+                        {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "tiktok"}}]}, "then": "TikTok"},
+                        {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "youtube"}}]}, "then": "YouTube"},
+                        {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "euroadria"}}]}, "then": "EuroAdria.me"},
+                        {"case": "$has_ref", "then": "Andere"},
                     ],
-                    "default": "Andere"
+                    "default": "Direkt"
                 }
             }
         }},
         {"$group": {"_id": "$source", "count": {"$sum": 1}}},
         {"$sort": {"count": -1}},
-        {"$limit": 8}
+        {"$limit": 10}
     ]
-    referrers = await db.page_views.aggregate(pipeline_referrers).to_list(8)
+    referrers = await db.page_views.aggregate(pipeline_referrers).to_list(10)
     
     # Total leads in period
     total_leads = await db.leads.count_documents({"submitted_at": {"$gte": cutoff}})
