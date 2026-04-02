@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Users, Mail, Loader2, CheckCircle, Download, AlertCircle, Image, Paperclip, Copy, X } from 'lucide-react';
+import { Send, Users, Mail, Loader2, CheckCircle, Download, AlertCircle, Image, Paperclip, Copy, X, Eye } from 'lucide-react';
 import WYSIWYGEditor from './WYSIWYGEditor';
 
 const NewsletterAdmin = ({ credentials }) => {
@@ -201,6 +201,15 @@ const NewsletterAdmin = ({ credentials }) => {
               onChange={setContent}
               placeholder="Newsletter-Inhalt hier eingeben..."
             />
+            <details className="mt-4 border border-gray-200 rounded-xl overflow-hidden">
+              <summary className="flex items-center gap-2 px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors text-sm font-medium text-ea-dark">
+                <Eye className="w-4 h-4 text-ea-gold" />
+                Vorschau anzeigen
+              </summary>
+              <div className="p-6 bg-white">
+                <div className="article-preview" dangerouslySetInnerHTML={{ __html: content }} />
+              </div>
+            </details>
           </div>
 
           {/* File Upload Section */}

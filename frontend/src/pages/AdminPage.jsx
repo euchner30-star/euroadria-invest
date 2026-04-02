@@ -2127,6 +2127,28 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
             onChange={handleEditorChange}
             placeholder="Beginne hier zu schreiben... Markiere Text und wähle eine Formatierung aus der Toolbar."
           />
+          {/* Live Preview */}
+          <details className="mt-4 border border-gray-200 rounded-xl overflow-hidden">
+            <summary className="flex items-center gap-2 px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors text-sm font-medium text-ea-dark">
+              <Eye className="w-4 h-4 text-ea-gold" />
+              Vorschau anzeigen
+            </summary>
+            <div className="p-6 bg-white">
+              <div className="article-preview" dangerouslySetInnerHTML={{ __html: editorContent }} />
+              <style>{`
+                .article-preview h1 { font-size: 1.75rem; font-weight: 700; color: #04151F; margin-bottom: 1rem; }
+                .article-preview h2 { font-size: 1.35rem; font-weight: 600; color: #04151F; margin-top: 2rem; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 2px solid #C8A96A; }
+                .article-preview h3 { font-size: 1.1rem; font-weight: 600; color: #04151F; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+                .article-preview p { color: rgba(4,21,31,0.7); line-height: 1.8; margin-bottom: 0.75rem; }
+                .article-preview ul, .article-preview ol { color: rgba(4,21,31,0.7); line-height: 1.8; margin-bottom: 0.75rem; padding-left: 1.5rem; }
+                .article-preview li { margin-bottom: 0.25rem; }
+                .article-preview a { color: #C8A96A; text-decoration: underline; }
+                .article-preview strong { color: #04151F; }
+                .article-preview img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+                .article-preview blockquote { border-left: 3px solid #C8A96A; padding-left: 1rem; color: rgba(4,21,31,0.6); font-style: italic; margin: 1rem 0; }
+              `}</style>
+            </div>
+          </details>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -2480,6 +2502,15 @@ const RegionForm = ({ initialData, onSave, onCancel, saveStatus, isCreating, cre
           value={formData.content}
           onChange={(content) => handleChange('content', content)}
         />
+        <details className="mt-4 border border-gray-200 rounded-xl overflow-hidden">
+          <summary className="flex items-center gap-2 px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors text-sm font-medium text-ea-dark">
+            <Eye className="w-4 h-4 text-ea-gold" />
+            Vorschau anzeigen
+          </summary>
+          <div className="p-6 bg-white">
+            <div className="article-preview" dangerouslySetInnerHTML={{ __html: formData.content }} />
+          </div>
+        </details>
       </div>
 
       {/* Bullet Points */}
@@ -2999,6 +3030,15 @@ const SectionEditor = ({ section, onChange, onDataChange, credentials }) => {
             value={section.content || ''}
             onChange={(content) => onChange('content', content)}
           />
+          <details className="mt-4 border border-gray-200 rounded-xl overflow-hidden">
+            <summary className="flex items-center gap-2 px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors text-sm font-medium text-ea-dark">
+              <Eye className="w-4 h-4 text-ea-gold" />
+              Vorschau anzeigen
+            </summary>
+            <div className="p-6 bg-white">
+              <div className="article-preview" dangerouslySetInnerHTML={{ __html: section.content || '' }} />
+            </div>
+          </details>
         </div>
       </div>
     );
