@@ -89,19 +89,8 @@ const SEO = ({
     "serviceType": service.type
   } : null;
 
-  // Generate FAQ structured data for GEO
-  const faqSchema = faq ? {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faq.map(item => ({
-      "@type": "Question",
-      "name": item.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": item.answer
-      }
-    }))
-  } : null;
+  // FAQ structured data removed from SEO component to prevent duplication
+  // Main FAQ schema is in index.html (single source of truth for Google)
 
   return (
     <Helmet>
@@ -162,11 +151,6 @@ const SEO = ({
       {serviceSchema && (
         <script type="application/ld+json">
           {JSON.stringify(serviceSchema)}
-        </script>
-      )}
-      {faqSchema && (
-        <script type="application/ld+json">
-          {JSON.stringify(faqSchema)}
         </script>
       )}
     </Helmet>
