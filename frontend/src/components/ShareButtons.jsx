@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linkedin, MessageCircle, Mail, Share2 } from 'lucide-react';
+import { Linkedin, MessageCircle, Mail, Share2, Link2, Check } from 'lucide-react';
 
 const XIcon = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -14,6 +14,7 @@ const FacebookIcon = ({ className }) => (
 );
 
 const ShareButtons = ({ title, url, excerpt }) => {
+  const [copied, setCopied] = React.useState(false);
   const encodedUrl = encodeURIComponent(url || window.location.href);
   const encodedTitle = encodeURIComponent(title || '');
   const encodedExcerpt = encodeURIComponent(excerpt || '');
@@ -29,6 +30,11 @@ const ShareButtons = ({ title, url, excerpt }) => {
   const handleShare = (platform) => {
     if (platform === 'email') {
       window.location.href = shareLinks[platform];
+    } else if (platform === 'copy') {
+      navigator.clipboard.writeText(url || window.location.href).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
     } else {
       window.open(shareLinks[platform], '_blank', 'width=600,height=400');
     }
@@ -95,6 +101,16 @@ const ShareButtons = ({ title, url, excerpt }) => {
             data-testid="share-email"
           >
             <Mail className="w-5 h-5" />
+          </button>
+
+          <button
+            onClick={() => handleShare('copy')}
+            className={`${buttonClass} ${copied ? '!bg-ea-gold !border-ea-gold !text-ea-dark' : ''}`}
+            title="Link kopieren"
+            aria-label="Link kopieren"
+            data-testid="share-copy-link"
+          >
+            {copied ? <Check className="w-5 h-5" /> : <Link2 className="w-5 h-5" />}
           </button>
         </div>
       </div>
