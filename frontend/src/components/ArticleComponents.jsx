@@ -186,13 +186,27 @@ export default LeadMagnetBox;
 // Due Diligence Box Component
 export const DueDiligenceBox = ({ title, content }) => {
   if (!content) return null;
+  
+  // Parse HTML list items into plain text array
+  const items = content
+    .replace(/<ul>|<\/ul>/g, '')
+    .split(/<li>|<\/li>/)
+    .map(item => item.replace(/✅\s?/g, '').trim())
+    .filter(item => item.length > 0);
+  
   return (
     <div className="my-8 md:my-12 bg-gradient-to-br from-ea-dark to-ea-dark/90 rounded-xl p-6 md:p-8 border border-ea-gold/20" data-testid="due-diligence-box">
       <h3 className="text-ea-gold text-lg md:text-xl font-semibold mb-4">{title || 'Due Diligence Checkliste'}</h3>
-      <div
-        className="text-ea-light/80 text-sm md:text-base leading-relaxed"
-        dangerouslySetInnerHTML={{ __html: content }}
-      />
+      <ul className="space-y-3">
+        {items.map((item, i) => (
+          <li key={i} className="flex items-start gap-3">
+            <svg className="w-5 h-5 mt-0.5 flex-shrink-0 text-ea-gold" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span className="text-ea-light/80 text-sm md:text-base">{item}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

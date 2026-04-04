@@ -2438,15 +2438,33 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
             value={formData.dueDiligenceBox?.title || ''}
             onChange={(e) => handleNestedChange('dueDiligenceBox', 'title', e.target.value)}
             className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            placeholder="z.B. Due Diligence Checkliste: Immobilienkauf"
           />
         </div>
         <div>
-          <label className="block text-ea-dark/80 text-sm mb-2">Inhalt</label>
+          <label className="block text-ea-dark/80 text-sm mb-2">Checkliste (ein Punkt pro Zeile)</label>
           <textarea
-            value={formData.dueDiligenceBox?.content || ''}
-            onChange={(e) => handleNestedChange('dueDiligenceBox', 'content', e.target.value)}
-            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold h-24"
+            value={
+              formData.dueDiligenceBox?.content
+                ? formData.dueDiligenceBox.content
+                    .replace(/<ul>|<\/ul>/g, '')
+                    .replace(/<li>/g, '')
+                    .replace(/<\/li>/g, '\n')
+                    .replace(/✅\s?/g, '')
+                    .trim()
+                : ''
+            }
+            onChange={(e) => {
+              const lines = e.target.value.split('\n').filter(l => l.trim());
+              const html = lines.length > 0 
+                ? '<ul>' + lines.map(l => `<li>${l.trim()}</li>`).join('') + '</ul>'
+                : '';
+              handleNestedChange('dueDiligenceBox', 'content', html);
+            }}
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold h-32"
+            placeholder="Grundbucheintrag prüfen&#10;Baugenehmigung verifizieren&#10;Steuerliche Struktur klären&#10;Lokalen Anwalt beauftragen"
           />
+          <p className="text-xs text-ea-dark/50 mt-1">Jede Zeile wird automatisch ein Checkpunkt mit goldenem Haken.</p>
         </div>
       </div>
 
