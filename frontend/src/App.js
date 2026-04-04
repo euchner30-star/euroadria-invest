@@ -1,5 +1,6 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { LanguageProvider } from "./context/LanguageContext";
 import usePageTracker from "./hooks/usePageTracker";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -39,6 +40,7 @@ function PageTracker() {
 
 function App() {
   return (
+    <LanguageProvider>
     <div className="App min-h-screen flex flex-col">
       <BrowserRouter>
         <PageTracker />
@@ -78,6 +80,7 @@ function App() {
         <CookieConsent />
       </BrowserRouter>
     </div>
+    </LanguageProvider>
   );
 }
 

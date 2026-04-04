@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { X, Cookie, Shield } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const COOKIE_CONSENT_KEY = 'euroadria_cookie_consent';
 
@@ -60,6 +61,22 @@ const CookieConsent = () => {
   if (!showBanner) return null;
 
   return (
+    <CookieConsentUI
+      showDetails={showDetails}
+      setShowDetails={setShowDetails}
+      preferences={preferences}
+      setPreferences={setPreferences}
+      handleAcceptAll={handleAcceptAll}
+      handleAcceptNecessary={handleAcceptNecessary}
+      handleSavePreferences={handleSavePreferences}
+    />
+  );
+};
+
+const CookieConsentUI = ({ showDetails, setShowDetails, preferences, setPreferences, handleAcceptAll, handleAcceptNecessary, handleSavePreferences }) => {
+  const { t } = useLanguage();
+
+  return (
     <div 
       className="fixed inset-0 z-[9999] flex items-end justify-center p-4 bg-black/30 backdrop-blur-sm"
       data-testid="cookie-consent-banner"
@@ -71,7 +88,7 @@ const CookieConsent = () => {
             <div className="p-2 bg-ea-gold/20 rounded-lg">
               <Cookie className="w-5 h-5 text-ea-gold" />
             </div>
-            <h2 className="text-white font-semibold text-lg">Cookie-Einstellungen</h2>
+            <h2 className="text-white font-semibold text-lg">{t('cookie.title')}</h2>
           </div>
           <button 
             onClick={handleAcceptNecessary}
@@ -85,9 +102,7 @@ const CookieConsent = () => {
         {/* Content */}
         <div className="p-6">
           <p className="text-ea-dark/70 mb-6">
-            Wir verwenden Cookies, um Ihnen die bestmögliche Erfahrung auf unserer Website zu bieten. 
-            Einige Cookies sind für den Betrieb der Website unbedingt erforderlich, während andere 
-            uns helfen, die Website und Ihre Erfahrung zu verbessern.
+            {t('cookie.text')}
           </p>
 
           {showDetails ? (
@@ -97,22 +112,21 @@ const CookieConsent = () => {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-3">
                     <Shield className="w-5 h-5 text-ea-gold" />
-                    <span className="font-semibold text-ea-dark">Notwendige Cookies</span>
+                    <span className="font-semibold text-ea-dark">{t('cookie.necessary')}</span>
                   </div>
                   <span className="text-xs bg-ea-gold/20 text-ea-dark px-2 py-1 rounded-full">
-                    Immer aktiv
+                    {t('cookie.alwaysActive')}
                   </span>
                 </div>
                 <p className="text-ea-dark/60 text-sm">
-                  Diese Cookies sind für das Funktionieren der Website unbedingt erforderlich 
-                  und können nicht deaktiviert werden.
+                  {t('cookie.necessaryDesc')}
                 </p>
               </div>
 
               {/* Analytics Cookies */}
               <div className="bg-ea-light rounded-xl p-4 border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold text-ea-dark">Analyse-Cookies</span>
+                  <span className="font-semibold text-ea-dark">{t('cookie.analytics')}</span>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
@@ -125,15 +139,14 @@ const CookieConsent = () => {
                   </label>
                 </div>
                 <p className="text-ea-dark/60 text-sm">
-                  Diese Cookies helfen uns zu verstehen, wie Besucher mit der Website interagieren, 
-                  indem sie Informationen anonym sammeln und melden.
+                  {t('cookie.analyticsDesc')}
                 </p>
               </div>
 
               {/* Marketing Cookies */}
               <div className="bg-ea-light rounded-xl p-4 border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold text-ea-dark">Marketing-Cookies</span>
+                  <span className="font-semibold text-ea-dark">{t('cookie.marketing')}</span>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
@@ -146,8 +159,7 @@ const CookieConsent = () => {
                   </label>
                 </div>
                 <p className="text-ea-dark/60 text-sm">
-                  Diese Cookies werden verwendet, um Werbung relevanter für Sie zu machen und 
-                  die Anzahl der Werbeanzeigen zu begrenzen.
+                  {t('cookie.marketingDesc')}
                 </p>
               </div>
             </div>
@@ -160,19 +172,19 @@ const CookieConsent = () => {
               className="text-ea-gold hover:underline"
               data-testid="cookie-privacy-link"
             >
-              Datenschutzerklärung
+              {t('cookie.privacyLink')}
             </Link>
             <Link 
               to="/impressum" 
               className="text-ea-gold hover:underline"
             >
-              Impressum
+              {t('cookie.imprintLink')}
             </Link>
             <Link 
               to="/agb" 
               className="text-ea-gold hover:underline"
             >
-              AGB
+              {t('cookie.termsLink')}
             </Link>
           </div>
 
@@ -185,14 +197,14 @@ const CookieConsent = () => {
                   className="flex-1 px-6 py-3 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all"
                   data-testid="cookie-save-preferences"
                 >
-                  Auswahl speichern
+                  {t('cookie.save')}
                 </button>
                 <button
                   onClick={handleAcceptAll}
                   className="flex-1 px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all"
                   data-testid="cookie-accept-all"
                 >
-                  Alle akzeptieren
+                  {t('cookie.acceptAll')}
                 </button>
               </>
             ) : (
@@ -202,21 +214,21 @@ const CookieConsent = () => {
                   className="flex-1 px-6 py-3 border border-gray-300 text-ea-dark font-medium rounded-lg hover:bg-gray-50 transition-all"
                   data-testid="cookie-show-details"
                 >
-                  Einstellungen anpassen
+                  {t('cookie.customize')}
                 </button>
                 <button
                   onClick={handleAcceptNecessary}
                   className="flex-1 px-6 py-3 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all"
                   data-testid="cookie-accept-necessary"
                 >
-                  Nur notwendige
+                  {t('cookie.necessaryOnly')}
                 </button>
                 <button
                   onClick={handleAcceptAll}
                   className="flex-1 px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all"
                   data-testid="cookie-accept-all-main"
                 >
-                  Alle akzeptieren
+                  {t('cookie.acceptAll')}
                 </button>
               </>
             )}

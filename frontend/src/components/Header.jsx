@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Shield, Map, Building2, ChevronDown, TrendingUp } from 'lucide-react';
+import { Menu, X, Shield, Map, Building2, ChevronDown, TrendingUp, Globe } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -9,6 +10,7 @@ const Header = () => {
   const [isMobileImmobilienOpen, setIsMobileImmobilienOpen] = useState(false);
   const dropdownRef = useRef(null);
   const location = useLocation();
+  const { lang, setLang, t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -71,10 +73,10 @@ const Header = () => {
 
   // Sekundäre Nav-Items (rechts vom Infrastruktur-Radar)
   const secondaryNavItems = [
-    { name: 'BLOG', path: '/blog' },
-    { name: 'ÜBER UNS', path: '/team' },
-    { name: 'KONTAKT', path: '/contact' },
-    { name: 'SERBIA EXECUTIVE', path: '/serbia-executive', icon: Shield, isExclusive: true },
+    { name: t('nav.blog'), path: '/blog' },
+    { name: t('nav.about'), path: '/team' },
+    { name: t('nav.contact'), path: '/contact' },
+    { name: t('nav.serbiaExecutive'), path: '/serbia-executive', icon: Shield, isExclusive: true },
   ];
 
   return (
@@ -124,7 +126,7 @@ const Header = () => {
                 data-testid="nav-immobilien-dropdown"
               >
                 <Building2 className="w-4 h-4" />
-                IMMOBILIENANGEBOT
+                {t('nav.realEstate')}
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isImmobilienOpen ? 'rotate-180' : ''}`} />
               </button>
               
@@ -180,8 +182,8 @@ const Header = () => {
               data-testid="nav-infrastruktur-radar"
             >
               <Map className="w-4 h-4 text-ea-gold" />
-              INFRASTRUKTUR-RADAR
-              <span className="text-[10px] bg-ea-gold text-white px-1.5 py-0.5 rounded-full font-bold">NEU</span>
+              {t('nav.infrastructure')}
+              <span className="text-[10px] bg-ea-gold text-white px-1.5 py-0.5 rounded-full font-bold">{t('nav.new')}</span>
             </Link>
 
             {/* 4. INVESTMENT INTELLIGENCE */}
@@ -222,14 +224,25 @@ const Header = () => {
             ))}
           </div>
 
-          {/* Desktop CTA Button */}
-          <Link
-            to="/contact"
-            className="hidden lg:block ml-4 px-3 py-2 bg-ea-dark text-white text-sm font-semibold tracking-wider rounded-lg hover:bg-ea-navy transition-all duration-300"
-            data-testid="header-cta-button"
-          >
-            Beratung anfragen
-          </Link>
+          {/* Desktop CTA + Language Toggle */}
+          <div className="hidden lg:flex items-center gap-2 ml-4">
+            <button
+              onClick={() => setLang(lang === 'de' ? 'en' : 'de')}
+              className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-gray-200 hover:border-ea-gold/50 hover:bg-ea-gold/5 transition-all text-sm font-semibold text-ea-dark"
+              data-testid="language-toggle-desktop"
+              title={lang === 'de' ? 'Switch to English' : 'Auf Deutsch wechseln'}
+            >
+              <Globe className="w-4 h-4 text-ea-gold" />
+              {lang === 'de' ? 'EN' : 'DE'}
+            </button>
+            <Link
+              to="/contact"
+              className="px-3 py-2 bg-ea-dark text-white text-sm font-semibold tracking-wider rounded-lg hover:bg-ea-navy transition-all duration-300"
+              data-testid="header-cta-button"
+            >
+              {t('nav.ctaButton')}
+            </Link>
+          </div>
 
           {/* Mobile Menu Button */}
           <button 
@@ -274,7 +287,7 @@ const Header = () => {
                 >
                   <div className="flex items-center gap-3">
                     <Building2 className="w-5 h-5 text-ea-gold" />
-                    <span className="font-semibold tracking-wide">IMMOBILIENANGEBOT</span>
+                    <span className="font-semibold tracking-wide">{t('nav.realEstate')}</span>
                   </div>
                   <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${isMobileImmobilienOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -304,7 +317,7 @@ const Header = () => {
                       className="flex items-center gap-2 text-xs font-semibold text-ea-gold px-3 pt-2"
                     >
                       <TrendingUp className="w-3 h-3" />
-                      Alle Standorte →
+                      {t('nav.allLocationsMobile')} →
                     </Link>
                   </div>
                 )}
@@ -316,8 +329,8 @@ const Header = () => {
                 className="flex items-center gap-3 border border-ea-gold/30 bg-ea-gold/10 text-ea-dark text-base font-semibold tracking-wide rounded-lg px-4 py-3"
               >
                 <Map className="w-5 h-5 text-ea-gold" />
-                INFRASTRUKTUR-RADAR
-                <span className="text-[10px] bg-ea-gold text-ea-dark px-1.5 py-0.5 rounded font-bold ml-auto">NEU</span>
+                {t('nav.infrastructure')}
+                <span className="text-[10px] bg-ea-gold text-ea-dark px-1.5 py-0.5 rounded font-bold ml-auto">{t('nav.new')}</span>
               </Link>
 
               {/* 4. INVESTMENT DASHBOARD */}
@@ -348,11 +361,21 @@ const Header = () => {
                 </Link>
               ))}
 
+              {/* Language Toggle Mobile */}
+              <button
+                onClick={() => setLang(lang === 'de' ? 'en' : 'de')}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-gray-200 hover:border-ea-gold/50 text-ea-dark font-semibold"
+                data-testid="language-toggle-mobile"
+              >
+                <Globe className="w-5 h-5 text-ea-gold" />
+                {lang === 'de' ? 'English' : 'Deutsch'}
+              </button>
+
               <Link
                 to="/contact"
                 className="mt-2 px-4 py-3 bg-ea-dark text-white text-base font-semibold rounded-lg text-center hover:bg-ea-navy"
               >
-                Jetzt Beratung anfragen
+                {t('nav.ctaButtonMobile')}
               </Link>
             </div>
           </div>
@@ -363,3 +386,4 @@ const Header = () => {
 };
 
 export default Header;
+     

@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Linkedin, Instagram, Facebook, Twitter } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { t } = useLanguage();
 
   return (
     <footer className="bg-ea-dark py-16">
@@ -26,31 +28,31 @@ const Footer = () => {
 
           {/* Euroadria Corporate Solutions */}
           <div>
-            <h3 className="text-white font-semibold text-base mb-6">Euroadria Corporate Solutions</h3>
+            <h3 className="text-white font-semibold text-base mb-6">{t('footer.company')}</h3>
             <ul className="space-y-3">
               <li>
                 <Link to="/" className="text-ea-light/70 hover:text-ea-gold transition-colors text-sm">
-                  Home
+                  {t('footer.home')}
                 </Link>
               </li>
               <li>
                 <Link to="/blog" className="text-ea-light/70 hover:text-ea-gold transition-colors text-sm">
-                  Blog
+                  {t('footer.blog')}
                 </Link>
               </li>
               <li>
                 <Link to="/team" className="text-ea-light/70 hover:text-ea-gold transition-colors text-sm">
-                  Über uns
+                  {t('footer.aboutUs')}
                 </Link>
               </li>
               <li>
                 <Link to="/serbia-executive" className="text-ea-light/70 hover:text-ea-gold transition-colors text-sm">
-                  Serbia Executive
+                  {t('footer.serbiaExec')}
                 </Link>
               </li>
               <li>
                 <Link to="/contact" className="text-ea-light/70 hover:text-ea-gold transition-colors text-sm">
-                  Kontakt
+                  {t('footer.contact')}
                 </Link>
               </li>
             </ul>
@@ -58,21 +60,21 @@ const Footer = () => {
 
           {/* Rechtliches */}
           <div>
-            <h3 className="text-white font-semibold text-base mb-6">Rechtliches</h3>
+            <h3 className="text-white font-semibold text-base mb-6">{t('footer.legal')}</h3>
             <ul className="space-y-3">
               <li>
                 <Link to="/impressum" className="text-ea-light/70 hover:text-ea-gold transition-colors text-sm">
-                  Impressum
+                  {t('footer.imprint')}
                 </Link>
               </li>
               <li>
                 <Link to="/datenschutz" className="text-ea-light/70 hover:text-ea-gold transition-colors text-sm">
-                  Datenschutz
+                  {t('footer.privacy')}
                 </Link>
               </li>
               <li>
                 <Link to="/agb" className="text-ea-light/70 hover:text-ea-gold transition-colors text-sm">
-                  AGB
+                  {t('footer.terms')}
                 </Link>
               </li>
             </ul>
@@ -80,7 +82,7 @@ const Footer = () => {
 
           {/* Kontakt */}
           <div>
-            <h3 className="text-white font-semibold text-base mb-6">Kontakt</h3>
+            <h3 className="text-white font-semibold text-base mb-6">{t('footer.contactTitle')}</h3>
             <ul className="space-y-4">
               <li className="flex items-start space-x-3">
                 <Mail className="w-5 h-5 text-ea-light/70 flex-shrink-0 mt-0.5" />
@@ -155,7 +157,7 @@ const Footer = () => {
             </div>
 
             <p className="text-ea-light/50 text-sm">
-              © {currentYear} EuroAdria Corporate Solutions. Alle Rechte vorbehalten.
+              © {currentYear} EuroAdria Corporate Solutions. {t('footer.rights')}
             </p>
           </div>
         </div>

@@ -18,6 +18,7 @@ import resend
 import requests as http_requests
 import time
 import json as json_module
+import hashlib
 
 
 ROOT_DIR = Path(__file__).parent
@@ -2807,6 +2808,149 @@ async def get_youtube_latest():
         if _youtube_cache["data"]:
             return _youtube_cache["data"]
         raise HTTPException(status_code=502, detail=f"YouTube API error: {str(e)}")
+
+
+# ---- TRANSLATION API ----
+class TranslateRequest(BaseModel):
+    text: str
+    source: str = "de"
+    target: str = "en"
+
+class TranslateBatchRequest(BaseModel):
+    texts: List[str]
+    source: str = "de"
+    target: str = "en"
+
+# Try to import argostranslate (available in dev, not on Render)
+_argos_available = False
+_argos_de_en = None
+_argos_en_de = None
+
+try:
+    from argostranslate import package as argos_package, translate as argos_translate
+    installed = argos_translate.get_installed_languages()
+    lang_codes = {l.code: l for l in installed}
+    if "de" in lang_codes and "en" in lang_codes:
+        _argos_de_en = lang_codes["de"].get_translation(lang_codes["en"])
+        _argos_en_de = lang_codes["en"].get_translation(lang_codes["de"])
+        if _argos_de_en and _argos_en_de:
+            _argos_available = True
+except Exception:
+    pass
+
+
+def _translate_text_argos(text: str, source: str, target: str) -> str:
+    if source == "de" and target == "en" and _argos_de_en:
+        return _argos_de_en.translate(text)
+    elif source == "en" and target == "de" and _argos_en_de:
+        return _argos_en_de.translate(text)
+    return text
+
+
+def _translate_text_api(text: str, source: str, target: str) -> str:
+    """Fallback: use MyMemory free API (EU-based, DSGVO-friendly)"""
+    try:
+        resp = http_requests.get(
+            "https://api.mymemory.translated.net/get",
+            params={"q": text[:500], "langpair": f"{source}|{target}"},
+            timeout=10
+        )
+        if resp.ok:
+            data = resp.json()
+            translated = data.get("responseData", {}).get("translatedText", "")
+            if translated and translated.lower() != text.lower():
+                return translated
+    except Exception:
+        pass
+    return text
+
+
+async def _get_or_translate(text: str, source: str, target: str) -> str:
+    if not text or not text.strip():
+        return text
+    if source == target:
+        return text
+
+    text_hash = hashlib.md5(f"{text}:{source}:{target}".encode()).hexdigest()
+
+    # Check MongoDB cache
+    cached = await db.translations.find_one(
+        {"hash": text_hash}, {"_id": 0, "translated": 1}
+    )
+    if cached:
+        return cached["translated"]
+
+    # Translate
+    if _argos_available:
+        translated = _translate_text_argos(text, source, target)
+    else:
+        translated = _translate_text_api(text, source, target)
+
+    # Cache in MongoDB
+    if translated and translated != text:
+        await db.translations.update_one(
+            {"hash": text_hash},
+            {"$set": {
+                "hash": text_hash,
+                "original": text,
+                "translated": translated,
+                "source": source,
+                "target": target,
+                "createdAt": datetime.now(timezone.utc).isoformat()
+            }},
+            upsert=True
+        )
+
+    return translated
+
+
+@api_router.post("/translate")
+async def translate_text(req: TranslateRequest):
+    translated = await _get_or_translate(req.text, req.source, req.target)
+    return {"translatedText": translated, "source": req.source, "target": req.target}
+
+
+@api_router.post("/translate/batch")
+async def translate_batch(req: TranslateBatchRequest):
+    results = []
+    for text in req.texts[:50]:  # Limit to 50 texts per batch
+        translated = await _get_or_translate(text, req.source, req.target)
+        results.append(translated)
+    return {"translations": results, "source": req.source, "target": req.target}
+
+
+@api_router.get("/translate/article/{slug}")
+async def translate_article(slug: str, target: str = "en"):
+    article = await db.articles.find_one({"slug": slug}, {"_id": 0})
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+
+    source = "de"
+    if target == source:
+        return article
+
+    # Translate key fields
+    for field in ["title", "excerpt", "content"]:
+        if article.get(field):
+            article[field] = await _get_or_translate(article[field], source, target)
+
+    # Translate expert tip
+    if article.get("expertTip"):
+        for f in ["title", "content"]:
+            if article["expertTip"].get(f):
+                article["expertTip"][f] = await _get_or_translate(article["expertTip"][f], source, target)
+
+    # Translate due diligence box
+    if article.get("dueDiligenceBox"):
+        if article["dueDiligenceBox"].get("title"):
+            article["dueDiligenceBox"]["title"] = await _get_or_translate(article["dueDiligenceBox"]["title"], source, target)
+        if article["dueDiligenceBox"].get("items"):
+            items = []
+            for item in article["dueDiligenceBox"]["items"]:
+                items.append(await _get_or_translate(item, source, target))
+            article["dueDiligenceBox"]["items"] = items
+
+    return article
 
 
 # Include the router in the main app

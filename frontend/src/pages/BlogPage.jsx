@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { articlesApi } from '../services/api';
 import { Clock, ArrowRight, Search, Loader2, ChevronRight, RefreshCw } from 'lucide-react';
 import SEO from '../components/SEO';
+import { useLanguage } from '../context/LanguageContext';
 
 // Lazy-loaded image component
 const LazyImage = ({ src, alt, className, imagePosition }) => {

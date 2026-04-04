@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingUp, Building2, Sparkles } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const Hero = ({ backgroundImage, overlayOpacity = 50, title, subtitle, ctaText, backgroundImagePosition }) => {
   const heroImage = backgroundImage || '';
   const [imageLoaded, setImageLoaded] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!heroImage) return;
@@ -45,10 +47,10 @@ const Hero = ({ backgroundImage, overlayOpacity = 50, title, subtitle, ctaText, 
 
         <div className="text-center max-w-4xl mx-auto mb-12">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-white mb-8 leading-tight">
-            {title || 'Firmengründung, Aufenthalt & Investments in Montenegro und Serbien'}
+            {title || t('hero.title')}
           </h1>
           <p className="text-lg md:text-xl text-ea-light/90 leading-relaxed max-w-3xl mx-auto">
-            {subtitle || 'EuroAdria ist Ihre Brücke zu erfolgreichen Investitionen, rechtssicherer Auswanderung und internationaler Unternehmensstrukturierung, sowohl in der Adria-Region als auch in Asien. Wir sind Ihr Trusted Advisor für alle unternehmerischen und privaten Vorhaben im Ausland.'}
+            {subtitle || t('hero.subtitle')}
           </p>
         </div>
 
@@ -58,7 +60,7 @@ const Hero = ({ backgroundImage, overlayOpacity = 50, title, subtitle, ctaText, 
             className="px-8 py-4 bg-ea-dark text-white text-base font-semibold rounded-lg hover:bg-ea-navy transition-all duration-300 hover:shadow-lg inline-flex items-center gap-2"
             data-testid="hero-cta-button"
           >
-            {ctaText || 'Jetzt Beratung anfragen'}
+            {ctaText || t('hero.cta')}
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
@@ -66,15 +68,15 @@ const Hero = ({ backgroundImage, overlayOpacity = 50, title, subtitle, ctaText, 
         <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-6 py-3 flex items-center space-x-2">
             <TrendingUp className="w-5 h-5 text-ea-gold" />
-            <span className="text-white text-sm font-medium">Premium Investments</span>
+            <span className="text-white text-sm font-medium">{t('hero.badge1')}</span>
           </div>
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-6 py-3 flex items-center space-x-2">
             <Building2 className="w-5 h-5 text-ea-gold" />
-            <span className="text-white text-sm font-medium">Luxus-Immobilien</span>
+            <span className="text-white text-sm font-medium">{t('hero.badge2')}</span>
           </div>
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-6 py-3 flex items-center space-x-2">
             <Sparkles className="w-5 h-5 text-ea-gold" />
-            <span className="text-white text-sm font-medium">Adriatic Lifestyle</span>
+            <span className="text-white text-sm font-medium">{t('hero.badge3')}</span>
           </div>
         </div>
       </div>

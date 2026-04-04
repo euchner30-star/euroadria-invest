@@ -1,0 +1,163 @@
+{
+  "nav": {
+    "home": "HOME",
+    "realEstate": "IMMOBILIENANGEBOT",
+    "infrastructure": "INFRASTRUKTUR-RADAR",
+    "investment": "INVESTMENT",
+    "blog": "BLOG",
+    "about": "ÜBER UNS",
+    "contact": "KONTAKT",
+    "serbiaExecutive": "SERBIA EXECUTIVE",
+    "ctaButton": "Beratung anfragen",
+    "ctaButtonMobile": "Jetzt Beratung anfragen",
+    "allLocations": "Alle 22 Standorte im Dashboard",
+    "allLocationsMobile": "Alle Standorte",
+    "new": "NEU"
+  },
+  "hero": {
+    "title": "Firmengründung, Aufenthalt & Investments in Montenegro und Serbien",
+    "subtitle": "EuroAdria ist Ihre Brücke zu erfolgreichen Investitionen, rechtssicherer Auswanderung und internationaler Unternehmensstrukturierung, sowohl in der Adria-Region als auch in Asien. Wir sind Ihr Trusted Advisor für alle unternehmerischen und privaten Vorhaben im Ausland.",
+    "cta": "Jetzt Beratung anfragen",
+    "badge1": "Premium Investments",
+    "badge2": "Luxus-Immobilien",
+    "badge3": "Adriatic Lifestyle"
+  },
+  "footer": {
+    "brand": "EuroAdria Corporate Solutions",
+    "brandDesc": "ist eine Marke der Montaris & Co. d.o.o. Novi Sad",
+    "address": "NOVI SAD, MARKA MILJANOVA 12, NOVI SAD, Serbien",
+    "company": "Euroadria Corporate Solutions",
+    "home": "Home",
+    "blog": "Blog",
+    "aboutUs": "Über uns",
+    "serbiaExec": "Serbia Executive",
+    "contact": "Kontakt",
+    "legal": "Rechtliches",
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "terms": "AGB",
+    "contactTitle": "Kontakt",
+    "rights": "Alle Rechte vorbehalten."
+  },
+  "cookie": {
+    "title": "Cookie-Einstellungen",
+    "text": "Wir verwenden Cookies, um Ihnen die bestmögliche Erfahrung auf unserer Website zu bieten. Einige Cookies sind für den Betrieb der Website unbedingt erforderlich, während andere uns helfen, die Website und Ihre Erfahrung zu verbessern.",
+    "privacyLink": "Datenschutzerklärung",
+    "imprintLink": "Impressum",
+    "termsLink": "AGB",
+    "customize": "Einstellungen anpassen",
+    "necessaryOnly": "Nur notwendige",
+    "acceptAll": "Alle akzeptieren",
+    "save": "Auswahl speichern",
+    "necessary": "Notwendig",
+    "necessaryDesc": "Diese Cookies sind für den Betrieb der Website erforderlich und können nicht deaktiviert werden.",
+    "analytics": "Analyse",
+    "analyticsDesc": "Hilft uns zu verstehen, wie Besucher die Website nutzen.",
+    "marketing": "Marketing",
+    "marketingDesc": "Wird verwendet, um relevante Werbung anzuzeigen.",
+    "alwaysActive": "Immer aktiv"
+  },
+  "contact": {
+    "pageTitle": "Kontakt aufnehmen",
+    "pageSubtitle": "Wir freuen uns auf Ihre Nachricht",
+    "formTitle": "Schreiben Sie uns",
+    "name": "Ihr Name",
+    "email": "Ihre E-Mail",
+    "phone": "Telefonnummer",
+    "subject": "Betreff",
+    "message": "Ihre Nachricht",
+    "send": "Nachricht senden",
+    "sending": "Wird gesendet...",
+    "success": "Ihre Nachricht wurde erfolgreich gesendet!",
+    "error": "Fehler beim Senden. Bitte versuchen Sie es erneut.",
+    "subjects": {
+      "general": "Allgemeine Anfrage",
+      "investment": "Investment-Beratung",
+      "immigration": "Auswanderung & Aufenthalt",
+      "company": "Firmengründung",
+      "other": "Sonstiges"
+    }
+  },
+  "blog": {
+    "title": "Blog & Insights",
+    "subtitle": "Aktuelle Analysen und Expertenwissen für Ihre Investitionsentscheidungen",
+    "readMore": "Weiterlesen",
+    "readTime": "Lesezeit",
+    "allCategories": "Alle Kategorien",
+    "searchPlaceholder": "Artikel suchen...",
+    "noResults": "Keine Artikel gefunden.",
+    "featured": "Empfohlen",
+    "latestArticles": "Neueste Artikel",
+    "expertTip": "Expertentipp",
+    "dueDiligence": "Due Diligence Checkliste",
+    "downloadExpose": "Exposé herunterladen",
+    "downloadPdf": "Download PDF",
+    "downloadDesc": "Laden Sie das vollständige Exposé als PDF herunter.",
+    "shareArticle": "Artikel teilen",
+    "comments": "Kommentare",
+    "writeComment": "Kommentar schreiben",
+    "commentName": "Ihr Name",
+    "commentEmail": "Ihre E-Mail",
+    "commentContent": "Ihr Kommentar",
+    "submitComment": "Absenden",
+    "relatedArticles": "Ähnliche Artikel"
+  },
+  "youtube": {
+    "sectionLabel": "YouTube Kanal",
+    "sectionTitle": "Unsere neuesten Videos",
+    "subscribe": "Kanal abonnieren"
+  },
+  "trust": {
+    "satisfiedClients": "Zufriedene Mandanten",
+    "yearsExperience": "Jahre Erfahrung",
+    "investments": "Begleitete Investments",
+    "countries": "Länder"
+  },
+  "faq": {
+    "title": "Häufig gestellte Fragen",
+    "subtitle": "Antworten auf die wichtigsten Fragen"
+  },
+  "newsletter": {
+    "title": "Newsletter abonnieren",
+    "subtitle": "Erhalten Sie exklusive Investment-Insights direkt in Ihr Postfach.",
+    "placeholder": "Ihre E-Mail-Adresse",
+    "subscribe": "Abonnieren",
+    "success": "Erfolgreich abonniert!",
+    "unsubscribeTitle": "Newsletter abbestellen",
+    "unsubscribeText": "Möchten Sie sich wirklich abmelden?",
+    "unsubscribeButton": "Abmelden"
+  },
+  "leadGate": {
+    "title": "Kostenloser Exposé-Download",
+    "subtitle": "Erhalten Sie unser exklusives Investoren-Exposé mit detaillierten Marktanalysen.",
+    "name": "Ihr Name",
+    "email": "Ihre E-Mail",
+    "download": "Jetzt herunterladen",
+    "privacy": "Ihre Daten werden vertraulich behandelt."
+  },
+  "common": {
+    "loading": "Wird geladen...",
+    "error": "Ein Fehler ist aufgetreten.",
+    "retry": "Erneut versuchen",
+    "back": "Zurück",
+    "close": "Schließen",
+    "more": "Mehr erfahren",
+    "views": "Views",
+    "language": "Sprache"
+  },
+  "regions": {
+    "premiumCoast": "Premium-Küste",
+    "emerging": "Aufstrebend",
+    "inlandLakes": "Inland & Seen"
+  },
+  "home": {
+    "testimonialQuote": "Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen. Ich habe mich bestens betreut gefühlt und kann EuroAdria jedem Unternehmer und Investor wärmstens empfehlen.",
+    "testimonialAuthor": "Maximilian R., Unternehmer aus Deutschland",
+    "ctaTitle": "Bereit für Ihre Investition?",
+    "ctaSubtitle": "Vereinbaren Sie ein unverbindliches Erstgespräch mit unseren Experten und entdecken Sie die Möglichkeiten am Balkan.",
+    "ctaButton": "Kostenlose Beratung anfragen",
+    "readMore": "Weiterlesen",
+    "balkanVsEuTitle": "Warum investieren immer mehr Deutsche im Balkan?",
+    "readTime": "Lesezeit"
+  }
+}

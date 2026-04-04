@@ -9,12 +9,14 @@ import MediaBadge from '../components/MediaBadge';
 import YouTubeSlider from '../components/YouTubeSlider';
 import TrustBar from '../components/TrustBar';
 import NewsletterSignup from '../components/NewsletterSignup';
+import { useLanguage } from '../context/LanguageContext';
 
 const Home = () => {
   const [featuredArticles, setFeaturedArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [heroData, setHeroData] = useState({});
   const [homeContent, setHomeContent] = useState({});
+  const { lang, t } = useLanguage();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,9 +69,9 @@ const Home = () => {
         backgroundImage={heroData.backgroundImage} 
         overlayOpacity={heroData.overlayOpacity}
         backgroundImagePosition={heroData.backgroundImagePosition}
-        title={homeContent.hero_title}
-        subtitle={homeContent.hero_subtitle}
-        ctaText={homeContent.hero_cta_text}
+        title={lang === 'en' ? t('hero.title') : homeContent.hero_title}
+        subtitle={lang === 'en' ? t('hero.subtitle') : homeContent.hero_subtitle}
+        ctaText={lang === 'en' ? t('hero.cta') : homeContent.hero_cta_text}
       />
 
       <TrustBar />
@@ -270,10 +272,13 @@ const Home = () => {
       <section className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-semibold text-ea-dark mb-6">
-            {homeContent.cta_title || <>Bereit für Ihre <span className="text-ea-gold">Investition</span>?</>}
+            {lang === 'en' 
+              ? <>{t('home.ctaTitle').split('Investition')[0]}<span className="text-ea-gold">Investment</span>?</>
+              : (homeContent.cta_title || <>Bereit für Ihre <span className="text-ea-gold">Investition</span>?</>)
+            }
           </h2>
           <p className="text-ea-dark/70 text-lg mb-8 max-w-2xl mx-auto">
-            {homeContent.cta_subtitle || 'Vereinbaren Sie ein unverbindliches Erstgespräch mit unseren Experten und entdecken Sie die Möglichkeiten am Balkan.'}
+            {lang === 'en' ? t('home.ctaSubtitle') : (homeContent.cta_subtitle || t('home.ctaSubtitle'))}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
@@ -281,7 +286,7 @@ const Home = () => {
               className="px-8 py-4 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all"
               data-testid="cta-consultation-button"
             >
-              Kostenlose Beratung anfragen
+              {t('home.ctaButton')}
             </Link>
             <Link
               to="/serbia-executive"

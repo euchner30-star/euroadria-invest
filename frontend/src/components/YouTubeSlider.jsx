@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Play, ExternalLink } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -52,6 +53,7 @@ const YouTubeSlider = () => {
   const intervalRef = useRef(null);
   const resumeRef = useRef(null);
   const [videos, setVideos] = useState(fallbackVideos);
+  const { t } = useLanguage();
 
   useEffect(() => {
     let cancelled = false;
@@ -137,8 +139,8 @@ const YouTubeSlider = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-ea-gold font-semibold text-sm tracking-wider uppercase mb-2">YouTube Kanal</p>
-            <h2 className="text-2xl sm:text-3xl font-bold text-ea-dark">Unsere neuesten Videos</h2>
+            <p className="text-ea-gold font-semibold text-sm tracking-wider uppercase mb-2">{t('youtube.sectionLabel')}</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-ea-dark">{t('youtube.sectionTitle')}</h2>
           </div>
           <a
             href="https://youtube.com/@euroadriacs"
@@ -151,7 +153,7 @@ const YouTubeSlider = () => {
               <path fill="#D5B781" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/>
               <path fill="#04150F" d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
             </svg>
-            <span>Kanal abonnieren</span>
+            <span>{t('youtube.subscribe')}</span>
             <ExternalLink className="w-4 h-4" />
           </a>
         </div>
@@ -183,7 +185,7 @@ const YouTubeSlider = () => {
             <path fill="#D5B781" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/>
             <path fill="#04150F" d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
           </svg>
-          <span>Kanal abonnieren</span>
+          <span>{t('youtube.subscribe')}</span>
         </a>
       </div>
     </section>

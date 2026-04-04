@@ -7,6 +7,9 @@ import ShareButtons from '../components/ShareButtons';
 import CommentsSection from '../components/CommentsSection';
 import SEO from '../components/SEO';
 import { parseContentToHTML } from '../utils/contentParser';
+import { useLanguage } from '../context/LanguageContext';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const ArticlePage = () => {
   const { slug } = useParams();
@@ -14,6 +17,7 @@ const ArticlePage = () => {
   const [relatedArticles, setRelatedArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const { lang, t } = useLanguage();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -21,6 +25,24 @@ const ArticlePage = () => {
     const fetchArticle = async () => {
       try {
         setLoading(true);
+        
+        if (lang === 'en') {
+          // Fetch translated article from backend
+          try {
+            const res = await fetch(`${API_URL}/api/translate/article/${slug}?target=en`);
+            if (res.ok) {
+              const translatedData = await res.json();
+              setArticle(translatedData);
+              if (translatedData.relatedArticles && translatedData.relatedArticles.length > 0) {
+                const related = await getRelatedArticles(translatedData.relatedArticles.slice(0, 3));
+                setRelatedArticles(related);
+              }
+              return;
+            }
+          } catch (_) {}
+        }
+
+        // Default: fetch original German article
         const data = await articlesApi.getBySlug(slug);
         if (!data) {
           setNotFound(true);
@@ -41,7 +63,7 @@ const ArticlePage = () => {
     };
     
     fetchArticle();
-  }, [slug]);
+  }, [slug, lang]);
 
   if (notFound) {
     return <Navigate to="/blog" replace />;
@@ -187,8 +209,8 @@ const ArticlePage = () => {
                   <Download className="w-6 h-6 text-ea-gold" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white mb-1">Exposé herunterladen</h3>
-                  <p className="text-ea-light/70 text-sm">Laden Sie das vollständige Exposé als PDF herunter.</p>
+                  <h3 className="text-lg font-semibold text-white mb-1">{t('blog.downloadExpose')}</h3>
+                  <p className="text-ea-light/70 text-sm">{t('blog.downloadDesc')}</p>
                 </div>
                 <a
                   href={article.downloadUrl}
@@ -198,7 +220,7 @@ const ArticlePage = () => {
                   data-testid="article-download-button"
                 >
                   <Download className="w-4 h-4" />
-                  <span>Download PDF</span>
+                  <span>{t('blog.downloadPdf')}</span>
                 </a>
               </div>
             </div>

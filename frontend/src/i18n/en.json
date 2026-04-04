@@ -1,0 +1,163 @@
+{
+  "nav": {
+    "home": "HOME",
+    "realEstate": "REAL ESTATE",
+    "infrastructure": "INFRASTRUCTURE RADAR",
+    "investment": "INVESTMENT",
+    "blog": "BLOG",
+    "about": "ABOUT US",
+    "contact": "CONTACT",
+    "serbiaExecutive": "SERBIA EXECUTIVE",
+    "ctaButton": "Request Consultation",
+    "ctaButtonMobile": "Request Consultation Now",
+    "allLocations": "All 22 Locations in Dashboard",
+    "allLocationsMobile": "All Locations",
+    "new": "NEW"
+  },
+  "hero": {
+    "title": "Company Formation, Residency & Investments in Montenegro and Serbia",
+    "subtitle": "EuroAdria is your bridge to successful investments, legally secure emigration, and international business structuring — in the Adriatic region and Asia. We are your Trusted Advisor for all entrepreneurial and private ventures abroad.",
+    "cta": "Request Consultation Now",
+    "badge1": "Premium Investments",
+    "badge2": "Luxury Real Estate",
+    "badge3": "Adriatic Lifestyle"
+  },
+  "footer": {
+    "brand": "EuroAdria Corporate Solutions",
+    "brandDesc": "is a brand of Montaris & Co. d.o.o. Novi Sad",
+    "address": "NOVI SAD, MARKA MILJANOVA 12, NOVI SAD, Serbia",
+    "company": "Euroadria Corporate Solutions",
+    "home": "Home",
+    "blog": "Blog",
+    "aboutUs": "About Us",
+    "serbiaExec": "Serbia Executive",
+    "contact": "Contact",
+    "legal": "Legal",
+    "imprint": "Imprint",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "contactTitle": "Contact",
+    "rights": "All rights reserved."
+  },
+  "cookie": {
+    "title": "Cookie Settings",
+    "text": "We use cookies to provide you with the best possible experience on our website. Some cookies are essential for the operation of the website, while others help us improve the website and your experience.",
+    "privacyLink": "Privacy Policy",
+    "imprintLink": "Imprint",
+    "termsLink": "Terms",
+    "customize": "Customize Settings",
+    "necessaryOnly": "Necessary Only",
+    "acceptAll": "Accept All",
+    "save": "Save Preferences",
+    "necessary": "Necessary",
+    "necessaryDesc": "These cookies are required for the website to function and cannot be disabled.",
+    "analytics": "Analytics",
+    "analyticsDesc": "Helps us understand how visitors use the website.",
+    "marketing": "Marketing",
+    "marketingDesc": "Used to display relevant advertisements.",
+    "alwaysActive": "Always active"
+  },
+  "contact": {
+    "pageTitle": "Get in Touch",
+    "pageSubtitle": "We look forward to hearing from you",
+    "formTitle": "Write to Us",
+    "name": "Your Name",
+    "email": "Your Email",
+    "phone": "Phone Number",
+    "subject": "Subject",
+    "message": "Your Message",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "success": "Your message has been sent successfully!",
+    "error": "Error sending message. Please try again.",
+    "subjects": {
+      "general": "General Inquiry",
+      "investment": "Investment Consulting",
+      "immigration": "Emigration & Residency",
+      "company": "Company Formation",
+      "other": "Other"
+    }
+  },
+  "blog": {
+    "title": "Blog & Insights",
+    "subtitle": "Current analyses and expert knowledge for your investment decisions",
+    "readMore": "Read More",
+    "readTime": "Read Time",
+    "allCategories": "All Categories",
+    "searchPlaceholder": "Search articles...",
+    "noResults": "No articles found.",
+    "featured": "Featured",
+    "latestArticles": "Latest Articles",
+    "expertTip": "Expert Tip",
+    "dueDiligence": "Due Diligence Checklist",
+    "downloadExpose": "Download Exposé",
+    "downloadPdf": "Download PDF",
+    "downloadDesc": "Download the complete exposé as a PDF.",
+    "shareArticle": "Share Article",
+    "comments": "Comments",
+    "writeComment": "Write a Comment",
+    "commentName": "Your Name",
+    "commentEmail": "Your Email",
+    "commentContent": "Your Comment",
+    "submitComment": "Submit",
+    "relatedArticles": "Related Articles"
+  },
+  "youtube": {
+    "sectionLabel": "YouTube Channel",
+    "sectionTitle": "Our Latest Videos",
+    "subscribe": "Subscribe to Channel"
+  },
+  "trust": {
+    "satisfiedClients": "Satisfied Clients",
+    "yearsExperience": "Years of Experience",
+    "investments": "Guided Investments",
+    "countries": "Countries"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Answers to the most important questions"
+  },
+  "newsletter": {
+    "title": "Subscribe to Newsletter",
+    "subtitle": "Receive exclusive investment insights directly in your inbox.",
+    "placeholder": "Your email address",
+    "subscribe": "Subscribe",
+    "success": "Successfully subscribed!",
+    "unsubscribeTitle": "Unsubscribe from Newsletter",
+    "unsubscribeText": "Do you really want to unsubscribe?",
+    "unsubscribeButton": "Unsubscribe"
+  },
+  "leadGate": {
+    "title": "Free Exposé Download",
+    "subtitle": "Get our exclusive investor exposé with detailed market analyses.",
+    "name": "Your Name",
+    "email": "Your Email",
+    "download": "Download Now",
+    "privacy": "Your data will be treated confidentially."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred.",
+    "retry": "Try Again",
+    "back": "Back",
+    "close": "Close",
+    "more": "Learn More",
+    "views": "Views",
+    "language": "Language"
+  },
+  "regions": {
+    "premiumCoast": "Premium Coast",
+    "emerging": "Emerging",
+    "inlandLakes": "Inland & Lakes"
+  },
+  "home": {
+    "testimonialQuote": "Thanks to EuroAdria, I was able to set up my company in Montenegro quickly, safely, and completely stress-free. I felt very well looked after and can warmly recommend EuroAdria to every entrepreneur and investor.",
+    "testimonialAuthor": "Maximilian R., Entrepreneur from Germany",
+    "ctaTitle": "Ready for Your Investment?",
+    "ctaSubtitle": "Schedule a free initial consultation with our experts and discover the opportunities in the Balkans.",
+    "ctaButton": "Request Free Consultation",
+    "readMore": "Read More",
+    "balkanVsEuTitle": "Why are more and more Germans investing in the Balkans?",
+    "readTime": "Read Time"
+  }
+}
