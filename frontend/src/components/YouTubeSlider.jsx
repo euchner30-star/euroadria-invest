@@ -44,53 +44,83 @@ const VideoCard = ({ video }) => (
 
 const YouTubeSlider = () => {
   const scrollRef = useRef(null);
-  const autoScrollRef = useRef(true);
-  const timerRef = useRef(null);
+  const rafRef = useRef(null);
+  const resumeTimerRef = useRef(null);
   const items = [...videos, ...videos, ...videos];
 
-  const resumeAutoScroll = useCallback(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => { autoScrollRef.current = true; }, 3000);
+  const startAutoScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    
+    // Cancel any existing animation
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+
+    const tick = () => {
+      if (el) {
+        el.scrollLeft += 0.8;
+        const oneSet = el.scrollWidth / 3;
+        if (el.scrollLeft >= oneSet * 2) {
+          el.scrollLeft -= oneSet;
+        }
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
   }, []);
+
+  const stopAutoScroll = useCallback(() => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+  }, []);
+
+  const scheduleResume = useCallback(() => {
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => {
+      startAutoScroll();
+    }, 4000);
+  }, [startAutoScroll]);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    let raf;
 
-    const tick = () => {
-      if (autoScrollRef.current && el) {
-        el.scrollLeft += 0.8;
-        const oneSet = el.scrollWidth / 3;
-        if (el.scrollLeft >= oneSet * 2) {
-          el.scrollLeft = el.scrollLeft - oneSet;
-        }
-      }
-      raf = requestAnimationFrame(tick);
+    // Start auto-scroll
+    startAutoScroll();
+
+    // Touch: completely stop RAF, let native scroll work freely
+    const onTouchStart = () => {
+      stopAutoScroll();
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
     };
-    raf = requestAnimationFrame(tick);
-
-    const onInteract = () => {
-      autoScrollRef.current = false;
-      resumeAutoScroll();
+    const onTouchEnd = () => {
+      scheduleResume();
     };
 
-    el.addEventListener('touchstart', onInteract, { passive: true });
-    el.addEventListener('touchmove', onInteract, { passive: true });
-    el.addEventListener('wheel', onInteract, { passive: true });
-    el.addEventListener('mousedown', onInteract);
-    el.addEventListener('mouseenter', onInteract);
+    // Mouse: pause on hover
+    const onMouseEnter = () => {
+      stopAutoScroll();
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    };
+    const onMouseLeave = () => {
+      scheduleResume();
+    };
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchend', onTouchEnd, { passive: true });
+    el.addEventListener('mouseenter', onMouseEnter);
+    el.addEventListener('mouseleave', onMouseLeave);
 
     return () => {
-      cancelAnimationFrame(raf);
-      if (timerRef.current) clearTimeout(timerRef.current);
-      el.removeEventListener('touchstart', onInteract);
-      el.removeEventListener('touchmove', onInteract);
-      el.removeEventListener('wheel', onInteract);
-      el.removeEventListener('mousedown', onInteract);
-      el.removeEventListener('mouseenter', onInteract);
+      stopAutoScroll();
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('mouseenter', onMouseEnter);
+      el.removeEventListener('mouseleave', onMouseLeave);
     };
-  }, [resumeAutoScroll]);
+  }, [startAutoScroll, stopAutoScroll, scheduleResume]);
 
   return (
     <section className="py-16 md:py-20 bg-ea-light" data-testid="youtube-slider-section">
@@ -122,7 +152,7 @@ const YouTubeSlider = () => {
         className="flex gap-5 overflow-x-auto px-4 sm:px-6 pb-4"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
       >
-        <style>{`.flex.overflow-x-auto::-webkit-scrollbar { display: none; }`}</style>
+        <style>{`[data-testid="youtube-slider-section"] .overflow-x-auto::-webkit-scrollbar { display: none; }`}</style>
         {items.map((video, i) => (
           <VideoCard key={`${video.id}-${i}`} video={video} />
         ))}
