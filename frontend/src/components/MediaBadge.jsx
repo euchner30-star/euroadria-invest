@@ -1,33 +1,16 @@
 import React from 'react';
 import { Newspaper, ExternalLink } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const MediaBadge = ({ variant = 'default' }) => {
+  const { lang } = useLanguage();
+
   const mediaLinks = [
-    {
-      name: 'n-tv',
-      url: 'https://unternehmen.n-tv.de/unternehmensgruendung-montenegro.html',
-      topic: 'Unternehmensgruendung'
-    },
-    {
-      name: 'RTL',
-      url: 'https://unternehmen.rtl.de/auswandern-montenegro.html',
-      topic: 'Auswandern'
-    },
-    {
-      name: 'Focus',
-      url: 'https://unternehmen.focus.de/immobilien-montenegro.html',
-      topic: 'Immobilien'
-    },
-    {
-      name: 'VC Magazin',
-      url: 'https://www.vc-magazin.de/blog/2026/02/13/kapitalflucht-warum-montenegro-zum-neuen-safe-haven-wird/',
-      topic: 'Kapitalflucht'
-    },
-    {
-      name: 'Kosmo',
-      url: 'https://www.kosmo.at/jetzt-expansion-in-die-adria-region-starten-mit-euroadria-sicher-in-balkan-markten-wachsen/',
-      topic: 'Expansion Adria'
-    }
+    { name: 'n-tv', url: 'https://unternehmen.n-tv.de/unternehmensgruendung-montenegro.html', topicDe: 'Unternehmensgruendung', topicEn: 'Company Formation' },
+    { name: 'RTL', url: 'https://unternehmen.rtl.de/auswandern-montenegro.html', topicDe: 'Auswandern', topicEn: 'Emigration' },
+    { name: 'Focus', url: 'https://unternehmen.focus.de/immobilien-montenegro.html', topicDe: 'Immobilien', topicEn: 'Real Estate' },
+    { name: 'VC Magazin', url: 'https://www.vc-magazin.de/blog/2026/02/13/kapitalflucht-warum-montenegro-zum-neuen-safe-haven-wird/', topicDe: 'Kapitalflucht', topicEn: 'Capital Flight' },
+    { name: 'Kosmo', url: 'https://www.kosmo.at/jetzt-expansion-in-die-adria-region-starten-mit-euroadria-sicher-in-balkan-markten-wachsen/', topicDe: 'Expansion Adria', topicEn: 'Adriatic Expansion' }
   ];
 
   if (variant === 'compact') {
@@ -35,7 +18,7 @@ const MediaBadge = ({ variant = 'default' }) => {
       <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-ea-gold/10 border border-ea-gold/20 rounded-full">
         <Newspaper className="w-3.5 h-3.5 text-ea-gold" />
         <span className="text-xs font-medium text-ea-dark">
-          Referenziert in n-tv, RTL, Focus, VC Magazin & Kosmo
+          {lang === 'en' ? 'Referenced in n-tv, RTL, Focus, VC Magazin & Kosmo' : 'Referenziert in n-tv, RTL, Focus, VC Magazin & Kosmo'}
         </span>
       </div>
     );
@@ -44,16 +27,10 @@ const MediaBadge = ({ variant = 'default' }) => {
   if (variant === 'hero') {
     return (
       <div className="flex flex-col sm:flex-row items-center gap-3 mt-6">
-        <span className="text-sm text-white/60">Bekannt aus:</span>
+        <span className="text-sm text-white/60">{lang === 'en' ? 'Featured in:' : 'Bekannt aus:'}</span>
         <div className="flex items-center gap-4">
           {mediaLinks.map((media) => (
-            <a
-              key={media.name}
-              href={media.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-all group"
-            >
+            <a key={media.name} href={media.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-all group">
               <span className="font-bold text-white">{media.name}</span>
               <ExternalLink className="w-3 h-3 text-white/50 group-hover:text-ea-gold" />
             </a>
@@ -63,7 +40,6 @@ const MediaBadge = ({ variant = 'default' }) => {
     );
   }
 
-  // Default variant - full card
   return (
     <div className="bg-gradient-to-r from-ea-dark to-ea-navy rounded-2xl p-6 border border-ea-gold/20" data-testid="media-badge">
       <div className="flex items-center gap-3 mb-4">
@@ -71,23 +47,16 @@ const MediaBadge = ({ variant = 'default' }) => {
           <Newspaper className="w-5 h-5 text-ea-gold" />
         </div>
         <div>
-          <p className="text-white font-semibold">Referenzierte Experten</p>
-          <p className="text-white/60 text-sm">in internationalen Wirtschaftsmedien</p>
+          <p className="text-white font-semibold">{lang === 'en' ? 'Referenced Experts' : 'Referenzierte Experten'}</p>
+          <p className="text-white/60 text-sm">{lang === 'en' ? 'in international business media' : 'in internationalen Wirtschaftsmedien'}</p>
         </div>
       </div>
-      
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {mediaLinks.map((media) => (
-          <a
-            key={media.name}
-            href={media.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all group"
-          >
+          <a key={media.name} href={media.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all group">
             <div>
               <p className="font-bold text-white">{media.name}</p>
-              <p className="text-xs text-white/50">{media.topic}</p>
+              <p className="text-xs text-white/50">{lang === 'en' ? media.topicEn : media.topicDe}</p>
             </div>
             <ExternalLink className="w-4 h-4 text-white/30 group-hover:text-ea-gold" />
           </a>
