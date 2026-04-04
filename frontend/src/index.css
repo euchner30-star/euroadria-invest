@@ -123,28 +123,26 @@ code {
 .legal-content blockquote { border-left: 4px solid #C8A96A; padding-left: 1rem; margin: 1rem 0; font-style: italic; color: rgba(4,21,31,0.6); }
 
 
-/* YouTube Slider Auto-Scroll */
-@keyframes scroll {
+/* YouTube Slider Marquee */
+.yt-marquee {
+  overflow: hidden;
+  width: 100%;
+}
+
+.yt-marquee-track {
+  display: flex;
+  gap: 1.25rem;
+  padding-left: 1rem;
+  width: max-content;
+  animation: yt-scroll 30s linear infinite;
+}
+
+@keyframes yt-scroll {
   0% {
     transform: translateX(0);
   }
   100% {
     transform: translateX(-50%);
-  }
-}
-
-.animate-scroll-touch {
-  animation: scroll 50s linear infinite;
-}
-
-.animate-scroll-touch:hover,
-.animate-scroll-touch:active {
-  animation-play-state: paused;
-}
-
-@media (pointer: coarse) {
-  .animate-scroll-touch {
-    animation: scroll 50s linear infinite;
   }
 }
 

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { Play, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const videos = [
@@ -71,51 +71,7 @@ const VideoCard = ({ video }) => {
 };
 
 const YouTubeSlider = () => {
-  const scrollRef = useRef(null);
-  const pausedRef = useRef(false);
   const duplicated = [...videos, ...videos];
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    let animFrame;
-    const speed = 0.6;
-
-    const step = () => {
-      if (!pausedRef.current && el) {
-        el.scrollLeft += speed;
-        if (el.scrollLeft >= el.scrollWidth / 2) {
-          el.scrollLeft = 0;
-        }
-      }
-      animFrame = requestAnimationFrame(step);
-    };
-    animFrame = requestAnimationFrame(step);
-
-    const pause = () => { pausedRef.current = true; };
-    const resume = () => { pausedRef.current = false; };
-
-    el.addEventListener('mouseenter', pause);
-    el.addEventListener('mouseleave', resume);
-
-    return () => {
-      cancelAnimationFrame(animFrame);
-      el.removeEventListener('mouseenter', pause);
-      el.removeEventListener('mouseleave', resume);
-    };
-  }, []);
-
-  const scroll = (direction) => {
-    if (scrollRef.current) {
-      pausedRef.current = true;
-      const amount = 360;
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -amount : amount,
-        behavior: 'smooth',
-      });
-      setTimeout(() => { pausedRef.current = false; }, 2000);
-    }
-  };
 
   return (
     <section className="py-16 md:py-20 bg-ea-light overflow-hidden" data-testid="youtube-slider-section">
@@ -127,51 +83,26 @@ const YouTubeSlider = () => {
               Unsere neuesten Videos
             </h2>
           </div>
-          <div className="flex items-center gap-3">
-            {/* Arrow buttons - desktop */}
-            <div className="hidden sm:flex items-center gap-2">
-              <button
-                onClick={() => scroll('left')}
-                className="w-10 h-10 rounded-full border border-ea-gold/30 flex items-center justify-center text-ea-dark hover:bg-ea-gold hover:text-ea-dark transition-all"
-                aria-label="Zurück"
-                data-testid="yt-scroll-left"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => scroll('right')}
-                className="w-10 h-10 rounded-full border border-ea-gold/30 flex items-center justify-center text-ea-dark hover:bg-ea-gold hover:text-ea-dark transition-all"
-                aria-label="Weiter"
-                data-testid="yt-scroll-right"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-            <a
-              href="https://youtube.com/@euroadriacs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-ea-dark text-ea-gold font-semibold rounded-lg hover:bg-ea-navy transition-all text-sm border border-ea-gold/20"
-              data-testid="youtube-channel-link"
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/>
-                <path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#D5B781"/>
-              </svg>
-              <span>Kanal abonnieren</span>
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </div>
+          <a
+            href="https://youtube.com/@euroadriacs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-ea-dark text-ea-gold font-semibold rounded-lg hover:bg-ea-navy transition-all text-sm border border-ea-gold/20"
+            data-testid="youtube-channel-link"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/>
+              <path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#D5B781"/>
+            </svg>
+            <span>Kanal abonnieren</span>
+            <ExternalLink className="w-4 h-4" />
+          </a>
         </div>
       </div>
 
-      {/* Scrollable slider - touch + mouse + auto-scroll */}
-      <div className="relative">
-        <div
-          ref={scrollRef}
-          className="flex gap-5 overflow-x-auto scroll-smooth px-4 sm:px-6 pb-4 no-scrollbar"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
-        >
+      {/* Auto-scrolling marquee - pure CSS */}
+      <div className="yt-marquee">
+        <div className="yt-marquee-track">
           {duplicated.map((video, i) => (
             <VideoCard key={`${video.id}-${i}`} video={video} />
           ))}
