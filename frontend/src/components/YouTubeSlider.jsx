@@ -1,5 +1,5 @@
-import React from 'react';
-import { Play, ExternalLink } from 'lucide-react';
+import React, { useRef } from 'react';
+import { Play, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const videos = [
   {
@@ -42,22 +42,22 @@ const VideoCard = ({ video }) => {
       href={`https://www.youtube.com/watch?v=${video.id}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex-shrink-0 w-[300px] sm:w-[340px] block"
+      className="group flex-shrink-0 w-[280px] sm:w-[340px] block"
       data-testid={`video-card-${video.id}`}
     >
-      <div className="relative overflow-hidden rounded-xl">
+      <div className="relative overflow-hidden rounded-xl border border-ea-gold/20">
         <img
           src={thumbnail}
           alt={video.title}
-          className="w-full h-[190px] object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-[170px] sm:h-[190px] object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center">
-          <div className="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-            <Play className="w-6 h-6 text-white ml-1" fill="white" />
+        <div className="absolute inset-0 bg-ea-dark/30 group-hover:bg-ea-dark/10 transition-all duration-300 flex items-center justify-center">
+          <div className="w-14 h-14 rounded-full bg-ea-gold flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+            <Play className="w-6 h-6 text-ea-dark ml-1" fill="currentColor" />
           </div>
         </div>
-        <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-md">
+        <div className="absolute top-3 right-3 bg-ea-dark/70 text-ea-gold text-xs font-medium px-2 py-1 rounded-md">
           {video.views} Views
         </div>
       </div>
@@ -71,11 +71,22 @@ const VideoCard = ({ video }) => {
 };
 
 const YouTubeSlider = () => {
+  const scrollRef = useRef(null);
   const duplicated = [...videos, ...videos];
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const amount = 360;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -amount : amount,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   return (
     <section className="py-16 md:py-20 bg-ea-light overflow-hidden" data-testid="youtube-slider-section">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-8">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-ea-gold font-semibold text-sm tracking-wider uppercase mb-2">YouTube Kanal</p>
@@ -83,26 +94,51 @@ const YouTubeSlider = () => {
               Unsere neuesten Videos
             </h2>
           </div>
-          <a
-            href="https://youtube.com/@euroadriacs"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-all text-sm"
-            data-testid="youtube-channel-link"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/>
-              <path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="white"/>
-            </svg>
-            <span>Kanal abonnieren</span>
-            <ExternalLink className="w-4 h-4" />
-          </a>
+          <div className="flex items-center gap-3">
+            {/* Arrow buttons - desktop */}
+            <div className="hidden sm:flex items-center gap-2">
+              <button
+                onClick={() => scroll('left')}
+                className="w-10 h-10 rounded-full border border-ea-gold/30 flex items-center justify-center text-ea-dark hover:bg-ea-gold hover:text-ea-dark transition-all"
+                aria-label="Zurück"
+                data-testid="yt-scroll-left"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => scroll('right')}
+                className="w-10 h-10 rounded-full border border-ea-gold/30 flex items-center justify-center text-ea-dark hover:bg-ea-gold hover:text-ea-dark transition-all"
+                aria-label="Weiter"
+                data-testid="yt-scroll-right"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+            <a
+              href="https://youtube.com/@euroadriacs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-ea-dark text-ea-gold font-semibold rounded-lg hover:bg-ea-navy transition-all text-sm border border-ea-gold/20"
+              data-testid="youtube-channel-link"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/>
+                <path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#D5B781"/>
+              </svg>
+              <span>Kanal abonnieren</span>
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
         </div>
       </div>
 
-      {/* Auto-scrolling slider */}
+      {/* Scrollable slider - touch + mouse + auto-scroll */}
       <div className="relative">
-        <div className="flex gap-6 animate-scroll hover:[animation-play-state:paused]">
+        <div
+          ref={scrollRef}
+          className="flex gap-5 overflow-x-auto scroll-smooth px-4 sm:px-6 pb-4 no-scrollbar animate-scroll-touch"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+        >
           {duplicated.map((video, i) => (
             <VideoCard key={`${video.id}-${i}`} video={video} />
           ))}
@@ -110,16 +146,16 @@ const YouTubeSlider = () => {
       </div>
 
       {/* Mobile CTA */}
-      <div className="sm:hidden mt-8 px-4">
+      <div className="sm:hidden mt-6 px-4">
         <a
           href="https://youtube.com/@euroadriacs"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-all text-sm"
+          className="flex items-center justify-center gap-2 w-full py-3 bg-ea-dark text-ea-gold font-semibold rounded-lg hover:bg-ea-navy transition-all text-sm border border-ea-gold/20"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
             <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/>
-            <path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="white"/>
+            <path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#D5B781"/>
           </svg>
           <span>Kanal abonnieren</span>
         </a>

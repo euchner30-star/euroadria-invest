@@ -133,12 +133,21 @@ code {
   }
 }
 
-.animate-scroll {
-  animation: scroll 40s linear infinite;
-  width: max-content;
-  padding-left: 1.5rem;
+.animate-scroll-touch {
+  animation: scroll 50s linear infinite;
 }
 
-.animate-scroll:hover {
+.animate-scroll-touch:hover,
+.animate-scroll-touch:active {
   animation-play-state: paused;
+}
+
+@media (pointer: coarse) {
+  .animate-scroll-touch {
+    animation: none;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
