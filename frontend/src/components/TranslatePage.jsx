@@ -9,15 +9,22 @@ const pageCache = {};
 const collectTextNodes = (element) => {
   const textNodes = [];
   const walk = (node) => {
-    if (node.nodeType === 3 && node.textContent.trim().length > 1) {
-      // Text node with meaningful content
+    if (node.nodeType === 3) {
       const text = node.textContent.trim();
-      // Skip numbers-only, emails, URLs, phone numbers
-      if (/^[\d\s.,€%+\-/()@:]+$/.test(text)) return;
+      // Skip empty, numbers-only, emails, URLs, short fragments
+      if (text.length < 3) return;
+      if (/^[\d\s.,€%+\-/()@:#&|]+$/.test(text)) return;
       if (/^https?:\/\//.test(text)) return;
       if (/^[\w.-]+@[\w.-]+$/.test(text)) return;
+      // Skip if parent already has data-no-translate
+      if (node.parentElement?.closest('[data-no-translate]')) return;
       textNodes.push(node);
-    } else if (node.nodeType === 1 && !['SCRIPT', 'STYLE', 'NOSCRIPT', 'CODE', 'PRE'].includes(node.tagName)) {
+    } else if (node.nodeType === 1) {
+      // Skip certain elements
+      const tag = node.tagName;
+      if (['SCRIPT', 'STYLE', 'NOSCRIPT', 'CODE', 'PRE', 'INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'SVG'].includes(tag)) return;
+      // Skip elements with data-no-translate
+      if (node.hasAttribute('data-no-translate')) return;
       for (const child of node.childNodes) {
         walk(child);
       }
@@ -32,10 +39,13 @@ const TranslatePage = ({ children }) => {
   const containerRef = useRef(null);
   const [isTranslating, setIsTranslating] = useState(false);
   const originalTexts = useRef(new Map());
+  const hasTranslated = useRef(false);
 
   const translatePage = useCallback(async () => {
     if (!containerRef.current || lang === 'de') return;
+    if (hasTranslated.current) return;
 
+    // Small delay to let DOM settle
     const textNodes = collectTextNodes(containerRef.current);
     if (textNodes.length === 0) return;
 
@@ -46,15 +56,20 @@ const TranslatePage = ({ children }) => {
       }
     });
 
-    // Collect texts to translate (deduplicated)
-    const uniqueTexts = [...new Set(textNodes.map(n => originalTexts.current.get(n) || n.textContent))];
+    // Collect unique texts to translate
+    const uniqueTexts = [...new Set(
+      textNodes
+        .map(n => (originalTexts.current.get(n) || n.textContent).trim())
+        .filter(t => t.length >= 3)
+    )];
+    
     const uncachedTexts = uniqueTexts.filter(t => !pageCache[`de>en:${t}`]);
 
     if (uncachedTexts.length > 0) {
       setIsTranslating(true);
-      // Batch in chunks of 40
-      for (let i = 0; i < uncachedTexts.length; i += 40) {
-        const batch = uncachedTexts.slice(i, i + 40);
+      // Batch in chunks of 30
+      for (let i = 0; i < uncachedTexts.length; i += 30) {
+        const batch = uncachedTexts.slice(i, i + 30);
         try {
           const res = await fetch(`${API_URL}/api/translate/batch`, {
             method: 'POST',
@@ -74,33 +89,51 @@ const TranslatePage = ({ children }) => {
       setIsTranslating(false);
     }
 
-    // Apply translations
+    // Apply translations - preserve original whitespace
     textNodes.forEach(node => {
       const original = originalTexts.current.get(node) || node.textContent;
-      const translated = pageCache[`de>en:${original}`];
-      if (translated) {
-        node.textContent = translated;
+      const trimmed = original.trim();
+      const translated = pageCache[`de>en:${trimmed}`];
+      if (translated && translated !== trimmed) {
+        // Preserve leading/trailing whitespace from original
+        const leadingSpace = original.match(/^\s*/)[0];
+        const trailingSpace = original.match(/\s*$/)[0];
+        node.textContent = leadingSpace + translated + trailingSpace;
       }
     });
+
+    hasTranslated.current = true;
   }, [lang]);
 
   const restoreOriginals = useCallback(() => {
     originalTexts.current.forEach((original, node) => {
-      if (node.parentNode) {
-        node.textContent = original;
-      }
+      try {
+        if (node.parentNode) {
+          node.textContent = original;
+        }
+      } catch {}
     });
+    hasTranslated.current = false;
   }, []);
 
   useEffect(() => {
     if (lang === 'en') {
-      // Wait for render, then translate
-      const timer = setTimeout(translatePage, 300);
+      hasTranslated.current = false;
+      const timer = setTimeout(translatePage, 500);
       return () => clearTimeout(timer);
     } else {
       restoreOriginals();
     }
   }, [lang, translatePage, restoreOriginals]);
+
+  // Re-translate when children change (e.g., data loads)
+  useEffect(() => {
+    if (lang === 'en' && containerRef.current) {
+      hasTranslated.current = false;
+      const timer = setTimeout(translatePage, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [children, lang, translatePage]);
 
   return (
     <div ref={containerRef}>

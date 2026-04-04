@@ -50,7 +50,6 @@ const Home = () => {
   }, []);
 
   return (
-    <TranslatePage>
     <main className="min-h-screen bg-white" itemScope itemType="https://schema.org/WebPage">
       <SEO 
         title="Investment & Business Beratung für Adria & Balkan"
@@ -85,23 +84,29 @@ const Home = () => {
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <div className="inline-block bg-ea-gold/10 border border-ea-gold/30 text-sm text-ea-dark px-4 py-2 rounded-full mb-4 font-medium">
-                  Alpha-Potenzial
+                  {lang === 'en' ? 'Alpha Potential' : 'Alpha-Potenzial'}
                 </div>
                 <h2 className="text-3xl md:text-4xl font-semibold text-ea-dark mb-6 leading-tight" itemProp="headline">
-                  Warum <span className="text-ea-gold">Balkan</span> statt EU?
+                  {lang === 'en' ? <>Why the <span className="text-ea-gold">Balkans</span> instead of the EU?</> : <>Warum <span className="text-ea-gold">Balkan</span> statt EU?</>}
                 </h2>
                 <p className="text-ea-dark/70 text-lg leading-relaxed mb-6" itemProp="description">
-                  Laut Weltbank rangiert Montenegro auf Platz 50 im Ease of Doing Business Index. 
-                  Mit nur <strong>9% Körperschaftssteuer</strong> (niedrigste in Europa) und dem 
-                  erwarteten <strong>EU-Beitritt 2028</strong> bietet die Region einzigartige Konvergenz-Arbitrage.
+                  {lang === 'en' 
+                    ? <>According to the World Bank, Montenegro ranks 50th in the Ease of Doing Business Index. With only <strong>9% corporate tax</strong> (lowest in Europe) and the expected <strong>EU accession in 2028</strong>, the region offers unique convergence arbitrage.</>
+                    : <>Laut Weltbank rangiert Montenegro auf Platz 50 im Ease of Doing Business Index. Mit nur <strong>9% Körperschaftssteuer</strong> (niedrigste in Europa) und dem erwarteten <strong>EU-Beitritt 2028</strong> bietet die Region einzigartige Konvergenz-Arbitrage.</>
+                  }
                 </p>
                 <ul className="space-y-4 mb-8">
-                  {[
+                  {(lang === 'en' ? [
+                    'Montenegro: 9% corporate tax, Euro as currency',
+                    'Serbia: Up to 50% state investment subsidies',
+                    '60-80% appreciation potential before EU accession',
+                    'Forensic due diligence per FATF standards'
+                  ] : [
                     'Montenegro: 9% Körperschaftssteuer, Euro als Währung',
                     'Serbien: Bis zu 50% staatliche Investitionsförderung',
                     '60-80% Wertsteigerungspotenzial vor EU-Beitritt',
                     'Forensische Due Diligence nach FATF-Standards'
-                  ].map((point, idx) => (
+                  ]).map((point, idx) => (
                     <li key={idx} className="flex items-start space-x-3">
                       <CheckCircle className="w-5 h-5 text-ea-gold flex-shrink-0 mt-0.5" />
                       <span className="text-ea-dark/70">{point}</span>
@@ -113,7 +118,7 @@ const Home = () => {
                   className="inline-flex items-center space-x-2 px-6 py-3 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all"
                   data-testid="balkan-section-cta"
                 >
-                  <span>Komplette Analyse lesen</span>
+                  <span>{lang === 'en' ? 'Read Full Analysis' : 'Komplette Analyse lesen'}</span>
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               </div>
@@ -128,7 +133,7 @@ const Home = () => {
                 <figcaption className="absolute -bottom-6 -left-6 bg-white border border-gray-200 rounded-xl p-6 shadow-lg max-w-xs">
                   <div className="text-3xl font-bold text-ea-gold mb-2">60-80%</div>
                   <div className="text-ea-dark/70 text-sm">
-                    Erwartete Wertsteigerung in Montenegro vor EU-Beitritt (Quelle: EuroAdria Marktanalyse)
+                    {lang === 'en' ? 'Expected appreciation in Montenegro before EU accession (Source: EuroAdria Market Analysis)' : 'Erwartete Wertsteigerung in Montenegro vor EU-Beitritt (Quelle: EuroAdria Marktanalyse)'}
                   </div>
                 </figcaption>
               </figure>
@@ -142,10 +147,10 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-semibold text-ea-dark mb-4">
-              Aktuelle <span className="text-ea-gold">Insights</span>
+              {lang === 'en' ? <>Current <span className="text-ea-gold">Insights</span></> : <>Aktuelle <span className="text-ea-gold">Insights</span></>}
             </h2>
             <p className="text-ea-dark/70 text-lg max-w-2xl mx-auto">
-              Exklusive Analysen, Marktberichte und Investment-Strategien für die Adria-Region
+              {lang === 'en' ? 'Exclusive analyses, market reports and investment strategies for the Adriatic region' : 'Exklusive Analysen, Marktberichte und Investment-Strategien für die Adria-Region'}
             </p>
           </div>
 
@@ -187,7 +192,7 @@ const Home = () => {
                         {article.excerpt}
                       </p>
                       <div className="flex items-center text-ea-gold text-sm font-medium">
-                        <span>Weiterlesen</span>
+                        <span>{lang === 'en' ? 'Read More' : 'Weiterlesen'}</span>
                         <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
@@ -203,7 +208,7 @@ const Home = () => {
               className="inline-flex items-center space-x-2 px-8 py-4 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all"
               data-testid="view-all-articles-button"
             >
-              <span>Alle Artikel ansehen</span>
+              <span>{lang === 'en' ? 'View All Articles' : 'Alle Artikel ansehen'}</span>
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
@@ -214,12 +219,17 @@ const Home = () => {
       <section className="py-16 bg-ea-light border-y border-gray-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {(homeContent.trust_items || [
+            {(homeContent.trust_items || (lang === 'en' ? [
+              { title: 'Trustworthy', desc: 'Referenced in n-tv, RTL, Focus & more' },
+              { title: 'Return Focus', desc: 'Double-digit target returns' },
+              { title: 'Expertise', desc: '15+ years experience' },
+              { title: 'Security', desc: 'Asset Protection' }
+            ] : [
               { title: 'Vertrauenswürdig', desc: 'Referenziert in n-tv, RTL, Focus & mehr' },
               { title: 'Rendite-Fokus', desc: 'Zweistellige Zielrenditen' },
               { title: 'Expertise', desc: '15+ Jahre Erfahrung' },
               { title: 'Sicherheit', desc: 'Asset Protection' }
-            ]).map((item, idx) => {
+            ])).map((item, idx) => {
               const icons = [Shield, TrendingUp, Award, Shield];
               const Icon = icons[idx % icons.length];
               return (
@@ -262,10 +272,16 @@ const Home = () => {
             ))}
           </div>
           <blockquote className="text-xl md:text-2xl text-ea-light font-semibold leading-relaxed mb-6">
-            „{homeContent.testimonial_quote || 'Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen. Ich habe mich bestens betreut gefühlt und kann EuroAdria jedem Unternehmer und Investor wärmstens empfehlen.'}"
+            „{lang === 'en' 
+              ? (homeContent.testimonial_quote ? homeContent.testimonial_quote : 'Thanks to EuroAdria, I was able to set up my company in Montenegro quickly, safely, and completely stress-free. I felt extremely well looked after and can warmly recommend EuroAdria to every entrepreneur and investor.')
+              : (homeContent.testimonial_quote || 'Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen. Ich habe mich bestens betreut gefühlt und kann EuroAdria jedem Unternehmer und Investor wärmstens empfehlen.')
+            }"
           </blockquote>
           <p className="text-ea-light/70">
-            {homeContent.testimonial_author || 'Maximilian R., Unternehmer aus Deutschland'}
+            {lang === 'en' 
+              ? (homeContent.testimonial_author || 'Maximilian R., Entrepreneur from Germany')
+              : (homeContent.testimonial_author || 'Maximilian R., Unternehmer aus Deutschland')
+            }
           </p>
         </div>
       </section>
@@ -275,7 +291,7 @@ const Home = () => {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-semibold text-ea-dark mb-6">
             {lang === 'en' 
-              ? <>{t('home.ctaTitle').split('Investition')[0]}<span className="text-ea-gold">Investment</span>?</>
+              ? <>Ready for Your <span className="text-ea-gold">Investment</span>?</>
               : (homeContent.cta_title || <>Bereit für Ihre <span className="text-ea-gold">Investition</span>?</>)
             }
           </h2>
@@ -312,7 +328,6 @@ const Home = () => {
       {/* FAQ Section - AEO optimiert */}
       <FAQSection />
     </main>
-    </TranslatePage>
   );
 };
 
