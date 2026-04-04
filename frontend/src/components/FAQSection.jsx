@@ -1,6 +1,5 @@
 import React from 'react';
 import { ChevronDown, Shield, Percent, Flag, Newspaper, Building } from 'lucide-react';
-import T from './T';
 import { useLanguage } from '../context/LanguageContext';
 
 const faqsDe = [
@@ -119,20 +118,20 @@ const FAQSection = () => {
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-12">
           <p className="text-ea-gold text-sm font-bold tracking-widest uppercase mb-3">
-            <T>{lang === 'en' ? 'Frequently Asked Questions' : 'Häufige Fragen'}</T>
+            {lang === 'en' ? 'Frequently Asked Questions' : 'Häufige Fragen'}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-ea-dark mb-4">
-            <T>{lang === 'en' ? 'Your Questions, Our Expertise' : 'Ihre Fragen, unsere Expertise'}</T>
+            {lang === 'en' ? 'Your Questions, Our Expertise' : 'Ihre Fragen, unsere Expertise'}
           </h2>
           <p className="text-ea-dark/60 max-w-2xl mx-auto">
-            <T>{lang === 'en' ? 'Answers from experts referenced by German business media' : 'Antworten von den Experten, die von deutschen Wirtschaftsmedien referenziert werden'}</T>
+            {lang === 'en' ? 'Answers from experts referenced by German business media' : 'Antworten von den Experten, die von deutschen Wirtschaftsmedien referenziert werden'}
           </p>
         </div>
 
         <div className="flex items-center justify-center gap-3 mb-10">
           <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100">
             <Newspaper className="w-4 h-4 text-ea-gold" />
-            <span className="text-sm text-ea-dark/70"><T>{lang === 'en' ? 'Referenced in:' : 'Referenziert in:'}</T></span>
+            <span className="text-sm text-ea-dark/70">{lang === 'en' ? 'Referenced in:' : 'Referenziert in:'}</span>
             <span className="font-semibold text-ea-dark">n-tv</span>
             <span className="text-ea-dark/30">|</span>
             <span className="font-semibold text-ea-dark">RTL</span>
@@ -187,13 +186,13 @@ const FAQSection = () => {
 
         <div className="mt-12 text-center">
           <p className="text-ea-dark/60 mb-4">
-            <T>{lang === 'en' ? 'More questions? Our experts will be happy to advise you.' : 'Weitere Fragen? Unsere Experten beraten Sie gerne.'}</T>
+            {lang === 'en' ? 'More questions? Our experts will be happy to advise you.' : 'Weitere Fragen? Unsere Experten beraten Sie gerne.'}
           </p>
           <a 
             href="/contact"
             className="inline-flex items-center gap-2 px-6 py-3 bg-ea-dark text-white font-semibold rounded-xl hover:bg-ea-navy transition-all"
           >
-            <T>{lang === 'en' ? 'Request Free Consultation' : 'Kostenlose Erstberatung anfragen'}</T>
+            {lang === 'en' ? 'Request Free Consultation' : 'Kostenlose Erstberatung anfragen'}
           </a>
         </div>
       </div>

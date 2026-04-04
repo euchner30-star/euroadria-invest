@@ -4,8 +4,6 @@ import { articlesApi } from '../services/api';
 import { Clock, ArrowRight, Search, Loader2, ChevronRight, RefreshCw } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useLanguage } from '../context/LanguageContext';
-import T from '../components/T';
-import TranslatePage from '../components/TranslatePage';
 
 // Lazy-loaded image component
 const LazyImage = ({ src, alt, className, imagePosition }) => {
@@ -32,7 +30,6 @@ const LazyImage = ({ src, alt, className, imagePosition }) => {
   }, []);
 
   return (
-    <TranslatePage>
     <div ref={imgRef} className={`${className} bg-ea-light`}>
       {isInView && (
         <img
@@ -52,7 +49,6 @@ const LazyImage = ({ src, alt, className, imagePosition }) => {
         </div>
       )}
     </div>
-    </TranslatePage>
   );
 };
 
@@ -71,6 +67,7 @@ const BlogPage = () => {
   });
   const [clusterCounts, setClusterCounts] = useState({});
   const [categories, setCategories] = useState([]);
+  const { lang, t } = useLanguage();
 
   // Debounced search
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -133,12 +130,12 @@ const BlogPage = () => {
       setError(null);
     } catch (err) {
       console.error('Failed to fetch articles:', err);
-      setError('Artikel konnten nicht geladen werden.');
+      setError(lang === 'en' ? 'Articles could not be loaded.' : 'Artikel konnten nicht geladen werden.');
     } finally {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [selectedCluster, debouncedSearch]);
+  }, [selectedCluster, debouncedSearch, lang]);
 
   // Initial fetch and when filters change
   useEffect(() => {
@@ -171,7 +168,7 @@ const BlogPage = () => {
             Insights
           </h1>
           <p className="text-ea-dark/70 text-lg max-w-3xl mx-auto">
-            Tiefgehende Analysen, Marktberichte und praktische Guides für erfolgreiche Investments an der Adria
+            {lang === 'en' ? 'In-depth analyses, market reports and practical guides for successful investments on the Adriatic' : 'Tiefgehende Analysen, Marktberichte und praktische Guides für erfolgreiche Investments an der Adria'}
           </p>
         </div>
 
@@ -187,7 +184,7 @@ const BlogPage = () => {
                   : 'bg-ea-light text-ea-dark hover:bg-ea-gold/20'
               }`}
             >
-              Alle ({pagination.total || Object.values(clusterCounts).reduce((a, b) => a + b, 0)})
+              {lang === 'en' ? 'All' : 'Alle'} ({pagination.total || Object.values(clusterCounts).reduce((a, b) => a + b, 0)})
             </button>
             {categories.map((cat) => (
               <button
@@ -212,7 +209,7 @@ const BlogPage = () => {
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-ea-dark/40" />
             <input
               type="text"
-              placeholder="Artikel durchsuchen..."
+              placeholder={lang === 'en' ? 'Search articles...' : 'Artikel durchsuchen...'}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               data-testid="blog-search-input"
@@ -223,7 +220,7 @@ const BlogPage = () => {
                 onClick={() => setSearchTerm('')}
                 className="absolute right-4 top-1/2 transform -translate-y-1/2 text-ea-dark/40 hover:text-ea-dark"
               >
-                ×
+                x
               </button>
             )}
           </div>
@@ -244,7 +241,7 @@ const BlogPage = () => {
               onClick={() => fetchArticles(1, false)}
               className="mt-4 px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
             >
-              Erneut versuchen
+              {lang === 'en' ? 'Try again' : 'Erneut versuchen'}
             </button>
           </div>
         )}
@@ -256,8 +253,8 @@ const BlogPage = () => {
               <div className="bg-ea-light border border-gray-200 rounded-xl p-12 text-center">
                 <p className="text-ea-dark/70 text-lg">
                   {debouncedSearch 
-                    ? 'Keine Artikel gefunden. Versuchen Sie einen anderen Suchbegriff.'
-                    : 'Keine Artikel in dieser Kategorie.'}
+                    ? (lang === 'en' ? 'No articles found. Try a different search term.' : 'Keine Artikel gefunden. Versuchen Sie einen anderen Suchbegriff.')
+                    : (lang === 'en' ? 'No articles in this category.' : 'Keine Artikel in dieser Kategorie.')}
                 </p>
               </div>
             ) : (
@@ -265,12 +262,12 @@ const BlogPage = () => {
                 {/* Results Info */}
                 <div className="flex items-center justify-between mb-6">
                   <p className="text-ea-dark/50 text-sm">
-                    {pagination.total} Artikel gefunden
-                    {debouncedSearch && ` für "${debouncedSearch}"`}
+                    {pagination.total} {lang === 'en' ? 'articles found' : 'Artikel gefunden'}
+                    {debouncedSearch && ` ${lang === 'en' ? 'for' : 'für'} "${debouncedSearch}"`}
                   </p>
                   {articles.length < pagination.total && (
                     <p className="text-ea-dark/50 text-sm">
-                      Zeige {articles.length} von {pagination.total}
+                      {lang === 'en' ? `Showing ${articles.length} of ${pagination.total}` : `Zeige ${articles.length} von ${pagination.total}`}
                     </p>
                   )}
                 </div>
@@ -301,7 +298,7 @@ const BlogPage = () => {
                         <div className="p-5">
                           <div className="flex items-center space-x-2 mb-2 text-xs text-ea-dark/50">
                             <span>{article.date}</span>
-                            <span>•</span>
+                            <span>-</span>
                             <Clock className="w-3 h-3" />
                             <span>{article.readTime}</span>
                           </div>
@@ -309,7 +306,7 @@ const BlogPage = () => {
                             {article.title}
                           </h3>
                           <div className="flex items-center text-ea-gold text-sm font-medium">
-                            <span>Lesen</span>
+                            <span>{lang === 'en' ? 'Read' : 'Lesen'}</span>
                             <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                           </div>
                         </div>
@@ -330,14 +327,14 @@ const BlogPage = () => {
                       {loadingMore ? (
                         <>
                           <Loader2 className="w-5 h-5 animate-spin" />
-                          Lade...
+                          {lang === 'en' ? 'Loading...' : 'Lade...'}
                         </>
                       ) : (
                         <>
                           <RefreshCw className="w-5 h-5" />
-                          Weitere Artikel laden
+                          {lang === 'en' ? 'Load more articles' : 'Weitere Artikel laden'}
                           <span className="text-white/70 text-sm">
-                            ({pagination.total - articles.length} verbleibend)
+                            ({pagination.total - articles.length} {lang === 'en' ? 'remaining' : 'verbleibend'})
                           </span>
                         </>
                       )}
@@ -349,7 +346,7 @@ const BlogPage = () => {
                 {!pagination.hasMore && articles.length > 12 && (
                   <div className="text-center py-8">
                     <p className="text-ea-dark/50">
-                      Alle {pagination.total} Artikel geladen
+                      {lang === 'en' ? `All ${pagination.total} articles loaded` : `Alle ${pagination.total} Artikel geladen`}
                     </p>
                   </div>
                 )}

@@ -8,7 +8,7 @@ import ExposeLeadGate from '../../components/ExposeLeadGate';
 import SEO from '../../components/SEO';
 import T from '../../components/T';
 import { useLanguage } from '../../context/LanguageContext';
-import TranslatePage from '../../components/TranslatePage';
+
 
 const NiksicPage = () => {
   const [showContactForm, setShowContactForm] = useState(false);
@@ -61,7 +61,7 @@ const NiksicPage = () => {
   ];
 
   return (
-    <TranslatePage>
+    
     <div className="min-h-screen bg-white" data-testid="niksic-page">
       <SEO 
         title="Immobilien Nikšić | Investment Montenegro"
@@ -394,7 +394,7 @@ const NiksicPage = () => {
         </div>
       )}
     </div>
-    </TranslatePage>
+    
   );
 };
 

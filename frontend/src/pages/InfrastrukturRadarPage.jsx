@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Map, FileText, ArrowRight, Shield, TrendingUp, Building2, Plane } from 'lucide-react';
 import SEO from '../components/SEO';
-import T from '../components/T';
 import { useLanguage } from '../context/LanguageContext';
-import TranslatePage from '../components/TranslatePage';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const InfrastrukturRadarPage = () => {
+  const { lang } = useLanguage();
+  const en = lang === 'en';
   const [showRequestForm, setShowRequestForm] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -49,7 +49,6 @@ const InfrastrukturRadarPage = () => {
   };
 
   return (
-    <TranslatePage>
     <div className="min-h-screen bg-ea-dark" data-testid="infrastruktur-radar-page">
       <SEO 
         title="Infrastruktur-Radar | Investment-Potenziale Montenegro"
@@ -88,14 +87,11 @@ const InfrastrukturRadarPage = () => {
           </div>
           
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-4 leading-tight">
-            Exklusiver <span className="text-ea-gold">Infrastruktur-Radar</span>:<br />
-            Investment-Potenziale in Montenegro
+            {en ? <>Exclusive <span className="text-ea-gold">Infrastructure Radar</span>:<br />Investment Potential in Montenegro</> : <>Exklusiver <span className="text-ea-gold">Infrastruktur-Radar</span>:<br />Investment-Potenziale in Montenegro</>}
           </h1>
           
           <p className="text-ea-light/70 text-lg max-w-3xl mb-6">
-            Interaktive Premium-Karte mit Investment-Scores, Infrastrukturprojekten und 
-            EuroAdria-Opportunitätszonen. Analysieren Sie Standorte wie <strong className="text-ea-gold">Andrijevica (94/100)</strong>, 
-            <strong className="text-ea-gold"> Bar (92/100)</strong> und <strong className="text-ea-gold"> Podgorica (90/100)</strong>.
+            {en ? <>Interactive premium map with investment scores, infrastructure projects and EuroAdria opportunity zones. Analyze locations like <strong className="text-ea-gold">Andrijevica (94/100)</strong>, <strong className="text-ea-gold"> Bar (92/100)</strong> and <strong className="text-ea-gold"> Podgorica (90/100)</strong>.</> : <>Interaktive Premium-Karte mit Investment-Scores, Infrastrukturprojekten und EuroAdria-Opportunitätszonen. Analysieren Sie Standorte wie <strong className="text-ea-gold">Andrijevica (94/100)</strong>, <strong className="text-ea-gold"> Bar (92/100)</strong> und <strong className="text-ea-gold"> Podgorica (90/100)</strong>.</>}
           </p>
 
           {/* Quick Stats */}
@@ -391,7 +387,6 @@ const InfrastrukturRadarPage = () => {
         </div>
       )}
     </div>
-    </TranslatePage>
   );
 };
 

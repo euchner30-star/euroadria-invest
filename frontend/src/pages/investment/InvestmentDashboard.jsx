@@ -9,7 +9,7 @@ import SEO from '../../components/SEO';
 import InvestmentHeatmap from '../../components/InvestmentHeatmap';
 import T from '../../components/T';
 import { useLanguage } from '../../context/LanguageContext';
-import TranslatePage from '../../components/TranslatePage';
+
 
 const InvestmentDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -50,7 +50,7 @@ const InvestmentDashboard = () => {
   };
 
   return (
-    <TranslatePage>
+    
     <>
       <SEO 
         title="Investment Dashboard | EuroAdria"
@@ -286,7 +286,7 @@ const InvestmentDashboard = () => {
         </div>
       </div>
     </>
-    </TranslatePage>
+    
   );
 };
 

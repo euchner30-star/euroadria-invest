@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
 import { useLanguage } from '../context/LanguageContext';
-import TranslatePage from '../components/TranslatePage';
 
 const DatenschutzPage = () => {
   const [content, setContent] = useState('');
@@ -30,7 +29,6 @@ const DatenschutzPage = () => {
   }, []);
 
   return (
-    <TranslatePage>
     <div className="min-h-screen pt-28 pb-20 bg-white" data-testid="datenschutz-page">
       <SEO 
         title="Datenschutzerklärung"
@@ -99,7 +97,6 @@ const DatenschutzPage = () => {
         )}
       </div>
     </div>
-    </TranslatePage>
   );
 };
 

@@ -1,116 +1,99 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+// Static German -> English translation dictionary for all <T> usage
+const translations = {
+  // ROI Calculator
+  'ROI-Rechner für Immobilien': 'Real Estate ROI Calculator',
+  'Berechnen Sie jährlichen Cashflow, ROI und Break-Even-Zeitpunkt für Ihre Immobilieninvestition': 'Calculate annual cash flow, ROI and break-even point for your real estate investment',
+  'Eingaben': 'Inputs',
+  'Kaufpreis': 'Purchase Price',
+  'Renovierungskosten': 'Renovation Costs',
+  'Nebenkosten (Notar, Makler, etc.)': 'Additional Costs (Notary, Broker, etc.)',
+  'Monatliche Miete': 'Monthly Rent',
+  'Leerstandsrate (%)': 'Vacancy Rate (%)',
+  'Monatliche Kosten (Verwaltung, Instandhaltung)': 'Monthly Costs (Management, Maintenance)',
+  'ROI Berechnen': 'Calculate ROI',
+  'Berechne...': 'Calculating...',
+  'Ergebnis': 'Result',
+  'Geben Sie Ihre Investitionsdaten ein und klicken Sie auf "ROI Berechnen"': 'Enter your investment data and click "Calculate ROI"',
+  'Jährlicher Cashflow': 'Annual Cash Flow',
+  'Netto-Rendite': 'Net Yield',
+  'Break-Even-Zeitpunkt': 'Break-Even Point',
+  'Gesamtinvestition': 'Total Investment',
+  'Einnahmen-Aufschlüsselung': 'Revenue Breakdown',
+  'Brutto-Mieteinnahmen': 'Gross Rental Income',
+  'Nach Leerstand': 'After Vacancy',
+  'Laufende Kosten': 'Running Costs',
+  'Netto-Mieteinnahmen': 'Net Rental Income',
+  'Hinweise zur Berechnung': 'Calculation Notes',
+  'Die Berechnung berücksichtigt keine Steuern, Finanzierungskosten oder Wertsteigerung': 'The calculation does not account for taxes, financing costs, or appreciation',
+  'Jährlicher Cashflow / Gesamtinvestition × 100': 'Annual Cash Flow / Total Investment × 100',
+  'Gesamtinvestition / Jährlicher Cashflow': 'Total Investment / Annual Cash Flow',
+  'Netto-Mieteinnahmen / Kaufpreis × 100': 'Net Rental Income / Purchase Price × 100',
 
-// Global translation cache (shared across all T components)
-const translationCache = new Map();
+  // Comments
+  'Kommentar hinterlassen': 'Leave a Comment',
+  'Kommentar absenden': 'Submit Comment',
+  'Wird gesendet...': 'Sending...',
+  'Kommentar': 'Comment',
+  'Kommentare': 'Comments',
 
-// Load cache from localStorage on init
-try {
-  const saved = localStorage.getItem('ea_translations');
-  if (saved) {
-    const entries = JSON.parse(saved);
-    entries.forEach(([k, v]) => translationCache.set(k, v));
-  }
-} catch {}
+  // Generic
+  'German text': 'German text',
+  'Mehr erfahren': 'Learn more',
+  'Jetzt Beratung anfragen': 'Request Consultation Now',
+  'Kostenlose Erstberatung anfragen': 'Request Free Consultation',
+  'Zurück': 'Back',
+  'Lesen': 'Read',
+  'Laden...': 'Loading...',
+  'Alle': 'All',
+  'Jahre': 'Years',
+  'Monate': 'Months',
+  'Ja': 'Yes',
+  'Nein': 'No',
+  'Weitere Artikel laden': 'Load More Articles',
+  'Artikel': 'Articles',
+  'Kontakt': 'Contact',
+  'Impressum': 'Imprint',
+  'Datenschutz': 'Privacy Policy',
+  'Blog': 'Blog',
+  'Standorte': 'Locations',
 
-// Batch queue for pending translations
-let batchQueue = [];
-let batchTimer = null;
+  // Trust/Media
+  'Referenziert in n-tv, RTL, Focus, VC Magazin & Kosmo': 'Referenced in n-tv, RTL, Focus, VC Magazin & Kosmo',
+  'Ihr direkter Draht ins Office': 'Your direct line to the office',
+  'Referenziert in:': 'Referenced in:',
 
-const processBatch = async () => {
-  if (batchQueue.length === 0) return;
-
-  const items = [...batchQueue];
-  batchQueue = [];
-
-  const texts = items.map(i => i.text);
-  try {
-    const res = await fetch(`${API_URL}/api/translate/batch`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ texts, source: 'de', target: 'en' }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      data.translations.forEach((translated, idx) => {
-        const key = `de>en:${items[idx].text}`;
-        translationCache.set(key, translated);
-        items[idx].resolve(translated);
-      });
-      // Save to localStorage (keep last 500 entries)
-      try {
-        const entries = [...translationCache.entries()].slice(-500);
-        localStorage.setItem('ea_translations', JSON.stringify(entries));
-      } catch {}
-    } else {
-      items.forEach(i => i.resolve(i.text));
-    }
-  } catch {
-    items.forEach(i => i.resolve(i.text));
-  }
-};
-
-const queueTranslation = (text) => {
-  return new Promise((resolve) => {
-    const key = `de>en:${text}`;
-    const cached = translationCache.get(key);
-    if (cached) {
-      resolve(cached);
-      return;
-    }
-    batchQueue.push({ text, resolve });
-    if (batchTimer) clearTimeout(batchTimer);
-    batchTimer = setTimeout(processBatch, 100);
-  });
+  // FAQ
+  'Häufige Fragen': 'Frequently Asked Questions',
+  'Ihre Fragen, unsere Expertise': 'Your Questions, Our Expertise',
+  'Antworten von den Experten, die von deutschen Wirtschaftsmedien referenziert werden': 'Answers from experts referenced by German business media',
+  'Weitere Fragen? Unsere Experten beraten Sie gerne.': 'More questions? Our experts will be happy to advise you.',
+  'Kostenlose Erstberatung anfragen': 'Request Free Consultation',
 };
 
 /**
- * Auto-translate component. Wraps German text and translates to English when needed.
- * Usage: <T>German text</T>
- * For JSX with mixed content, only translates string children.
+ * T Component - Synchronous Translation
+ * Replaces German text with English translations when language is set to 'en'.
+ * No API calls, no delays - instant translation using a static dictionary.
  */
 const T = ({ children }) => {
   const { lang } = useLanguage();
-  const [translated, setTranslated] = useState(null);
-  const textRef = useRef(typeof children === 'string' ? children : '');
-
-  useEffect(() => {
-    if (lang === 'de' || !children) {
-      setTranslated(null);
-      return;
-    }
-
-    const text = typeof children === 'string' ? children.trim() : '';
-    if (!text) {
-      setTranslated(null);
-      return;
-    }
-    textRef.current = text;
-
-    // Check cache immediately
-    const key = `de>en:${text}`;
-    const cached = translationCache.get(key);
-    if (cached) {
-      setTranslated(cached);
-      return;
-    }
-
-    // Queue for batch translation
-    let cancelled = false;
-    queueTranslation(text).then((result) => {
-      if (!cancelled && textRef.current === text) {
-        setTranslated(result);
-      }
-    });
-
-    return () => { cancelled = true; };
-  }, [lang, children]);
-
-  if (lang === 'de' || typeof children !== 'string') return children;
-  return translated || children;
+  
+  // If German or no children, render as-is
+  if (lang === 'de' || !children) {
+    return <>{children}</>;
+  }
+  
+  // If English, look up translation
+  const text = typeof children === 'string' ? children.trim() : '';
+  if (text && translations[text]) {
+    return <>{translations[text]}</>;
+  }
+  
+  // Fallback: render original text
+  return <>{children}</>;
 };
 
 export default T;
-export { queueTranslation, translationCache };

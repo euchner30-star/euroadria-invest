@@ -10,7 +10,6 @@ import YouTubeSlider from '../components/YouTubeSlider';
 import TrustBar from '../components/TrustBar';
 import NewsletterSignup from '../components/NewsletterSignup';
 import { useLanguage } from '../context/LanguageContext';
-import TranslatePage from '../components/TranslatePage';
 
 const Home = () => {
   const [featuredArticles, setFeaturedArticles] = useState([]);

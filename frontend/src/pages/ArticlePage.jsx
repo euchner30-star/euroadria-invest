@@ -8,7 +8,6 @@ import CommentsSection from '../components/CommentsSection';
 import SEO from '../components/SEO';
 import { parseContentToHTML } from '../utils/contentParser';
 import { useLanguage } from '../context/LanguageContext';
-import TranslatePage from '../components/TranslatePage';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -83,7 +82,6 @@ const ArticlePage = () => {
   }
 
   return (
-    <TranslatePage>
     <div className="min-h-screen pt-24 md:pt-32 pb-20 px-4 md:px-6 bg-white">
       <SEO 
         title={article.title}
@@ -105,7 +103,7 @@ const ArticlePage = () => {
           data-testid="back-to-blog-button"
         >
           <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 group-hover:-translate-x-1 transition-transform" />
-          <span>Zurück zum Blog</span>
+          <span>{lang === 'en' ? 'Back to Blog' : 'Zurück zum Blog'}</span>
         </Link>
 
         {/* Article Header */}
@@ -128,7 +126,7 @@ const ArticlePage = () => {
             </div>
             <div className="flex items-center space-x-1.5 md:space-x-2">
               <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4 text-ea-gold" />
-              <span>{new Date(article.date).toLocaleDateString('de-DE', { 
+              <span>{new Date(article.date).toLocaleDateString(lang === 'en' ? 'en-GB' : 'de-DE', { 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric' 
@@ -136,7 +134,7 @@ const ArticlePage = () => {
             </div>
             <div className="flex items-center space-x-1.5 md:space-x-2">
               <Clock className="w-3.5 h-3.5 md:w-4 md:h-4 text-ea-gold" />
-              <span>{article.readTime} Lesezeit</span>
+              <span>{article.readTime} {lang === 'en' ? 'read time' : 'Lesezeit'}</span>
             </div>
           </div>
 
@@ -173,13 +171,13 @@ const ArticlePage = () => {
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-2">Serbia Executive Access</h3>
                   <p className="text-ea-light/80 text-sm mb-4">
-                    Exklusiver Zugang zu serbischen Regierungskontakten, Infrastrukturprojekten und Investment-Incentives.
+                    {lang === 'en' ? 'Exclusive access to Serbian government contacts, infrastructure projects, and investment incentives.' : 'Exklusiver Zugang zu serbischen Regierungskontakten, Infrastrukturprojekten und Investment-Incentives.'}
                   </p>
                   <Link 
                     to="/serbia-executive" 
                     className="inline-flex items-center gap-2 text-ea-gold hover:text-ea-gold/80 font-medium text-sm"
                   >
-                    Mehr erfahren <ArrowRight className="w-4 h-4" />
+                    {lang === 'en' ? 'Learn more' : 'Mehr erfahren'} <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
               </div>
@@ -203,7 +201,7 @@ const ArticlePage = () => {
             />
           )}
 
-          {/* Download / Exposé Button */}
+          {/* Download / Expose Button */}
           {article.downloadUrl && (
             <div className="my-8 md:my-10 p-5 md:p-8 bg-ea-navy rounded-xl border border-ea-gold/20" data-testid="article-download-section">
               <div className="flex items-center gap-4">
@@ -241,17 +239,17 @@ const ArticlePage = () => {
           {/* CTA Section */}
           <div className="mt-8 md:mt-12 p-5 md:p-8 bg-ea-light rounded-xl border border-ea-gold/20">
             <h3 className="text-xl md:text-2xl font-semibold text-ea-dark mb-2 md:mb-3">
-              Interessiert an Investment-Möglichkeiten?
+              {lang === 'en' ? 'Interested in investment opportunities?' : 'Interessiert an Investment-Möglichkeiten?'}
             </h3>
             <p className="text-ea-dark/70 mb-4 md:mb-6 text-sm md:text-base">
-              Lassen Sie sich von unseren Experten beraten und entdecken Sie exklusive Opportunities.
+              {lang === 'en' ? 'Let our experts advise you and discover exclusive opportunities.' : 'Lassen Sie sich von unseren Experten beraten und entdecken Sie exklusive Opportunities.'}
             </p>
             <Link
               to="/contact"
               className="inline-flex items-center space-x-2 px-5 py-2.5 md:px-6 md:py-3 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all text-sm md:text-base"
               data-testid="article-cta-button"
             >
-              <span>Kostenlose Beratung anfragen</span>
+              <span>{lang === 'en' ? 'Request free consultation' : 'Kostenlose Beratung anfragen'}</span>
               <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
             </Link>
           </div>
@@ -264,7 +262,7 @@ const ArticlePage = () => {
         {relatedArticles.length > 0 && (
           <div className="mt-12 md:mt-16">
             <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-ea-dark mb-6 md:mb-8">
-              Ähnliche <span className="text-ea-gold">Beiträge</span>
+              {lang === 'en' ? <>Related <span className="text-ea-gold">Articles</span></> : <>Ähnliche <span className="text-ea-gold">Beiträge</span></>}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {relatedArticles.map((related) => (
@@ -299,7 +297,6 @@ const ArticlePage = () => {
         )}
       </div>
     </div>
-    </TranslatePage>
   );
 };
 

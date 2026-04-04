@@ -8,7 +8,7 @@ import { investmentApi } from '../../services/api';
 import SEO from '../../components/SEO';
 import T from '../../components/T';
 import { useLanguage } from '../../context/LanguageContext';
-import TranslatePage from '../../components/TranslatePage';
+
 
 const LocationProfile = () => {
   const { city } = useParams();
@@ -70,7 +70,7 @@ const LocationProfile = () => {
   const horizon = TimeHorizonLabel[location.time_horizon] || TimeHorizonLabel.medium;
 
   return (
-    <TranslatePage>
+    
     <>
       <SEO 
         title={`${location.city} Investment Profil | EuroAdria`}
@@ -339,7 +339,7 @@ const LocationProfile = () => {
         </div>
       </div>
     </>
-    </TranslatePage>
+    
   );
 };
 

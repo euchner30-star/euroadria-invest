@@ -5,13 +5,13 @@ import {
   FileText, AlertTriangle, Scale
 } from 'lucide-react';
 import SEO from '../components/SEO';
-import T from '../components/T';
 import { useLanguage } from '../context/LanguageContext';
-import TranslatePage from '../components/TranslatePage';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const CryptoCompliancePage = () => {
+  const { lang } = useLanguage();
+  const en = lang === 'en';
   const [form, setForm] = useState({
     name: '', company: '', email: '', phone: '', volume: '', message: ''
   });
@@ -42,7 +42,6 @@ const CryptoCompliancePage = () => {
   };
 
   return (
-    <TranslatePage>
     <div className="min-h-screen bg-white" data-testid="crypto-compliance-page">
       <SEO 
         title="Compliance & Executive Assessment - Crypto-Banking Serbien"
@@ -214,7 +213,6 @@ const CryptoCompliancePage = () => {
         </div>
       </section>
     </div>
-    </TranslatePage>
   );
 };
 

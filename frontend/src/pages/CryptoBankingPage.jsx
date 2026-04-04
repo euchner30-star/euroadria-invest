@@ -5,13 +5,12 @@ import {
   CreditCard, Building2, BarChart3, ChevronRight
 } from 'lucide-react';
 import SEO from '../components/SEO';
-import T from '../components/T';
 import { useLanguage } from '../context/LanguageContext';
-import TranslatePage from '../components/TranslatePage';
 
 const CryptoBankingPage = () => {
+  const { lang } = useLanguage();
+  const en = lang === 'en';
   return (
-    <TranslatePage>
     <div className="min-h-screen bg-white" data-testid="crypto-banking-page">
       <SEO 
         title="Crypto-Banking & Treasury in Serbien"
@@ -42,23 +41,21 @@ const CryptoBankingPage = () => {
               <span className="text-ea-gold text-sm font-medium">Serbia Executive Access</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Internationale Liquidität und <span className="text-ea-gold">Datensouveränität</span>
+              {en ? <>International Liquidity and <span className="text-ea-gold">Data Sovereignty</span></> : <>Internationale Liquidität und <span className="text-ea-gold">Datensouveränität</span></>}
             </h1>
             <p className="text-lg md:text-xl text-ea-light/80 mb-4 leading-relaxed max-w-3xl">
-              Strategische Begleitung für Unternehmer und Investoren beim Aufbau belastbarer 
-              Krypto-, Treasury- und Banking-Strukturen in Serbien.
+              {en ? 'Strategic guidance for entrepreneurs and investors in building robust crypto, treasury, and banking structures in Serbia.' : 'Strategische Begleitung für Unternehmer und Investoren beim Aufbau belastbarer Krypto-, Treasury- und Banking-Strukturen in Serbien.'}
             </p>
             <p className="text-base text-ea-light/60 mb-8 max-w-3xl">
-              Vollständig legal, orchestriert über lizenzierte Partner und strategisch vorteilhaft 
-              außerhalb der restriktiven EU-Rahmenwerke positioniert.
+              {en ? 'Fully legal, orchestrated through licensed partners, and strategically advantageous — positioned outside restrictive EU frameworks.' : 'Vollständig legal, orchestriert über lizenzierte Partner und strategisch vorteilhaft außerhalb der restriktiven EU-Rahmenwerke positioniert.'}
             </p>
             <div className="flex flex-wrap gap-4">
               <a href="#solutions" className="px-6 py-3 bg-ea-gold text-white font-semibold rounded-lg hover:bg-ea-gold/80 transition-all flex items-center gap-2" data-testid="crypto-cta">
                 <Shield className="w-5 h-5" />
-                Executive Assessment anfragen
+                {en ? 'Request Executive Assessment' : 'Executive Assessment anfragen'}
               </a>
               <Link to="/serbia-executive/crypto-compliance" className="px-6 py-3 bg-white/10 text-white border border-white/20 rounded-lg hover:bg-white/20 transition-all flex items-center gap-2">
-                Compliance & Qualitätsfilter
+                {en ? 'Compliance & Quality Filter' : 'Compliance & Qualitätsfilter'}
                 <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
@@ -71,11 +68,10 @@ const CryptoBankingPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-ea-dark mb-4">
-              Der strategische <span className="text-ea-gold">Standortvorteil</span>
+              {en ? <>The Strategic <span className="text-ea-gold">Location Advantage</span></> : <>Der strategische <span className="text-ea-gold">Standortvorteil</span></>}
             </h2>
             <p className="text-ea-dark/70 text-lg max-w-3xl mx-auto">
-              Regulatorische Arbitrage statt Grauzone. Der europäische Raum wird durch MiCA 
-              und DAC8 zunehmend restriktiver. Serbien bietet eine legale Alternative.
+              {en ? 'Regulatory arbitrage instead of gray zones. The European space is becoming increasingly restrictive through MiCA and DAC8. Serbia offers a legal alternative.' : 'Regulatorische Arbitrage statt Grauzone. Der europäische Raum wird durch MiCA und DAC8 zunehmend restriktiver. Serbien bietet eine legale Alternative.'}
             </p>
           </div>
 
@@ -221,7 +217,6 @@ const CryptoBankingPage = () => {
         </div>
       </section>
     </div>
-    </TranslatePage>
   );
 };
 

@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, MapPin, TrendingUp, ArrowRight, Filter, Mountain, Waves, Factory, Trees } from 'lucide-react';
 import SEO from '../components/SEO';
-import T from '../components/T';
 import { useLanguage } from '../context/LanguageContext';
-import TranslatePage from '../components/TranslatePage';
 
 // Sample property data - in real app would come from API
 const properties = {
@@ -79,15 +77,16 @@ const properties = {
 };
 
 const ImmobilienangebotPage = () => {
+  const { lang } = useLanguage();
+  const en = lang === 'en';
   const [selectedType, setSelectedType] = useState('all');
   const regions = Object.values(properties);
 
   return (
-    <TranslatePage>
     <div className="min-h-screen pt-28 pb-20 bg-white">
       <SEO 
-        title="Immobilienangebot Montenegro | Apartments & Investment"
-        description="Exklusive Immobilien in Montenegro: Apartments am Skadar-See, in Žabljak, Budva und Nikšić. Investment-Scores, ROI-Analysen und Premium-Objekte für DACH-Investoren."
+        title={en ? "Real Estate Offering Montenegro | Apartments & Investment" : "Immobilienangebot Montenegro | Apartments & Investment"}
+        description={en ? "Exclusive real estate in Montenegro: Apartments at Lake Skadar, in Žabljak, Budva and Nikšić. Investment scores, ROI analyses and premium properties for DACH investors." : "Exklusive Immobilien in Montenegro: Apartments am Skadar-See, in Žabljak, Budva und Nikšić. Investment-Scores, ROI-Analysen und Premium-Objekte für DACH-Investoren."}
         url="/immobilienangebot"
       />
 
@@ -99,11 +98,10 @@ const ImmobilienangebotPage = () => {
             <span className="text-ea-dark font-semibold text-sm">Premium Investment Properties</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-semibold text-ea-dark mb-6">
-            Immobilien<span className="text-ea-gold">angebot</span> Montenegro
+            {en ? <>Real Estate <span className="text-ea-gold">Offering</span> Montenegro</> : <>Immobilien<span className="text-ea-gold">angebot</span> Montenegro</>}
           </h1>
           <p className="text-ea-dark/70 text-lg max-w-3xl mx-auto">
-            Entdecken Sie exklusive Apartments in den aufstrebenden Regionen Montenegros. 
-            Jedes Objekt wurde von EuroAdria auf Investment-Potenzial geprüft.
+            {en ? 'Discover exclusive apartments in the emerging regions of Montenegro. Each property has been evaluated by EuroAdria for investment potential.' : 'Entdecken Sie exklusive Apartments in den aufstrebenden Regionen Montenegros. Jedes Objekt wurde von EuroAdria auf Investment-Potenzial geprüft.'}
           </p>
         </div>
 
@@ -208,7 +206,6 @@ const ImmobilienangebotPage = () => {
         </div>
       </div>
     </div>
-    </TranslatePage>
   );
 };
 

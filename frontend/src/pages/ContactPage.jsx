@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Send, CheckSquare, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useLanguage } from '../context/LanguageContext';
-import TranslatePage from '../components/TranslatePage';
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -73,7 +72,6 @@ const ContactPage = () => {
   };
 
   return (
-    <TranslatePage>
     <div className="min-h-screen pt-32 pb-20 px-6 bg-white">
       <SEO 
         title="Kontakt"
@@ -316,7 +314,6 @@ const ContactPage = () => {
         </div>
       </div>
     </div>
-    </TranslatePage>
   );
 };
 

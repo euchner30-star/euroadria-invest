@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
 import { useLanguage } from '../context/LanguageContext';
-import TranslatePage from '../components/TranslatePage';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -32,7 +31,6 @@ const AGBPage = () => {
   }, []);
 
   return (
-    <TranslatePage>
     <div className="min-h-screen pt-28 pb-20 bg-white" data-testid="agb-page">
       <SEO 
         title="Allgemeine Geschäftsbedingungen (AGB)"
@@ -98,12 +96,11 @@ const AGBPage = () => {
           </>
         ) : (
           <div className="text-center py-12 text-ea-dark/50">
-            <p>Die AGB werden derzeit aktualisiert. Bitte kontaktieren Sie uns bei Fragen.</p>
+            <p>{lang === 'en' ? 'The terms & conditions are currently being updated. Please contact us if you have questions.' : 'Die AGB werden derzeit aktualisiert. Bitte kontaktieren Sie uns bei Fragen.'}</p>
           </div>
         )}
       </div>
     </div>
-    </TranslatePage>
   );
 };
 

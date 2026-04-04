@@ -8,7 +8,7 @@ import ExposeLeadGate from '../../components/ExposeLeadGate';
 import SEO from '../../components/SEO';
 import T from '../../components/T';
 import { useLanguage } from '../../context/LanguageContext';
-import TranslatePage from '../../components/TranslatePage';
+
 
 const SkadarLakePage = () => {
   const [showContactForm, setShowContactForm] = useState(false);
@@ -61,7 +61,7 @@ const SkadarLakePage = () => {
   ];
 
   return (
-    <TranslatePage>
+    
     <div className="min-h-screen bg-white" data-testid="skadar-lake-page">
       <SEO 
         title="Immobilien Skadar-Lake | Investment Montenegro"
@@ -394,7 +394,7 @@ const SkadarLakePage = () => {
         </div>
       )}
     </div>
-    </TranslatePage>
+    
   );
 };
 
