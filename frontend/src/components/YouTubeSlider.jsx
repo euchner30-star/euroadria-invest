@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Play, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const videos = [
@@ -72,15 +72,56 @@ const VideoCard = ({ video }) => {
 
 const YouTubeSlider = () => {
   const scrollRef = useRef(null);
+  const pausedRef = useRef(false);
   const duplicated = [...videos, ...videos];
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    let animFrame;
+    const speed = 0.6;
+
+    const step = () => {
+      if (!pausedRef.current && el) {
+        el.scrollLeft += speed;
+        if (el.scrollLeft >= el.scrollWidth / 2) {
+          el.scrollLeft = 0;
+        }
+      }
+      animFrame = requestAnimationFrame(step);
+    };
+    animFrame = requestAnimationFrame(step);
+
+    const pause = () => { pausedRef.current = true; };
+    const resume = () => { setTimeout(() => { pausedRef.current = false; }, 1500); };
+
+    el.addEventListener('pointerdown', pause);
+    el.addEventListener('pointerup', resume);
+    el.addEventListener('mouseenter', pause);
+    el.addEventListener('mouseleave', resume);
+    el.addEventListener('touchstart', pause, { passive: true });
+    el.addEventListener('touchend', resume);
+
+    return () => {
+      cancelAnimationFrame(animFrame);
+      el.removeEventListener('pointerdown', pause);
+      el.removeEventListener('pointerup', resume);
+      el.removeEventListener('mouseenter', pause);
+      el.removeEventListener('mouseleave', resume);
+      el.removeEventListener('touchstart', pause);
+      el.removeEventListener('touchend', resume);
+    };
+  }, []);
 
   const scroll = (direction) => {
     if (scrollRef.current) {
+      pausedRef.current = true;
       const amount = 360;
       scrollRef.current.scrollBy({
         left: direction === 'left' ? -amount : amount,
         behavior: 'smooth',
       });
+      setTimeout(() => { pausedRef.current = false; }, 2000);
     }
   };
 
@@ -136,7 +177,7 @@ const YouTubeSlider = () => {
       <div className="relative">
         <div
           ref={scrollRef}
-          className="flex gap-5 overflow-x-auto scroll-smooth px-4 sm:px-6 pb-4 no-scrollbar animate-scroll-touch"
+          className="flex gap-5 overflow-x-auto scroll-smooth px-4 sm:px-6 pb-4 no-scrollbar"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
         >
           {duplicated.map((video, i) => (
