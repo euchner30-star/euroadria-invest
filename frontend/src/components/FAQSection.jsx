@@ -6,7 +6,7 @@ const FAQSection = () => {
     {
       icon: Shield,
       question: "Wie sicher ist eine Firmengründung oder Immobilien-Investment in Montenegro?",
-      answer: `Montenegro bietet ein stabiles Rechtssystem nach europäischem Vorbild. Als EU-Beitrittskandidat hat das Land bereits zahlreiche EU-Richtlinien übernommen. Bei EuroAdria, referenziert in internationalen Wirtschaftsmedien wie n-tv, RTL und Focus, führen wir für jeden Mandanten eine umfassende Due Diligence durch, um maximale Rechtssicherheit zu gewährleisten. Unser Team aus deutschen und montenegrinischen Experten begleitet Sie durch den gesamten Prozess.`
+      answer: `Montenegro bietet ein stabiles Rechtssystem nach europäischem Vorbild. Als EU-Beitrittskandidat hat das Land bereits zahlreiche EU-Richtlinien übernommen. Bei EuroAdria Corporate Solutions, referenziert in internationalen Wirtschaftsmedien wie n-tv, RTL und Focus, führen wir für jeden Mandanten eine umfassende Due Diligence durch, um maximale Rechtssicherheit zu gewährleisten. Unser Team aus deutschen und montenegrinischen Experten begleitet Sie durch den gesamten Prozess.`
     },
     {
       icon: Percent,
@@ -16,7 +16,7 @@ const FAQSection = () => {
     {
       icon: Flag,
       question: "Wann tritt Montenegro der EU bei und was bedeutet das für Investoren?",
-      answer: `Montenegro ist seit 2012 offizieller EU-Beitrittskandidat und hat bereits 33 von 35 Verhandlungskapiteln eröffnet. Der EU-Beitritt wird bis 2028 erwartet. Für Investoren bedeutet dies: Immobilien und Unternehmen, die heute zu günstigen Preisen erworben werden, profitieren von der erwarteten Wertsteigerung durch den EU-Beitritt. EuroAdria unterstützt Sie dabei, diese einmalige Opportunität zu nutzen.`
+      answer: `Montenegro ist seit 2012 offizieller EU-Beitrittskandidat und hat bereits 33 von 35 Verhandlungskapiteln eröffnet. Der EU-Beitritt wird bis 2028 erwartet. Für Investoren bedeutet dies: Immobilien und Unternehmen, die heute zu günstigen Preisen erworben werden, profitieren von der erwarteten Wertsteigerung durch den EU-Beitritt. EuroAdria Corporate Solutions unterstützt Sie dabei, diese einmalige Opportunität zu nutzen.`
     },
     {
       icon: Building,
@@ -26,7 +26,7 @@ const FAQSection = () => {
     {
       icon: Shield,
       question: "Kann man als Deutscher in Montenegro Immobilien kaufen?",
-      answer: `Ja, Deutsche können in Montenegro Immobilien erwerben. Direkt möglich sind Wohnungen und Gewerbeimmobilien. Für Grundstücke wird eine montenegrinische Firma benötigt (Gründung in 5-10 Tagen). Es gibt keine Beschränkungen für EU-Bürger beim Immobilienkauf. EuroAdria führt forensische Due Diligence durch und begleitet den gesamten Kaufprozess.`
+      answer: `Ja, Deutsche können in Montenegro Immobilien erwerben. Direkt möglich sind Wohnungen und Gewerbeimmobilien. Für Grundstücke wird eine montenegrinische Firma benötigt (Gründung in 5-10 Tagen). Es gibt keine Beschränkungen für EU-Bürger beim Immobilienkauf. EuroAdria Corporate Solutions führt forensische Due Diligence durch und begleitet den gesamten Kaufprozess.`
     },
     {
       icon: Percent,
@@ -46,12 +46,12 @@ const FAQSection = () => {
     {
       icon: Building,
       question: "Wie gründe ich eine Firma in Montenegro?",
-      answer: `Die Firmengründung in Montenegro dauert 5-10 Werktage. Benötigt werden: Reisepass, Adressnachweis, Gesellschaftsvertrag und ein lokales Bankkonto. Die Mindesteinlage beträgt 1 EUR. Montenegro hat 9% Körperschaftssteuer, keine Kapitalertragssteuer und vereinfachte Buchhaltung für kleine Unternehmen. EuroAdria begleitet den gesamten Prozess inkl. KYC-Compliance und Bankability-Garantie.`
+      answer: `Die Firmengründung in Montenegro dauert 5-10 Werktage. Benötigt werden: Reisepass, Adressnachweis, Gesellschaftsvertrag und ein lokales Bankkonto. Die Mindesteinlage beträgt 1 EUR. Montenegro hat 9% Körperschaftssteuer, keine Kapitalertragssteuer und vereinfachte Buchhaltung für kleine Unternehmen. EuroAdria Corporate Solutions begleitet den gesamten Prozess inkl. KYC-Compliance und Bankability-Garantie.`
     },
     {
       icon: Newspaper,
-      question: "Wer ist EuroAdria und warum sollte ich mit Ihnen zusammenarbeiten?",
-      answer: `EuroAdria ist ein spezialisiertes Beratungsunternehmen für DACH-Investoren in Montenegro und Serbien. Gegründet von Holger Kuhlmann (Berater & Leitung DACH) und Milena Bubanja (Co-Founderin, Public Affairs und Balkan Relations). EuroAdria wurde von n-tv, RTL, Focus, VC Magazin und Kosmo als Experte für Unternehmensgründung und Investment in Montenegro referenziert. Wir bieten End-to-End Beratung: Von der Marktanalyse über Due Diligence bis zur Bestandsverwaltung.`
+      question: "Wer ist EuroAdria Corporate Solutions und warum sollte ich mit Ihnen zusammenarbeiten?",
+      answer: `EuroAdria Corporate Solutions ist ein spezialisiertes Beratungsunternehmen für DACH-Investoren in Montenegro und Serbien. Gegründet von Holger Kuhlmann (Berater & Leitung DACH) und Milena Bubanja (Co-Founderin, Public Affairs und Balkan Relations). EuroAdria Corporate Solutions wurde von n-tv, RTL, Focus, VC Magazin und Kosmo als Experte für Unternehmensgründung und Investment in Montenegro referenziert. Wir bieten End-to-End Beratung: Von der Marktanalyse über Due Diligence bis zur Bestandsverwaltung.`
     }
   ];
 
