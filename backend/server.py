@@ -1066,7 +1066,8 @@ async def get_articles_list(
     category: Optional[str] = None,
     page: int = 1,
     limit: int = 12,
-    search: Optional[str] = None
+    search: Optional[str] = None,
+    lang: Optional[str] = None
 ):
     """Get paginated article list for blog page (lightweight - no content)"""
     query = {}
@@ -1086,6 +1087,16 @@ async def get_articles_list(
     # Get paginated results
     skip = (page - 1) * limit
     articles = await db.articles.find(query, BLOG_LIST_FIELDS).sort([("sortOrder", 1), ("date", -1)]).skip(skip).limit(limit).to_list(limit)
+    
+    # Translate titles and excerpts if lang=en
+    if lang == "en":
+        for art in articles:
+            if art.get("title"):
+                art["title"] = await _get_or_translate(art["title"], "de", "en")
+            if art.get("excerpt"):
+                art["excerpt"] = await _get_or_translate(art["excerpt"], "de", "en")
+            if art.get("category"):
+                art["category"] = await _get_or_translate(art["category"], "de", "en")
     
     return {
         "articles": articles,

@@ -111,7 +111,8 @@ const BlogPage = () => {
         page,
         limit: 12,
         cluster: selectedCluster !== 'All' ? selectedCluster : null,
-        search: debouncedSearch || null
+        search: debouncedSearch || null,
+        lang: lang === 'en' ? 'en' : null
       });
 
       if (append) {

@@ -24,10 +24,11 @@ export const articlesApi = {
   },
 
   // Paginated lightweight list for blog page (no content field)
-  getList: async ({ page = 1, limit = 12, cluster = null, search = null } = {}) => {
+  getList: async ({ page = 1, limit = 12, cluster = null, search = null, lang = null } = {}) => {
     const params = new URLSearchParams({ page: page.toString(), limit: limit.toString() });
     if (cluster && cluster !== 'All') params.append('cluster', cluster);
     if (search) params.append('search', search);
+    if (lang) params.append('lang', lang);
     
     const response = await fetch(`${API_BASE_URL}/api/articles/list?${params}`);
     if (!response.ok) {

@@ -16,6 +16,7 @@ const InvestmentDashboard = () => {
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const { lang } = useLanguage();
+  const en = lang === 'en';
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -68,7 +69,7 @@ const InvestmentDashboard = () => {
               Balkan Investment Dashboard
             </h1>
             <p className="text-ea-light/70 text-lg max-w-2xl mx-auto">
-              Datengetriebene Analyse der besten Investmentstandorte in Montenegro und Serbien
+              {en ? 'Data-driven analysis of the best investment locations in Montenegro and Serbia' : 'Datengetriebene Analyse der besten Investmentstandorte in Montenegro und Serbien'}
             </p>
           </div>
         </div>
@@ -79,14 +80,14 @@ const InvestmentDashboard = () => {
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5">
               <div className="flex items-center space-x-3 mb-2">
                 <MapPin className="w-5 h-5 text-ea-gold" />
-                <span className="text-ea-light/60 text-sm">Standorte</span>
+                <span className="text-ea-light/60 text-sm">{en ? 'Locations' : 'Standorte'}</span>
               </div>
               <p className="text-3xl font-bold text-white">{stats?.total_locations || 0}</p>
             </div>
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5">
               <div className="flex items-center space-x-3 mb-2">
                 <Building2 className="w-5 h-5 text-ea-gold" />
-                <span className="text-ea-light/60 text-sm">Infrastruktur</span>
+                <span className="text-ea-light/60 text-sm">{en ? 'Infrastructure' : 'Infrastruktur'}</span>
               </div>
               <p className="text-3xl font-bold text-white">{stats?.total_infrastructure || 0}</p>
             </div>
@@ -263,8 +264,8 @@ const InvestmentDashboard = () => {
               className="bg-gradient-to-r from-ea-gold/20 to-ea-gold/5 border border-ea-gold/30 rounded-2xl p-6 hover:border-ea-gold/50 transition-all group"
             >
               <BarChart3 className="w-8 h-8 text-ea-gold mb-3" />
-              <h3 className="text-white font-bold text-lg mb-1">Standortvergleich</h3>
-              <p className="text-ea-light/60 text-sm">Vergleichen Sie mehrere Städte nach Investment-Kennzahlen</p>
+              <h3 className="text-white font-bold text-lg mb-1">{en ? 'Location Comparison' : 'Standortvergleich'}</h3>
+              <p className="text-ea-light/60 text-sm">{en ? 'Compare multiple cities by investment metrics' : 'Vergleichen Sie mehrere Städte nach Investment-Kennzahlen'}</p>
             </Link>
             <Link 
               to="/investment/rechner"
@@ -280,7 +281,7 @@ const InvestmentDashboard = () => {
             >
               <MapPin className="w-8 h-8 text-blue-400 mb-3" />
               <h3 className="text-white font-bold text-lg mb-1">Infrastruktur-Karte</h3>
-              <p className="text-ea-light/60 text-sm">Interaktive Karte aller Standorte und Projekte</p>
+              <p className="text-ea-light/60 text-sm">{en ? 'Interactive map of all locations and projects' : 'Interaktive Karte aller Standorte und Projekte'}</p>
             </Link>
           </div>
         </div>
