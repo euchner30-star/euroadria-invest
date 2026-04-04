@@ -38,6 +38,7 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - AGB-Seite mit Admin Panel Editor (April 2026)
 
 ### Completed Tasks (Latest First)
+- Bulk Import Funktion: CSV, Excel (.xlsx), Word (.docx) Upload im Admin Panel mit automatischer Kategorie-Zuordnung (4. April 2026)
 - Google Site Verification Meta-Tag + HTML-Datei hinzugefuegt (3. April 2026)
 - Google Analytics GA4 (G-KZK813E3BS) integriert (3. April 2026)
 - 5 Medien-Erwaehnungen (n-tv, RTL, Focus, VC Magazin, Kosmo): MediaBadge, TrustBar, FAQ, Schema.org, Blog-Artikel aktualisiert (4. April 2026)
