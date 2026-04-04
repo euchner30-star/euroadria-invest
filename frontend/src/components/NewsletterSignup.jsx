@@ -1,12 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { Mail, CheckCircle, Loader2, ArrowRight } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const NewsletterSignup = ({ variant = 'inline' }) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const [status, setStatus] = useState('idle'); // idle | loading | success | error
+  const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
   const sectionRef = useRef(null);
+  const { lang, t } = useLanguage();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,11 +30,11 @@ const NewsletterSignup = ({ variant = 'inline' }) => {
         }, 100);
       } else {
         setStatus('error');
-        setMessage(data.detail || 'Fehler bei der Anmeldung');
+        setMessage(data.detail || (lang === 'en' ? 'Error subscribing' : 'Fehler bei der Anmeldung'));
       }
     } catch {
       setStatus('error');
-      setMessage('Verbindungsfehler. Bitte versuchen Sie es erneut.');
+      setMessage(lang === 'en' ? 'Connection error. Please try again.' : 'Verbindungsfehler. Bitte versuchen Sie es erneut.');
     }
   };
 
@@ -53,17 +55,17 @@ const NewsletterSignup = ({ variant = 'inline' }) => {
             <Mail className="w-7 h-7 text-ea-gold" />
           </div>
           <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
-            Newsletter abonnieren
+            {t('newsletter.title')}
           </h3>
           <p className="text-white/60 mb-8 text-base">
-            Erhalten Sie exklusive Investment-Insights, Marktanalysen und Neuigkeiten zu Immobilien am Balkan.
+            {lang === 'en' ? 'Receive exclusive investment insights, market analyses and news about Balkan real estate.' : 'Erhalten Sie exklusive Investment-Insights, Marktanalysen und Neuigkeiten zu Immobilien am Balkan.'}
           </p>
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Ihr Name"
+              placeholder={lang === 'en' ? 'Your Name' : 'Ihr Name'}
               className="flex-1 bg-white/10 border border-white/20 rounded-xl px-5 py-3.5 text-white placeholder-white/40 focus:outline-none focus:border-ea-gold"
               data-testid="newsletter-name"
             />
@@ -72,7 +74,7 @@ const NewsletterSignup = ({ variant = 'inline' }) => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Ihre E-Mail *"
+              placeholder={lang === 'en' ? 'Your Email *' : 'Ihre E-Mail *'}
               className="flex-1 bg-white/10 border border-white/20 rounded-xl px-5 py-3.5 text-white placeholder-white/40 focus:outline-none focus:border-ea-gold"
               data-testid="newsletter-email"
             />
@@ -85,14 +87,14 @@ const NewsletterSignup = ({ variant = 'inline' }) => {
               {status === 'loading' ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <><span>Anmelden</span><ArrowRight className="w-4 h-4" /></>
+                <><span>{lang === 'en' ? 'Subscribe' : 'Anmelden'}</span><ArrowRight className="w-4 h-4" /></>
               )}
             </button>
           </form>
           {status === 'error' && (
             <p className="text-red-400 text-sm mt-3">{message}</p>
           )}
-          <p className="text-white/30 text-xs mt-4">Kein Spam. Jederzeit abbestellbar. Ihre Daten sind sicher.</p>
+          <p className="text-white/30 text-xs mt-4">{lang === 'en' ? 'No spam. Cancel anytime. Your data is safe.' : 'Kein Spam. Jederzeit abbestellbar. Ihre Daten sind sicher.'}</p>
         </div>
       </div>
     );
@@ -106,7 +108,7 @@ const NewsletterSignup = ({ variant = 'inline' }) => {
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="Ihre E-Mail"
+        placeholder={lang === 'en' ? 'Your Email' : 'Ihre E-Mail'}
         className="flex-1 bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white placeholder-white/40 text-sm focus:outline-none focus:border-ea-gold"
         data-testid="newsletter-email-inline"
       />
@@ -116,7 +118,7 @@ const NewsletterSignup = ({ variant = 'inline' }) => {
         className="bg-ea-gold text-ea-dark font-semibold px-4 py-2.5 rounded-lg hover:bg-ea-gold/90 transition-all disabled:opacity-50 text-sm"
         data-testid="newsletter-submit-inline"
       >
-        {status === 'loading' ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Anmelden'}
+        {status === 'loading' ? <Loader2 className="w-4 h-4 animate-spin" /> : (lang === 'en' ? 'Subscribe' : 'Anmelden')}
       </button>
     </form>
   );

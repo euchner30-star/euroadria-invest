@@ -4,6 +4,8 @@ import { articlesApi } from '../services/api';
 import { Clock, ArrowRight, Search, Loader2, ChevronRight, RefreshCw } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useLanguage } from '../context/LanguageContext';
+import T from '../components/T';
+import TranslatePage from '../components/TranslatePage';
 
 // Lazy-loaded image component
 const LazyImage = ({ src, alt, className, imagePosition }) => {
@@ -30,6 +32,7 @@ const LazyImage = ({ src, alt, className, imagePosition }) => {
   }, []);
 
   return (
+    <TranslatePage>
     <div ref={imgRef} className={`${className} bg-ea-light`}>
       {isInView && (
         <img
@@ -49,6 +52,7 @@ const LazyImage = ({ src, alt, className, imagePosition }) => {
         </div>
       )}
     </div>
+    </TranslatePage>
   );
 };
 

@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Map, FileText, ArrowRight, Shield, TrendingUp, Building2, Plane } from 'lucide-react';
 import SEO from '../components/SEO';
+import T from '../components/T';
+import { useLanguage } from '../context/LanguageContext';
+import TranslatePage from '../components/TranslatePage';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -46,6 +49,7 @@ const InfrastrukturRadarPage = () => {
   };
 
   return (
+    <TranslatePage>
     <div className="min-h-screen bg-ea-dark" data-testid="infrastruktur-radar-page">
       <SEO 
         title="Infrastruktur-Radar | Investment-Potenziale Montenegro"
@@ -387,6 +391,7 @@ const InfrastrukturRadarPage = () => {
         </div>
       )}
     </div>
+    </TranslatePage>
   );
 };
 

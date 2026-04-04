@@ -6,6 +6,9 @@ import {
 } from 'lucide-react';
 import ExposeLeadGate from '../../components/ExposeLeadGate';
 import SEO from '../../components/SEO';
+import T from '../../components/T';
+import { useLanguage } from '../../context/LanguageContext';
+import TranslatePage from '../../components/TranslatePage';
 
 const ZabljakPage = () => {
   const [showContactForm, setShowContactForm] = useState(false);
@@ -58,6 +61,7 @@ const ZabljakPage = () => {
   ];
 
   return (
+    <TranslatePage>
     <div className="min-h-screen bg-white" data-testid="zabljak-page">
       <SEO 
         title="Immobilien Žabljak | Investment Montenegro"
@@ -389,6 +393,7 @@ const ZabljakPage = () => {
         </div>
       )}
     </div>
+    </TranslatePage>
   );
 };
 

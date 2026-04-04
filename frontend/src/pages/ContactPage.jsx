@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Send, CheckSquare, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import SEO from '../components/SEO';
+import { useLanguage } from '../context/LanguageContext';
+import TranslatePage from '../components/TranslatePage';
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const ContactPage = () => {
+  const { lang, t } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -49,20 +52,20 @@ const ContactPage = () => {
       if (response.ok) {
         setStatus({ 
           type: 'success', 
-          message: data.message || 'Vielen Dank für Ihre Nachricht! Wir melden uns zeitnah bei Ihnen.' 
+          message: data.message || (lang === 'en' ? 'Thank you for your message! We will get back to you shortly.' : 'Vielen Dank für Ihre Nachricht! Wir melden uns zeitnah bei Ihnen.')
         });
         setFormData({ name: '', email: '', phone: '', subject: '', message: '', privacyConsent: false });
       } else {
         setStatus({ 
           type: 'error', 
-          message: 'Es gab einen Fehler. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt per E-Mail.' 
+          message: lang === 'en' ? 'There was an error. Please try again or contact us directly by email.' : 'Es gab einen Fehler. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt per E-Mail.' 
         });
       }
     } catch (error) {
       console.error('Contact form error:', error);
       setStatus({ 
         type: 'error', 
-        message: 'Verbindungsfehler. Bitte kontaktieren Sie uns direkt unter office@euroadria.me' 
+        message: lang === 'en' ? 'Connection error. Please contact us directly at office@euroadria.me' : 'Verbindungsfehler. Bitte kontaktieren Sie uns direkt unter office@euroadria.me' 
       });
     } finally {
       setIsSubmitting(false);
@@ -70,6 +73,7 @@ const ContactPage = () => {
   };
 
   return (
+    <TranslatePage>
     <div className="min-h-screen pt-32 pb-20 px-6 bg-white">
       <SEO 
         title="Kontakt"
@@ -80,10 +84,10 @@ const ContactPage = () => {
         {/* Page Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-semibold text-ea-dark mb-6">
-            Kontakt<span className="text-ea-gold">aufnahme</span>
+            {lang === 'en' ? <><span className="text-ea-gold">Contact</span> Us</> : <>Kontakt<span className="text-ea-gold">aufnahme</span></>}
           </h1>
           <p className="text-ea-dark/70 text-lg max-w-2xl mx-auto">
-            Lassen Sie uns über Ihre Investment-Ziele sprechen. Wir freuen uns auf Ihre Nachricht.
+            {lang === 'en' ? "Let's talk about your investment goals. We look forward to your message." : 'Lassen Sie uns über Ihre Investment-Ziele sprechen. Wir freuen uns auf Ihre Nachricht.'}
           </p>
         </div>
 
@@ -124,7 +128,7 @@ const ContactPage = () => {
                   <MapPin className="w-6 h-6 text-ea-gold" />
                 </div>
                 <div>
-                  <h3 className="text-ea-dark font-semibold mb-1">Adresse</h3>
+                  <h3 className="text-ea-dark font-semibold mb-1">{lang === 'en' ? 'Address' : 'Adresse'}</h3>
                   <p className="text-ea-dark/70 text-sm">
                     Marka Miljanova 12<br />
                     Novi Sad, Serbien
@@ -134,19 +138,19 @@ const ContactPage = () => {
             </div>
 
             <div className="bg-ea-light border border-gray-200 rounded-xl p-6">
-              <h3 className="text-ea-dark font-semibold mb-3">Öffnungszeiten</h3>
+              <h3 className="text-ea-dark font-semibold mb-3">{lang === 'en' ? 'Business Hours' : 'Öffnungszeiten'}</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between text-ea-dark/70">
-                  <span>Montag - Freitag</span>
+                  <span>{lang === 'en' ? 'Monday - Friday' : 'Montag - Freitag'}</span>
                   <span>9:00 - 18:00</span>
                 </div>
                 <div className="flex justify-between text-ea-dark/70">
-                  <span>Samstag</span>
+                  <span>{lang === 'en' ? 'Saturday' : 'Samstag'}</span>
                   <span>10:00 - 14:00</span>
                 </div>
                 <div className="flex justify-between text-ea-dark/70">
-                  <span>Sonntag</span>
-                  <span>Geschlossen</span>
+                  <span>{lang === 'en' ? 'Sunday' : 'Sonntag'}</span>
+                  <span>{lang === 'en' ? 'Closed' : 'Geschlossen'}</span>
                 </div>
               </div>
             </div>
@@ -156,7 +160,7 @@ const ContactPage = () => {
           <div className="lg:col-span-2">
             <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
               <h2 className="text-2xl font-semibold text-ea-dark mb-6">
-                Senden Sie uns eine <span className="text-ea-gold">Nachricht</span>
+                {lang === 'en' ? <>Send us a <span className="text-ea-gold">Message</span></> : <>Senden Sie uns eine <span className="text-ea-gold">Nachricht</span></>}
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -174,7 +178,7 @@ const ContactPage = () => {
                       required
                       data-testid="contact-name-input"
                       className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark placeholder-ea-dark/40 focus:outline-none focus:border-ea-gold focus:ring-2 focus:ring-ea-gold/20 transition-all"
-                      placeholder="Ihr Name"
+                      placeholder={lang === 'en' ? 'Your Name' : 'Ihr Name'}
                     />
                   </div>
 
@@ -191,7 +195,7 @@ const ContactPage = () => {
                       required
                       data-testid="contact-email-input"
                       className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark placeholder-ea-dark/40 focus:outline-none focus:border-ea-gold focus:ring-2 focus:ring-ea-gold/20 transition-all"
-                      placeholder="ihre.email@beispiel.de"
+                      placeholder={lang === 'en' ? 'your.email@example.com' : 'ihre.email@beispiel.de'}
                     />
                   </div>
                 </div>
@@ -199,7 +203,7 @@ const ContactPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="phone" className="block text-ea-dark text-sm font-medium mb-2">
-                      Telefon
+                      {lang === 'en' ? 'Phone' : 'Telefon'}
                     </label>
                     <input
                       type="tel"
@@ -215,7 +219,7 @@ const ContactPage = () => {
 
                   <div>
                     <label htmlFor="subject" className="block text-ea-dark text-sm font-medium mb-2">
-                      Betreff *
+                      {lang === 'en' ? 'Subject *' : 'Betreff *'}
                     </label>
                     <input
                       type="text"
@@ -226,14 +230,14 @@ const ContactPage = () => {
                       required
                       data-testid="contact-subject-input"
                       className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark placeholder-ea-dark/40 focus:outline-none focus:border-ea-gold focus:ring-2 focus:ring-ea-gold/20 transition-all"
-                      placeholder="Worum geht es?"
+                      placeholder={lang === 'en' ? 'What is this about?' : 'Worum geht es?'}
                     />
                   </div>
                 </div>
 
                 <div>
                   <label htmlFor="message" className="block text-ea-dark text-sm font-medium mb-2">
-                    Nachricht *
+                    {lang === 'en' ? 'Message *' : 'Nachricht *'}
                   </label>
                   <textarea
                     id="message"
@@ -244,7 +248,7 @@ const ContactPage = () => {
                     rows="6"
                     data-testid="contact-message-input"
                     className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark placeholder-ea-dark/40 focus:outline-none focus:border-ea-gold focus:ring-2 focus:ring-ea-gold/20 transition-all resize-none"
-                    placeholder="Teilen Sie uns Ihre Fragen oder Ihr Anliegen mit..."
+                    placeholder={lang === 'en' ? 'Share your questions or concerns with us...' : 'Teilen Sie uns Ihre Fragen oder Ihr Anliegen mit...'}
                   ></textarea>
                 </div>
 
@@ -261,11 +265,11 @@ const ContactPage = () => {
                       className="mt-1 w-5 h-5 text-ea-gold bg-white border-gray-300 rounded focus:ring-ea-gold focus:ring-2 cursor-pointer"
                     />
                     <span className="text-ea-dark/70 text-sm leading-relaxed">
-                      Ich habe die{' '}
-                      <Link to="/datenschutz" className="text-ea-gold hover:underline font-medium" target="_blank">
-                        Datenschutzerklärung
-                      </Link>{' '}
-                      gelesen und stimme der Verarbeitung meiner Daten zur Bearbeitung meiner Anfrage zu. *
+                      {lang === 'en' ? (
+                        <>I have read the{' '}<Link to="/datenschutz" className="text-ea-gold hover:underline font-medium" target="_blank">Privacy Policy</Link>{' '}and consent to the processing of my data to handle my inquiry. *</>
+                      ) : (
+                        <>Ich habe die{' '}<Link to="/datenschutz" className="text-ea-gold hover:underline font-medium" target="_blank">Datenschutzerklärung</Link>{' '}gelesen und stimme der Verarbeitung meiner Daten zur Bearbeitung meiner Anfrage zu. *</>
+                      )}
                     </span>
                   </label>
                 </div>
@@ -283,11 +287,11 @@ const ContactPage = () => {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>Wird gesendet...</span>
+                      <span>{lang === 'en' ? 'Sending...' : 'Wird gesendet...'}</span>
                     </>
                   ) : (
                     <>
-                      <span>Nachricht senden</span>
+                      <span>{lang === 'en' ? 'Send Message' : 'Nachricht senden'}</span>
                       <Send className="w-5 h-5" />
                     </>
                   )}
@@ -312,6 +316,7 @@ const ContactPage = () => {
         </div>
       </div>
     </div>
+    </TranslatePage>
   );
 };
 

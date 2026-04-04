@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
+import { useLanguage } from '../context/LanguageContext';
+import TranslatePage from '../components/TranslatePage';
 
 const DatenschutzPage = () => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
+  const { lang } = useLanguage();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -27,6 +30,7 @@ const DatenschutzPage = () => {
   }, []);
 
   return (
+    <TranslatePage>
     <div className="min-h-screen pt-28 pb-20 bg-white" data-testid="datenschutz-page">
       <SEO 
         title="Datenschutzerklärung"
@@ -35,9 +39,9 @@ const DatenschutzPage = () => {
       />
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-16 animate-fadeIn">
-          <p className="text-ea-gold text-sm font-semibold tracking-wider uppercase mb-4">Rechtliches</p>
+          <p className="text-ea-gold text-sm font-semibold tracking-wider uppercase mb-4">{lang === 'en' ? 'Legal' : 'Rechtliches'}</p>
           <h1 className="font-semibold text-4xl md:text-5xl lg:text-6xl text-ea-dark mb-6">
-            Datenschutzerklärung
+            {lang === 'en' ? 'Privacy Policy' : 'Datenschutzerklärung'}
           </h1>
           <div className="section-divider"></div>
         </div>
@@ -95,6 +99,7 @@ const DatenschutzPage = () => {
         )}
       </div>
     </div>
+    </TranslatePage>
   );
 };
 

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { MailX, CheckCircle, Loader2 } from 'lucide-react';
+import T from '../components/T';
+import { useLanguage } from '../context/LanguageContext';
+import TranslatePage from '../components/TranslatePage';
 
 const NewsletterUnsubscribe = () => {
   const [searchParams] = useSearchParams();
@@ -26,6 +29,7 @@ const NewsletterUnsubscribe = () => {
   };
 
   return (
+    <TranslatePage>
     <div className="min-h-screen pt-28 pb-20 bg-white" data-testid="unsubscribe-page">
       <div className="max-w-lg mx-auto px-6 text-center">
         {status === 'done' ? (
@@ -88,6 +92,7 @@ const NewsletterUnsubscribe = () => {
         )}
       </div>
     </div>
+    </TranslatePage>
   );
 };
 

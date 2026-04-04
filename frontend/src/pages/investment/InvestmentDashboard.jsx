@@ -7,11 +7,15 @@ import {
 import { investmentApi } from '../../services/api';
 import SEO from '../../components/SEO';
 import InvestmentHeatmap from '../../components/InvestmentHeatmap';
+import T from '../../components/T';
+import { useLanguage } from '../../context/LanguageContext';
+import TranslatePage from '../../components/TranslatePage';
 
 const InvestmentDashboard = () => {
   const [stats, setStats] = useState(null);
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { lang } = useLanguage();
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -46,6 +50,7 @@ const InvestmentDashboard = () => {
   };
 
   return (
+    <TranslatePage>
     <>
       <SEO 
         title="Investment Dashboard | EuroAdria"
@@ -281,6 +286,7 @@ const InvestmentDashboard = () => {
         </div>
       </div>
     </>
+    </TranslatePage>
   );
 };
 

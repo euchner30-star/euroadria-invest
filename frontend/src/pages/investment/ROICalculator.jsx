@@ -3,8 +3,11 @@ import React, { useState } from 'react';
 import { Calculator, Euro, Percent, TrendingUp, Clock, Building } from 'lucide-react';
 import { investmentApi } from '../../services/api';
 import SEO from '../../components/SEO';
+import T from '../../components/T';
+import { useLanguage } from '../../context/LanguageContext';
 
 const ROICalculator = () => {
+  const { lang } = useLanguage();
   const [inputs, setInputs] = useState({
     purchase_price: 150000,
     renovation_costs: 10000,
@@ -73,10 +76,10 @@ const ROICalculator = () => {
               Investment Tools
             </p>
             <h1 className="text-4xl font-bold text-white mb-4">
-              ROI-Rechner für Immobilien
+              <T>ROI-Rechner für Immobilien</T>
             </h1>
             <p className="text-ea-light/70 max-w-xl mx-auto">
-              Berechnen Sie jährlichen Cashflow, ROI und Break-Even-Zeitpunkt für Ihre Immobilieninvestition
+              <T>Berechnen Sie jährlichen Cashflow, ROI und Break-Even-Zeitpunkt für Ihre Immobilieninvestition</T>
             </p>
           </div>
 
@@ -85,13 +88,13 @@ const ROICalculator = () => {
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <Calculator className="w-5 h-5 text-ea-gold" />
-                <h2 className="text-xl font-bold text-white">Eingaben</h2>
+                <h2 className="text-xl font-bold text-white"><T>Eingaben</T></h2>
               </div>
 
               <div className="space-y-5">
                 {/* Purchase Price */}
                 <div>
-                  <label className="block text-ea-light/70 text-sm mb-2">Kaufpreis</label>
+                  <label className="block text-ea-light/70 text-sm mb-2"><T>Kaufpreis</T></label>
                   <div className="relative">
                     <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ea-gold" />
                     <input
@@ -106,7 +109,7 @@ const ROICalculator = () => {
 
                 {/* Renovation Costs */}
                 <div>
-                  <label className="block text-ea-light/70 text-sm mb-2">Renovierungskosten</label>
+                  <label className="block text-ea-light/70 text-sm mb-2"><T>Renovierungskosten</T></label>
                   <div className="relative">
                     <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ea-gold" />
                     <input
@@ -121,7 +124,7 @@ const ROICalculator = () => {
 
                 {/* Additional Costs */}
                 <div>
-                  <label className="block text-ea-light/70 text-sm mb-2">Nebenkosten (Notar, Makler, etc.)</label>
+                  <label className="block text-ea-light/70 text-sm mb-2"><T>Nebenkosten (Notar, Makler, etc.)</T></label>
                   <div className="relative">
                     <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ea-gold" />
                     <input
@@ -136,7 +139,7 @@ const ROICalculator = () => {
 
                 {/* Monthly Rent */}
                 <div>
-                  <label className="block text-ea-light/70 text-sm mb-2">Monatliche Miete</label>
+                  <label className="block text-ea-light/70 text-sm mb-2"><T>Monatliche Miete</T></label>
                   <div className="relative">
                     <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-green-400" />
                     <input
@@ -151,7 +154,7 @@ const ROICalculator = () => {
 
                 {/* Vacancy Rate */}
                 <div>
-                  <label className="block text-ea-light/70 text-sm mb-2">Leerstandsrate (%)</label>
+                  <label className="block text-ea-light/70 text-sm mb-2"><T>Leerstandsrate (%)</T></label>
                   <div className="relative">
                     <Percent className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-orange-400" />
                     <input
@@ -168,7 +171,7 @@ const ROICalculator = () => {
 
                 {/* Running Costs */}
                 <div>
-                  <label className="block text-ea-light/70 text-sm mb-2">Monatliche Kosten (Verwaltung, Instandhaltung)</label>
+                  <label className="block text-ea-light/70 text-sm mb-2"><T>Monatliche Kosten (Verwaltung, Instandhaltung)</T></label>
                   <div className="relative">
                     <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-red-400" />
                     <input
@@ -187,7 +190,7 @@ const ROICalculator = () => {
                   className="w-full bg-ea-gold text-ea-dark font-bold py-4 rounded-xl hover:bg-ea-gold/80 transition-all disabled:opacity-50"
                   data-testid="roi-calculate-btn"
                 >
-                  {loading ? 'Berechne...' : 'ROI Berechnen'}
+                  {loading ? <T>Berechne...</T> : <T>ROI Berechnen</T>}
                 </button>
               </div>
             </div>
@@ -196,23 +199,23 @@ const ROICalculator = () => {
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <TrendingUp className="w-5 h-5 text-ea-gold" />
-                <h2 className="text-xl font-bold text-white">Ergebnis</h2>
+                <h2 className="text-xl font-bold text-white"><T>Ergebnis</T></h2>
               </div>
 
               {result ? (
                 <div className="space-y-4">
                   {/* Total Investment */}
                   <div className="bg-white/5 rounded-xl p-4 border border-white/5">
-                    <p className="text-ea-light/60 text-sm mb-1">Gesamtinvestition</p>
+                    <p className="text-ea-light/60 text-sm mb-1"><T>Gesamtinvestition</T></p>
                     <p className="text-2xl font-bold text-white">{formatCurrency(result.total_investment)}</p>
                   </div>
 
                   {/* Annual Cashflow */}
                   <div className="bg-green-500/10 rounded-xl p-4 border border-green-500/20">
-                    <p className="text-green-400/80 text-sm mb-1">Jährlicher Cashflow</p>
+                    <p className="text-green-400/80 text-sm mb-1"><T>Jährlicher Cashflow</T></p>
                     <p className="text-2xl font-bold text-green-400">{formatCurrency(result.annual_cashflow)}</p>
                     <p className="text-green-400/60 text-xs mt-1">
-                      {formatCurrency(result.annual_cashflow / 12)} / Monat
+                      {formatCurrency(result.annual_cashflow / 12)} / {lang === 'en' ? 'month' : 'Monat'}
                     </p>
                   </div>
 
@@ -223,7 +226,7 @@ const ROICalculator = () => {
                       <p className="text-2xl font-bold text-ea-gold">{result.roi_percent}%</p>
                     </div>
                     <div className="bg-blue-500/10 rounded-xl p-4 border border-blue-500/20">
-                      <p className="text-blue-400/80 text-sm mb-1">Netto-Rendite</p>
+                      <p className="text-blue-400/80 text-sm mb-1"><T>Netto-Rendite</T></p>
                       <p className="text-2xl font-bold text-blue-400">{result.net_yield_percent}%</p>
                     </div>
                   </div>
@@ -232,31 +235,31 @@ const ROICalculator = () => {
                   <div className="bg-white/5 rounded-xl p-4 border border-white/5">
                     <div className="flex items-center space-x-2 mb-2">
                       <Clock className="w-4 h-4 text-ea-light/60" />
-                      <p className="text-ea-light/60 text-sm">Break-Even-Zeitpunkt</p>
+                      <p className="text-ea-light/60 text-sm"><T>Break-Even-Zeitpunkt</T></p>
                     </div>
                     <p className="text-2xl font-bold text-white">
-                      {result.break_even_years === Infinity ? '∞' : `${result.break_even_years} Jahre`}
+                      {result.break_even_years === Infinity ? '∞' : `${result.break_even_years} ${lang === 'en' ? 'Years' : 'Jahre'}`}
                     </p>
                   </div>
 
                   {/* Income Breakdown */}
                   <div className="bg-white/5 rounded-xl p-4 border border-white/5">
-                    <p className="text-ea-light/60 text-sm mb-3">Einnahmen-Aufschlüsselung</p>
+                    <p className="text-ea-light/60 text-sm mb-3"><T>Einnahmen-Aufschlüsselung</T></p>
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-ea-light/70">Brutto-Mieteinnahmen</span>
+                        <span className="text-ea-light/70"><T>Brutto-Mieteinnahmen</T></span>
                         <span className="text-white">{formatCurrency(result.gross_rental_income)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-ea-light/70">Nach Leerstand ({inputs.vacancy_rate}%)</span>
+                        <span className="text-ea-light/70"><T>Nach Leerstand</T> ({inputs.vacancy_rate}%)</span>
                         <span className="text-yellow-400">-{formatCurrency(result.gross_rental_income * inputs.vacancy_rate / 100)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-ea-light/70">Laufende Kosten</span>
+                        <span className="text-ea-light/70"><T>Laufende Kosten</T></span>
                         <span className="text-red-400">-{formatCurrency(inputs.running_costs_monthly * 12)}</span>
                       </div>
                       <div className="border-t border-white/10 pt-2 mt-2 flex justify-between">
-                        <span className="text-white font-medium">Netto-Mieteinnahmen</span>
+                        <span className="text-white font-medium"><T>Netto-Mieteinnahmen</T></span>
                         <span className="text-green-400 font-bold">{formatCurrency(result.net_rental_income)}</span>
                       </div>
                     </div>
@@ -267,7 +270,7 @@ const ROICalculator = () => {
                   <div>
                     <Calculator className="w-16 h-16 text-ea-light/20 mx-auto mb-4" />
                     <p className="text-ea-light/50">
-                      Geben Sie Ihre Investitionsdaten ein und klicken Sie auf "ROI Berechnen"
+                      <T>Geben Sie Ihre Investitionsdaten ein und klicken Sie auf "ROI Berechnen"</T>
                     </p>
                   </div>
                 </div>
@@ -275,14 +278,13 @@ const ROICalculator = () => {
             </div>
           </div>
 
-          {/* Info Box */}
           <div className="mt-8 bg-ea-gold/10 border border-ea-gold/20 rounded-2xl p-6">
-            <h3 className="text-ea-gold font-bold mb-3">Hinweise zur Berechnung</h3>
+            <h3 className="text-ea-gold font-bold mb-3"><T>Hinweise zur Berechnung</T></h3>
             <ul className="text-ea-light/70 text-sm space-y-2">
-              <li>• <strong>ROI</strong> = Jährlicher Cashflow / Gesamtinvestition × 100</li>
-              <li>• <strong>Netto-Rendite</strong> = Netto-Mieteinnahmen / Kaufpreis × 100</li>
-              <li>• <strong>Break-Even</strong> = Gesamtinvestition / Jährlicher Cashflow</li>
-              <li>• Die Berechnung berücksichtigt keine Steuern, Finanzierungskosten oder Wertsteigerung</li>
+              <li>• <strong>ROI</strong> = <T>Jährlicher Cashflow / Gesamtinvestition × 100</T></li>
+              <li>• <strong><T>Netto-Rendite</T></strong> = <T>Netto-Mieteinnahmen / Kaufpreis × 100</T></li>
+              <li>• <strong>Break-Even</strong> = <T>Gesamtinvestition / Jährlicher Cashflow</T></li>
+              <li>• <T>Die Berechnung berücksichtigt keine Steuern, Finanzierungskosten oder Wertsteigerung</T></li>
             </ul>
           </div>
         </div>

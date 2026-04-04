@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, TrendingUp, Mail, Linkedin, Loader2 } from 'lucide-react';
 import { pagesApi } from '../services/api';
+import T from './T';
+import { useLanguage } from '../context/LanguageContext';
 
 const TeamSection = () => {
   const [pageData, setPageData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { lang } = useLanguage();
 
   useEffect(() => {
     const fetchTeamData = async () => {
@@ -30,9 +33,9 @@ const TeamSection = () => {
     {
       id: 'holger',
       name: 'Holger Kuhlmann',
-      title: 'Berater & Leitung DACH',
+      title: lang === 'en' ? 'Advisor & DACH Lead' : 'Berater & Leitung DACH',
       subtitle: '',
-      description: '„Ich glaube daran, dass nachhaltige Projekte und solide Strukturen die beste Basis für langfristigen Erfolg sind."',
+      description: lang === 'en' ? '"I believe that sustainable projects and solid structures are the best foundation for long-term success."' : '„Ich glaube daran, dass nachhaltige Projekte und solide Strukturen die beste Basis für langfristigen Erfolg sind."',
       image: '/holger-kuhlmann.jpg',
       icon: 'trending-up',
       skills: ['Investment-Strategie', 'Bankability', 'Deal-Structuring', 'Off-Market Access']
@@ -40,9 +43,9 @@ const TeamSection = () => {
     {
       id: 'milena',
       name: 'Milena Bubanja',
-      title: 'Co-Founderin und Geschäftsführerin',
+      title: lang === 'en' ? 'Co-Founder & Managing Director' : 'Co-Founderin und Geschäftsführerin',
       subtitle: 'Public Affairs und Balkan Relations',
-      description: '„Nachhaltige Ergebnisse entstehen dort, wo lokale Realität und europäische Standards sauber zusammengeführt werden."',
+      description: lang === 'en' ? '"Sustainable results emerge where local reality and European standards are cleanly brought together."' : '„Nachhaltige Ergebnisse entstehen dort, wo lokale Realität und europäische Standards sauber zusammengeführt werden."',
       image: '/milena-bubanja.jpg',
       icon: 'shield',
       skills: ['Due Diligence', 'Katasterprüfung', 'Restitutionsrecht', 'Compliance']

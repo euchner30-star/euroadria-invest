@@ -7,6 +7,9 @@ import {
 import ShareButtons from '../components/ShareButtons';
 import CommentsSection from '../components/CommentsSection';
 import SEO from '../components/SEO';
+import T from '../components/T';
+import { useLanguage } from '../context/LanguageContext';
+import TranslatePage from '../components/TranslatePage';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -45,6 +48,7 @@ const SerbiaExecutivePage = () => {
   };
 
   return (
+    <TranslatePage>
     <div className="min-h-screen bg-white" data-testid="serbia-executive-page">
       <SEO 
         title="Serbia Executive Access - Exklusive Investoren-Kontakte"
@@ -406,6 +410,7 @@ const SerbiaExecutivePage = () => {
         </div>
       </section>
     </div>
+    </TranslatePage>
   );
 };
 

@@ -6,6 +6,9 @@ import {
 } from 'lucide-react';
 import { investmentApi } from '../../services/api';
 import SEO from '../../components/SEO';
+import T from '../../components/T';
+import { useLanguage } from '../../context/LanguageContext';
+import TranslatePage from '../../components/TranslatePage';
 
 const LocationComparison = () => {
   const [allLocations, setAllLocations] = useState([]);
@@ -80,6 +83,7 @@ const LocationComparison = () => {
   }
 
   return (
+    <TranslatePage>
     <>
       <SEO 
         title="Standortvergleich | EuroAdria Investment"
@@ -352,6 +356,7 @@ const LocationComparison = () => {
         </div>
       </div>
     </>
+    </TranslatePage>
   );
 };
 

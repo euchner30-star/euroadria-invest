@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, MapPin, TrendingUp, ArrowRight, Filter, Mountain, Waves, Factory, Trees } from 'lucide-react';
 import SEO from '../components/SEO';
+import T from '../components/T';
+import { useLanguage } from '../context/LanguageContext';
+import TranslatePage from '../components/TranslatePage';
 
 // Sample property data - in real app would come from API
 const properties = {
@@ -80,6 +83,7 @@ const ImmobilienangebotPage = () => {
   const regions = Object.values(properties);
 
   return (
+    <TranslatePage>
     <div className="min-h-screen pt-28 pb-20 bg-white">
       <SEO 
         title="Immobilienangebot Montenegro | Apartments & Investment"
@@ -204,6 +208,7 @@ const ImmobilienangebotPage = () => {
         </div>
       </div>
     </div>
+    </TranslatePage>
   );
 };
 

@@ -8,6 +8,7 @@ import CommentsSection from '../components/CommentsSection';
 import SEO from '../components/SEO';
 import { parseContentToHTML } from '../utils/contentParser';
 import { useLanguage } from '../context/LanguageContext';
+import TranslatePage from '../components/TranslatePage';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -82,6 +83,7 @@ const ArticlePage = () => {
   }
 
   return (
+    <TranslatePage>
     <div className="min-h-screen pt-24 md:pt-32 pb-20 px-4 md:px-6 bg-white">
       <SEO 
         title={article.title}
@@ -297,6 +299,7 @@ const ArticlePage = () => {
         )}
       </div>
     </div>
+    </TranslatePage>
   );
 };
 

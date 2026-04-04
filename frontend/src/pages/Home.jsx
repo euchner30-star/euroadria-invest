@@ -10,6 +10,7 @@ import YouTubeSlider from '../components/YouTubeSlider';
 import TrustBar from '../components/TrustBar';
 import NewsletterSignup from '../components/NewsletterSignup';
 import { useLanguage } from '../context/LanguageContext';
+import TranslatePage from '../components/TranslatePage';
 
 const Home = () => {
   const [featuredArticles, setFeaturedArticles] = useState([]);
@@ -49,6 +50,7 @@ const Home = () => {
   }, []);
 
   return (
+    <TranslatePage>
     <main className="min-h-screen bg-white" itemScope itemType="https://schema.org/WebPage">
       <SEO 
         title="Investment & Business Beratung für Adria & Balkan"
@@ -310,6 +312,7 @@ const Home = () => {
       {/* FAQ Section - AEO optimiert */}
       <FAQSection />
     </main>
+    </TranslatePage>
   );
 };
 

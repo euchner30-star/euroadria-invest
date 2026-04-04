@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MessageSquare, User, Mail, Send, Loader2, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import { commentsApi } from '../services/api';
+import T from './T';
 
 // Comment Form Component
 export const CommentForm = ({ articleId, articleSlug, onCommentSubmitted }) => {
@@ -53,7 +54,7 @@ export const CommentForm = ({ articleId, articleSlug, onCommentSubmitted }) => {
         <div className="w-10 h-10 bg-ea-gold/10 rounded-lg flex items-center justify-center">
           <MessageSquare className="w-5 h-5 text-ea-gold" />
         </div>
-        <h3 className="text-xl font-semibold text-ea-dark">Kommentar hinterlassen</h3>
+        <h3 className="text-xl font-semibold text-ea-dark"><T>Kommentar hinterlassen</T></h3>
       </div>
 
       {status.message && (
@@ -138,7 +139,7 @@ export const CommentForm = ({ articleId, articleSlug, onCommentSubmitted }) => {
             ) : (
               <Send className="w-5 h-5" />
             )}
-            <span>{submitting ? 'Wird gesendet...' : 'Kommentar absenden'}</span>
+            <span>{submitting ? <T>Wird gesendet...</T> : <T>Kommentar absenden</T>}</span>
           </button>
         </div>
       </form>
@@ -228,7 +229,7 @@ export const CommentsList = ({ articleId, articleSlug }) => {
   return (
     <div className="space-y-4" data-testid="comments-list">
       <p className="text-ea-dark/50 text-sm mb-4">
-        {comments.length} {comments.length === 1 ? 'Kommentar' : 'Kommentare'}
+        {comments.length} {comments.length === 1 ? <T>Kommentar</T> : <T>Kommentare</T>}
       </p>
       {comments.map((comment) => (
         <Comment key={comment.id} comment={comment} />

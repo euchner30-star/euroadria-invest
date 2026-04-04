@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
+import T from '../components/T';
+import { useLanguage } from '../context/LanguageContext';
+import TranslatePage from '../components/TranslatePage';
 
 const ImpressumPage = () => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
+  const { lang } = useLanguage();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -27,6 +31,7 @@ const ImpressumPage = () => {
   }, []);
 
   return (
+    <TranslatePage>
     <div className="min-h-screen pt-28 pb-20 bg-white" data-testid="impressum-page">
       <SEO 
         title="Impressum"
@@ -35,9 +40,9 @@ const ImpressumPage = () => {
       />
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-16 animate-fadeIn">
-          <p className="text-ea-gold text-sm font-semibold tracking-wider uppercase mb-4">Rechtliches</p>
+          <p className="text-ea-gold text-sm font-semibold tracking-wider uppercase mb-4"><T>{lang === 'en' ? 'Legal' : 'Rechtliches'}</T></p>
           <h1 className="text-4xl md:text-5xl font-semibold text-ea-dark mb-6">
-            Impressum
+            <T>{lang === 'en' ? 'Imprint' : 'Impressum'}</T>
           </h1>
           <div className="section-divider"></div>
         </div>
@@ -95,6 +100,7 @@ const ImpressumPage = () => {
         )}
       </div>
     </div>
+    </TranslatePage>
   );
 };
 

@@ -5,9 +5,13 @@ import {
   CreditCard, Building2, BarChart3, ChevronRight
 } from 'lucide-react';
 import SEO from '../components/SEO';
+import T from '../components/T';
+import { useLanguage } from '../context/LanguageContext';
+import TranslatePage from '../components/TranslatePage';
 
 const CryptoBankingPage = () => {
   return (
+    <TranslatePage>
     <div className="min-h-screen bg-white" data-testid="crypto-banking-page">
       <SEO 
         title="Crypto-Banking & Treasury in Serbien"
@@ -217,6 +221,7 @@ const CryptoBankingPage = () => {
         </div>
       </section>
     </div>
+    </TranslatePage>
   );
 };
 

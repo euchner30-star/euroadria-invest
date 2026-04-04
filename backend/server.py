@@ -2849,20 +2849,45 @@ def _translate_text_argos(text: str, source: str, target: str) -> str:
 
 def _translate_text_api(text: str, source: str, target: str) -> str:
     """Fallback: use MyMemory free API (EU-based, DSGVO-friendly)"""
-    try:
-        resp = http_requests.get(
-            "https://api.mymemory.translated.net/get",
-            params={"q": text[:500], "langpair": f"{source}|{target}"},
-            timeout=10
-        )
-        if resp.ok:
-            data = resp.json()
-            translated = data.get("responseData", {}).get("translatedText", "")
-            if translated and translated.lower() != text.lower():
-                return translated
-    except Exception:
-        pass
-    return text
+    if len(text) <= 500:
+        try:
+            resp = http_requests.get(
+                "https://api.mymemory.translated.net/get",
+                params={"q": text, "langpair": f"{source}|{target}"},
+                timeout=10
+            )
+            if resp.ok:
+                data = resp.json()
+                translated = data.get("responseData", {}).get("translatedText", "")
+                if translated and translated.upper() != text.upper():
+                    return translated
+        except Exception:
+            pass
+        return text
+
+    # Split long text into sentences and translate each
+    import re
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    translated_parts = []
+    for sent in sentences:
+        if len(sent) > 500:
+            translated_parts.append(sent[:500])
+        else:
+            try:
+                resp = http_requests.get(
+                    "https://api.mymemory.translated.net/get",
+                    params={"q": sent, "langpair": f"{source}|{target}"},
+                    timeout=10
+                )
+                if resp.ok:
+                    data = resp.json()
+                    tr = data.get("responseData", {}).get("translatedText", "")
+                    translated_parts.append(tr if tr and tr.upper() != sent.upper() else sent)
+                else:
+                    translated_parts.append(sent)
+            except Exception:
+                translated_parts.append(sent)
+    return " ".join(translated_parts)
 
 
 async def _get_or_translate(text: str, source: str, target: str) -> str:
