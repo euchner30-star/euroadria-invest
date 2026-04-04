@@ -38,7 +38,10 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - AGB-Seite mit Admin Panel Editor (April 2026)
 
 ### Completed Tasks (Latest First)
-- Google Site Verification Meta-Tag hinzugefuegt fuer Google Search Console Verifizierung (3. April 2026)
+- Google Site Verification Meta-Tag + HTML-Datei hinzugefuegt (3. April 2026)
+- Google Analytics GA4 (G-KZK813E3BS) integriert (3. April 2026)
+- 5 Medien-Erwaehnungen (n-tv, RTL, Focus, VC Magazin, Kosmo): MediaBadge, TrustBar, FAQ, Schema.org, Blog-Artikel aktualisiert (4. April 2026)
+- EuroAdria -> EuroAdria Corporate Solutions ueberall in FAQ-Texten (4. April 2026)
 - Kategorie-Tabs auf Infrastruktur-Karte: 7 Tabs (Flughäfen, Gemeinden, Rivièras, Nationalparks, Berge, Seen, Skizentren) mit automatischem Zoom und Premium-Design (2. April 2026)
 - AGB-Seite (/agb) mit 11 Paragraphen, Admin Panel WYSIWYG-Editor, Footer + Cookie-Banner Links, Sitemap (2. April 2026)
 - Backend-Optimierung: ~43 MB RAM gespart durch Entfernung ungenutzter Deps (pandas, numpy, boto3), Lazy PIL Import, MongoDB Pool Limits (2. April 2026)
