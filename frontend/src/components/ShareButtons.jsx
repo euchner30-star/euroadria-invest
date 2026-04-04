@@ -16,18 +16,14 @@ const FacebookIcon = ({ className }) => (
 const ShareButtons = ({ title, url, excerpt }) => {
   const [copied, setCopied] = React.useState(false);
   const currentUrl = url || window.location.href;
-  const slug = currentUrl.split('/blog/')[1];
-  const API_URL = process.env.REACT_APP_BACKEND_URL;
-  const ogUrl = slug ? `${API_URL}/api/og/blog/${slug}` : currentUrl;
-  const encodedOgUrl = encodeURIComponent(ogUrl);
   const encodedUrl = encodeURIComponent(currentUrl);
   const encodedTitle = encodeURIComponent(title || '');
   const encodedExcerpt = encodeURIComponent(excerpt || '');
 
   const shareLinks = {
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedOgUrl}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
     twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedOgUrl}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
     whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
     email: `mailto:?subject=${encodedTitle}&body=${encodedExcerpt}%0A%0AMehr%20lesen:%20${encodedUrl}`
   };
