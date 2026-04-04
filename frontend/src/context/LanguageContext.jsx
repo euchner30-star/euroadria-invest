@@ -6,31 +6,10 @@ const translations = { de, en };
 
 const LanguageContext = createContext();
 
-// Detect browser language: German browsers get German, everyone else gets English
-const detectBrowserLanguage = () => {
-  try {
-    const stored = localStorage.getItem('ea_lang');
-    if (stored) return stored;
-  } catch {}
-  
-  try {
-    const browserLang = navigator.language || navigator.userLanguage || '';
-    // Only German browsers (de, de-DE, de-AT, de-CH) get German
-    if (browserLang.startsWith('de')) return 'de';
-  } catch {}
-  
-  // Everyone else (English, Serbian, French, etc.) gets English
-  return 'en';
-};
-
 export const LanguageProvider = ({ children }) => {
-  const [lang, setLangState] = useState(detectBrowserLanguage);
+  const [lang] = useState('de');
 
-  const setLang = useCallback((newLang) => {
-    setLangState(newLang);
-    try { localStorage.setItem('ea_lang', newLang); } catch {}
-    document.documentElement.lang = newLang;
-  }, []);
+  const setLang = useCallback(() => {}, []);
 
   const t = useCallback((key) => {
     const keys = key.split('.');
