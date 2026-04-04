@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Shield, Map, Building2, ChevronDown, TrendingUp, Globe } from 'lucide-react';
+import { Menu, X, Shield, Map, Building2, ChevronDown, TrendingUp } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const Header = () => {
@@ -10,7 +10,7 @@ const Header = () => {
   const [isMobileImmobilienOpen, setIsMobileImmobilienOpen] = useState(false);
   const dropdownRef = useRef(null);
   const location = useLocation();
-  const { lang, setLang, t } = useLanguage();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -224,17 +224,8 @@ const Header = () => {
             ))}
           </div>
 
-          {/* Desktop CTA + Language Toggle */}
+          {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-2 ml-4">
-            <button
-              onClick={() => setLang(lang === 'de' ? 'en' : 'de')}
-              className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-gray-200 hover:border-ea-gold/50 hover:bg-ea-gold/5 transition-all text-sm font-semibold text-ea-dark"
-              data-testid="language-toggle-desktop"
-              title={lang === 'de' ? 'Switch to English' : 'Auf Deutsch wechseln'}
-            >
-              <Globe className="w-4 h-4 text-ea-gold" />
-              {lang === 'de' ? 'EN' : 'DE'}
-            </button>
             <Link
               to="/contact"
               className="px-3 py-2 bg-ea-dark text-white text-sm font-semibold tracking-wider rounded-lg hover:bg-ea-navy transition-all duration-300"
@@ -360,16 +351,6 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
-
-              {/* Language Toggle Mobile */}
-              <button
-                onClick={() => setLang(lang === 'de' ? 'en' : 'de')}
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-gray-200 hover:border-ea-gold/50 text-ea-dark font-semibold"
-                data-testid="language-toggle-mobile"
-              >
-                <Globe className="w-5 h-5 text-ea-gold" />
-                {lang === 'de' ? 'English' : 'Deutsch'}
-              </button>
 
               <Link
                 to="/contact"

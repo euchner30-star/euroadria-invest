@@ -1,10 +1,10 @@
 # EuroAdria Investment Intelligence Platform - PRD
 
 ## Original Problem Statement
-Professional "Investment Intelligence Platform" for the Balkan region with full CMS. Features: ROI calculator, dynamic location profiles, contact form with email notifications, SEO-optimized blog, interactive investment maps, extensive CMS admin panel, YouTube Video Slider, and DE/EN translation system.
+Professional "Investment Intelligence Platform" for the Balkan region with full CMS. Features: ROI calculator, dynamic location profiles, contact form with email notifications, SEO-optimized blog, interactive investment maps, extensive CMS admin panel, YouTube Video Slider, and automatic DE/EN translation based on browser language.
 
 ## Tech Stack
-- **Frontend**: React, TailwindCSS, Custom i18n Context
+- **Frontend**: React, TailwindCSS, Custom i18n Context with auto-detection
 - **Backend**: FastAPI, Motor (async MongoDB)
 - **Database**: MongoDB Atlas (Remote)
 - **Hosting**: Render (separate Frontend/Backend services)
@@ -22,20 +22,22 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - [x] YouTube Video Slider (dynamic via API)
 - [x] Cookie consent banner (GDPR)
 - [x] Article Download URL/Exposé (Admin + public view)
-- [x] **DE/EN Translation System (2026-04-04)**: Complete refactor from DOM-manipulating TranslatePage to synchronous JSON + dictionary-based translations
+- [x] **DE/EN Translation System (2026-04-04)**: Synchronous JSON + dictionary-based translations
+  - Auto-detection of browser language (English browser → English site, otherwise German)
+  - Manual EN/DE toggle REMOVED per user request
   - Static UI text: `de.json`/`en.json` via `t()` function
   - Page-specific text: Inline `lang === 'en'` ternaries
   - ROI Calculator: `<T>` component with synchronous dictionary lookup
   - Dynamic DB content: Backend `/api/translate/article/{slug}` endpoint
-  - Removed slow `TranslatePage` wrapper from all 15+ pages
-  - Testing: 100% pass rate (iteration_10)
+  - Removed slow `TranslatePage` DOM-manipulator from all pages
 
 ## Architecture
 ### Translation System
 - `/app/frontend/src/i18n/de.json` & `en.json` - Static string dictionaries
-- `/app/frontend/src/context/LanguageContext.jsx` - Global language state + `t()` helper
-- `/app/frontend/src/components/T.jsx` - Synchronous German->English dictionary component (no API calls)
+- `/app/frontend/src/context/LanguageContext.jsx` - Auto-detects browser language + `t()` helper
+- `/app/frontend/src/components/T.jsx` - Synchronous German→English dictionary component (no API calls)
 - Backend `/api/translate/article/{slug}` - MyMemory API with MongoDB caching for dynamic content
+- NO manual language toggle button - fully automatic based on `navigator.language`
 
 ## Pending/Backlog Tasks
 

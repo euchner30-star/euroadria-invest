@@ -6,11 +6,23 @@ const translations = { de, en };
 
 const LanguageContext = createContext();
 
+// Detect browser language: if browser is set to English, use 'en', otherwise 'de'
+const detectBrowserLanguage = () => {
+  try {
+    const stored = localStorage.getItem('ea_lang');
+    if (stored) return stored;
+  } catch {}
+  
+  try {
+    const browserLang = navigator.language || navigator.userLanguage || '';
+    if (browserLang.startsWith('en')) return 'en';
+  } catch {}
+  
+  return 'de';
+};
+
 export const LanguageProvider = ({ children }) => {
-  const [lang, setLangState] = useState(() => {
-    try { return localStorage.getItem('ea_lang') || 'de'; }
-    catch { return 'de'; }
-  });
+  const [lang, setLangState] = useState(detectBrowserLanguage);
 
   const setLang = useCallback((newLang) => {
     setLangState(newLang);
