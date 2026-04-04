@@ -144,7 +144,7 @@ code {
 
 @media (pointer: coarse) {
   .animate-scroll-touch {
-    animation: none;
+    animation: scroll 50s linear infinite;
   }
 }
 
