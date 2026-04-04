@@ -6,7 +6,7 @@ const translations = { de, en };
 
 const LanguageContext = createContext();
 
-// Detect browser language: if browser is set to English, use 'en', otherwise 'de'
+// Detect browser language: German browsers get German, everyone else gets English
 const detectBrowserLanguage = () => {
   try {
     const stored = localStorage.getItem('ea_lang');
@@ -15,10 +15,12 @@ const detectBrowserLanguage = () => {
   
   try {
     const browserLang = navigator.language || navigator.userLanguage || '';
-    if (browserLang.startsWith('en')) return 'en';
+    // Only German browsers (de, de-DE, de-AT, de-CH) get German
+    if (browserLang.startsWith('de')) return 'de';
   } catch {}
   
-  return 'de';
+  // Everyone else (English, Serbian, French, etc.) gets English
+  return 'en';
 };
 
 export const LanguageProvider = ({ children }) => {
