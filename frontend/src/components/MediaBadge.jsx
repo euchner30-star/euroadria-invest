@@ -12,6 +12,21 @@ const MediaBadge = ({ variant = 'default' }) => {
       name: 'RTL',
       url: 'https://unternehmen.rtl.de/auswandern-montenegro.html',
       topic: 'Auswandern'
+    },
+    {
+      name: 'Focus',
+      url: 'https://unternehmen.focus.de/immobilien-montenegro.html',
+      topic: 'Immobilien'
+    },
+    {
+      name: 'VC Magazin',
+      url: 'https://www.vc-magazin.de/blog/2026/02/13/kapitalflucht-warum-montenegro-zum-neuen-safe-haven-wird/',
+      topic: 'Kapitalflucht'
+    },
+    {
+      name: 'Kosmo',
+      url: 'https://www.kosmo.at/jetzt-expansion-in-die-adria-region-starten-mit-euroadria-sicher-in-balkan-markten-wachsen/',
+      topic: 'Expansion Adria'
     }
   ];
 
@@ -20,7 +35,7 @@ const MediaBadge = ({ variant = 'default' }) => {
       <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-ea-gold/10 border border-ea-gold/20 rounded-full">
         <Newspaper className="w-3.5 h-3.5 text-ea-gold" />
         <span className="text-xs font-medium text-ea-dark">
-          Referenziert in n-tv & RTL
+          Referenziert in n-tv, RTL, Focus, VC Magazin & Kosmo
         </span>
       </div>
     );
@@ -57,11 +72,11 @@ const MediaBadge = ({ variant = 'default' }) => {
         </div>
         <div>
           <p className="text-white font-semibold">Referenzierte Experten</p>
-          <p className="text-white/60 text-sm">in deutschen Wirtschaftsmedien</p>
+          <p className="text-white/60 text-sm">in internationalen Wirtschaftsmedien</p>
         </div>
       </div>
       
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {mediaLinks.map((media) => (
           <a
             key={media.name}

@@ -210,7 +210,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {(homeContent.trust_items || [
-              { title: 'Vertrauenswürdig', desc: 'Referenziert in n-tv & RTL' },
+              { title: 'Vertrauenswürdig', desc: 'Referenziert in n-tv, RTL, Focus & mehr' },
               { title: 'Rendite-Fokus', desc: 'Zweistellige Zielrenditen' },
               { title: 'Expertise', desc: '15+ Jahre Erfahrung' },
               { title: 'Sicherheit', desc: 'Asset Protection' }
