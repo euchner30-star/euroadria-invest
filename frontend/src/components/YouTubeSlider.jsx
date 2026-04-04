@@ -125,5 +125,7 @@ const YouTubeSlider = () => {
         </a>
       </div>
     </section>
+  );
+};
 
 export default YouTubeSlider;
