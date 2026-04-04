@@ -1,93 +1,52 @@
-# EuroAdria - Product Requirements Document
+# EuroAdria Investment Intelligence Platform — PRD
 
 ## Original Problem Statement
-Professional "Investment Intelligence Platform" for the Balkan region with full CMS. Deployed on Render with MongoDB Atlas. Admin panel for managing articles, hero images, PDF Expose downloads, and download URLs. Custom domain: `invest.euroadria.me`.
+Professional "Investment Intelligence Platform" for the Balkan region with full CMS. Hosted on Render with MongoDB Atlas. Features include ROI calculator, dynamic location profiles, contact form with email (Resend), AEO-optimized blog, interactive maps, Admin Panel (CMS), Lead Generation, Analytics Dashboard, Brevo Newsletter, Crypto-Banking/Compliance pages, and YouTube Video Slider.
 
 ## Architecture
-- **Frontend:** React + TailwindCSS (Static Site on Render: `euroadria-invest`)
-- **Backend:** FastAPI + Motor/MongoDB (Web Service on Render: `invest.euroadria`)
-- **Database:** MongoDB Atlas (remote)
-- **Email:** Resend API
-- **Newsletter:** Brevo API
-- **Images:** imgBB (external hosting)
-- **PDFs/Exposes:** External URLs (Google Drive, Dropbox)
-- **Maps:** Leaflet + OpenStreetMap
-- **Tracking:** FunnelCockpit Conversion Pixel
-- **Object Storage:** Emergent Object Storage (Newsletter uploads)
-- **GitHub Repo:** `euchner30-star/euroadria-invest` (branch: `main`)
-- **Custom Domain:** `invest.euroadria.me` (via Strato DNS -> Render)
+- **Frontend:** React + TailwindCSS (Render Static Site)
+- **Backend:** FastAPI + Motor (Render Web Service)
+- **Database:** MongoDB Atlas (Remote)
+- **Deployment:** GitHub push → Render auto-deploy (`euchner30-star/euroadria-invest`)
 
-## What's Been Implemented
+## What's Been Implemented (Latest: 2026-02-04)
+- [x] E2E Investment Dashboard with ROI Calculator
+- [x] AEO-optimized Blog with Due Diligence Checklists & Expert Tips
+- [x] Admin Panel with Article Bulk-Import (CSV/XLSX/DOCX)
+- [x] Analytics Dashboard with UTM Tracking
+- [x] Lead Generation Modals (Exposé downloads, newsletter)
+- [x] Google Analytics GA4 & Search Console Verification
+- [x] Media Mentions (Focus, VC Magazin, Kosmo)
+- [x] Social Share Buttons with Copy Link
+- [x] Contact Form via Resend API
+- [x] Interactive Maps with Category Tabs
+- [x] Brevo Newsletter Integration
+- [x] Crypto-Banking & Compliance Landing Pages
+- [x] Download URL/Exposé field in Admin Article Editor
+- [x] **YouTube Data API v3 Integration** — Dynamic video slider with live view counts, 1-hour cache (2026-02-04)
 
-### Core Features
-- Investment Dashboard with ROI Calculator
-- AEO-optimized Blog with Expert Tips
-- Admin Panel (Articles, Comments, Regions, Pages CMS, Downloads, Homepage CMS, Legal Pages)
-- Contact Form with Resend email notifications
-- Dynamic Location Profiles (5 Immobilien-Seiten)
-- Infrastructure Radar with interactive Leaflet maps
-- Interactive Leaflet/OpenStreetMap maps for Montenegro & Serbia
-- Trust Bar (global, all pages)
-- Floating WhatsApp Button with pulse animation
-- Homepage CMS (Hero text, Testimonials, CTA, Trust Badges)
-- Image Position Sliders for Hero, Testimonial, and Article images
-- Newsletter System (Brevo: Anmeldung, Kampagnen, Abmeldung)
-- Analytics Dashboard (KPIs, Charts, Page-View Tracking, Lead-Tabelle)
-- Lead-Generierung (Expose-Downloads mit Name+E-Mail)
-- Crypto-Banking & Compliance Subpages (Serbia Executive)
-- AGB-Seite mit Admin Panel Editor (April 2026)
+## Pending / Backlog
 
-### Completed Tasks (Latest First)
-- Bulk Import Funktion: CSV, Excel (.xlsx), Word (.docx) Upload im Admin Panel mit automatischer Kategorie-Zuordnung (4. April 2026)
-- Google Site Verification Meta-Tag + HTML-Datei hinzugefuegt (3. April 2026)
-- Google Analytics GA4 (G-KZK813E3BS) integriert (3. April 2026)
-- 5 Medien-Erwaehnungen (n-tv, RTL, Focus, VC Magazin, Kosmo): MediaBadge, TrustBar, FAQ, Schema.org, Blog-Artikel aktualisiert (4. April 2026)
-- EuroAdria -> EuroAdria Corporate Solutions ueberall in FAQ-Texten (4. April 2026)
-- Kategorie-Tabs auf Infrastruktur-Karte: 7 Tabs (Flughäfen, Gemeinden, Rivièras, Nationalparks, Berge, Seen, Skizentren) mit automatischem Zoom und Premium-Design (2. April 2026)
-- AGB-Seite (/agb) mit 11 Paragraphen, Admin Panel WYSIWYG-Editor, Footer + Cookie-Banner Links, Sitemap (2. April 2026)
-- Backend-Optimierung: ~43 MB RAM gespart durch Entfernung ungenutzter Deps (pandas, numpy, boto3), Lazy PIL Import, MongoDB Pool Limits (2. April 2026)
-- Karten-Labels vergroessert: Entfernungen/Fahrzeiten von 9-10px auf 12-13px (2. April 2026)
-- Kommentar-E-Mail von SMTP auf Resend migriert (2. April 2026)
-- Health-Check erweitert mit DB-Ping (2. April 2026)
-- Object Storage Upload im Newsletter-Admin (2. April 2026)
-- Newsletter Abmelde-Seite mit Brevo-Integration (1. April 2026)
-- WYSIWYG Editor Bug Fix (Cursor-Jumping via Debouncing) (1. April 2026)
-- Technical SEO: Schema.org, Open Graph, Sitemap (1. April 2026)
-- Crypto-Banking & Compliance Subpages (1. April 2026)
-- Legal Pages: Impressum & Datenschutz editierbar mit WYSIWYG + Live-Vorschau (31. Maerz 2026)
+### P1 — Upcoming
+- Admin Panel UI for Investment Data (Locations, Infrastructure)
+- Heatmap Visualizations on investment map
+- Apartment-Listing functionality
 
-## Legal Pages
-- **Impressum** (`/impressum`) - DSGVO-konform, editierbar im Admin
-- **Datenschutz** (`/datenschutz`) - DSGVO-konform, editierbar im Admin
-- **AGB** (`/agb`) - 11 Paragraphen, editierbar im Admin, enthält Investment-Disclaimer
+### P2 — Future
+- Video Background for Hero section
+- Multi-language support (DE/EN/SR)
+- FunnelCockpit Tracking (BLOCKED — awaiting user's code)
+- Custom Domain (`invest.euroadria.me`) — user DNS configuration needed
+- Cloudinary/S3 for native image uploads (currently using imgBB)
 
-## SEO Status
-- 7 JSON-LD Structured Data Schemas
-- Dynamic Sitemap at `/api/sitemap.xml` (25+ pages inkl. /agb)
-- robots.txt, Canonical, OG, Twitter meta tags
+### Known Issues
+- Render Cold Starts (free tier) — recommend paid plan
+- WYSIWYG editor backward-text on mobile — testing pending
 
-## Prioritized Backlog
-
-### P1 (Important)
-- Apartment-Listing Funktionalitaet (User-Interesse)
-- Video Background fuer Hero Section
-
-### P2 (Nice to Have)
-- Mehrsprachigkeit (DE/EN/SR)
-- AdminPage.jsx / server.py Refactoring (Monolithen)
-
-## Known Issues
-- Render ephemeral storage: local file uploads wiped on deploy (using external URLs)
-
-## Admin Credentials
-- Local: `admin` / `euroadria2025`
-- Render (live): `office@euroadria.me` / `IsTH42#HZMC4q@3A7ITfp#Ip`
-
-## 3rd Party Integrations
-- Resend API (emails)
-- Brevo API (newsletter)
-- MongoDB Atlas (database)
-- Emergent Object Storage (newsletter file uploads)
-- imgBB (image hosting, user-managed)
-- FunnelCockpit (tracking pixel)
-- OpenStreetMap/Leaflet (maps)
+## Environment Variables (Render)
+- `MONGO_URL` — MongoDB Atlas connection string
+- `RESEND_API_KEY` — Resend email API
+- `BREVO_API_KEY` — Brevo newsletter
+- `YOUTUBE_API_KEY` — YouTube Data API v3
+- `YOUTUBE_PLAYLIST_ID` — Channel uploads playlist
+- `CORS_ORIGINS` — Allowed frontend origins
