@@ -76,13 +76,19 @@ const YouTubeSlider = () => {
     };
 
     el.addEventListener('touchstart', onInteract, { passive: true });
+    el.addEventListener('touchmove', onInteract, { passive: true });
     el.addEventListener('wheel', onInteract, { passive: true });
+    el.addEventListener('mousedown', onInteract);
+    el.addEventListener('mouseenter', onInteract);
 
     return () => {
       cancelAnimationFrame(raf);
       if (timerRef.current) clearTimeout(timerRef.current);
       el.removeEventListener('touchstart', onInteract);
+      el.removeEventListener('touchmove', onInteract);
       el.removeEventListener('wheel', onInteract);
+      el.removeEventListener('mousedown', onInteract);
+      el.removeEventListener('mouseenter', onInteract);
     };
   }, [resumeAutoScroll]);
 
