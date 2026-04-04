@@ -93,23 +93,15 @@ const YouTubeSlider = () => {
     animFrame = requestAnimationFrame(step);
 
     const pause = () => { pausedRef.current = true; };
-    const resume = () => { setTimeout(() => { pausedRef.current = false; }, 1500); };
+    const resume = () => { pausedRef.current = false; };
 
-    el.addEventListener('pointerdown', pause);
-    el.addEventListener('pointerup', resume);
     el.addEventListener('mouseenter', pause);
     el.addEventListener('mouseleave', resume);
-    el.addEventListener('touchstart', pause, { passive: true });
-    el.addEventListener('touchend', resume);
 
     return () => {
       cancelAnimationFrame(animFrame);
-      el.removeEventListener('pointerdown', pause);
-      el.removeEventListener('pointerup', resume);
       el.removeEventListener('mouseenter', pause);
       el.removeEventListener('mouseleave', resume);
-      el.removeEventListener('touchstart', pause);
-      el.removeEventListener('touchend', resume);
     };
   }, []);
 
