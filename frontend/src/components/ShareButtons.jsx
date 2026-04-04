@@ -15,14 +15,19 @@ const FacebookIcon = ({ className }) => (
 
 const ShareButtons = ({ title, url, excerpt }) => {
   const [copied, setCopied] = React.useState(false);
-  const encodedUrl = encodeURIComponent(url || window.location.href);
+  const currentUrl = url || window.location.href;
+  const slug = currentUrl.split('/blog/')[1];
+  const API_URL = process.env.REACT_APP_BACKEND_URL;
+  const ogUrl = slug ? `${API_URL}/api/og/blog/${slug}` : currentUrl;
+  const encodedOgUrl = encodeURIComponent(ogUrl);
+  const encodedUrl = encodeURIComponent(currentUrl);
   const encodedTitle = encodeURIComponent(title || '');
   const encodedExcerpt = encodeURIComponent(excerpt || '');
 
   const shareLinks = {
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&title=${encodedTitle}&summary=${encodedExcerpt}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedOgUrl}`,
     twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedOgUrl}`,
     whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
     email: `mailto:?subject=${encodedTitle}&body=${encodedExcerpt}%0A%0AMehr%20lesen:%20${encodedUrl}`
   };

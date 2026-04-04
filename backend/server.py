@@ -1127,6 +1127,45 @@ async def get_article_by_slug(slug: str):
     return article
 
 
+@api_router.get("/og/blog/{slug}")
+async def get_article_og_html(slug: str):
+    """Serve pre-rendered HTML with OG tags for social media crawlers"""
+    article = await db.articles.find_one({"slug": slug}, {"_id": 0})
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    
+    site_url = "https://invest.euroadria.me"
+    title = f"{article.get('title', '')} | EuroAdria Corporate Solutions"
+    description = article.get('excerpt', '')[:200]
+    image = article.get('image', f"{site_url}/euroadria-logo.png")
+    url = f"{site_url}/blog/{slug}"
+    
+    html = f"""<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<title>{title}</title>
+<meta name="description" content="{description}"/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="{url}"/>
+<meta property="og:title" content="{title}"/>
+<meta property="og:description" content="{description}"/>
+<meta property="og:image" content="{image}"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:locale" content="de_DE"/>
+<meta property="og:site_name" content="EuroAdria Corporate Solutions"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="{title}"/>
+<meta name="twitter:description" content="{description}"/>
+<meta name="twitter:image" content="{image}"/>
+<meta http-equiv="refresh" content="0;url={url}"/>
+</head>
+<body><p>Weiterleitung zu <a href="{url}">{title}</a></p></body>
+</html>"""
+    return Response(content=html, media_type="text/html")
+
+
 @api_router.get("/articles/id/{article_id}", response_model=Article)
 async def get_article_by_id(article_id: int):
     """Get a single article by ID"""
