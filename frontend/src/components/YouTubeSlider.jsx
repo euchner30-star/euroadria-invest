@@ -52,15 +52,23 @@ const YouTubeSlider = () => {
     setPaused(true);
     if (trackRef.current) {
       const track = trackRef.current;
-      const cardWidth = 300;
-      const current = parseFloat(getComputedStyle(track).transform.split(',')[4]) || 0;
+      // Get current computed position
+      const style = getComputedStyle(track);
+      const matrix = new DOMMatrix(style.transform);
+      const currentX = matrix.m41;
+      const cardWidth = window.innerWidth < 640 ? 300 : 360;
       const offset = direction === 'left' ? cardWidth : -cardWidth;
-      track.style.transition = 'transform 0.5s ease';
-      track.style.transform = `translateX(${current + offset}px)`;
+      
+      // Stop CSS animation, set current position
+      track.style.animation = 'none';
+      track.style.transform = `translateX(${currentX + offset}px)`;
+      track.style.transition = 'transform 0.4s ease';
+      
       setTimeout(() => {
         track.style.transition = '';
+        track.style.animation = '';
         setPaused(false);
-      }, 2000);
+      }, 2500);
     }
   };
 
@@ -76,19 +84,19 @@ const YouTubeSlider = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => jumpTo('left')}
-                className="w-10 h-10 rounded-full border border-ea-gold/30 flex items-center justify-center text-ea-dark hover:bg-ea-gold hover:text-ea-dark active:bg-ea-gold transition-all"
+                className="w-11 h-11 rounded-full border-2 border-ea-gold/40 flex items-center justify-center text-ea-dark hover:bg-ea-gold hover:text-ea-dark active:bg-ea-gold active:scale-95 transition-all"
                 aria-label="Zurück"
                 data-testid="yt-scroll-left"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-6 h-6" />
               </button>
               <button
                 onClick={() => jumpTo('right')}
-                className="w-10 h-10 rounded-full border border-ea-gold/30 flex items-center justify-center text-ea-dark hover:bg-ea-gold hover:text-ea-dark active:bg-ea-gold transition-all"
+                className="w-11 h-11 rounded-full border-2 border-ea-gold/40 flex items-center justify-center text-ea-dark hover:bg-ea-gold hover:text-ea-dark active:bg-ea-gold active:scale-95 transition-all"
                 aria-label="Weiter"
                 data-testid="yt-scroll-right"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-6 h-6" />
               </button>
             </div>
             <a
