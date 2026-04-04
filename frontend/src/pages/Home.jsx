@@ -218,12 +218,12 @@ const Home = () => {
       <section className="py-16 bg-ea-light border-y border-gray-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {(homeContent.trust_items || (lang === 'en' ? [
+            {(lang === 'en' ? [
               { title: 'Trustworthy', desc: 'Referenced in n-tv, RTL, Focus & more' },
               { title: 'Return Focus', desc: 'Double-digit target returns' },
               { title: 'Expertise', desc: '15+ years experience' },
               { title: 'Security', desc: 'Asset Protection' }
-            ] : [
+            ] : (homeContent.trust_items || [
               { title: 'Vertrauenswürdig', desc: 'Referenziert in n-tv, RTL, Focus & mehr' },
               { title: 'Rendite-Fokus', desc: 'Zweistellige Zielrenditen' },
               { title: 'Expertise', desc: '15+ Jahre Erfahrung' },
@@ -272,13 +272,13 @@ const Home = () => {
           </div>
           <blockquote className="text-xl md:text-2xl text-ea-light font-semibold leading-relaxed mb-6">
             „{lang === 'en' 
-              ? (homeContent.testimonial_quote ? homeContent.testimonial_quote : 'Thanks to EuroAdria, I was able to set up my company in Montenegro quickly, safely, and completely stress-free. I felt extremely well looked after and can warmly recommend EuroAdria to every entrepreneur and investor.')
+              ? 'Thanks to EuroAdria, I was able to set up my company in Montenegro quickly, safely, and completely stress-free. I felt extremely well looked after and can warmly recommend EuroAdria to every entrepreneur and investor.'
               : (homeContent.testimonial_quote || 'Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen. Ich habe mich bestens betreut gefühlt und kann EuroAdria jedem Unternehmer und Investor wärmstens empfehlen.')
             }"
           </blockquote>
           <p className="text-ea-light/70">
             {lang === 'en' 
-              ? (homeContent.testimonial_author || 'Maximilian R., Entrepreneur from Germany')
+              ? 'Maximilian R., Entrepreneur from Germany'
               : (homeContent.testimonial_author || 'Maximilian R., Unternehmer aus Deutschland')
             }
           </p>
