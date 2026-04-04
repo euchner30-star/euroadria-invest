@@ -1587,6 +1587,188 @@ async def seed_articles_data(articles: List[ArticleCreate], admin: str = Depends
     return {"message": f"Successfully seeded {len(articles)} articles", "seeded": True, "count": len(articles)}
 
 
+@api_router.post("/admin/articles/bulk-import")
+async def bulk_import_articles(file: UploadFile = File(...), admin: str = Depends(verify_admin)):
+    """Bulk import articles from CSV, XLSX, or DOCX files"""
+    import csv as csv_module
+    
+    filename = file.filename.lower()
+    content = await file.read()
+    
+    articles_data = []
+    
+    try:
+        if filename.endswith('.csv'):
+            text = content.decode('utf-8-sig')
+            reader = csv_module.DictReader(io.StringIO(text), delimiter=';')
+            if not reader.fieldnames or 'Titel' not in [f.strip() for f in reader.fieldnames]:
+                reader = csv_module.DictReader(io.StringIO(text), delimiter=',')
+            for row in reader:
+                row = {k.strip(): v.strip() if v else '' for k, v in row.items() if k}
+                if row.get('Titel'):
+                    articles_data.append({
+                        'title': row.get('Titel', ''),
+                        'category': row.get('Kategorie', 'Allgemein'),
+                        'excerpt': row.get('Excerpt', row.get('Beschreibung', '')),
+                        'content': row.get('Content', row.get('Inhalt', '')),
+                        'image': row.get('Bild', row.get('Bild-URL', row.get('Image', ''))),
+                        'author': row.get('Autor', 'EuroAdria Corporate Solutions'),
+                        'readTime': row.get('Lesezeit', '5 min'),
+                        'downloadUrl': row.get('Download-URL', row.get('DownloadUrl', None)) or None,
+                    })
+                    
+        elif filename.endswith('.xlsx') or filename.endswith('.xls'):
+            from openpyxl import load_workbook
+            wb = load_workbook(io.BytesIO(content), read_only=True)
+            ws = wb.active
+            rows = list(ws.iter_rows(values_only=True))
+            if not rows:
+                raise HTTPException(status_code=400, detail="Excel-Datei ist leer")
+            headers = [str(h).strip() if h else '' for h in rows[0]]
+            col_map = {}
+            for i, h in enumerate(headers):
+                hl = h.lower()
+                if 'titel' in hl or 'title' in hl: col_map['title'] = i
+                elif 'kategorie' in hl or 'category' in hl or 'cluster' in hl: col_map['category'] = i
+                elif 'excerpt' in hl or 'beschreibung' in hl: col_map['excerpt'] = i
+                elif 'content' in hl or 'inhalt' in hl: col_map['content'] = i
+                elif 'bild' in hl or 'image' in hl: col_map['image'] = i
+                elif 'autor' in hl or 'author' in hl: col_map['author'] = i
+                elif 'lesezeit' in hl or 'readtime' in hl: col_map['readTime'] = i
+                elif 'download' in hl: col_map['downloadUrl'] = i
+            
+            if 'title' not in col_map:
+                raise HTTPException(status_code=400, detail="Spalte 'Titel' nicht gefunden. Erwartete Spalten: Titel, Kategorie, Excerpt, Content, Bild")
+            
+            for row in rows[1:]:
+                title = str(row[col_map['title']]).strip() if col_map.get('title') is not None and row[col_map['title']] else ''
+                if title:
+                    articles_data.append({
+                        'title': title,
+                        'category': str(row[col_map.get('category', 0)] or 'Allgemein').strip() if col_map.get('category') is not None else 'Allgemein',
+                        'excerpt': str(row[col_map.get('excerpt', 0)] or '').strip() if col_map.get('excerpt') is not None else '',
+                        'content': str(row[col_map.get('content', 0)] or '').strip() if col_map.get('content') is not None else '',
+                        'image': str(row[col_map.get('image', 0)] or '').strip() if col_map.get('image') is not None else '',
+                        'author': str(row[col_map.get('author', 0)] or 'EuroAdria Corporate Solutions').strip() if col_map.get('author') is not None else 'EuroAdria Corporate Solutions',
+                        'readTime': str(row[col_map.get('readTime', 0)] or '5 min').strip() if col_map.get('readTime') is not None else '5 min',
+                        'downloadUrl': str(row[col_map.get('downloadUrl', 0)] or '').strip() if col_map.get('downloadUrl') is not None else None,
+                    })
+            wb.close()
+                    
+        elif filename.endswith('.docx'):
+            from docx import Document
+            doc = Document(io.BytesIO(content))
+            current_article = None
+            current_content = []
+            current_category = 'Allgemein'
+            
+            for para in doc.paragraphs:
+                text = para.text.strip()
+                if not text:
+                    if current_content:
+                        current_content.append('')
+                    continue
+                    
+                if para.style.name.startswith('Heading 1') or (para.runs and para.runs[0].bold and len(text) < 150 and not text.endswith('.')):
+                    if current_article:
+                        content_html = ''
+                        for line in current_content:
+                            if line == '':
+                                continue
+                            elif line.startswith('##'):
+                                content_html += f'<h3>{line[2:].strip()}</h3>'
+                            else:
+                                content_html += f'<p>{line}</p>'
+                        current_article['content'] = content_html
+                        current_article['excerpt'] = current_content[0][:200] if current_content else ''
+                        articles_data.append(current_article)
+                    
+                    if text.startswith('[') and ']' in text:
+                        current_category = text[1:text.index(']')].strip()
+                        title_part = text[text.index(']')+1:].strip()
+                        if title_part:
+                            current_article = {'title': title_part, 'category': current_category, 'content': '', 'excerpt': '', 'image': '', 'author': 'EuroAdria Corporate Solutions', 'readTime': '5 min', 'downloadUrl': None}
+                        else:
+                            current_article = None
+                    else:
+                        current_article = {'title': text, 'category': current_category, 'content': '', 'excerpt': '', 'image': '', 'author': 'EuroAdria Corporate Solutions', 'readTime': '5 min', 'downloadUrl': None}
+                    current_content = []
+                    
+                elif para.style.name.startswith('Heading 2'):
+                    current_content.append(f'##{text}')
+                else:
+                    current_content.append(text)
+            
+            if current_article:
+                content_html = ''
+                for line in current_content:
+                    if line == '':
+                        continue
+                    elif line.startswith('##'):
+                        content_html += f'<h3>{line[2:].strip()}</h3>'
+                    else:
+                        content_html += f'<p>{line}</p>'
+                current_article['content'] = content_html
+                current_article['excerpt'] = current_content[0][:200] if current_content else ''
+                articles_data.append(current_article)
+        else:
+            raise HTTPException(status_code=400, detail="Nicht unterstütztes Format. Bitte CSV, XLSX oder DOCX verwenden.")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Fehler beim Parsen der Datei: {str(e)}")
+    
+    if not articles_data:
+        raise HTTPException(status_code=400, detail="Keine Artikel in der Datei gefunden.")
+    
+    max_id_doc = await db.articles.find_one(sort=[("id", -1)])
+    next_id = (max_id_doc["id"] + 1) if max_id_doc else 101
+    
+    import re
+    def make_slug(title):
+        slug = title.lower().strip()
+        slug = slug.replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue').replace('ß', 'ss')
+        slug = re.sub(r'[^a-z0-9]+', '-', slug)
+        slug = slug.strip('-')
+        return slug[:80]
+    
+    imported = []
+    for art in articles_data:
+        slug = make_slug(art['title'])
+        existing = await db.articles.find_one({"slug": slug})
+        if existing:
+            slug = f"{slug}-{next_id}"
+        
+        category = art.get('category', 'Allgemein')
+        
+        article_doc = {
+            "id": next_id,
+            "cluster": category,
+            "title": art['title'],
+            "slug": slug,
+            "excerpt": art.get('excerpt', '')[:300],
+            "content": art.get('content', ''),
+            "image": art.get('image', ''),
+            "category": category,
+            "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            "readTime": art.get('readTime', '5 min'),
+            "featured": False,
+            "author": art.get('author', 'EuroAdria Corporate Solutions'),
+            "relatedArticles": [],
+            "dueDiligenceBox": None,
+            "expertTip": None,
+            "downloadUrl": art.get('downloadUrl') or None,
+            "sortOrder": 0,
+            "imagePosition": 50
+        }
+        
+        await db.articles.insert_one(article_doc)
+        imported.append({"id": next_id, "title": art['title'], "category": category, "slug": slug})
+        next_id += 1
+    
+    return {"message": f"{len(imported)} Artikel erfolgreich importiert", "count": len(imported), "articles": imported}
+
+
 # =============================================
 # COMMENT ENDPOINTS (Public & Admin)
 # =============================================

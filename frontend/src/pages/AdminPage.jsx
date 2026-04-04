@@ -4,7 +4,7 @@ import {
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
   FileText, Loader2, AlertCircle, Check, MessageSquare,
   CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image as ImageIcon,
-  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield, Send, Eye
+  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield, Send, Eye, Upload
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHtml } from '../components/admin/WYSIWYGEditor';
@@ -37,6 +37,10 @@ const AdminPage = () => {
   const [articlesLoading, setArticlesLoading] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [showBulkImport, setShowBulkImport] = useState(false);
+  const [bulkImportFile, setBulkImportFile] = useState(null);
+  const [bulkImporting, setBulkImporting] = useState(false);
+  const [bulkImportResult, setBulkImportResult] = useState(null);
   
   // Comments State
   const [comments, setComments] = useState([]);
@@ -515,6 +519,33 @@ const AdminPage = () => {
     }
   };
 
+  const handleBulkImport = async () => {
+    if (!bulkImportFile) return;
+    setBulkImporting(true);
+    setBulkImportResult(null);
+    try {
+      const formData = new FormData();
+      formData.append('file', bulkImportFile);
+      const API_URL = process.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(`${API_URL}/api/admin/articles/bulk-import`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+        },
+        body: formData
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || 'Import fehlgeschlagen');
+      setBulkImportResult({ type: 'success', message: data.message, articles: data.articles });
+      fetchArticles(credentials);
+      setBulkImportFile(null);
+    } catch (err) {
+      setBulkImportResult({ type: 'error', message: err.message });
+    } finally {
+      setBulkImporting(false);
+    }
+  };
+
   // Login Form
   if (!isAuthenticated) {
     return (
@@ -728,14 +759,24 @@ const AdminPage = () => {
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             {activeTab === 'articles' && (
-              <button
-                onClick={() => setIsCreating(true)}
-                className="px-4 sm:px-6 py-2 sm:py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all flex items-center space-x-2 text-sm sm:text-base"
-                data-testid="create-article-button"
-              >
-                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span>Neuer Artikel</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowBulkImport(true)}
+                  className="px-4 sm:px-5 py-2 sm:py-3 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-dark/80 transition-all flex items-center space-x-2 text-sm sm:text-base"
+                  data-testid="bulk-import-button"
+                >
+                  <Upload className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span>Bulk Import</span>
+                </button>
+                <button
+                  onClick={() => setIsCreating(true)}
+                  className="px-4 sm:px-6 py-2 sm:py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all flex items-center space-x-2 text-sm sm:text-base"
+                  data-testid="create-article-button"
+                >
+                  <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span>Neuer Artikel</span>
+                </button>
+              </div>
             )}
             {activeTab === 'regions' && (
               <button
@@ -905,6 +946,100 @@ const AdminPage = () => {
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
           <AnalyticsDashboard credentials={credentials} />
+        )}
+
+        {/* Bulk Import Modal */}
+        {showBulkImport && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" data-testid="bulk-import-modal">
+            <div className="bg-white rounded-2xl shadow-xl max-w-xl w-full max-h-[80vh] overflow-y-auto">
+              <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Upload className="w-6 h-6 text-ea-gold" />
+                  <h2 className="text-xl font-bold text-ea-dark">Artikel Bulk Import</h2>
+                </div>
+                <button onClick={() => { setShowBulkImport(false); setBulkImportResult(null); setBulkImportFile(null); }} className="p-2 hover:bg-gray-100 rounded-lg">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="bg-ea-light/50 border border-ea-gold/20 rounded-xl p-4">
+                  <p className="text-sm font-semibold text-ea-dark mb-2">Unterstützte Formate:</p>
+                  <ul className="text-sm text-ea-dark/70 space-y-1">
+                    <li><strong>Excel (.xlsx)</strong> — Eine Zeile pro Artikel</li>
+                    <li><strong>CSV (.csv)</strong> — Semikolon oder Komma getrennt</li>
+                    <li><strong>Word (.docx)</strong> — Überschrift 1 = neuer Artikel</li>
+                  </ul>
+                  <p className="text-sm font-semibold text-ea-dark mt-3 mb-1">Erwartete Spalten (Excel/CSV):</p>
+                  <p className="text-xs text-ea-dark/60 font-mono">Titel | Kategorie | Excerpt | Content | Bild | Autor | Lesezeit | Download-URL</p>
+                  <p className="text-xs text-ea-dark/50 mt-1">Nur "Titel" ist Pflicht. Rest wird automatisch gefüllt.</p>
+                  <p className="text-sm font-semibold text-ea-dark mt-3 mb-1">Word-Format:</p>
+                  <p className="text-xs text-ea-dark/60">Jede <strong>Überschrift 1</strong> startet einen neuen Artikel. Optional: <strong>[Kategorie] Titel</strong> für Zuordnung.</p>
+                </div>
+
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-ea-gold transition-colors">
+                  <input
+                    type="file"
+                    accept=".csv,.xlsx,.xls,.docx"
+                    onChange={(e) => { setBulkImportFile(e.target.files[0]); setBulkImportResult(null); }}
+                    className="hidden"
+                    id="bulk-import-file"
+                    data-testid="bulk-import-file-input"
+                  />
+                  <label htmlFor="bulk-import-file" className="cursor-pointer">
+                    <Upload className="w-10 h-10 text-gray-400 mx-auto mb-2" />
+                    {bulkImportFile ? (
+                      <p className="text-ea-dark font-medium">{bulkImportFile.name}</p>
+                    ) : (
+                      <p className="text-gray-500">Datei auswählen (.xlsx, .csv, .docx)</p>
+                    )}
+                  </label>
+                </div>
+
+                {bulkImportResult && (
+                  <div className={`p-4 rounded-xl ${bulkImportResult.type === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      {bulkImportResult.type === 'success' ? (
+                        <CheckCircle className="w-5 h-5 text-green-600" />
+                      ) : (
+                        <AlertCircle className="w-5 h-5 text-red-600" />
+                      )}
+                      <p className={`font-semibold ${bulkImportResult.type === 'success' ? 'text-green-800' : 'text-red-800'}`}>
+                        {bulkImportResult.message}
+                      </p>
+                    </div>
+                    {bulkImportResult.articles && (
+                      <div className="mt-2 max-h-40 overflow-y-auto">
+                        {bulkImportResult.articles.map((a, i) => (
+                          <p key={i} className="text-xs text-green-700 py-0.5">
+                            {a.title} <span className="text-green-500">({a.category})</span>
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <button
+                  onClick={handleBulkImport}
+                  disabled={!bulkImportFile || bulkImporting}
+                  className="w-full py-3 bg-ea-gold text-ea-dark font-bold rounded-xl hover:bg-ea-gold/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                  data-testid="bulk-import-submit"
+                >
+                  {bulkImporting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Importiere...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-5 h-5" />
+                      <span>Artikel importieren</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Articles Tab */}
