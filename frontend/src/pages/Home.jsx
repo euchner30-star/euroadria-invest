@@ -6,6 +6,7 @@ import { ArrowRight, Clock, Shield, TrendingUp, Award, Loader2, CheckCircle } fr
 import SEO from '../components/SEO';
 import FAQSection from '../components/FAQSection';
 import MediaBadge from '../components/MediaBadge';
+import YouTubeSlider from '../components/YouTubeSlider';
 import TrustBar from '../components/TrustBar';
 import NewsletterSignup from '../components/NewsletterSignup';
 
@@ -235,6 +236,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* YouTube Video Slider */}
+      <YouTubeSlider />
 
       {/* Testimonial Section */}
       <section className="py-20 bg-ea-dark relative overflow-hidden">

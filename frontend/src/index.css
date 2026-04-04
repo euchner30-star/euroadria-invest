@@ -121,3 +121,24 @@ code {
 .legal-content a:hover { color: #04151F; }
 .legal-content strong { color: #04151F; font-weight: 600; }
 .legal-content blockquote { border-left: 4px solid #C8A96A; padding-left: 1rem; margin: 1rem 0; font-style: italic; color: rgba(4,21,31,0.6); }
+
+
+/* YouTube Slider Auto-Scroll */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 40s linear infinite;
+  width: max-content;
+  padding-left: 1.5rem;
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
