@@ -1,7 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Play, ExternalLink } from 'lucide-react';
 
-const videos = [
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+const fallbackVideos = [
   { id: '228QIsmJOYY', title: 'Eisbaden im Durmitor Nationalpark Teil 2', views: '10K' },
   { id: 'H0QATEfW_do', title: 'Montenegro verschärft Regeln für Investoren und Auswanderer', views: '13K' },
   { id: 'DnKhmkOFL9U', title: 'Serbien Praxischeck: Digitale Signatur für Gründung & Bankkonto', views: '5.9K' },
@@ -20,7 +22,7 @@ const VideoCard = ({ video }) => (
   >
     <div className="relative overflow-hidden rounded-xl border border-ea-gold/20">
       <img
-        src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
+        src={video.thumbnail || `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
         alt={video.title}
         className="w-full h-[170px] sm:h-[190px] object-cover transition-transform duration-500 group-hover:scale-105"
         loading="lazy"
@@ -31,9 +33,11 @@ const VideoCard = ({ video }) => (
           <Play className="w-6 h-6 text-ea-gold ml-1" fill="currentColor" />
         </div>
       </div>
-      <div className="absolute top-3 right-3 bg-ea-dark/70 text-ea-gold text-xs font-medium px-2 py-1 rounded-md">
-        {video.views} Views
-      </div>
+      {video.views && (
+        <div className="absolute top-3 right-3 bg-ea-dark/70 text-ea-gold text-xs font-medium px-2 py-1 rounded-md">
+          {video.views} Views
+        </div>
+      )}
     </div>
     <div className="mt-3 px-1">
       <h3 className="text-sm font-semibold text-ea-dark leading-tight line-clamp-2 group-hover:text-ea-gold transition-colors">
@@ -47,6 +51,27 @@ const YouTubeSlider = () => {
   const scrollRef = useRef(null);
   const intervalRef = useRef(null);
   const resumeRef = useRef(null);
+  const [videos, setVideos] = useState(fallbackVideos);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchVideos = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/youtube/latest`);
+        if (res.ok) {
+          const data = await res.json();
+          if (!cancelled && data.videos && data.videos.length > 0) {
+            setVideos(data.videos);
+          }
+        }
+      } catch (_) {
+        // Fallback videos are already set
+      }
+    };
+    fetchVideos();
+    return () => { cancelled = true; };
+  }, []);
+
   const items = [...videos, ...videos, ...videos];
 
   const startScroll = () => {
@@ -78,17 +103,13 @@ const YouTubeSlider = () => {
     const el = scrollRef.current;
     if (!el) return;
 
-    // Start auto-scroll after 1 second
     const initTimer = setTimeout(startScroll, 1000);
 
-    // Touch handlers - completely stop interval
     const onTouchStart = () => {
       stopScroll();
       if (resumeRef.current) clearTimeout(resumeRef.current);
     };
     const onTouchEnd = () => scheduleResume();
-
-    // Desktop mouse handlers
     const onMouseEnter = () => {
       stopScroll();
       if (resumeRef.current) clearTimeout(resumeRef.current);
