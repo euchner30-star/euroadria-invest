@@ -21,9 +21,9 @@ const ShareButtons = ({ title, url, excerpt }) => {
   const encodedExcerpt = encodeURIComponent(excerpt || '');
 
   const shareLinks = {
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+    linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}&summary=${encodedExcerpt}`,
     twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`,
     whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
     email: `mailto:?subject=${encodedTitle}&body=${encodedExcerpt}%0A%0AMehr%20lesen:%20${encodedUrl}`
   };
