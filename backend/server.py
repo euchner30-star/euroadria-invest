@@ -2860,7 +2860,10 @@ def _translate_text_argos(text: str, source: str, target: str) -> str:
 
 def _translate_text_api(text: str, source: str, target: str) -> str:
     """Fallback: use MyMemory free API (EU-based, DSGVO-friendly)"""
-    if len(text) <= 500:
+    import re
+    
+    # For short texts, translate directly
+    if len(text) <= 450:
         try:
             resp = http_requests.get(
                 "https://api.mymemory.translated.net/get",
@@ -2876,14 +2879,41 @@ def _translate_text_api(text: str, source: str, target: str) -> str:
             pass
         return text
 
-    # Split long text into sentences and translate each
-    import re
-    sentences = re.split(r'(?<=[.!?])\s+', text)
-    translated_parts = []
-    for sent in sentences:
-        if len(sent) > 500:
-            translated_parts.append(sent[:500])
-        else:
+    # For HTML content: split by paragraphs/headings, translate each piece
+    # Split on HTML block elements while keeping the tags
+    html_pattern = r'(<(?:p|h[1-6]|li|div|blockquote|td|th|caption|figcaption)[^>]*>)(.*?)(</(?:p|h[1-6]|li|div|blockquote|td|th|caption|figcaption)>)'
+    
+    def translate_chunk(chunk):
+        """Translate a single chunk, handling the 450 char limit"""
+        if not chunk or not chunk.strip():
+            return chunk
+        # Strip HTML tags for translation
+        clean = re.sub(r'<[^>]+>', '', chunk).strip()
+        if not clean:
+            return chunk
+        if len(clean) <= 450:
+            try:
+                resp = http_requests.get(
+                    "https://api.mymemory.translated.net/get",
+                    params={"q": clean, "langpair": f"{source}|{target}"},
+                    timeout=10
+                )
+                if resp.ok:
+                    data = resp.json()
+                    tr = data.get("responseData", {}).get("translatedText", "")
+                    if tr and tr.upper() != clean.upper():
+                        # Replace the text content in the original chunk (keep inline HTML)
+                        return chunk.replace(clean, tr)
+            except Exception:
+                pass
+            return chunk
+        # Split longer text by sentences
+        sentences = re.split(r'(?<=[.!?])\s+', clean)
+        translated_sentences = []
+        for sent in sentences:
+            if len(sent) > 450:
+                translated_sentences.append(sent)
+                continue
             try:
                 resp = http_requests.get(
                     "https://api.mymemory.translated.net/get",
@@ -2893,12 +2923,32 @@ def _translate_text_api(text: str, source: str, target: str) -> str:
                 if resp.ok:
                     data = resp.json()
                     tr = data.get("responseData", {}).get("translatedText", "")
-                    translated_parts.append(tr if tr and tr.upper() != sent.upper() else sent)
+                    translated_sentences.append(tr if tr and tr.upper() != sent.upper() else sent)
                 else:
-                    translated_parts.append(sent)
+                    translated_sentences.append(sent)
             except Exception:
-                translated_parts.append(sent)
-    return " ".join(translated_parts)
+                translated_sentences.append(sent)
+        translated_text = " ".join(translated_sentences)
+        return chunk.replace(clean, translated_text)
+    
+    # Try HTML-aware splitting first
+    matches = list(re.finditer(html_pattern, text, re.DOTALL | re.IGNORECASE))
+    if matches:
+        result = text
+        for match in reversed(matches):  # Reverse to preserve offsets
+            full = match.group(0)
+            inner = match.group(2)
+            translated_inner = translate_chunk(inner)
+            if translated_inner != inner:
+                result = result[:match.start()] + match.group(1) + translated_inner + match.group(3) + result[match.end():]
+        return result
+    
+    # Fallback: split by newlines/paragraphs
+    parts = re.split(r'\n\n+', text)
+    translated_parts = []
+    for part in parts:
+        translated_parts.append(translate_chunk(part))
+    return "\n\n".join(translated_parts)
 
 
 async def _get_or_translate(text: str, source: str, target: str) -> str:
