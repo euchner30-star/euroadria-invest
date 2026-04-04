@@ -15,29 +15,26 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 
 ## Completed Features
 - [x] E2E Investment Dashboard
-- [x] ROI Calculator (with proper input clearing)
+- [x] ROI Calculator
 - [x] AEO-optimized Blog with Expert Tips
 - [x] Admin Panel with bulk article import
 - [x] Contact form with Resend email notifications
 - [x] YouTube Video Slider (dynamic via API)
 - [x] Cookie consent banner (GDPR)
 - [x] Article Download URL/Exposé (Admin + public view)
-- [x] **DE/EN Translation System (2026-04-04)**: Synchronous JSON + dictionary-based translations
-  - Auto-detection of browser language (English browser → English site, otherwise German)
-  - Manual EN/DE toggle REMOVED per user request
-  - Static UI text: `de.json`/`en.json` via `t()` function
-  - Page-specific text: Inline `lang === 'en'` ternaries
-  - ROI Calculator: `<T>` component with synchronous dictionary lookup
-  - Dynamic DB content: Backend `/api/translate/article/{slug}` endpoint
-  - Removed slow `TranslatePage` DOM-manipulator from all pages
+- [x] DE/EN Translation System (2026-04-04):
+  - Auto-detection: German browsers → DE, all others → EN
+  - Static UI: JSON files + inline ternaries (Header, Footer, Hero, Contact, FAQ, Blog UI, ROI Calculator, all 5 Immobilien pages, Serbia Executive, Crypto pages, Investment Dashboard, Comments)
+  - Dynamic DB content (articles): Backend MyMemory API with HTML-aware paragraph splitting + MongoDB caching
+  - Manual toggle removed per user request
+  - Note: Free MyMemory API has limitations on long article content translation
 
 ## Architecture
 ### Translation System
 - `/app/frontend/src/i18n/de.json` & `en.json` - Static string dictionaries
-- `/app/frontend/src/context/LanguageContext.jsx` - Auto-detects browser language + `t()` helper
-- `/app/frontend/src/components/T.jsx` - Synchronous German→English dictionary component (no API calls)
-- Backend `/api/translate/article/{slug}` - MyMemory API with MongoDB caching for dynamic content
-- NO manual language toggle button - fully automatic based on `navigator.language`
+- `/app/frontend/src/context/LanguageContext.jsx` - Auto-detects browser language
+- `/app/frontend/src/components/T.jsx` - Synchronous dictionary component
+- Backend `/api/translate/article/{slug}` - MyMemory API with MongoDB caching
 
 ## Pending/Backlog Tasks
 
@@ -51,11 +48,12 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - Video Background for Hero section
 - Multi-language support (Serbian as 3rd language)
 - Custom Domain Setup (`invest.euroadria.me`)
-- WYSIWYG editor backward-text bug on mobile (testing pending, recurrence: 2)
+- WYSIWYG editor backward-text bug on mobile (testing pending)
 
 ### P3 - Nice to Have
-- Cloudinary/S3 integration for native file uploads (currently using external URLs)
+- Cloudinary/S3 for native file uploads
 - Newsletter Integration
+- Consider paid translation API (DeepL) for better article translation quality
 
 ## Deployment
-Changes must be pushed to GitHub: `euchner30-star/euroadria-invest` → Render auto-deploy.
+Git push to `euchner30-star/euroadria-invest` → Render auto-deploy.
