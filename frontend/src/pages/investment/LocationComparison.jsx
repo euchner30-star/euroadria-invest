@@ -90,7 +90,7 @@ const LocationComparison = () => {
         description="Vergleichen Sie Investmentstandorte in Montenegro und Serbien nach Preis, Rendite und Wachstum."
       />
       
-      <div className="min-h-screen bg-gradient-to-b from-ea-dark via-ea-navy to-ea-dark pt-20 pb-16 px-4">
+      <div className="min-h-screen bg-gradient-to-b from-ea-dark via-ea-navy to-ea-dark pt-28 sm:pt-24 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
