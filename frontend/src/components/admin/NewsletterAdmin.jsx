@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Users, Mail, Loader2, CheckCircle, Download, AlertCircle, Image, Paperclip, Copy, X, Eye } from 'lucide-react';
+import { Send, Users, Mail, Loader2, CheckCircle, Download, AlertCircle, Image, Paperclip, Copy, X, Eye, Trash2 } from 'lucide-react';
 import WYSIWYGEditor from './WYSIWYGEditor';
 
 const NewsletterAdmin = ({ credentials }) => {
@@ -120,6 +120,26 @@ const NewsletterAdmin = ({ credentials }) => {
     navigator.clipboard.writeText(text);
     setSendStatus({ type: 'success', message: 'URL kopiert!' });
     setTimeout(() => setSendStatus(null), 2000);
+  };
+
+  const handleDeleteSubscriber = async (email) => {
+    if (!window.confirm(`"${email}" wirklich löschen?`)) return;
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/newsletter/subscribers/${encodeURIComponent(email)}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) }
+      });
+      if (res.ok) {
+        setSubscribers(prev => prev.filter(s => s.email !== email));
+        setTotalSubs(prev => prev - 1);
+        setSendStatus({ type: 'success', message: `${email} gelöscht.` });
+        setTimeout(() => setSendStatus(null), 3000);
+      } else {
+        setSendStatus({ type: 'error', message: 'Löschen fehlgeschlagen' });
+      }
+    } catch (err) {
+      setSendStatus({ type: 'error', message: 'Verbindungsfehler' });
+    }
   };
 
   return (
@@ -335,6 +355,7 @@ const NewsletterAdmin = ({ credentials }) => {
                   <th className="text-left py-2.5 text-ea-dark/50 font-medium">#</th>
                   <th className="text-left py-2.5 text-ea-dark/50 font-medium">E-Mail</th>
                   <th className="text-left py-2.5 text-ea-dark/50 font-medium">Name</th>
+                  <th className="text-right py-2.5 text-ea-dark/50 font-medium">Aktion</th>
                 </tr>
               </thead>
               <tbody>
@@ -343,6 +364,16 @@ const NewsletterAdmin = ({ credentials }) => {
                     <td className="py-2.5 text-ea-dark/40">{i + 1}</td>
                     <td className="py-2.5 text-ea-dark font-medium">{sub.email}</td>
                     <td className="py-2.5 text-ea-dark/70">{sub.name || '-'}</td>
+                    <td className="py-2.5 text-right">
+                      <button
+                        onClick={() => handleDeleteSubscriber(sub.email)}
+                        className="p-1.5 text-ea-dark/30 hover:text-red-500 transition-all rounded hover:bg-red-50"
+                        title="Abonnent löschen"
+                        data-testid={`delete-subscriber-${i}`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -948,6 +948,26 @@ async def get_newsletter_subscribers(admin: str = Depends(verify_admin)):
         "local_count": local_count
     }
 
+
+@api_router.delete("/admin/newsletter/subscribers/{email}")
+async def admin_delete_subscriber(email: str, admin: str = Depends(verify_admin)):
+    """Admin: Delete a newsletter subscriber"""
+    from urllib.parse import unquote
+    email = unquote(email)
+    
+    # Remove from Brevo
+    if BREVO_API_KEY:
+        try:
+            brevo_request("POST", f"contacts/lists/{BREVO_LIST_ID}/contacts/remove", {"emails": [email]})
+        except Exception as e:
+            logger.error(f"Brevo remove error: {e}")
+    
+    # Remove from local DB
+    await db.newsletter_subscribers.delete_one({"email": email})
+    
+    return {"success": True, "message": f"{email} wurde gelöscht."}
+
+
 @api_router.post("/admin/newsletter/send")
 async def send_newsletter(data: dict, admin: str = Depends(verify_admin)):
     """Send a newsletter campaign via Brevo"""
