@@ -72,15 +72,37 @@ const AdminPage = () => {
   const [downloadsSaving, setDownloadsSaving] = useState(false);
 
   // Investment Data State
+  const [investSubTab, setInvestSubTab] = useState('locations');
   const [investLocations, setInvestLocations] = useState([]);
   const [investLoading, setInvestLoading] = useState(false);
   const [editingLocation, setEditingLocation] = useState(null);
   const [locationFormData, setLocationFormData] = useState({
-    city: '', country: 'Montenegro', region: '', latitude: 0, longitude: 0,
-    population: 0, price_per_m2: 0, rental_yield: 0, price_growth: 0,
-    investment_score: 0, description: '', highlights: []
+    city: '', country: 'Montenegro', latitude: 0, longitude: 0,
+    price_per_m2: 0, rental_yield: 0, tourism_growth: 0, population_growth: 0,
+    price_growth: 0, infrastructure_score: 0, description: '',
+    opportunities: [], risks: [], use_cases: [], time_horizon: 'medium'
   });
-  
+
+  // Infrastructure State
+  const [infraProjects, setInfraProjects] = useState([]);
+  const [infraLoading, setInfraLoading] = useState(false);
+  const [editingInfra, setEditingInfra] = useState(null);
+  const [infraFormData, setInfraFormData] = useState({
+    project_name: '', type: 'road', latitude: 0, longitude: 0,
+    impact_radius_km: 10, status: 'planned', description: '',
+    completion_year: 2026, investment_eur: 0
+  });
+
+  // Zones State
+  const [zones, setZones] = useState([]);
+  const [zonesLoading, setZonesLoading] = useState(false);
+  const [editingZone, setEditingZone] = useState(null);
+  const [zoneFormData, setZoneFormData] = useState({
+    name: '', country: 'Montenegro', description: '',
+    center_lat: 0, center_lng: 0, radius_km: 10,
+    color: '#c8a96a', investment_focus: [], expected_growth: 0
+  });
+
   const [saveStatus, setSaveStatus] = useState({ type: '', message: '' });
 
   // Check for stored credentials
@@ -105,6 +127,8 @@ const AdminPage = () => {
         fetchPages(creds);
         fetchDownloadSettings();
         fetchInvestLocations();
+        fetchInfraProjects();
+        fetchZones();
         fetchHomepageContent();
         fetchLegalContent('impressum');
         fetchLegalContent('datenschutz');
@@ -134,6 +158,8 @@ const AdminPage = () => {
         fetchPages(credentials);
         fetchDownloadSettings();
         fetchInvestLocations();
+        fetchInfraProjects();
+        fetchZones();
         fetchHomepageContent();
         fetchLegalContent('impressum');
         fetchLegalContent('datenschutz');
@@ -403,6 +429,13 @@ const AdminPage = () => {
     }
   };
 
+  const defaultLocationForm = {
+    city: '', country: 'Montenegro', latitude: 0, longitude: 0,
+    price_per_m2: 0, rental_yield: 0, tourism_growth: 0, population_growth: 0,
+    price_growth: 0, infrastructure_score: 0, description: '',
+    opportunities: [], risks: [], use_cases: [], time_horizon: 'medium'
+  };
+
   const handleSaveLocation = async () => {
     try {
       if (editingLocation) {
@@ -412,7 +445,7 @@ const AdminPage = () => {
       }
       fetchInvestLocations();
       setEditingLocation(null);
-      setLocationFormData({ city: '', country: 'Montenegro', region: '', latitude: 0, longitude: 0, population: 0, price_per_m2: 0, rental_yield: 0, price_growth: 0, investment_score: 0, description: '', highlights: [] });
+      setLocationFormData({...defaultLocationForm});
       setSaveStatus({ type: 'success', message: 'Standort gespeichert!' });
       setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
     } catch (err) {
@@ -423,12 +456,14 @@ const AdminPage = () => {
   const handleEditLocation = (loc) => {
     setEditingLocation(loc.city);
     setLocationFormData({
-      city: loc.city, country: loc.country, region: loc.region || '',
+      city: loc.city, country: loc.country || 'Montenegro',
       latitude: loc.latitude || 0, longitude: loc.longitude || 0,
-      population: loc.population || 0, price_per_m2: loc.price_per_m2 || 0,
-      rental_yield: loc.rental_yield || 0, price_growth: loc.price_growth || 0,
-      investment_score: loc.investment_score || 0, description: loc.description || '',
-      highlights: loc.highlights || []
+      price_per_m2: loc.price_per_m2 || 0, rental_yield: loc.rental_yield || 0,
+      tourism_growth: loc.tourism_growth || 0, population_growth: loc.population_growth || 0,
+      price_growth: loc.price_growth || 0, infrastructure_score: loc.infrastructure_score || 0,
+      description: loc.description || '',
+      opportunities: loc.opportunities || [], risks: loc.risks || [],
+      use_cases: loc.use_cases || [], time_horizon: loc.time_horizon || 'medium'
     });
   };
 
@@ -438,6 +473,124 @@ const AdminPage = () => {
       await investmentApi.deleteLocation(city, credentials);
       fetchInvestLocations();
       setSaveStatus({ type: 'success', message: 'Standort gelöscht!' });
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: err.message });
+    }
+  };
+
+  // Infrastructure Functions
+  const fetchInfraProjects = async () => {
+    setInfraLoading(true);
+    try {
+      const data = await investmentApi.getInfrastructure();
+      setInfraProjects(data);
+    } catch (err) {
+      console.error('Failed to fetch infrastructure:', err);
+    } finally {
+      setInfraLoading(false);
+    }
+  };
+
+  const defaultInfraForm = {
+    project_name: '', type: 'road', latitude: 0, longitude: 0,
+    impact_radius_km: 10, status: 'planned', description: '',
+    completion_year: 2026, investment_eur: 0
+  };
+
+  const handleSaveInfra = async () => {
+    try {
+      if (editingInfra) {
+        await investmentApi.updateInfrastructure(editingInfra, infraFormData, credentials);
+      } else {
+        await investmentApi.createInfrastructure(infraFormData, credentials);
+      }
+      fetchInfraProjects();
+      setEditingInfra(null);
+      setInfraFormData({...defaultInfraForm});
+      setSaveStatus({ type: 'success', message: 'Projekt gespeichert!' });
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: err.message });
+    }
+  };
+
+  const handleEditInfra = (proj) => {
+    setEditingInfra(proj.id);
+    setInfraFormData({
+      project_name: proj.project_name || '', type: proj.type || 'road',
+      latitude: proj.latitude || 0, longitude: proj.longitude || 0,
+      impact_radius_km: proj.impact_radius_km || 10, status: proj.status || 'planned',
+      description: proj.description || '', completion_year: proj.completion_year || 2026,
+      investment_eur: proj.investment_eur || 0
+    });
+  };
+
+  const handleDeleteInfra = async (id, name) => {
+    if (!window.confirm(`Projekt "${name}" wirklich löschen?`)) return;
+    try {
+      await investmentApi.deleteInfrastructure(id, credentials);
+      fetchInfraProjects();
+      setSaveStatus({ type: 'success', message: 'Projekt gelöscht!' });
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: err.message });
+    }
+  };
+
+  // Zones Functions
+  const fetchZones = async () => {
+    setZonesLoading(true);
+    try {
+      const data = await investmentApi.getZones();
+      setZones(data);
+    } catch (err) {
+      console.error('Failed to fetch zones:', err);
+    } finally {
+      setZonesLoading(false);
+    }
+  };
+
+  const defaultZoneForm = {
+    name: '', country: 'Montenegro', description: '',
+    center_lat: 0, center_lng: 0, radius_km: 10,
+    color: '#c8a96a', investment_focus: [], expected_growth: 0
+  };
+
+  const handleSaveZone = async () => {
+    try {
+      if (editingZone) {
+        await investmentApi.updateZone(editingZone, zoneFormData, credentials);
+      } else {
+        await investmentApi.createZone(zoneFormData, credentials);
+      }
+      fetchZones();
+      setEditingZone(null);
+      setZoneFormData({...defaultZoneForm});
+      setSaveStatus({ type: 'success', message: 'Zone gespeichert!' });
+      setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
+    } catch (err) {
+      setSaveStatus({ type: 'error', message: err.message });
+    }
+  };
+
+  const handleEditZone = (zone) => {
+    setEditingZone(zone.id);
+    setZoneFormData({
+      name: zone.name || '', country: zone.country || 'Montenegro',
+      description: zone.description || '',
+      center_lat: zone.center_lat || 0, center_lng: zone.center_lng || 0,
+      radius_km: zone.radius_km || 10, color: zone.color || '#c8a96a',
+      investment_focus: zone.investment_focus || [], expected_growth: zone.expected_growth || 0
+    });
+  };
+
+  const handleDeleteZone = async (id, name) => {
+    if (!window.confirm(`Zone "${name}" wirklich löschen?`)) return;
+    try {
+      await investmentApi.deleteZone(id, credentials);
+      fetchZones();
+      setSaveStatus({ type: 'success', message: 'Zone gelöscht!' });
       setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
     } catch (err) {
       setSaveStatus({ type: 'error', message: err.message });
@@ -915,7 +1068,7 @@ const AdminPage = () => {
             data-testid="tab-investment"
           >
             <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Investment ({investLocations.length})</span>
+            <span>Investment ({investLocations.length + infraProjects.length + zones.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('legal')}
@@ -1832,125 +1985,439 @@ const AdminPage = () => {
         {/* Investment Tab */}
         {activeTab === 'investment' && (
           <div className="space-y-6">
-            {/* Location Editor */}
-            {editingLocation !== null ? (
-              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
-                <div className="flex items-center justify-between mb-4 sm:mb-6">
-                  <h2 className="text-lg sm:text-xl font-bold text-ea-dark">
-                    {editingLocation ? `${editingLocation} bearbeiten` : 'Neuer Standort'}
-                  </h2>
-                  <button onClick={() => { setEditingLocation(null); }} className="text-ea-dark/50 hover:text-ea-dark">
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm text-ea-dark/70 mb-1">Stadt</label>
-                    <input type="text" value={locationFormData.city} onChange={e => setLocationFormData(p => ({...p, city: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-city" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-ea-dark/70 mb-1">Land</label>
-                    <select value={locationFormData.country} onChange={e => setLocationFormData(p => ({...p, country: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-country">
-                      <option value="Montenegro">Montenegro</option>
-                      <option value="Serbien">Serbien</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-ea-dark/70 mb-1">Region</label>
-                    <input type="text" value={locationFormData.region} onChange={e => setLocationFormData(p => ({...p, region: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-region" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-ea-dark/70 mb-1">Preis/m² (EUR)</label>
-                    <input type="number" value={locationFormData.price_per_m2 || ''} onChange={e => setLocationFormData(p => ({...p, price_per_m2: parseFloat(e.target.value) || 0}))} onBlur={e => { if(!e.target.value) setLocationFormData(p => ({...p, price_per_m2: 0})); }} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-price" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-ea-dark/70 mb-1">Mietrendite (%)</label>
-                    <input type="number" step="0.1" value={locationFormData.rental_yield || ''} onChange={e => setLocationFormData(p => ({...p, rental_yield: parseFloat(e.target.value) || 0}))} onBlur={e => { if(!e.target.value) setLocationFormData(p => ({...p, rental_yield: 0})); }} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-yield" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-ea-dark/70 mb-1">Preiswachstum (%/Jahr)</label>
-                    <input type="number" step="0.1" value={locationFormData.price_growth || ''} onChange={e => setLocationFormData(p => ({...p, price_growth: parseFloat(e.target.value) || 0}))} onBlur={e => { if(!e.target.value) setLocationFormData(p => ({...p, price_growth: 0})); }} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-growth" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-ea-dark/70 mb-1">Investment Score (0-100)</label>
-                    <input type="number" value={locationFormData.investment_score || ''} onChange={e => setLocationFormData(p => ({...p, investment_score: parseFloat(e.target.value) || 0}))} onBlur={e => { if(!e.target.value) setLocationFormData(p => ({...p, investment_score: 0})); }} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-score" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-ea-dark/70 mb-1">Bevölkerung</label>
-                    <input type="number" value={locationFormData.population || ''} onChange={e => setLocationFormData(p => ({...p, population: parseInt(e.target.value) || 0}))} onBlur={e => { if(!e.target.value) setLocationFormData(p => ({...p, population: 0})); }} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-population" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-ea-dark/70 mb-1">Breitengrad</label>
-                    <input type="number" step="0.01" value={locationFormData.latitude || ''} onChange={e => setLocationFormData(p => ({...p, latitude: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-ea-dark/70 mb-1">Längengrad</label>
-                    <input type="number" step="0.01" value={locationFormData.longitude || ''} onChange={e => setLocationFormData(p => ({...p, longitude: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" />
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <label className="block text-sm text-ea-dark/70 mb-1">Beschreibung</label>
-                  <textarea value={locationFormData.description} onChange={e => setLocationFormData(p => ({...p, description: e.target.value}))} rows={3} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-description" />
-                </div>
-                <div className="mt-4 flex gap-3">
-                  <button onClick={handleSaveLocation} className="flex items-center gap-2 px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all" data-testid="save-location-btn">
-                    <Save className="w-4 h-4" /> Speichern
-                  </button>
-                  <button onClick={() => setEditingLocation(null)} className="px-6 py-3 bg-gray-100 text-ea-dark rounded-lg hover:bg-gray-200 transition-all">
-                    Abbrechen
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-ea-gold" />
-                    <h2 className="text-lg sm:text-xl font-bold text-ea-dark">Investment-Standorte</h2>
-                  </div>
-                  <button
-                    onClick={() => { setEditingLocation(''); setLocationFormData({ city: '', country: 'Montenegro', region: '', latitude: 0, longitude: 0, population: 0, price_per_m2: 0, rental_yield: 0, price_growth: 0, investment_score: 0, description: '', highlights: [] }); }}
-                    className="flex items-center justify-center gap-2 px-4 py-2 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all w-full sm:w-auto"
-                    data-testid="add-location-btn"
-                  >
-                    <Plus className="w-4 h-4" /> Neuer Standort
-                  </button>
-                </div>
+            {/* Sub-tab navigation */}
+            <div className="flex gap-2 border-b border-gray-200 pb-3">
+              {[
+                { key: 'locations', label: 'Standorte', icon: MapPin, count: investLocations.length },
+                { key: 'infrastructure', label: 'Infrastruktur', icon: Building2, count: infraProjects.length },
+                { key: 'zones', label: 'Zonen', icon: Globe, count: zones.length }
+              ].map(tab => (
+                <button
+                  key={tab.key}
+                  onClick={() => setInvestSubTab(tab.key)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    investSubTab === tab.key
+                      ? 'bg-ea-gold text-ea-dark'
+                      : 'text-ea-dark/60 hover:text-ea-dark hover:bg-gray-100'
+                  }`}
+                  data-testid={`invest-subtab-${tab.key}`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="text-xs opacity-70">({tab.count})</span>
+                </button>
+              ))}
+            </div>
 
-                {investLoading ? (
-                  <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-ea-gold" /></div>
+            {/* Status Message */}
+            {saveStatus.message && (
+              <div className={`p-3 rounded-lg text-sm font-medium ${saveStatus.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                {saveStatus.message}
+              </div>
+            )}
+
+            {/* ===== LOCATIONS SUB-TAB ===== */}
+            {investSubTab === 'locations' && (
+              <>
+                {editingLocation !== null ? (
+                  <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
+                      <h2 className="text-lg sm:text-xl font-bold text-ea-dark">
+                        {editingLocation ? `${editingLocation} bearbeiten` : 'Neuer Standort'}
+                      </h2>
+                      <button onClick={() => setEditingLocation(null)} className="text-ea-dark/50 hover:text-ea-dark"><X className="w-5 h-5" /></button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Stadt *</label>
+                        <input type="text" value={locationFormData.city} onChange={e => setLocationFormData(p => ({...p, city: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-city" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Land</label>
+                        <select value={locationFormData.country} onChange={e => setLocationFormData(p => ({...p, country: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-country">
+                          <option value="Montenegro">Montenegro</option>
+                          <option value="Serbien">Serbien</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Preis/m² (EUR)</label>
+                        <input type="number" value={locationFormData.price_per_m2 || ''} onChange={e => setLocationFormData(p => ({...p, price_per_m2: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-price" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Mietrendite (%)</label>
+                        <input type="number" step="0.1" value={locationFormData.rental_yield || ''} onChange={e => setLocationFormData(p => ({...p, rental_yield: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-yield" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Tourismus-Wachstum (%)</label>
+                        <input type="number" step="0.1" value={locationFormData.tourism_growth || ''} onChange={e => setLocationFormData(p => ({...p, tourism_growth: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-tourism" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Bevölkerungswachstum (%)</label>
+                        <input type="number" step="0.1" value={locationFormData.population_growth || ''} onChange={e => setLocationFormData(p => ({...p, population_growth: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-popgrowth" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Preiswachstum (%/Jahr)</label>
+                        <input type="number" step="0.1" value={locationFormData.price_growth || ''} onChange={e => setLocationFormData(p => ({...p, price_growth: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-growth" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Infrastruktur-Score (0-100)</label>
+                        <input type="number" value={locationFormData.infrastructure_score || ''} onChange={e => setLocationFormData(p => ({...p, infrastructure_score: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-infrascore" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Zeithorizont</label>
+                        <select value={locationFormData.time_horizon} onChange={e => setLocationFormData(p => ({...p, time_horizon: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-horizon">
+                          <option value="short">Kurzfristig</option>
+                          <option value="medium">Mittelfristig</option>
+                          <option value="long">Langfristig</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Breitengrad</label>
+                        <input type="number" step="0.0001" value={locationFormData.latitude || ''} onChange={e => setLocationFormData(p => ({...p, latitude: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-lat" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Längengrad</label>
+                        <input type="number" step="0.0001" value={locationFormData.longitude || ''} onChange={e => setLocationFormData(p => ({...p, longitude: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-lng" />
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <label className="block text-sm text-ea-dark/70 mb-1">Beschreibung</label>
+                      <textarea value={locationFormData.description} onChange={e => setLocationFormData(p => ({...p, description: e.target.value}))} rows={3} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-description" />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Chancen (kommagetrennt)</label>
+                        <input type="text" value={(locationFormData.opportunities || []).join(', ')} onChange={e => setLocationFormData(p => ({...p, opportunities: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}))} placeholder="Flughafen, Tourismus, Hafen" className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-opportunities" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Risiken (kommagetrennt)</label>
+                        <input type="text" value={(locationFormData.risks || []).join(', ')} onChange={e => setLocationFormData(p => ({...p, risks: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}))} placeholder="Hohe Preise, Saisonalität" className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="loc-risks" />
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <label className="block text-sm text-ea-dark/70 mb-1">Nutzungsarten</label>
+                      <div className="flex flex-wrap gap-2">
+                        {['tourism', 'residential', 'logistics', 'relocation'].map(uc => (
+                          <button key={uc} type="button"
+                            onClick={() => setLocationFormData(p => ({
+                              ...p, use_cases: p.use_cases.includes(uc) ? p.use_cases.filter(u => u !== uc) : [...p.use_cases, uc]
+                            }))}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                              locationFormData.use_cases.includes(uc) ? 'bg-ea-gold text-ea-dark' : 'bg-gray-100 text-ea-dark/60 hover:bg-gray-200'
+                            }`}
+                            data-testid={`loc-usecase-${uc}`}
+                          >
+                            {uc === 'tourism' ? 'Tourismus' : uc === 'residential' ? 'Wohnen' : uc === 'logistics' ? 'Logistik' : 'Umzug'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="mt-4 flex gap-3">
+                      <button onClick={handleSaveLocation} className="flex items-center gap-2 px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all" data-testid="save-location-btn">
+                        <Save className="w-4 h-4" /> Speichern
+                      </button>
+                      <button onClick={() => setEditingLocation(null)} className="px-6 py-3 bg-gray-100 text-ea-dark rounded-lg hover:bg-gray-200 transition-all">Abbrechen</button>
+                    </div>
+                  </div>
                 ) : (
-                  <div className="grid gap-3">
-                    {investLocations.sort((a, b) => (b.investment_score || 0) - (a.investment_score || 0)).map(loc => (
-                      <div key={loc.city} className="bg-white border border-gray-200 rounded-xl shadow-sm p-3 sm:p-4 flex items-start sm:items-center justify-between gap-2" data-testid={`invest-loc-${loc.city.toLowerCase()}`}>
-                        <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                          <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm shrink-0 ${loc.investment_score >= 80 ? 'bg-green-500' : loc.investment_score >= 60 ? 'bg-yellow-500' : 'bg-orange-500'}`}>
-                            {Math.round(loc.investment_score)}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-bold text-ea-dark text-sm sm:text-base truncate">{loc.city}</h3>
-                              <span className="text-xs text-ea-dark/40 shrink-0">{loc.country}</span>
+                  <>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <h2 className="text-lg font-bold text-ea-dark">Investment-Standorte</h2>
+                      <button
+                        onClick={() => { setEditingLocation(''); setLocationFormData({...defaultLocationForm}); }}
+                        className="flex items-center justify-center gap-2 px-4 py-2 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all w-full sm:w-auto"
+                        data-testid="add-location-btn"
+                      >
+                        <Plus className="w-4 h-4" /> Neuer Standort
+                      </button>
+                    </div>
+                    {investLoading ? (
+                      <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-ea-gold" /></div>
+                    ) : (
+                      <div className="grid gap-3">
+                        {investLocations.sort((a, b) => (b.investment_score || 0) - (a.investment_score || 0)).map(loc => (
+                          <div key={loc.id || loc.city} className="bg-white border border-gray-200 rounded-xl shadow-sm p-3 sm:p-4 flex items-start sm:items-center justify-between gap-2" data-testid={`invest-loc-${loc.city.toLowerCase()}`}>
+                            <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                              <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm shrink-0 ${loc.investment_score >= 80 ? 'bg-green-500' : loc.investment_score >= 60 ? 'bg-yellow-500' : 'bg-orange-500'}`}>
+                                {Math.round(loc.investment_score || 0)}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-bold text-ea-dark text-sm sm:text-base truncate">{loc.city}</h3>
+                                  <span className="text-xs text-ea-dark/40 shrink-0">{loc.country}</span>
+                                  <span className={`text-xs px-1.5 py-0.5 rounded ${loc.time_horizon === 'short' ? 'bg-green-100 text-green-700' : loc.time_horizon === 'long' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
+                                    {loc.time_horizon === 'short' ? 'Kurzfristig' : loc.time_horizon === 'long' ? 'Langfristig' : 'Mittelfristig'}
+                                  </span>
+                                </div>
+                                <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs sm:text-sm text-ea-dark/60 mt-0.5">
+                                  <span>{loc.price_per_m2?.toLocaleString('de-DE')} EUR/m²</span>
+                                  <span>{loc.rental_yield}% Rendite</span>
+                                  <span>+{loc.price_growth}%/Jahr</span>
+                                  <span>Infra: {loc.infrastructure_score}/100</span>
+                                </div>
+                              </div>
                             </div>
-                            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs sm:text-sm text-ea-dark/60 mt-0.5">
-                              <span>{loc.price_per_m2?.toLocaleString('de-DE')} €/m²</span>
-                              <span>{loc.rental_yield}% Rendite</span>
-                              <span>+{loc.price_growth}%/Jahr</span>
-                              {loc.population > 0 && <span>{loc.population?.toLocaleString('de-DE')} Einwohner</span>}
+                            <div className="flex gap-1">
+                              <button onClick={() => handleEditLocation(loc)} className="p-2 text-ea-dark/50 hover:text-ea-gold transition-all" data-testid={`edit-invest-${loc.city.toLowerCase()}`}>
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => handleDeleteLocation(loc.city)} className="p-2 text-ea-dark/50 hover:text-red-500 transition-all" data-testid={`delete-invest-${loc.city.toLowerCase()}`}>
+                                <Trash2 className="w-4 h-4" />
+                              </button>
                             </div>
                           </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <button onClick={() => handleEditLocation(loc)} className="p-2 text-ea-dark/50 hover:text-ea-gold transition-all" data-testid={`edit-invest-${loc.city.toLowerCase()}`}>
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button onClick={() => handleDeleteLocation(loc.city)} className="p-2 text-ea-dark/50 hover:text-red-500 transition-all">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                        ))}
+                        {investLocations.length === 0 && !investLoading && (
+                          <p className="text-center text-ea-dark/50 py-8">Keine Standorte vorhanden.</p>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+
+            {/* ===== INFRASTRUCTURE SUB-TAB ===== */}
+            {investSubTab === 'infrastructure' && (
+              <>
+                {editingInfra !== null ? (
+                  <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
+                      <h2 className="text-lg sm:text-xl font-bold text-ea-dark">
+                        {editingInfra ? 'Projekt bearbeiten' : 'Neues Infrastrukturprojekt'}
+                      </h2>
+                      <button onClick={() => setEditingInfra(null)} className="text-ea-dark/50 hover:text-ea-dark"><X className="w-5 h-5" /></button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      <div className="sm:col-span-2">
+                        <label className="block text-sm text-ea-dark/70 mb-1">Projektname *</label>
+                        <input type="text" value={infraFormData.project_name} onChange={e => setInfraFormData(p => ({...p, project_name: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="infra-name" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Typ</label>
+                        <select value={infraFormData.type} onChange={e => setInfraFormData(p => ({...p, type: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="infra-type">
+                          <option value="road">Straße</option>
+                          <option value="rail">Bahn</option>
+                          <option value="airport">Flughafen</option>
+                          <option value="port">Hafen</option>
+                          <option value="clinic">Klinik</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Status</label>
+                        <select value={infraFormData.status} onChange={e => setInfraFormData(p => ({...p, status: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="infra-status">
+                          <option value="planned">Geplant</option>
+                          <option value="construction">Im Bau</option>
+                          <option value="modernization">Modernisierung</option>
+                          <option value="built">Fertiggestellt</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Fertigstellung (Jahr)</label>
+                        <input type="number" value={infraFormData.completion_year || ''} onChange={e => setInfraFormData(p => ({...p, completion_year: parseInt(e.target.value) || null}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="infra-year" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Investition (EUR)</label>
+                        <input type="number" value={infraFormData.investment_eur || ''} onChange={e => setInfraFormData(p => ({...p, investment_eur: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="infra-invest" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Wirkungsradius (km)</label>
+                        <input type="number" step="0.1" value={infraFormData.impact_radius_km || ''} onChange={e => setInfraFormData(p => ({...p, impact_radius_km: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="infra-radius" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Breitengrad</label>
+                        <input type="number" step="0.0001" value={infraFormData.latitude || ''} onChange={e => setInfraFormData(p => ({...p, latitude: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="infra-lat" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Längengrad</label>
+                        <input type="number" step="0.0001" value={infraFormData.longitude || ''} onChange={e => setInfraFormData(p => ({...p, longitude: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="infra-lng" />
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <label className="block text-sm text-ea-dark/70 mb-1">Beschreibung</label>
+                      <textarea value={infraFormData.description} onChange={e => setInfraFormData(p => ({...p, description: e.target.value}))} rows={3} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="infra-description" />
+                    </div>
+                    <div className="mt-4 flex gap-3">
+                      <button onClick={handleSaveInfra} className="flex items-center gap-2 px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all" data-testid="save-infra-btn">
+                        <Save className="w-4 h-4" /> Speichern
+                      </button>
+                      <button onClick={() => setEditingInfra(null)} className="px-6 py-3 bg-gray-100 text-ea-dark rounded-lg hover:bg-gray-200 transition-all">Abbrechen</button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <h2 className="text-lg font-bold text-ea-dark">Infrastrukturprojekte</h2>
+                      <button
+                        onClick={() => { setEditingInfra(''); setInfraFormData({...defaultInfraForm}); }}
+                        className="flex items-center justify-center gap-2 px-4 py-2 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all w-full sm:w-auto"
+                        data-testid="add-infra-btn"
+                      >
+                        <Plus className="w-4 h-4" /> Neues Projekt
+                      </button>
+                    </div>
+                    {infraLoading ? (
+                      <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-ea-gold" /></div>
+                    ) : (
+                      <div className="grid gap-3">
+                        {infraProjects.map(proj => {
+                          const typeLabels = { road: 'Straße', rail: 'Bahn', airport: 'Flughafen', port: 'Hafen', clinic: 'Klinik' };
+                          const statusLabels = { planned: 'Geplant', construction: 'Im Bau', modernization: 'Modernisierung', built: 'Fertig' };
+                          const statusColors = { planned: 'bg-blue-100 text-blue-700', construction: 'bg-yellow-100 text-yellow-700', modernization: 'bg-purple-100 text-purple-700', built: 'bg-green-100 text-green-700' };
+                          return (
+                            <div key={proj.id} className="bg-white border border-gray-200 rounded-xl shadow-sm p-3 sm:p-4 flex items-start sm:items-center justify-between gap-2" data-testid={`infra-project-${proj.id}`}>
+                              <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-ea-dark/10 flex items-center justify-center shrink-0">
+                                  <Building2 className="w-5 h-5 text-ea-dark/60" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <h3 className="font-bold text-ea-dark text-sm sm:text-base truncate">{proj.project_name}</h3>
+                                    <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-ea-dark/60">{typeLabels[proj.type] || proj.type}</span>
+                                    <span className={`text-xs px-1.5 py-0.5 rounded ${statusColors[proj.status] || 'bg-gray-100 text-gray-700'}`}>{statusLabels[proj.status] || proj.status}</span>
+                                  </div>
+                                  <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs sm:text-sm text-ea-dark/60 mt-0.5">
+                                    {proj.investment_eur > 0 && <span>{(proj.investment_eur / 1000000).toFixed(0)} Mio. EUR</span>}
+                                    {proj.completion_year && <span>Fertig: {proj.completion_year}</span>}
+                                    <span>Radius: {proj.impact_radius_km} km</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex gap-1">
+                                <button onClick={() => handleEditInfra(proj)} className="p-2 text-ea-dark/50 hover:text-ea-gold transition-all" data-testid={`edit-infra-${proj.id}`}>
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                                <button onClick={() => handleDeleteInfra(proj.id, proj.project_name)} className="p-2 text-ea-dark/50 hover:text-red-500 transition-all" data-testid={`delete-infra-${proj.id}`}>
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        {infraProjects.length === 0 && !infraLoading && (
+                          <p className="text-center text-ea-dark/50 py-8">Keine Infrastrukturprojekte vorhanden.</p>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+
+            {/* ===== ZONES SUB-TAB ===== */}
+            {investSubTab === 'zones' && (
+              <>
+                {editingZone !== null ? (
+                  <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
+                      <h2 className="text-lg sm:text-xl font-bold text-ea-dark">
+                        {editingZone ? 'Zone bearbeiten' : 'Neue Investitionszone'}
+                      </h2>
+                      <button onClick={() => setEditingZone(null)} className="text-ea-dark/50 hover:text-ea-dark"><X className="w-5 h-5" /></button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      <div className="sm:col-span-2">
+                        <label className="block text-sm text-ea-dark/70 mb-1">Name *</label>
+                        <input type="text" value={zoneFormData.name} onChange={e => setZoneFormData(p => ({...p, name: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="zone-name" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Land</label>
+                        <select value={zoneFormData.country} onChange={e => setZoneFormData(p => ({...p, country: e.target.value}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="zone-country">
+                          <option value="Montenegro">Montenegro</option>
+                          <option value="Serbien">Serbien</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Farbe</label>
+                        <div className="flex items-center gap-2">
+                          <input type="color" value={zoneFormData.color} onChange={e => setZoneFormData(p => ({...p, color: e.target.value}))} className="w-10 h-10 rounded border border-gray-200 cursor-pointer" data-testid="zone-color" />
+                          <input type="text" value={zoneFormData.color} onChange={e => setZoneFormData(p => ({...p, color: e.target.value}))} className="flex-1 bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold text-sm" />
                         </div>
                       </div>
-                    ))}
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Erwartetes Wachstum (%)</label>
+                        <input type="number" step="0.1" value={zoneFormData.expected_growth || ''} onChange={e => setZoneFormData(p => ({...p, expected_growth: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="zone-growth" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Radius (km)</label>
+                        <input type="number" step="0.1" value={zoneFormData.radius_km || ''} onChange={e => setZoneFormData(p => ({...p, radius_km: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="zone-radius" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Zentrum Breitengrad</label>
+                        <input type="number" step="0.0001" value={zoneFormData.center_lat || ''} onChange={e => setZoneFormData(p => ({...p, center_lat: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="zone-lat" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-ea-dark/70 mb-1">Zentrum Längengrad</label>
+                        <input type="number" step="0.0001" value={zoneFormData.center_lng || ''} onChange={e => setZoneFormData(p => ({...p, center_lng: parseFloat(e.target.value) || 0}))} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="zone-lng" />
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <label className="block text-sm text-ea-dark/70 mb-1">Beschreibung</label>
+                      <textarea value={zoneFormData.description} onChange={e => setZoneFormData(p => ({...p, description: e.target.value}))} rows={3} className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="zone-description" />
+                    </div>
+                    <div className="mt-4">
+                      <label className="block text-sm text-ea-dark/70 mb-1">Investitionsfokus (kommagetrennt)</label>
+                      <input type="text" value={(zoneFormData.investment_focus || []).join(', ')} onChange={e => setZoneFormData(p => ({...p, investment_focus: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}))} placeholder="Tourismus, Logistik, Luxus" className="w-full bg-ea-light border border-gray-200 rounded-lg px-3 py-2 text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="zone-focus" />
+                    </div>
+                    <div className="mt-4 flex gap-3">
+                      <button onClick={handleSaveZone} className="flex items-center gap-2 px-6 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all" data-testid="save-zone-btn">
+                        <Save className="w-4 h-4" /> Speichern
+                      </button>
+                      <button onClick={() => setEditingZone(null)} className="px-6 py-3 bg-gray-100 text-ea-dark rounded-lg hover:bg-gray-200 transition-all">Abbrechen</button>
+                    </div>
                   </div>
+                ) : (
+                  <>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <h2 className="text-lg font-bold text-ea-dark">Investitionszonen</h2>
+                      <button
+                        onClick={() => { setEditingZone(''); setZoneFormData({...defaultZoneForm}); }}
+                        className="flex items-center justify-center gap-2 px-4 py-2 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all w-full sm:w-auto"
+                        data-testid="add-zone-btn"
+                      >
+                        <Plus className="w-4 h-4" /> Neue Zone
+                      </button>
+                    </div>
+                    {zonesLoading ? (
+                      <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-ea-gold" /></div>
+                    ) : (
+                      <div className="grid gap-3">
+                        {zones.map(zone => (
+                          <div key={zone.id} className="bg-white border border-gray-200 rounded-xl shadow-sm p-3 sm:p-4 flex items-start sm:items-center justify-between gap-2" data-testid={`zone-item-${zone.id}`}>
+                            <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg shrink-0 border-2" style={{ backgroundColor: zone.color + '20', borderColor: zone.color }}>
+                                <div className="w-full h-full rounded-md flex items-center justify-center">
+                                  <Globe className="w-5 h-5" style={{ color: zone.color }} />
+                                </div>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <h3 className="font-bold text-ea-dark text-sm sm:text-base truncate">{zone.name}</h3>
+                                  <span className="text-xs text-ea-dark/40">{zone.country}</span>
+                                </div>
+                                <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs sm:text-sm text-ea-dark/60 mt-0.5">
+                                  {zone.expected_growth > 0 && <span>+{zone.expected_growth}% Wachstum</span>}
+                                  <span>Radius: {zone.radius_km} km</span>
+                                  {zone.investment_focus?.length > 0 && <span>{zone.investment_focus.join(', ')}</span>}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex gap-1">
+                              <button onClick={() => handleEditZone(zone)} className="p-2 text-ea-dark/50 hover:text-ea-gold transition-all" data-testid={`edit-zone-${zone.id}`}>
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => handleDeleteZone(zone.id, zone.name)} className="p-2 text-ea-dark/50 hover:text-red-500 transition-all" data-testid={`delete-zone-${zone.id}`}>
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        {zones.length === 0 && !zonesLoading && (
+                          <p className="text-center text-ea-dark/50 py-8">Keine Investitionszonen vorhanden.</p>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
               </>
             )}
