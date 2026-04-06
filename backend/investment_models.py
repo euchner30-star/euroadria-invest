@@ -203,6 +203,11 @@ class SimulationInput(BaseModel):
     holding_period: int = Field(10, ge=1, le=30, description="Haltedauer in Jahren")
     equity_percent: float = Field(100.0, ge=10, le=100, description="Eigenkapitalanteil in %")
     mortgage_rate: float = Field(3.5, ge=0, le=15, description="Hypothekenzins in % (falls finanziert)")
+    # A. Steuer-Logik (Montenegro Pauschalsteuer)
+    apply_tax: bool = Field(False, description="Netto nach Steuern berechnen")
+    tax_rate: float = Field(9.0, ge=0, le=50, description="Steuersatz auf Mieteinnahmen in %")
+    # B. Exit-Kosten (Verkaufsgebühren)
+    exit_costs_percent: float = Field(3.0, ge=0, le=15, description="Verkaufskosten in % des Endwerts")
 
 
 class YearlyProjection(BaseModel):
@@ -212,6 +217,7 @@ class YearlyProjection(BaseModel):
     vacancy_loss: float
     running_costs: float
     net_rental_income: float
+    tax_amount: float
     mortgage_payment: float
     cashflow: float
     cumulative_cashflow: float
@@ -233,6 +239,8 @@ class SimulationResult(BaseModel):
     total_cashflow: float
     final_property_value: float
     value_appreciation: float
+    exit_costs: float
+    total_tax_paid: float
     # Jährliche Daten für Recharts
     yearly_data: List[YearlyProjection]
     # Kennzahlen
@@ -240,6 +248,9 @@ class SimulationResult(BaseModel):
     cashflow_yield_percent: float
     total_return_percent: float
     break_even_year: Optional[int]
+    # Flags
+    tax_applied: bool
+    tax_rate_used: float
 
 
 def calculate_simulation(inp: SimulationInput) -> SimulationResult:
@@ -251,6 +262,8 @@ def calculate_simulation(inp: SimulationInput) -> SimulationResult:
     - NPV: Σ CF(t) / (1 + r)^t für t = 0..n
     - IRR: Diskontrate r bei der NPV = 0
     - Eigenkapital-ROI: (Gesamtgewinn / Eigenkapital) * 100
+    - Steuer (optional): Pauschalsteuer auf Netto-Mieteinnahmen
+    - Exit-Kosten: Maklergebühren/Verkaufskosten beim Verkauf
     """
     import numpy_financial as npf
     
@@ -275,11 +288,12 @@ def calculate_simulation(inp: SimulationInput) -> SimulationResult:
         annual_mortgage = debt / inp.holding_period if debt > 0 else 0
     
     # Cashflow-Reihe für IRR (Jahr 0 = Investition)
-    cashflows_for_irr = [-equity]  # Eigenkapitaleinsatz als negativer Cashflow
+    cashflows_for_irr = [-equity]
     
     yearly_data = []
     cumulative_cf = 0
     break_even_year = None
+    total_tax = 0
     
     for year in range(1, inp.holding_period + 1):
         # Mietsteigerung mit Zinseszins
@@ -292,11 +306,17 @@ def calculate_simulation(inp: SimulationInput) -> SimulationResult:
         # Betriebskosten (% der Bruttomiete)
         running_costs = gross_rent * (inp.running_costs_percent / 100)
         
-        # Netto-Mieteinnahmen
+        # Netto-Mieteinnahmen (vor Steuer)
         net_rental = effective_rent - running_costs
         
-        # Cashflow nach Hypothek
-        cashflow = net_rental - annual_mortgage
+        # A. Steuer-Logik (Montenegro Pauschalsteuer)
+        tax_amount = 0
+        if inp.apply_tax and net_rental > 0:
+            tax_amount = net_rental * (inp.tax_rate / 100)
+            total_tax += tax_amount
+        
+        # Cashflow nach Hypothek und Steuer
+        cashflow = net_rental - annual_mortgage - tax_amount
         cumulative_cf += cashflow
         
         # Immobilienwert mit Wertsteigerung
@@ -315,9 +335,10 @@ def calculate_simulation(inp: SimulationInput) -> SimulationResult:
         if break_even_year is None and cumulative_cf >= 0:
             break_even_year = year
         
-        # Für IRR: Letztes Jahr enthält auch den Verkaufserlös
+        # B. Exit-Kosten im letzten Jahr
         if year == inp.holding_period:
-            sale_proceeds = property_value - remaining_debt
+            exit_costs = property_value * (inp.exit_costs_percent / 100)
+            sale_proceeds = property_value - remaining_debt - exit_costs
             cashflows_for_irr.append(cashflow + sale_proceeds)
         else:
             cashflows_for_irr.append(cashflow)
@@ -328,6 +349,7 @@ def calculate_simulation(inp: SimulationInput) -> SimulationResult:
             vacancy_loss=round(vacancy_loss, 2),
             running_costs=round(running_costs, 2),
             net_rental_income=round(net_rental, 2),
+            tax_amount=round(tax_amount, 2),
             mortgage_payment=round(annual_mortgage, 2),
             cashflow=round(cashflow, 2),
             cumulative_cashflow=round(cumulative_cf, 2),
@@ -350,8 +372,9 @@ def calculate_simulation(inp: SimulationInput) -> SimulationResult:
     
     # Gesamtkennzahlen
     final_value = yearly_data[-1].property_value
+    exit_costs_total = final_value * (inp.exit_costs_percent / 100)
     total_cashflow = sum(y.cashflow for y in yearly_data)
-    value_gain = final_value - inp.purchase_price
+    value_gain = final_value - inp.purchase_price - exit_costs_total
     total_profit = total_cashflow + value_gain
     equity_roi = (total_profit / equity) * 100 if equity > 0 else 0
     avg_cashflow = total_cashflow / inp.holding_period
@@ -369,11 +392,15 @@ def calculate_simulation(inp: SimulationInput) -> SimulationResult:
         total_cashflow=round(total_cashflow, 2),
         final_property_value=round(final_value, 2),
         value_appreciation=round(value_gain, 2),
+        exit_costs=round(exit_costs_total, 2),
+        total_tax_paid=round(total_tax, 2),
         yearly_data=yearly_data,
         average_annual_cashflow=round(avg_cashflow, 2),
         cashflow_yield_percent=round(cashflow_yield, 2),
         total_return_percent=round(total_return_pct, 2),
-        break_even_year=break_even_year
+        break_even_year=break_even_year,
+        tax_applied=inp.apply_tax,
+        tax_rate_used=inp.tax_rate if inp.apply_tax else 0
     )
 
 
