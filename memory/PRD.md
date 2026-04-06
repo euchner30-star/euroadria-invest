@@ -33,6 +33,11 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
   - Market Data Validation: /api/v1/market-check with deviation warnings >15%
   - PDF Exposé Generator: Professional PDF with ReportLab (KPIs, parameters, 10-year table)
   - Frontend: /investment/simulation page with real-time sliders + PDF download
+- [x] Simulation Erweiterungen (2026-04-06):
+  - Steuer-Toggle: 9% MNE Pauschalsteuer (ein/ausschaltbar mit variablem Steuersatz)
+  - Exit-Kosten: 3% Maklergebühr-Slider, abgezogen vom Endwert
+  - Hypotheken-Annuität: Dynamische Tabellenspalte bei Fremdfinanzierung (EK < 100%)
+  - Lead-Gen CTA: "Finanzierung für dieses Objekt anfragen" Button mit Kontaktformular-Link
 
 ## Architecture
 ### Key Files
