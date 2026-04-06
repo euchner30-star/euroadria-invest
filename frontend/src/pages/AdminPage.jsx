@@ -689,7 +689,7 @@ const AdminPage = () => {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.detail || 'Import fehlgeschlagen');
-      setBulkImportResult({ type: 'success', message: data.message, articles: data.articles });
+      setBulkImportResult({ type: 'success', message: data.message, articles: data.articles, skipped: data.skipped || [], skipped_count: data.skipped_count || 0 });
       fetchArticles(credentials);
       setBulkImportFile(null);
     } catch (err) {
@@ -1160,11 +1160,22 @@ const AdminPage = () => {
                         {bulkImportResult.message}
                       </p>
                     </div>
-                    {bulkImportResult.articles && (
-                      <div className="mt-2 max-h-40 overflow-y-auto">
+                    {bulkImportResult.articles?.length > 0 && (
+                      <div className="mt-2 max-h-32 overflow-y-auto">
+                        <p className="text-xs font-semibold text-green-700 mb-1">Importiert:</p>
                         {bulkImportResult.articles.map((a, i) => (
                           <p key={i} className="text-xs text-green-700 py-0.5">
                             {a.title} <span className="text-green-500">({a.category})</span>
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                    {bulkImportResult.skipped?.length > 0 && (
+                      <div className="mt-3 max-h-32 overflow-y-auto border-t border-yellow-200 pt-2">
+                        <p className="text-xs font-semibold text-yellow-700 mb-1">Übersprungen ({bulkImportResult.skipped_count} Duplikate):</p>
+                        {bulkImportResult.skipped.map((s, i) => (
+                          <p key={i} className="text-xs text-yellow-700 py-0.5">
+                            {s.title} <span className="text-yellow-500">— {s.reason}</span>
                           </p>
                         ))}
                       </div>

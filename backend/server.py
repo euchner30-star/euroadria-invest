@@ -1805,19 +1805,46 @@ async def bulk_import_articles(file: UploadFile = File(...), admin: str = Depend
         slug = slug.strip('-')
         return slug[:80]
     
+    # Pre-load all existing slugs and titles for duplicate detection
+    existing_articles = await db.articles.find({}, {"slug": 1, "title": 1, "_id": 0}).to_list(10000)
+    existing_slugs = {a["slug"] for a in existing_articles}
+    existing_titles = {a["title"].strip().lower() for a in existing_articles if a.get("title")}
+    
     imported = []
+    skipped = []
+    file_seen_slugs = set()  # Track duplicates within the same file
+    
     for art in articles_data:
-        slug = make_slug(art['title'])
-        existing = await db.articles.find_one({"slug": slug})
-        if existing:
-            slug = f"{slug}-{next_id}"
+        title = art['title'].strip()
+        if not title:
+            skipped.append({"title": "(leer)", "reason": "Kein Titel"})
+            continue
+        
+        slug = make_slug(title)
+        
+        # Check 1: Duplicate slug in database
+        if slug in existing_slugs:
+            skipped.append({"title": title, "reason": f"Slug '{slug}' existiert bereits in der Datenbank"})
+            continue
+        
+        # Check 2: Duplicate title in database (case-insensitive)
+        if title.strip().lower() in existing_titles:
+            skipped.append({"title": title, "reason": "Titel existiert bereits in der Datenbank"})
+            continue
+        
+        # Check 3: Duplicate within the same import file
+        if slug in file_seen_slugs:
+            skipped.append({"title": title, "reason": "Duplikat innerhalb der Import-Datei"})
+            continue
+        
+        file_seen_slugs.add(slug)
         
         category = art.get('category', 'Allgemein')
         
         article_doc = {
             "id": next_id,
             "cluster": category,
-            "title": art['title'],
+            "title": title,
             "slug": slug,
             "excerpt": art.get('excerpt', '')[:300],
             "content": art.get('content', ''),
@@ -1836,10 +1863,21 @@ async def bulk_import_articles(file: UploadFile = File(...), admin: str = Depend
         }
         
         await db.articles.insert_one(article_doc)
-        imported.append({"id": next_id, "title": art['title'], "category": category, "slug": slug})
+        existing_slugs.add(slug)
+        existing_titles.add(title.strip().lower())
+        imported.append({"id": next_id, "title": title, "category": category, "slug": slug})
         next_id += 1
     
-    return {"message": f"{len(imported)} Artikel erfolgreich importiert", "count": len(imported), "articles": imported}
+    result = {
+        "message": f"{len(imported)} Artikel importiert, {len(skipped)} übersprungen",
+        "count": len(imported),
+        "skipped_count": len(skipped),
+        "articles": imported,
+    }
+    if skipped:
+        result["skipped"] = skipped
+    
+    return result
 
 
 # =============================================
