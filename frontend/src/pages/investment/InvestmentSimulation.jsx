@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useTransition, useEffect } from 'react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
-import { Calculator, TrendingUp, Download, AlertTriangle, Info, Loader2, ChevronDown, ChevronUp, MapPin } from 'lucide-react';
+import { Calculator, TrendingUp, Download, AlertTriangle, Info, Loader2, ChevronDown, ChevronUp, MapPin, Shield, Banknote, Mail } from 'lucide-react';
 import SEO from '../../components/SEO';
 import { simulationApi, investmentApi } from '../../services/api';
 
@@ -16,7 +16,10 @@ const DEFAULT_PARAMS = {
   discount_rate: 4,
   holding_period: 10,
   equity_percent: 100,
-  mortgage_rate: 3.5
+  mortgage_rate: 3.5,
+  apply_tax: false,
+  tax_rate: 9,
+  exit_costs_percent: 3
 };
 
 const SLIDER_CONFIG = {
@@ -31,7 +34,9 @@ const SLIDER_CONFIG = {
   discount_rate: { min: 0, max: 15, step: 0.5, label: 'Diskontierungszins', unit: '%' },
   holding_period: { min: 1, max: 30, step: 1, label: 'Haltedauer', unit: 'Jahre' },
   equity_percent: { min: 10, max: 100, step: 5, label: 'Eigenkapital', unit: '%' },
-  mortgage_rate: { min: 0, max: 10, step: 0.25, label: 'Hypothekenzins', unit: '%' }
+  mortgage_rate: { min: 0, max: 10, step: 0.25, label: 'Hypothekenzins', unit: '%' },
+  tax_rate: { min: 0, max: 30, step: 1, label: 'Steuersatz', unit: '%' },
+  exit_costs_percent: { min: 0, max: 10, step: 0.5, label: 'Verkaufskosten', unit: '%' }
 };
 
 const fmt = (val, type = 'eur') => {
@@ -188,7 +193,8 @@ export default function InvestmentSimulation() {
   })) || [];
 
   const basicSliders = ['purchase_price', 'renovation_costs', 'monthly_rent', 'rent_increase_percent', 'appreciation_percent', 'holding_period'];
-  const advancedSliders = ['additional_costs_percent', 'vacancy_rate', 'running_costs_percent', 'discount_rate', 'equity_percent', 'mortgage_rate'];
+  const advancedSliders = ['additional_costs_percent', 'vacancy_rate', 'running_costs_percent', 'discount_rate', 'equity_percent', 'mortgage_rate', 'exit_costs_percent'];
+  const showMortgage = params.equity_percent < 100;
 
   return (
     <>
@@ -278,6 +284,36 @@ export default function InvestmentSimulation() {
                     {advancedSliders.map(key => (
                       <Slider key={key} paramKey={key} value={params[key]} onChange={handleChange} />
                     ))}
+
+                    {/* Tax Toggle */}
+                    <div className="pt-3 border-t border-white/[0.06]">
+                      <button
+                        onClick={() => handleChange('apply_tax', !params.apply_tax)}
+                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg border transition-all ${
+                          params.apply_tax
+                            ? 'bg-ea-gold/10 border-ea-gold/30 text-ea-gold'
+                            : 'bg-white/[0.04] border-white/[0.08] text-white/50'
+                        }`}
+                        data-testid="toggle-tax"
+                      >
+                        <span className="flex items-center gap-2 text-xs font-medium">
+                          <Shield className="w-3.5 h-3.5" />
+                          Netto nach Steuern (MNE {params.tax_rate}%)
+                        </span>
+                        <div className={`w-9 h-5 rounded-full flex items-center px-0.5 transition-colors ${
+                          params.apply_tax ? 'bg-ea-gold' : 'bg-white/20'
+                        }`}>
+                          <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${
+                            params.apply_tax ? 'translate-x-4' : 'translate-x-0'
+                          }`} />
+                        </div>
+                      </button>
+                      {params.apply_tax && (
+                        <div className="mt-3">
+                          <Slider paramKey="tax_rate" value={params.tax_rate} onChange={handleChange} />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -323,11 +359,57 @@ export default function InvestmentSimulation() {
                   </div>
 
                   {/* Investment Summary */}
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className={`grid gap-3 ${result.tax_applied || result.exit_costs > 0 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3'}`}>
                     <KPICard label="Investition" value={fmt(result.total_investment)} />
                     <KPICard label="Endwert" value={fmt(result.final_property_value)} positive={result.value_appreciation > 0} />
-                    <KPICard label="Wertzuwachs" value={fmt(result.value_appreciation)} positive={result.value_appreciation > 0} />
+                    {result.exit_costs > 0 && (
+                      <KPICard label="Exit-Kosten" value={fmt(result.exit_costs)} sub={`${params.exit_costs_percent}% Maklergebühr`} positive={false} />
+                    )}
+                    <KPICard label="Netto-Wertzuwachs" value={fmt(result.value_appreciation)} positive={result.value_appreciation > 0} />
                   </div>
+
+                  {/* Tax & Financing Summary */}
+                  {(result.tax_applied || result.debt_amount > 0) && (
+                    <div className={`grid gap-3 ${result.tax_applied && result.debt_amount > 0 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3'}`}>
+                      {result.tax_applied && (
+                        <KPICard label="Gezahlte Steuer" value={fmt(result.total_tax_paid)} sub={`MNE Pauschal ${result.tax_rate_used}%`} positive={false} />
+                      )}
+                      {result.debt_amount > 0 && (
+                        <>
+                          <KPICard label="Eigenkapital" value={fmt(result.equity_invested)} sub={`${params.equity_percent}% der Investition`} />
+                          <KPICard label="Fremdkapital" value={fmt(result.debt_amount)} sub={`${params.mortgage_rate}% Hypothekenzins`} />
+                          <KPICard label="Ges. Cashflow" value={fmt(result.total_cashflow)} sub="Nach Hypothek & Steuer" positive={result.total_cashflow > 0} />
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Lead-Gen: Financing CTA */}
+                  {showMortgage && result && (
+                    <div className="bg-gradient-to-r from-ea-gold/[0.08] to-ea-gold/[0.03] border border-ea-gold/20 rounded-2xl p-5 sm:p-6" data-testid="financing-cta">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex items-start gap-3">
+                          <Banknote className="w-6 h-6 text-ea-gold shrink-0 mt-0.5" />
+                          <div>
+                            <h3 className="text-white font-bold text-sm mb-1">Finanzierung für dieses Objekt anfragen</h3>
+                            <p className="text-white/50 text-xs leading-relaxed">
+                              Benötigtes Fremdkapital: <strong className="text-white/70">{fmt(result.debt_amount)}</strong> bei {params.mortgage_rate}% Zins.
+                              Unsere Partner-Banken in Montenegro bieten exklusive Konditionen für ausländische Investoren.
+                            </p>
+                          </div>
+                        </div>
+                        <a
+                          href={`/kontakt?betreff=Finanzierungsanfrage&betrag=${encodeURIComponent(fmt(result.debt_amount))}`}
+                          className="shrink-0 flex items-center gap-2 px-5 py-3 bg-ea-gold text-ea-dark font-bold rounded-xl
+                                     hover:bg-ea-gold/90 transition-all text-sm whitespace-nowrap"
+                          data-testid="financing-request-btn"
+                        >
+                          <Mail className="w-4 h-4" />
+                          Jetzt anfragen
+                        </a>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Cumulative Cashflow Chart */}
                   <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-4 sm:p-6">
@@ -392,7 +474,12 @@ export default function InvestmentSimulation() {
                             <th className="px-3 py-2.5 text-left text-white/40 font-medium">Jahr</th>
                             <th className="px-3 py-2.5 text-right text-white/40 font-medium">Bruttomiete</th>
                             <th className="px-3 py-2.5 text-right text-white/40 font-medium">Netto-Miete</th>
-                            <th className="px-3 py-2.5 text-right text-white/40 font-medium">Hypothek</th>
+                            {result.tax_applied && (
+                              <th className="px-3 py-2.5 text-right text-white/40 font-medium">Steuer ({result.tax_rate_used}%)</th>
+                            )}
+                            {result.debt_amount > 0 && (
+                              <th className="px-3 py-2.5 text-right text-white/40 font-medium">Annuität</th>
+                            )}
                             <th className="px-3 py-2.5 text-right text-white/40 font-medium">Cashflow</th>
                             <th className="px-3 py-2.5 text-right text-white/40 font-medium">Kum. CF</th>
                             <th className="px-3 py-2.5 text-right text-white/40 font-medium">Immobilienwert</th>
@@ -404,7 +491,12 @@ export default function InvestmentSimulation() {
                               <td className="px-3 py-2 text-white/60 font-medium">{y.year}</td>
                               <td className="px-3 py-2 text-right text-white/50 tabular-nums">{fmt(y.gross_rent)}</td>
                               <td className="px-3 py-2 text-right text-white/50 tabular-nums">{fmt(y.net_rental_income)}</td>
-                              <td className="px-3 py-2 text-right text-white/50 tabular-nums">{fmt(y.mortgage_payment)}</td>
+                              {result.tax_applied && (
+                                <td className="px-3 py-2 text-right text-red-400/60 tabular-nums">-{fmt(y.tax_amount)}</td>
+                              )}
+                              {result.debt_amount > 0 && (
+                                <td className="px-3 py-2 text-right text-orange-400/60 tabular-nums">-{fmt(y.mortgage_payment)}</td>
+                              )}
                               <td className={`px-3 py-2 text-right font-medium tabular-nums ${y.cashflow >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                                 {fmt(y.cashflow)}
                               </td>

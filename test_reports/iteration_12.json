@@ -1,0 +1,135 @@
+{
+  "summary": "Comprehensive testing of Investment Simulation page enhancements for EuroAdria. All features working correctly: Tax toggle (9% Montenegro flat tax), Exit costs slider (3% broker fee), Mortgage/Annuity columns in table when equity < 100%, and Lead-Gen financing CTA with German language UI.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_simulation_api.py",
+    "/app/test_reports/pytest/simulation_api_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_simulation_api.py"
+  ],
+  "success_rate": {
+    "backend": "100% - 9/9 tests passed",
+    "frontend": "100% - All simulation features verified"
+  },
+  "features_tested": {
+    "backend_api": {
+      "endpoint": "POST /api/calculator/simulation",
+      "status": "PASS",
+      "tests": [
+        "Basic simulation without tax/financing",
+        "Simulation with Montenegro 9% flat tax",
+        "Simulation with custom tax rate (15%)",
+        "Simulation with exit costs (5%)",
+        "Simulation with financing (70% equity)",
+        "Simulation with both tax and financing",
+        "Yearly data structure validation",
+        "Result structure validation"
+      ],
+      "new_fields_verified": {
+        "input": ["apply_tax", "tax_rate", "exit_costs_percent"],
+        "output": ["tax_applied", "tax_rate_used", "total_tax_paid", "exit_costs", "debt_amount"],
+        "yearly_data": ["tax_amount", "mortgage_payment"]
+      }
+    },
+    "frontend_simulation_page": {
+      "url": "/investment/simulation",
+      "status": "PASS",
+      "features_verified": {
+        "erweiterte_parameter_toggle": {
+          "status": "PASS",
+          "data_testid": "toggle-advanced",
+          "description": "Expands advanced section with equity, mortgage, exit costs sliders and tax toggle"
+        },
+        "tax_toggle": {
+          "status": "PASS",
+          "data_testid": "toggle-tax",
+          "description": "Toggle shows 'Netto nach Steuern (MNE 9%)' with Shield icon, gold color when active",
+          "tax_rate_slider_appears": true
+        },
+        "exit_costs_slider": {
+          "status": "PASS",
+          "data_testid": "slider-exit_costs_percent",
+          "label": "Verkaufskosten",
+          "default_value": "3%"
+        },
+        "equity_slider": {
+          "status": "PASS",
+          "data_testid": "slider-equity_percent",
+          "label": "Eigenkapital",
+          "range": "10-100%"
+        },
+        "kpi_cards": {
+          "status": "PASS",
+          "cards_verified": [
+            "IRR",
+            "EK-ROI",
+            "NPV",
+            "Gesamtgewinn",
+            "Investition",
+            "Endwert",
+            "Exit-Kosten (when exit_costs > 0)",
+            "Netto-Wertzuwachs",
+            "Gezahlte Steuer (when tax_applied)",
+            "Eigenkapital (when debt > 0)",
+            "Fremdkapital (when debt > 0)",
+            "Ges. Cashflow (when debt > 0)"
+          ]
+        },
+        "table_dynamic_columns": {
+          "status": "PASS",
+          "steuer_column": "Shows 'Steuer (X%)' when tax_applied is true",
+          "annuitat_column": "Shows 'Annuität' when debt_amount > 0"
+        },
+        "financing_cta": {
+          "status": "PASS",
+          "data_testid": "financing-cta",
+          "title": "Finanzierung für dieses Objekt anfragen",
+          "shows_when": "equity_percent < 100 and simulation ran",
+          "content": "Shows required debt amount and mortgage rate"
+        },
+        "financing_request_button": {
+          "status": "PASS",
+          "data_testid": "financing-request-btn",
+          "text": "Jetzt anfragen",
+          "href": "/kontakt?betreff=Finanzierungsanfrage&betrag={debt_amount}"
+        }
+      }
+    }
+  },
+  "german_language_ui": {
+    "verified_labels": [
+      "Erweiterte Parameter",
+      "Netto nach Steuern (MNE 9%)",
+      "Steuersatz",
+      "Verkaufskosten",
+      "Eigenkapital",
+      "Hypothekenzins",
+      "Simulation starten",
+      "Finanzierung für dieses Objekt anfragen",
+      "Jetzt anfragen",
+      "Gezahlte Steuer",
+      "Fremdkapital",
+      "Annuität"
+    ]
+  },
+  "test_credentials": {
+    "admin_username": "admin",
+    "admin_password": "euroadria2025",
+    "note": "Not needed for simulation page - it's public"
+  },
+  "seed_data_creation": "None - simulation uses user input parameters",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Investment Simulation page fully functional with all new features: Tax toggle (Montenegro 9% flat tax), Exit costs slider (3% broker fee), dynamic table columns (Steuer/Annuität), and Lead-Gen financing CTA. Backend tests in /app/backend/tests/test_simulation_api.py. Cookie consent banner must be dismissed first by clicking 'Alle akzeptieren'."
+}
