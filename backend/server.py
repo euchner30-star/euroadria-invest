@@ -1314,6 +1314,7 @@ STATIC_PAGES = [
     {"loc": "/infrastruktur-radar", "priority": "0.8", "changefreq": "weekly"},
     {"loc": "/investment", "priority": "0.9", "changefreq": "weekly"},
     {"loc": "/investment/rechner", "priority": "0.8", "changefreq": "monthly"},
+    {"loc": "/investment/simulation", "priority": "0.9", "changefreq": "weekly"},
     {"loc": "/investment/vergleich", "priority": "0.8", "changefreq": "monthly"},
     {"loc": "/contact", "priority": "0.8", "changefreq": "monthly"},
     {"loc": "/team", "priority": "0.7", "changefreq": "monthly"},
@@ -1352,6 +1353,17 @@ async def generate_sitemap():
         xml_parts.append(f'    <loc>{SITE_URL}/blog/{article["slug"]}</loc>')
         xml_parts.append(f'    <lastmod>{article.get("date", today)}</lastmod>')
         xml_parts.append('    <changefreq>monthly</changefreq>')
+        xml_parts.append('    <priority>0.7</priority>')
+        xml_parts.append('  </url>')
+    
+    # Dynamic location profiles from DB
+    locations = await db.locations.find({}, {"_id": 0, "city": 1}).to_list(100)
+    for loc in locations:
+        city_slug = loc["city"].replace(" ", "%20")
+        xml_parts.append('  <url>')
+        xml_parts.append(f'    <loc>{SITE_URL}/investment/standort/{city_slug}</loc>')
+        xml_parts.append(f'    <lastmod>{today}</lastmod>')
+        xml_parts.append('    <changefreq>weekly</changefreq>')
         xml_parts.append('    <priority>0.7</priority>')
         xml_parts.append('  </url>')
     
