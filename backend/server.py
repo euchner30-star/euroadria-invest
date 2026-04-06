@@ -3055,10 +3055,25 @@ async def generate_expose_pdf(inp: SimulationInput):
     elements.append(Spacer(1, 8*mm))
     
     # DISCLAIMER
+    elements.append(Spacer(1, 6*mm))
     elements.append(Paragraph(
-        "Hinweis: Diese Berechnung dient ausschließlich Informationszwecken und stellt keine Anlageberatung dar. "
-        "Alle Prognosen basieren auf den eingegebenen Annahmen. Tatsächliche Ergebnisse können abweichen. "
-        "Konsultieren Sie einen qualifizierten Finanzberater vor jeder Investitionsentscheidung.",
+        "<b>WICHTIGER HINWEIS — KEINE ANLAGEBERATUNG</b>",
+        ParagraphStyle('Disclaimer_Title', parent=styles['Normal'],
+                      fontSize=9, textColor=HexColor('#B45309'), spaceBefore=4*mm, spaceAfter=2*mm)
+    ))
+    elements.append(Paragraph(
+        "Diese Simulation dient ausschließlich zu Informations- und Veranschaulichungszwecken und stellt "
+        "keine Anlageberatung, Kaufempfehlung oder Renditegarantie dar. Alle dargestellten Zahlen, Prognosen "
+        "und Ergebnisse basieren auf den vom Benutzer eingegebenen Annahmen und vereinfachten Modellen. "
+        "<b>Tatsächliche Ergebnisse können erheblich abweichen.</b>",
+        styles['Small_EA']
+    ))
+    elements.append(Paragraph(
+        "Insbesondere können Faktoren wie Steuern, Finanzierungskonditionen, Währungsrisiken, politische "
+        "Veränderungen, Marktvolatilität, Instandhaltungskosten und unvorhergesehene Ereignisse die tatsächliche "
+        "Rendite wesentlich beeinflussen. Konsultieren Sie vor jeder Investitionsentscheidung einen qualifizierten "
+        "und unabhängigen Finanzberater. Der Herausgeber übernimmt keine Haftung für Entscheidungen, die auf "
+        "Grundlage dieser Berechnung getroffen werden.",
         styles['Small_EA']
     ))
     

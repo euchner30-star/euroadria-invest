@@ -419,6 +419,27 @@ export default function InvestmentSimulation() {
                     </div>
                   </div>
 
+                  {/* Legal Disclaimer */}
+                  <div className="bg-amber-500/[0.06] border border-amber-500/20 rounded-2xl p-4 sm:p-5">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                      <div>
+                        <h3 className="text-amber-400 font-bold text-xs uppercase tracking-wider mb-2">Wichtiger Hinweis — Keine Anlageberatung</h3>
+                        <p className="text-white/50 text-xs leading-relaxed">
+                          Diese Simulation dient ausschließlich zu <strong className="text-white/70">Informations- und Veranschaulichungszwecken</strong> und stellt
+                          keine Anlageberatung, Kaufempfehlung oder Renditegarantie dar. Alle dargestellten Zahlen, Prognosen und Ergebnisse basieren
+                          auf den vom Benutzer eingegebenen Annahmen und vereinfachten Modellen.
+                          <strong className="text-white/70"> Tatsächliche Ergebnisse können erheblich abweichen.</strong>
+                        </p>
+                        <p className="text-white/40 text-[11px] mt-2 leading-relaxed">
+                          Insbesondere können Faktoren wie Steuern, Finanzierungskonditionen, Währungsrisiken, politische Veränderungen,
+                          Marktvolatilität, Instandhaltungskosten und unvorhergesehene Ereignisse die tatsächliche Rendite wesentlich beeinflussen.
+                          Konsultieren Sie vor jeder Investitionsentscheidung einen qualifizierten und unabhängigen Finanzberater.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Formulas */}
                   <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-4 sm:p-5">
                     <div className="flex items-center gap-2 mb-3">

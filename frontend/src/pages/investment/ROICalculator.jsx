@@ -288,6 +288,17 @@ const ROICalculator = () => {
             </ul>
           </div>
 
+          {/* Legal Disclaimer */}
+          <div className="mt-4 bg-amber-500/[0.06] border border-amber-500/20 rounded-2xl p-5">
+            <p className="text-amber-400/80 text-xs font-bold uppercase tracking-wider mb-2">Wichtiger Hinweis — Keine Anlageberatung</p>
+            <p className="text-ea-light/40 text-xs leading-relaxed">
+              Diese Berechnung dient ausschließlich zu Informations- und Veranschaulichungszwecken und stellt keine Anlageberatung,
+              Kaufempfehlung oder Renditegarantie dar. Alle Ergebnisse basieren auf vereinfachten Annahmen.
+              Tatsächliche Ergebnisse können erheblich abweichen. Konsultieren Sie vor jeder Investitionsentscheidung
+              einen qualifizierten und unabhängigen Finanzberater.
+            </p>
+          </div>
+
           {/* Link to Simulation */}
           <div className="mt-6 text-center">
             <a
