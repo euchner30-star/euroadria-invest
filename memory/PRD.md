@@ -17,18 +17,22 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - [x] E2E Investment Dashboard
 - [x] ROI Calculator
 - [x] AEO-optimized Blog with Expert Tips
-- [x] Admin Panel with bulk article import
+- [x] Admin Panel with bulk article import (Duplikat-Schutz via Slug + Titel)
 - [x] Contact form with Resend email notifications
 - [x] YouTube Video Slider (dynamic via API)
 - [x] Cookie consent banner (GDPR)
 - [x] Article Download URL/Expose (Admin + public view)
 - [x] Translation system REMOVED per user request - app is strictly German-only
-- [x] Admin Panel Investment Data UI (2026-04-05):
-  - Full CRUD for Locations (22 seeded), Infrastructure Projects (14 seeded), Opportunity Zones (8 seeded)
-  - Sub-tabs: Standorte / Infrastruktur / Zonen
-  - Location form correctly maps to backend: tourism_growth, population_growth, infrastructure_score, opportunities, risks, use_cases, time_horizon
-  - Infrastructure form: project_name, type, status, completion_year, investment_eur, impact_radius_km, lat/lng
-  - Zones form: name, country, color picker, expected_growth, radius_km, investment_focus, lat/lng
+- [x] Admin Panel Investment Data UI (2026-04-05): Locations, Infrastructure, Zones CRUD
+- [x] Newsletter Admin: Subscriber delete function (2026-04-05)
+- [x] ROI Calculator fix: Netto-Rendite based on Gesamtinvestition (2026-04-05)
+- [x] Bulk Import: Professional duplicate detection (slug + title + file-internal) (2026-04-05)
+- [x] 4 Pro-Features (2026-04-06):
+  - Dynamic Simulation: 10-year IRR/NPV/Cashflow projection with sliders + Recharts
+  - Predictive Infrastructure Score: Weighted algorithm (Airport +15%, Road +10%, Clinic +8%)
+  - Market Data Validation: /api/v1/market-check with deviation warnings >15%
+  - PDF Exposé Generator: Professional PDF with ReportLab (KPIs, parameters, 10-year table)
+  - Frontend: /investment/simulation page with real-time sliders + PDF download
 
 ## Architecture
 ### Key Files
