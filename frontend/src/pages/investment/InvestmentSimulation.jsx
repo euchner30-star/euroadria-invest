@@ -1,8 +1,8 @@
-import React, { useState, useCallback, useTransition } from 'react';
+import React, { useState, useCallback, useTransition, useEffect } from 'react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
-import { Calculator, TrendingUp, Download, AlertTriangle, CheckCircle, Info, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calculator, TrendingUp, Download, AlertTriangle, Info, Loader2, ChevronDown, ChevronUp, MapPin } from 'lucide-react';
 import SEO from '../../components/SEO';
-import { simulationApi } from '../../services/api';
+import { simulationApi, investmentApi } from '../../services/api';
 
 const DEFAULT_PARAMS = {
   purchase_price: 250000,
@@ -99,6 +99,49 @@ export default function InvestmentSimulation() {
   const [error, setError] = useState(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [locations, setLocations] = useState([]);
+  const [selectedCity, setSelectedCity] = useState('');
+  const [marketInfo, setMarketInfo] = useState(null);
+
+  useEffect(() => {
+    investmentApi.getLocations().then(data => {
+      setLocations(data.sort((a, b) => (b.investment_score || 0) - (a.investment_score || 0)));
+    }).catch(() => {});
+  }, []);
+
+  const handleCitySelect = (city) => {
+    setSelectedCity(city);
+    if (!city) {
+      setMarketInfo(null);
+      return;
+    }
+    const loc = locations.find(l => l.city === city);
+    if (!loc) return;
+
+    // Realistische Werte aus Marktdaten ableiten
+    const avgSize = 60; // Durchschnittliche Wohnungsgröße m²
+    const purchasePrice = Math.round(loc.price_per_m2 * avgSize / 1000) * 1000;
+    const monthlyRent = Math.round((loc.rental_yield / 100) * purchasePrice / 12 / 10) * 10;
+
+    setMarketInfo({
+      city: loc.city,
+      country: loc.country,
+      score: loc.investment_score,
+      price_m2: loc.price_per_m2,
+      yield: loc.rental_yield,
+      growth: loc.price_growth
+    });
+
+    startTransition(() => {
+      setParams(prev => ({
+        ...prev,
+        purchase_price: purchasePrice,
+        monthly_rent: monthlyRent,
+        appreciation_percent: Math.min(loc.price_growth, 15),
+        rent_increase_percent: Math.min(Math.round(loc.price_growth * 0.4 * 10) / 10, 8)
+      }));
+    });
+  };
 
   const handleChange = useCallback((key, value) => {
     startTransition(() => {
@@ -175,6 +218,45 @@ export default function InvestmentSimulation() {
                 <h2 className="text-white font-bold text-sm uppercase tracking-wider mb-5 flex items-center gap-2">
                   <Calculator className="w-4 h-4 text-ea-gold" /> Parameter
                 </h2>
+
+                {/* City Selector */}
+                <div className="mb-5 pb-5 border-b border-white/[0.06]">
+                  <label className="flex items-center gap-1.5 text-xs font-medium text-white/60 mb-2">
+                    <MapPin className="w-3.5 h-3.5 text-ea-gold" /> Standort wählen
+                  </label>
+                  <select
+                    value={selectedCity}
+                    onChange={e => handleCitySelect(e.target.value)}
+                    className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2.5 text-white text-sm
+                               focus:outline-none focus:border-ea-gold/50 appearance-none cursor-pointer"
+                    data-testid="city-selector"
+                  >
+                    <option value="" className="bg-ea-dark">Manuelle Eingabe</option>
+                    {locations.map(loc => (
+                      <option key={loc.city} value={loc.city} className="bg-ea-dark">
+                        {loc.city} ({loc.country}) — Score {Math.round(loc.investment_score)}
+                      </option>
+                    ))}
+                  </select>
+                  {marketInfo && (
+                    <div className="mt-2.5 p-2.5 bg-ea-gold/[0.06] border border-ea-gold/[0.12] rounded-lg">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-ea-gold text-xs font-bold">{marketInfo.city}</span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                          marketInfo.score >= 80 ? 'bg-green-500/20 text-green-400' :
+                          marketInfo.score >= 60 ? 'bg-yellow-500/20 text-yellow-400' :
+                          'bg-orange-500/20 text-orange-400'
+                        }`}>Score {Math.round(marketInfo.score)}</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-[10px] text-white/40">
+                        <div><span className="text-white/60 font-medium">{marketInfo.price_m2?.toLocaleString('de-DE')}</span> EUR/m²</div>
+                        <div><span className="text-white/60 font-medium">{marketInfo.yield}%</span> Rendite</div>
+                        <div><span className="text-white/60 font-medium">+{marketInfo.growth}%</span>/Jahr</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-4">
                   {basicSliders.map(key => (
                     <Slider key={key} paramKey={key} value={params[key]} onChange={handleChange} />
