@@ -670,4 +670,43 @@ export const settingsApi = {
   }
 };
 
-export default { articlesApi, adminApi, commentsApi, regionsApi, pagesApi, investmentApi, settingsApi, getRelatedArticles };
+// Simulation & Analysis API
+export const simulationApi = {
+  runSimulation: async (params) => {
+    const response = await fetch(`${API_BASE_URL}/api/calculator/simulation`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (!response.ok) throw new Error('Simulation fehlgeschlagen');
+    return response.json();
+  },
+
+  getPredictiveScore: async (city) => {
+    const response = await fetch(`${API_BASE_URL}/api/locations/${encodeURIComponent(city)}/predictive-score`);
+    if (!response.ok) throw new Error('Score-Abfrage fehlgeschlagen');
+    return response.json();
+  },
+
+  marketCheck: async (params) => {
+    const response = await fetch(`${API_BASE_URL}/api/v1/market-check`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (!response.ok) throw new Error('Marktcheck fehlgeschlagen');
+    return response.json();
+  },
+
+  downloadExposePdf: async (params) => {
+    const response = await fetch(`${API_BASE_URL}/api/calculator/expose-pdf`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (!response.ok) throw new Error('PDF-Generierung fehlgeschlagen');
+    return response.blob();
+  }
+};
+
+export default { articlesApi, adminApi, commentsApi, regionsApi, pagesApi, investmentApi, settingsApi, simulationApi, getRelatedArticles };

@@ -32,6 +32,7 @@ import InvestmentDashboard from "./pages/investment/InvestmentDashboard";
 import ROICalculator from "./pages/investment/ROICalculator";
 import LocationComparison from "./pages/investment/LocationComparison";
 import LocationProfile from "./pages/investment/LocationProfile";
+import InvestmentSimulation from "./pages/investment/InvestmentSimulation";
 
 function PageTracker() {
   usePageTracker();
@@ -73,6 +74,7 @@ function App() {
           <Route path="/investment/rechner" element={<ROICalculator />} />
           <Route path="/investment/vergleich" element={<LocationComparison />} />
           <Route path="/investment/standort/:city" element={<LocationProfile />} />
+          <Route path="/investment/simulation" element={<InvestmentSimulation />} />
         </Routes>
         </main>
         <Footer />

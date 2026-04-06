@@ -774,7 +774,6 @@ async def get_status_checks():
 # NEWSLETTER ENDPOINTS (Brevo)
 # =============================================
 
-import requests as http_requests
 
 class NewsletterSubscribe(BaseModel):
     email: EmailStr
@@ -1339,22 +1338,22 @@ async def generate_sitemap():
     
     # Static pages
     for page in STATIC_PAGES:
-        xml_parts.append(f'  <url>')
+        xml_parts.append('  <url>')
         xml_parts.append(f'    <loc>{SITE_URL}{page["loc"]}</loc>')
         xml_parts.append(f'    <lastmod>{today}</lastmod>')
         xml_parts.append(f'    <changefreq>{page["changefreq"]}</changefreq>')
         xml_parts.append(f'    <priority>{page["priority"]}</priority>')
-        xml_parts.append(f'  </url>')
+        xml_parts.append('  </url>')
     
     # Dynamic articles from DB
     articles = await db.articles.find({}, {"_id": 0, "slug": 1, "date": 1}).to_list(1000)
     for article in articles:
-        xml_parts.append(f'  <url>')
+        xml_parts.append('  <url>')
         xml_parts.append(f'    <loc>{SITE_URL}/blog/{article["slug"]}</loc>')
         xml_parts.append(f'    <lastmod>{article.get("date", today)}</lastmod>')
-        xml_parts.append(f'    <changefreq>monthly</changefreq>')
-        xml_parts.append(f'    <priority>0.7</priority>')
-        xml_parts.append(f'  </url>')
+        xml_parts.append('    <changefreq>monthly</changefreq>')
+        xml_parts.append('    <priority>0.7</priority>')
+        xml_parts.append('  </url>')
     
     xml_parts.append('</urlset>')
     
@@ -2341,6 +2340,10 @@ from investment_models import (
     InfrastructureProjectBase, InfrastructureProjectCreate, InfrastructureProjectUpdate, InfrastructureProject,
     OpportunityZoneBase, OpportunityZoneCreate, OpportunityZoneUpdate, OpportunityZone,
     ROICalculation, ROIResult,
+    SimulationInput, SimulationResult, calculate_simulation,
+    MarketCheckInput, MarketCheckResult, MarketCheckWarning,
+    PredictiveScoreResult,
+    INFRA_TYPE_WEIGHTS, INFRA_STATUS_MULTIPLIER,
     calculate_investment_score, calculate_roi,
     SEED_LOCATIONS, SEED_INFRASTRUCTURE, SEED_ZONES
 )
@@ -2362,36 +2365,29 @@ def calculate_distance_km(lat1: float, lon1: float, lat2: float, lon2: float) ->
 
 
 async def calculate_infrastructure_boost(lat: float, lng: float) -> float:
-    """Calculate infrastructure score boost based on nearby projects"""
+    """
+    Predictive Infrastructure Score Boost.
+    Gewichtung: Flughafen +15%, Autobahn +10%, Klinik +8%
+    Statusfaktor: Fertig 100%, Im Bau 60%, Geplant 20%
+    """
     projects = await db.infrastructure_projects.find({}, {"_id": 0}).to_list(1000)
     
     boost = 0
     for project in projects:
         distance = calculate_distance_km(lat, lng, project["latitude"], project["longitude"])
         if distance <= project["impact_radius_km"]:
-            # Closer projects have more impact
+            # Entfernungsfaktor: Linear abnehmend (1.0 = direkt, 0.0 = am Rand)
             impact_factor = 1 - (distance / project["impact_radius_km"])
             
-            # Status-based multiplier
-            status_multiplier = {
-                "built": 1.0,
-                "modernization": 0.8,
-                "construction": 0.6,
-                "planned": 0.3
-            }.get(project["status"], 0.5)
+            # Typ-basierte Gewichtung (aus investment_models.py)
+            type_boost = INFRA_TYPE_WEIGHTS.get(project["type"], 5.0)
             
-            # Type-based base boost
-            type_boost = {
-                "airport": 8,
-                "port": 7,
-                "rail": 6,
-                "road": 5,
-                "clinic": 4
-            }.get(project["type"], 5)
+            # Status-Multiplikator
+            status_mult = INFRA_STATUS_MULTIPLIER.get(project["status"], 0.5)
             
-            boost += type_boost * impact_factor * status_multiplier
+            boost += type_boost * impact_factor * status_mult
     
-    return min(boost, 20)  # Cap at 20 points
+    return min(boost, 25)  # Cap bei 25 Punkten
 
 
 # ---- LOCATIONS API ----
@@ -2669,6 +2665,413 @@ async def delete_zone(zone_id: str, admin: str = Depends(verify_admin)):
 async def calculate_property_roi(calc: ROICalculation):
     """Calculate ROI for a property investment"""
     return calculate_roi(calc)
+
+
+# ---- DYNAMIC SIMULATION (IRR & CASHFLOW-PROGNOSE) ----
+
+@api_router.post("/calculator/simulation", response_model=SimulationResult)
+async def run_investment_simulation(inp: SimulationInput):
+    """
+    10-Jahres Investment-Simulation mit IRR, NPV und kumuliertem Cashflow.
+    Berechnet Eigenkapital-ROI, Wertsteigerung und Break-Even.
+    """
+    return calculate_simulation(inp)
+
+
+# ---- PREDICTIVE INFRASTRUCTURE SCORE ----
+
+@api_router.get("/locations/{city}/predictive-score")
+async def get_predictive_score(city: str):
+    """
+    Prädiktiver Investment-Score für einen Standort.
+    Zeigt aktuellen Score, Infrastructure-Boost und Was-wäre-wenn Szenarien.
+    """
+    location = await db.locations.find_one({"city": city}, {"_id": 0})
+    if not location:
+        raise HTTPException(status_code=404, detail=f"Standort '{city}' nicht gefunden")
+    
+    projects = await db.infrastructure_projects.find({}, {"_id": 0}).to_list(1000)
+    
+    # Aktuelle Infrastruktur-Boost Berechnung
+    current_boost = await calculate_infrastructure_boost(location["latitude"], location["longitude"])
+    adjusted_infra = min(location["infrastructure_score"] + current_boost, 100)
+    current_score = calculate_investment_score(
+        adjusted_infra, location["tourism_growth"],
+        location["rental_yield"], location["price_growth"]
+    )
+    
+    # Nahe Projekte finden
+    nearby = []
+    for proj in projects:
+        dist = calculate_distance_km(
+            location["latitude"], location["longitude"],
+            proj["latitude"], proj["longitude"]
+        )
+        if dist <= proj["impact_radius_km"] * 1.5:  # 1.5x Radius für "in der Nähe"
+            nearby.append({
+                "project_name": proj["project_name"],
+                "type": proj["type"],
+                "status": proj["status"],
+                "distance_km": round(dist, 1),
+                "impact_radius_km": proj["impact_radius_km"],
+                "within_range": dist <= proj["impact_radius_km"],
+                "type_weight": INFRA_TYPE_WEIGHTS.get(proj["type"], 5.0),
+                "status_multiplier": INFRA_STATUS_MULTIPLIER.get(proj["status"], 0.5)
+            })
+    
+    # Was-wäre-wenn Szenarien: Jedes geplante/im-Bau Projekt auf "fertig" setzen
+    scenarios = []
+    for proj in projects:
+        if proj["status"] in ("planned", "construction"):
+            dist = calculate_distance_km(
+                location["latitude"], location["longitude"],
+                proj["latitude"], proj["longitude"]
+            )
+            if dist <= proj["impact_radius_km"]:
+                # Simuliere: Projekt wird fertiggestellt
+                impact_factor = 1 - (dist / proj["impact_radius_km"])
+                type_w = INFRA_TYPE_WEIGHTS.get(proj["type"], 5.0)
+                
+                current_contribution = type_w * impact_factor * INFRA_STATUS_MULTIPLIER.get(proj["status"], 0.5)
+                completed_contribution = type_w * impact_factor * 1.0  # Status "built"
+                delta = completed_contribution - current_contribution
+                
+                # Neuer Score mit fertiggestelltem Projekt
+                new_boost = current_boost + delta
+                new_infra = min(location["infrastructure_score"] + new_boost, 100)
+                new_score = calculate_investment_score(
+                    new_infra, location["tourism_growth"],
+                    location["rental_yield"], location["price_growth"]
+                )
+                
+                scenarios.append({
+                    "project_name": proj["project_name"],
+                    "current_status": proj["status"],
+                    "simulated_status": "built",
+                    "score_impact": round(new_score - current_score, 1),
+                    "predicted_score": round(new_score, 1),
+                    "distance_km": round(dist, 1)
+                })
+    
+    # Gesamtszenario: Alle geplanten Projekte fertig
+    total_boost_all = 0
+    for proj in projects:
+        dist = calculate_distance_km(
+            location["latitude"], location["longitude"],
+            proj["latitude"], proj["longitude"]
+        )
+        if dist <= proj["impact_radius_km"]:
+            impact_factor = 1 - (dist / proj["impact_radius_km"])
+            type_w = INFRA_TYPE_WEIGHTS.get(proj["type"], 5.0)
+            total_boost_all += type_w * impact_factor * 1.0  # Alles "built"
+    
+    max_infra = min(location["infrastructure_score"] + total_boost_all, 100)
+    predicted_max = calculate_investment_score(
+        max_infra, location["tourism_growth"],
+        location["rental_yield"], location["price_growth"]
+    )
+    
+    return PredictiveScoreResult(
+        city=city,
+        current_score=round(current_score, 1),
+        predicted_score=round(predicted_max, 1),
+        score_delta=round(predicted_max - current_score, 1),
+        infrastructure_boost=round(current_boost, 1),
+        nearby_projects=sorted(nearby, key=lambda x: x["distance_km"]),
+        scenarios=sorted(scenarios, key=lambda x: x["score_impact"], reverse=True)
+    )
+
+
+# ---- MARKET-DATA-VALIDATION ----
+
+@api_router.post("/v1/market-check", response_model=MarketCheckResult)
+async def market_data_check(inp: MarketCheckInput):
+    """
+    Prüft Benutzereingaben gegen Marktdurchschnitte.
+    Warning-Flag bei Abweichung > 15%.
+    """
+    warnings = []
+    market_avgs = {}
+    
+    # Marktdaten aus der Datenbank laden
+    location = None
+    if inp.city:
+        location = await db.locations.find_one({"city": inp.city}, {"_id": 0})
+    
+    if not location and inp.country:
+        # Durchschnitt aller Standorte im Land
+        locations = await db.locations.find({"country": inp.country}, {"_id": 0}).to_list(1000)
+        if locations:
+            location = {
+                "city": f"Durchschnitt {inp.country}",
+                "price_per_m2": sum(l["price_per_m2"] for l in locations) / len(locations),
+                "rental_yield": sum(l["rental_yield"] for l in locations) / len(locations),
+                "price_growth": sum(l["price_growth"] for l in locations) / len(locations),
+            }
+    
+    if not location:
+        return MarketCheckResult(
+            city=inp.city,
+            market_data_available=False,
+            warnings=[],
+            market_averages={},
+            risk_level="unknown",
+            summary="Keine Marktdaten für diesen Standort verfügbar."
+        )
+    
+    market_avgs = {
+        "price_per_m2": round(location.get("price_per_m2", 0), 2),
+        "rental_yield": round(location.get("rental_yield", 0), 2),
+        "price_growth": round(location.get("price_growth", 0), 2),
+    }
+    
+    # Abweichungen berechnen (Monatsmiete → Mietrendite ableiten)
+    if inp.price_per_m2 and location.get("price_per_m2"):
+        avg = location["price_per_m2"]
+        dev = ((inp.price_per_m2 - avg) / avg) * 100
+        severity = "critical" if abs(dev) > 30 else "warning" if abs(dev) > 15 else "info"
+        direction = "über" if dev > 0 else "unter"
+        warnings.append(MarketCheckWarning(
+            field="price_per_m2",
+            user_value=inp.price_per_m2,
+            market_average=round(avg, 2),
+            deviation_percent=round(dev, 1),
+            severity=severity,
+            message=f"Ihr Preis von {inp.price_per_m2:.0f} EUR/m² liegt {abs(dev):.0f}% {direction} dem Marktdurchschnitt von {avg:.0f} EUR/m²."
+        ))
+    
+    if inp.rental_yield and location.get("rental_yield"):
+        avg = location["rental_yield"]
+        dev = ((inp.rental_yield - avg) / avg) * 100
+        severity = "critical" if abs(dev) > 30 else "warning" if abs(dev) > 15 else "info"
+        direction = "über" if dev > 0 else "unter"
+        warnings.append(MarketCheckWarning(
+            field="rental_yield",
+            user_value=inp.rental_yield,
+            market_average=round(avg, 2),
+            deviation_percent=round(dev, 1),
+            severity=severity,
+            message=f"Ihre Mietrendite von {inp.rental_yield:.1f}% liegt {abs(dev):.0f}% {direction} dem Marktdurchschnitt von {avg:.1f}%."
+        ))
+    
+    # Mietpreis pro m² berechnen wenn Kaufpreis und Größe gegeben
+    if inp.monthly_rent_per_m2 and inp.price_per_m2:
+        implied_yield = (inp.monthly_rent_per_m2 * 12 / inp.price_per_m2) * 100
+        avg_yield = location.get("rental_yield", 5.0)
+        dev = ((implied_yield - avg_yield) / avg_yield) * 100
+        severity = "critical" if abs(dev) > 30 else "warning" if abs(dev) > 15 else "info"
+        market_avgs["implied_yield"] = round(implied_yield, 2)
+        if abs(dev) > 15:
+            warnings.append(MarketCheckWarning(
+                field="implied_yield",
+                user_value=round(implied_yield, 2),
+                market_average=round(avg_yield, 2),
+                deviation_percent=round(dev, 1),
+                severity=severity,
+                message=f"Ihre implizierte Rendite von {implied_yield:.1f}% weicht {abs(dev):.0f}% vom Marktdurchschnitt ab."
+            ))
+    
+    # Risikobewertung
+    critical_count = sum(1 for w in warnings if w.severity == "critical")
+    warning_count = sum(1 for w in warnings if w.severity == "warning")
+    
+    if critical_count > 0:
+        risk_level = "high"
+        summary = f"Achtung: {critical_count} kritische Abweichung(en) vom Marktdurchschnitt. Bitte Eingaben prüfen."
+    elif warning_count > 0:
+        risk_level = "medium"
+        summary = f"{warning_count} Eingabe(n) weichen über 15% vom Markt ab. Empfehlung: Marktforschung vertiefen."
+    else:
+        risk_level = "low"
+        summary = "Ihre Eingaben liegen im Rahmen der aktuellen Marktdaten."
+    
+    return MarketCheckResult(
+        city=inp.city or location.get("city"),
+        market_data_available=True,
+        warnings=warnings,
+        market_averages=market_avgs,
+        risk_level=risk_level,
+        summary=summary
+    )
+
+
+# ---- PDF EXPOSÉ-GENERATOR ----
+
+@api_router.post("/calculator/expose-pdf")
+async def generate_expose_pdf(inp: SimulationInput):
+    """
+    Generiert ein professionelles PDF-Exposé mit ROI-Daten,
+    10-Jahres-Prognose und Investment-Kennzahlen.
+    """
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import mm
+    from reportlab.lib.colors import HexColor
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+    from starlette.responses import Response
+    
+    # Simulation berechnen
+    result = calculate_simulation(inp)
+    
+    # PDF erstellen
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4,
+                           leftMargin=20*mm, rightMargin=20*mm,
+                           topMargin=20*mm, bottomMargin=20*mm)
+    
+    # Farben
+    dark = HexColor('#04151F')
+    gray = HexColor('#6B7280')
+    light_gray = HexColor('#F3F4F6')
+    
+    # Styles
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle('Title_EA', parent=styles['Title'],
+                              fontSize=22, textColor=dark, spaceAfter=4*mm))
+    styles.add(ParagraphStyle('Subtitle_EA', parent=styles['Normal'],
+                              fontSize=11, textColor=gray, spaceAfter=8*mm))
+    styles.add(ParagraphStyle('Section_EA', parent=styles['Heading2'],
+                              fontSize=14, textColor=dark, spaceBefore=8*mm, spaceAfter=4*mm,
+                              borderWidth=0, borderPadding=0))
+    styles.add(ParagraphStyle('Body_EA', parent=styles['Normal'],
+                              fontSize=10, textColor=dark, leading=14))
+    styles.add(ParagraphStyle('Small_EA', parent=styles['Normal'],
+                              fontSize=8, textColor=gray))
+    styles.add(ParagraphStyle('KPI_Value', parent=styles['Normal'],
+                              fontSize=16, textColor=dark, alignment=TA_CENTER))
+    styles.add(ParagraphStyle('KPI_Label', parent=styles['Normal'],
+                              fontSize=8, textColor=gray, alignment=TA_CENTER))
+    styles.add(ParagraphStyle('Right_EA', parent=styles['Normal'],
+                              fontSize=10, textColor=dark, alignment=TA_RIGHT))
+    
+    elements = []
+    
+    def fmt(val, suffix='EUR'):
+        if suffix == 'EUR':
+            return f"{val:,.0f} EUR".replace(',', '.')
+        elif suffix == '%':
+            return f"{val:.2f}%"
+        return str(val)
+    
+    # HEADER
+    elements.append(Paragraph("INVESTMENT EXPOSÉ", styles['Title_EA']))
+    elements.append(Paragraph(
+        f"10-Jahres-Prognose | Erstellt am {datetime.now(timezone.utc).strftime('%d.%m.%Y')}",
+        styles['Subtitle_EA']
+    ))
+    
+    # KPI ÜBERSICHT
+    elements.append(Paragraph("Zusammenfassung", styles['Section_EA']))
+    
+    kpi_data = [
+        ['Gesamtinvestition', 'Eigenkapital', 'Fremdkapital', 'IRR'],
+        [fmt(result.total_investment), fmt(result.equity_invested),
+         fmt(result.debt_amount), fmt(result.irr_percent, '%')],
+        ['NPV', 'Eigenkapital-ROI', 'Gesamtgewinn', 'Break-Even'],
+        [fmt(result.npv), fmt(result.equity_roi_percent, '%'),
+         fmt(result.total_profit), f"Jahr {result.break_even_year}" if result.break_even_year else "–"]
+    ]
+    
+    kpi_table = Table(kpi_data, colWidths=[42*mm]*4)
+    kpi_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), light_gray),
+        ('BACKGROUND', (0, 2), (-1, 2), light_gray),
+        ('TEXTCOLOR', (0, 0), (-1, 0), gray),
+        ('TEXTCOLOR', (0, 2), (-1, 2), gray),
+        ('FONTSIZE', (0, 0), (-1, 0), 8),
+        ('FONTSIZE', (0, 2), (-1, 2), 8),
+        ('FONTSIZE', (0, 1), (-1, 1), 12),
+        ('FONTSIZE', (0, 3), (-1, 3), 12),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('GRID', (0, 0), (-1, -1), 0.5, HexColor('#E5E7EB')),
+        ('ROUNDEDCORNERS', [3, 3, 3, 3]),
+    ]))
+    elements.append(kpi_table)
+    elements.append(Spacer(1, 6*mm))
+    
+    # EINGABEPARAMETER
+    elements.append(Paragraph("Eingabeparameter", styles['Section_EA']))
+    
+    param_data = [
+        ['Parameter', 'Wert', 'Parameter', 'Wert'],
+        ['Kaufpreis', fmt(inp.purchase_price), 'Mietsteigerung/Jahr', fmt(inp.rent_increase_percent, '%')],
+        ['Renovierung', fmt(inp.renovation_costs), 'Wertsteigerung/Jahr', fmt(inp.appreciation_percent, '%')],
+        ['Nebenkosten', fmt(inp.additional_costs_percent, '%'), 'Leerstandsrate', fmt(inp.vacancy_rate, '%')],
+        ['Monatliche Miete', fmt(inp.monthly_rent), 'Betriebskosten', fmt(inp.running_costs_percent, '%')],
+        ['Eigenkapital', fmt(inp.equity_percent, '%'), 'Hypothekenzins', fmt(inp.mortgage_rate, '%')],
+        ['Haltedauer', f"{inp.holding_period} Jahre", 'Diskontierungszins', fmt(inp.discount_rate, '%')],
+    ]
+    
+    param_table = Table(param_data, colWidths=[35*mm, 35*mm, 40*mm, 30*mm])
+    param_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), dark),
+        ('TEXTCOLOR', (0, 0), (-1, 0), HexColor('#FFFFFF')),
+        ('FONTSIZE', (0, 0), (-1, -1), 9),
+        ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+        ('ALIGN', (3, 0), (3, -1), 'RIGHT'),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+        ('GRID', (0, 0), (-1, -1), 0.5, HexColor('#E5E7EB')),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [HexColor('#FFFFFF'), light_gray]),
+    ]))
+    elements.append(param_table)
+    elements.append(Spacer(1, 6*mm))
+    
+    # 10-JAHRES-PROGNOSE TABELLE
+    elements.append(Paragraph("10-Jahres-Cashflow-Prognose", styles['Section_EA']))
+    
+    cf_header = ['Jahr', 'Bruttomiete', 'Netto-Miete', 'Hypothek', 'Cashflow', 'Kum. CF', 'Immobilienwert']
+    cf_rows = [cf_header]
+    for y in result.yearly_data:
+        cf_rows.append([
+            str(y.year),
+            fmt(y.gross_rent),
+            fmt(y.net_rental_income),
+            fmt(y.mortgage_payment),
+            fmt(y.cashflow),
+            fmt(y.cumulative_cashflow),
+            fmt(y.property_value)
+        ])
+    
+    col_w = [12*mm, 26*mm, 24*mm, 22*mm, 22*mm, 22*mm, 30*mm]
+    cf_table = Table(cf_rows, colWidths=col_w)
+    cf_style = [
+        ('BACKGROUND', (0, 0), (-1, 0), dark),
+        ('TEXTCOLOR', (0, 0), (-1, 0), HexColor('#FFFFFF')),
+        ('FONTSIZE', (0, 0), (-1, -1), 8),
+        ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
+        ('ALIGN', (0, 0), (0, -1), 'CENTER'),
+        ('TOPPADDING', (0, 0), (-1, -1), 3),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+        ('GRID', (0, 0), (-1, -1), 0.5, HexColor('#E5E7EB')),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [HexColor('#FFFFFF'), light_gray]),
+    ]
+    cf_table.setStyle(TableStyle(cf_style))
+    elements.append(cf_table)
+    elements.append(Spacer(1, 8*mm))
+    
+    # DISCLAIMER
+    elements.append(Paragraph(
+        "Hinweis: Diese Berechnung dient ausschließlich Informationszwecken und stellt keine Anlageberatung dar. "
+        "Alle Prognosen basieren auf den eingegebenen Annahmen. Tatsächliche Ergebnisse können abweichen. "
+        "Konsultieren Sie einen qualifizierten Finanzberater vor jeder Investitionsentscheidung.",
+        styles['Small_EA']
+    ))
+    
+    # PDF generieren
+    doc.build(elements)
+    pdf_bytes = buffer.getvalue()
+    buffer.close()
+    
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=Investment_Expose.pdf"}
+    )
 
 
 # ---- DASHBOARD API ----

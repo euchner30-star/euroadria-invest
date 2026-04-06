@@ -170,11 +170,10 @@ def calculate_investment_score(
     
     All inputs should be normalized to 0-100 scale
     """
-    # Normalize values to 0-100 scale
     normalized_infrastructure = min(infrastructure_score, 100)
-    normalized_tourism = min(tourism_growth * 5, 100)  # 20% growth = 100 score
-    normalized_yield = min(rental_yield * 10, 100)  # 10% yield = 100 score
-    normalized_price = min(price_growth * 5, 100)  # 20% growth = 100 score
+    normalized_tourism = min(tourism_growth * 5, 100)
+    normalized_yield = min(rental_yield * 10, 100)
+    normalized_price = min(price_growth * 5, 100)
     
     score = (
         0.30 * normalized_infrastructure +
@@ -184,6 +183,273 @@ def calculate_investment_score(
     )
     
     return round(min(score, 100), 1)
+
+
+# =============================================
+# 1. DYNAMIC SIMULATION (IRR & CASHFLOW-PROGNOSE)
+# =============================================
+
+class SimulationInput(BaseModel):
+    """10-Jahres Investment-Simulation mit IRR"""
+    purchase_price: float = Field(..., gt=0, description="Kaufpreis in EUR")
+    renovation_costs: float = Field(0, ge=0, description="Renovierungskosten in EUR")
+    additional_costs_percent: float = Field(5.0, ge=0, le=20, description="Nebenkosten in % des Kaufpreises")
+    monthly_rent: float = Field(..., gt=0, description="Monatliche Kaltmiete in EUR")
+    vacancy_rate: float = Field(5.0, ge=0, le=50, description="Leerstandsrate in %")
+    running_costs_percent: float = Field(15.0, ge=0, le=50, description="Betriebskosten in % der Miete")
+    rent_increase_percent: float = Field(2.0, ge=-5, le=15, description="Jährliche Mietsteigerung in %")
+    appreciation_percent: float = Field(3.0, ge=-10, le=30, description="Jährliche Wertsteigerung in %")
+    discount_rate: float = Field(4.0, ge=0, le=20, description="Diskontierungszins / Opportunitätskosten in %")
+    holding_period: int = Field(10, ge=1, le=30, description="Haltedauer in Jahren")
+    equity_percent: float = Field(100.0, ge=10, le=100, description="Eigenkapitalanteil in %")
+    mortgage_rate: float = Field(3.5, ge=0, le=15, description="Hypothekenzins in % (falls finanziert)")
+
+
+class YearlyProjection(BaseModel):
+    """Jährliche Projektion"""
+    year: int
+    gross_rent: float
+    vacancy_loss: float
+    running_costs: float
+    net_rental_income: float
+    mortgage_payment: float
+    cashflow: float
+    cumulative_cashflow: float
+    property_value: float
+    equity_value: float
+    total_return: float
+
+
+class SimulationResult(BaseModel):
+    """Ergebnis der 10-Jahres-Simulation"""
+    # Zusammenfassung
+    total_investment: float
+    equity_invested: float
+    debt_amount: float
+    irr_percent: float
+    equity_roi_percent: float
+    npv: float
+    total_profit: float
+    total_cashflow: float
+    final_property_value: float
+    value_appreciation: float
+    # Jährliche Daten für Recharts
+    yearly_data: List[YearlyProjection]
+    # Kennzahlen
+    average_annual_cashflow: float
+    cashflow_yield_percent: float
+    total_return_percent: float
+    break_even_year: Optional[int]
+
+
+def calculate_simulation(inp: SimulationInput) -> SimulationResult:
+    """
+    Berechnet eine vollständige 10-Jahres-Investment-Simulation.
+    
+    Mathematische Grundlagen:
+    - Zinseszins: V(t) = V(0) * (1 + g)^t
+    - NPV: Σ CF(t) / (1 + r)^t für t = 0..n
+    - IRR: Diskontrate r bei der NPV = 0
+    - Eigenkapital-ROI: (Gesamtgewinn / Eigenkapital) * 100
+    """
+    import numpy_financial as npf
+    
+    # Gesamtinvestition
+    additional_costs = inp.purchase_price * (inp.additional_costs_percent / 100)
+    total_investment = inp.purchase_price + inp.renovation_costs + additional_costs
+    
+    # Finanzierungsstruktur
+    equity = total_investment * (inp.equity_percent / 100)
+    debt = total_investment - equity
+    
+    # Jährliche Hypothekenzahlung (Annuität, Volltilgung über Haltedauer)
+    if debt > 0 and inp.mortgage_rate > 0:
+        monthly_rate = inp.mortgage_rate / 100 / 12
+        n_months = inp.holding_period * 12
+        if monthly_rate > 0:
+            monthly_payment = debt * (monthly_rate * (1 + monthly_rate)**n_months) / ((1 + monthly_rate)**n_months - 1)
+        else:
+            monthly_payment = debt / n_months
+        annual_mortgage = monthly_payment * 12
+    else:
+        annual_mortgage = debt / inp.holding_period if debt > 0 else 0
+    
+    # Cashflow-Reihe für IRR (Jahr 0 = Investition)
+    cashflows_for_irr = [-equity]  # Eigenkapitaleinsatz als negativer Cashflow
+    
+    yearly_data = []
+    cumulative_cf = 0
+    break_even_year = None
+    
+    for year in range(1, inp.holding_period + 1):
+        # Mietsteigerung mit Zinseszins
+        gross_rent = inp.monthly_rent * 12 * (1 + inp.rent_increase_percent / 100) ** (year - 1)
+        
+        # Leerstand
+        vacancy_loss = gross_rent * (inp.vacancy_rate / 100)
+        effective_rent = gross_rent - vacancy_loss
+        
+        # Betriebskosten (% der Bruttomiete)
+        running_costs = gross_rent * (inp.running_costs_percent / 100)
+        
+        # Netto-Mieteinnahmen
+        net_rental = effective_rent - running_costs
+        
+        # Cashflow nach Hypothek
+        cashflow = net_rental - annual_mortgage
+        cumulative_cf += cashflow
+        
+        # Immobilienwert mit Wertsteigerung
+        property_value = inp.purchase_price * (1 + inp.appreciation_percent / 100) ** year
+        
+        # Restschuld (linear vereinfacht)
+        remaining_debt = max(0, debt * (1 - year / inp.holding_period))
+        
+        # Eigenkapitalwert = Immobilienwert - Restschuld
+        equity_value = property_value - remaining_debt
+        
+        # Gesamtrendite = Kumulierter Cashflow + Eigenkapitalzuwachs
+        total_return = cumulative_cf + (equity_value - equity)
+        
+        # Break-Even prüfen
+        if break_even_year is None and cumulative_cf >= 0:
+            break_even_year = year
+        
+        # Für IRR: Letztes Jahr enthält auch den Verkaufserlös
+        if year == inp.holding_period:
+            sale_proceeds = property_value - remaining_debt
+            cashflows_for_irr.append(cashflow + sale_proceeds)
+        else:
+            cashflows_for_irr.append(cashflow)
+        
+        yearly_data.append(YearlyProjection(
+            year=year,
+            gross_rent=round(gross_rent, 2),
+            vacancy_loss=round(vacancy_loss, 2),
+            running_costs=round(running_costs, 2),
+            net_rental_income=round(net_rental, 2),
+            mortgage_payment=round(annual_mortgage, 2),
+            cashflow=round(cashflow, 2),
+            cumulative_cashflow=round(cumulative_cf, 2),
+            property_value=round(property_value, 2),
+            equity_value=round(equity_value, 2),
+            total_return=round(total_return, 2)
+        ))
+    
+    # IRR berechnen (numpy_financial)
+    try:
+        irr = npf.irr(cashflows_for_irr) * 100
+        if irr is None or irr != irr:  # NaN check
+            irr = 0.0
+    except Exception:
+        irr = 0.0
+    
+    # NPV berechnen
+    discount_rate = inp.discount_rate / 100
+    npv = sum(cf / (1 + discount_rate)**t for t, cf in enumerate(cashflows_for_irr))
+    
+    # Gesamtkennzahlen
+    final_value = yearly_data[-1].property_value
+    total_cashflow = sum(y.cashflow for y in yearly_data)
+    value_gain = final_value - inp.purchase_price
+    total_profit = total_cashflow + value_gain
+    equity_roi = (total_profit / equity) * 100 if equity > 0 else 0
+    avg_cashflow = total_cashflow / inp.holding_period
+    cashflow_yield = (avg_cashflow / total_investment) * 100
+    total_return_pct = (total_profit / equity) * 100 if equity > 0 else 0
+    
+    return SimulationResult(
+        total_investment=round(total_investment, 2),
+        equity_invested=round(equity, 2),
+        debt_amount=round(debt, 2),
+        irr_percent=round(irr, 2),
+        equity_roi_percent=round(equity_roi, 2),
+        npv=round(npv, 2),
+        total_profit=round(total_profit, 2),
+        total_cashflow=round(total_cashflow, 2),
+        final_property_value=round(final_value, 2),
+        value_appreciation=round(value_gain, 2),
+        yearly_data=yearly_data,
+        average_annual_cashflow=round(avg_cashflow, 2),
+        cashflow_yield_percent=round(cashflow_yield, 2),
+        total_return_percent=round(total_return_pct, 2),
+        break_even_year=break_even_year
+    )
+
+
+# =============================================
+# 2. PREDICTIVE INFRASTRUCTURE SCORE
+# =============================================
+
+# Gewichtungen nach Spezifikation
+INFRA_TYPE_WEIGHTS = {
+    "airport": 15.0,   # Flughafen +15%
+    "road": 10.0,      # Autobahn +10%
+    "rail": 8.0,       # Bahn +8%
+    "port": 10.0,      # Hafen +10%
+    "clinic": 8.0      # Klinik +8%
+}
+
+INFRA_STATUS_MULTIPLIER = {
+    "built": 1.0,        # Fertiggestellt: voller Effekt
+    "modernization": 0.8,
+    "construction": 0.6, # Im Bau: 60% des Effekts
+    "planned": 0.2       # Geplant: 20% des Effekts
+}
+
+
+class PredictiveScoreResult(BaseModel):
+    """Ergebnis der prädiktiven Score-Analyse"""
+    city: str
+    current_score: float
+    predicted_score: float
+    score_delta: float
+    infrastructure_boost: float
+    nearby_projects: List[dict]
+    scenarios: List[dict]
+
+
+class ScenarioProjection(BaseModel):
+    """Was-wäre-wenn Szenario"""
+    project_name: str
+    current_status: str
+    simulated_status: str
+    score_impact: float
+
+
+# =============================================
+# 3. MARKET-DATA-VALIDATION LAYER
+# =============================================
+
+class MarketCheckInput(BaseModel):
+    """Eingabe für Marktdaten-Validierung"""
+    city: Optional[str] = None
+    country: Optional[str] = "Montenegro"
+    price_per_m2: Optional[float] = Field(None, ge=0, description="Kaufpreis pro m² in EUR")
+    monthly_rent_per_m2: Optional[float] = Field(None, ge=0, description="Monatsmiete pro m² in EUR")
+    rental_yield: Optional[float] = Field(None, ge=0, le=50, description="Erwartete Mietrendite in %")
+    purchase_price: Optional[float] = Field(None, ge=0, description="Gesamtkaufpreis in EUR")
+    property_size_m2: Optional[float] = Field(None, ge=0, description="Wohnfläche in m²")
+
+
+class MarketCheckWarning(BaseModel):
+    """Einzelne Warnung"""
+    field: str
+    user_value: float
+    market_average: float
+    deviation_percent: float
+    severity: str  # "info", "warning", "critical"
+    message: str
+
+
+class MarketCheckResult(BaseModel):
+    """Ergebnis der Marktdaten-Prüfung"""
+    city: Optional[str]
+    market_data_available: bool
+    warnings: List[MarketCheckWarning]
+    market_averages: dict
+    risk_level: str  # "low", "medium", "high"
+    summary: str
 
 
 def calculate_roi(calc: ROICalculation) -> ROIResult:

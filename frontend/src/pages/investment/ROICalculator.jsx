@@ -279,13 +279,26 @@ const ROICalculator = () => {
           </div>
 
           <div className="mt-8 bg-ea-gold/10 border border-ea-gold/20 rounded-2xl p-6">
-            <h3 className="text-ea-gold font-bold mb-3"><T>Hinweise zur Berechnung</T></h3>
+            <h3 className="text-ea-gold font-bold mb-3">Hinweise zur Berechnung</h3>
             <ul className="text-ea-light/70 text-sm space-y-2">
-              <li>• <strong>ROI</strong> = <T>Jährlicher Cashflow / Gesamtinvestition × 100</T></li>
-              <li>• <strong><T>Netto-Rendite</T></strong> = <T>Netto-Mieteinnahmen / Kaufpreis × 100</T></li>
-              <li>• <strong>Break-Even</strong> = <T>Gesamtinvestition / Jährlicher Cashflow</T></li>
-              <li>• <T>Die Berechnung berücksichtigt keine Steuern, Finanzierungskosten oder Wertsteigerung</T></li>
+              <li>• <strong>ROI</strong> = Jährlicher Cashflow / Gesamtinvestition x 100</li>
+              <li>• <strong>Netto-Rendite</strong> = Netto-Mieteinnahmen / Gesamtinvestition x 100</li>
+              <li>• <strong>Break-Even</strong> = Gesamtinvestition / Jährlicher Cashflow</li>
+              <li>• Die Berechnung berücksichtigt keine Steuern, Finanzierungskosten oder Wertsteigerung</li>
             </ul>
+          </div>
+
+          {/* Link to Simulation */}
+          <div className="mt-6 text-center">
+            <a
+              href="/investment/simulation"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-ea-gold/20 text-ea-gold
+                         rounded-xl font-semibold text-sm hover:bg-ea-gold/10 transition-all"
+              data-testid="link-simulation"
+            >
+              <TrendingUp className="w-4 h-4" />
+              Erweiterte 10-Jahres-Simulation mit IRR, NPV & PDF-Export
+            </a>
           </div>
         </div>
       </div>
