@@ -207,7 +207,7 @@ def calculate_roi(calc: ROICalculation) -> ROIResult:
     roi_percent = (annual_cashflow / total_investment) * 100 if total_investment > 0 else 0
     
     # Net Yield = Net Rental / Purchase Price
-    net_yield_percent = (net_rental_income / calc.purchase_price) * 100 if calc.purchase_price > 0 else 0
+    net_yield_percent = (net_rental_income / total_investment) * 100 if total_investment > 0 else 0
     
     # Break-even years
     break_even_years = total_investment / annual_cashflow if annual_cashflow > 0 else float('inf')
