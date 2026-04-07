@@ -3897,6 +3897,17 @@ async def cleanup_database(admin: str = Depends(verify_admin)):
     
     return {"message": "Datenbank bereinigt", "details": results}
 
+@api_router.delete("/admin/analytics/reset")
+async def reset_analytics(admin: str = Depends(verify_admin)):
+    """Reset all analytics data (page views, contact submissions, calculator tracking)"""
+    pv = await db.page_views.delete_many({})
+    cs = await db.contact_submissions.delete_many({})
+    return {
+        "message": "Analytics zurückgesetzt",
+        "deleted_page_views": pv.deleted_count,
+        "deleted_contact_submissions": cs.deleted_count
+    }
+
 
 
 # --- AUTO-LINK NEW CONTACT FORM LEADS TO CRM ---
