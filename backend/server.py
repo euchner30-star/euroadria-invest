@@ -663,6 +663,70 @@ async def capture_lead(lead: LeadForm):
             }
             resend.Emails.send(params)
             email_sent = True
+            
+            # Send branded confirmation email to the lead
+            lead_name = lead_dict.get('name', 'Investor')
+            confirmation_html = f"""
+            <html>
+            <body style="margin:0;padding:0;background-color:#04151F;font-family:Arial,Helvetica,sans-serif;">
+                <div style="max-width:600px;margin:0 auto;background-color:#04151F;">
+                    <!-- Header -->
+                    <div style="background-color:#071E2D;padding:24px 30px;border-bottom:2px solid #C8A96A;">
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <td>
+                                    <span style="color:#FFFFFF;font-size:16px;font-weight:bold;letter-spacing:0.5px;">EUROADRIA CORPORATE SOLUTIONS</span><br/>
+                                    <span style="color:#C8A96A;font-size:11px;">Investment Intelligence Platform</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <!-- Body -->
+                    <div style="padding:32px 30px;">
+                        <h1 style="color:#FFFFFF;font-size:22px;margin:0 0 8px 0;">Vielen Dank, {lead_name}!</h1>
+                        <p style="color:#8896A3;font-size:14px;margin:0 0 24px 0;">Ihr persönliches Investment Exposé wurde erstellt.</p>
+                        <div style="background-color:#0D2A3D;border-radius:8px;padding:20px;border-left:3px solid #C8A96A;margin-bottom:24px;">
+                            <p style="color:#C8A96A;font-size:12px;margin:0 0 6px 0;text-transform:uppercase;letter-spacing:1px;">Ihr Download</p>
+                            <p style="color:#FFFFFF;font-size:16px;margin:0;font-weight:bold;">{lead_dict.get('expose_name', 'Investment Exposé')}</p>
+                        </div>
+                        <p style="color:#D0D8E0;font-size:14px;line-height:22px;margin:0 0 24px 0;">
+                            Sie haben soeben Ihr personalisiertes Investment Exposé heruntergeladen. Dieses Dokument enthält eine detaillierte 10-Jahres-Prognose basierend auf Ihren individuellen Eingaben.
+                        </p>
+                        <p style="color:#D0D8E0;font-size:14px;line-height:22px;margin:0 0 24px 0;">
+                            Möchten Sie die Analyse mit einem unserer Experten besprechen? Wir beraten Sie gerne persönlich und unverbindlich.
+                        </p>
+                        <!-- CTA Button -->
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <td align="center" style="padding:8px 0 24px 0;">
+                                    <a href="https://invest.euroadria.me/kontakt" style="display:inline-block;background-color:#C8A96A;color:#04151F;font-size:14px;font-weight:bold;text-decoration:none;padding:14px 32px;border-radius:6px;">
+                                        Kostenlose Beratung anfragen
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="border-top:1px solid #1A3040;padding-top:20px;">
+                            <p style="color:#8896A3;font-size:12px;line-height:18px;margin:0;">
+                                <strong style="color:#C8A96A;">Hinweis:</strong> Die im Exposé dargestellten Zahlen dienen ausschließlich zu Informationszwecken und stellen keine Anlageberatung dar.
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Footer -->
+                    <div style="background-color:#071E2D;padding:20px 30px;border-top:1px solid #1A3040;">
+                        <p style="color:#8896A3;font-size:11px;margin:0 0 4px 0;">EuroAdria Corporate Solutions</p>
+                        <p style="color:#5A6A78;font-size:10px;margin:0;">invest.euroadria.me | office@euroadria.me</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            resend.Emails.send({
+                "from": "EuroAdria Corporate Solutions <onboarding@resend.dev>",
+                "to": [lead_dict['email']],
+                "subject": f"Ihr Investment Exposé — {lead_dict.get('expose_name', 'EuroAdria')}",
+                "html": confirmation_html,
+                "reply_to": NOTIFICATION_EMAIL
+            })
         except Exception as e:
             logger.error(f"Failed to send lead email: {e}")
     
