@@ -382,21 +382,40 @@ const EditDealModal = ({ deal, onSave, onClose }) => {
 export const RevenueDashboard = ({ credentials }) => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [resetting, setResetting] = useState(false);
   const authHeader = 'Basic ' + btoa(`${credentials.username}:${credentials.password}`);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/admin/crm/stats`, { headers: { Authorization: authHeader } });
-        if (res.ok) setStats(await res.json());
-      } catch (err) {
-        console.error('Stats fetch error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
+  const fetchStats = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/crm/stats`, { headers: { Authorization: authHeader } });
+      if (res.ok) setStats(await res.json());
+    } catch (err) {
+      console.error('Stats fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
   }, [authHeader]);
+
+  useEffect(() => { fetchStats(); }, [fetchStats]);
+
+  const resetCRM = async () => {
+    if (!window.confirm('Alle CRM-Daten (Leads + Deals) wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) return;
+    setResetting(true);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/crm/reset`, {
+        method: 'DELETE', headers: { Authorization: authHeader }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        alert(`${data.deleted_leads} Leads und ${data.deleted_deals} Deals gelöscht.`);
+        fetchStats();
+      }
+    } catch (err) {
+      console.error('Reset failed:', err);
+    } finally {
+      setResetting(false);
+    }
+  };
 
   if (loading) return <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 text-ea-gold animate-spin" /></div>;
   if (!stats) return <div className="text-center py-16 text-ea-dark/50">Keine Daten</div>;
@@ -419,7 +438,17 @@ export const RevenueDashboard = ({ credentials }) => {
 
   return (
     <div className="space-y-6" data-testid="revenue-dashboard">
-      <h2 className="text-lg sm:text-xl font-bold text-ea-dark">Revenue Dashboard</h2>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h2 className="text-lg sm:text-xl font-bold text-ea-dark">Revenue Dashboard</h2>
+        {stats && stats.total_leads > 0 && (
+          <button onClick={resetCRM} disabled={resetting}
+            className="flex items-center gap-1.5 px-3 py-1.5 border border-red-200 text-red-500 rounded-lg text-xs font-medium hover:bg-red-50 transition-all disabled:opacity-50"
+            data-testid="reset-crm-btn">
+            {resetting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+            CRM zurücksetzen
+          </button>
+        )}
+      </div>
 
       {/* KPI Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">

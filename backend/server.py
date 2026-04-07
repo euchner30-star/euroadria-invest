@@ -3465,6 +3465,18 @@ async def migrate_existing_leads(admin: str = Depends(verify_admin)):
 
     return {"migrated": migrated, "total_crm_leads": await db.crm_leads.count_documents({})}
 
+@api_router.delete("/admin/crm/reset")
+async def reset_crm_data(admin: str = Depends(verify_admin)):
+    """Reset all CRM data (leads + deals)"""
+    deleted_deals = await db.crm_deals.delete_many({})
+    deleted_leads = await db.crm_leads.delete_many({})
+    return {
+        "message": "CRM-Daten zurückgesetzt",
+        "deleted_leads": deleted_leads.deleted_count,
+        "deleted_deals": deleted_deals.deleted_count
+    }
+
+
 # --- AUTO-LINK NEW CONTACT FORM LEADS TO CRM ---
 
 # =============================================
