@@ -101,7 +101,7 @@ async def followup_email_loop():
                             <div style="max-width:600px;margin:0 auto;background-color:#04151F;">
                                 <div style="background-color:#071E2D;padding:24px 30px;border-bottom:2px solid #C8A96A;">
                                     <span style="color:#FFFFFF;font-size:16px;font-weight:bold;letter-spacing:0.5px;">EUROADRIA CORPORATE SOLUTIONS</span><br/>
-                                    <span style="color:#C8A96A;font-size:11px;">Investment Intelligence Platform</span>
+                                    <span style="color:#C8A96A;font-size:11px;">Beratung & Angebotsplattform</span>
                                 </div>
                                 <div style="padding:32px 30px;">
                                     <h1 style="color:#FFFFFF;font-size:22px;margin:0 0 16px 0;">Hallo {name},</h1>
@@ -710,7 +710,7 @@ async def submit_contact_form(form: ContactForm):
                 <div style="max-width:600px;margin:0 auto;background-color:#04151F;">
                     <div style="background-color:#071E2D;padding:24px 30px;border-bottom:2px solid #C8A96A;">
                         <span style="color:#FFFFFF;font-size:16px;font-weight:bold;letter-spacing:0.5px;">EUROADRIA CORPORATE SOLUTIONS</span><br/>
-                        <span style="color:#C8A96A;font-size:11px;">Investment Intelligence Platform</span>
+                        <span style="color:#C8A96A;font-size:11px;">Beratung & Angebotsplattform</span>
                     </div>
                     <div style="padding:32px 30px;">
                         <h1 style="color:#FFFFFF;font-size:22px;margin:0 0 8px 0;">Vielen Dank, {customer_name}!</h1>
@@ -856,7 +856,7 @@ async def capture_lead(lead: LeadForm):
                             <tr>
                                 <td>
                                     <span style="color:#FFFFFF;font-size:16px;font-weight:bold;letter-spacing:0.5px;">EUROADRIA CORPORATE SOLUTIONS</span><br/>
-                                    <span style="color:#C8A96A;font-size:11px;">Investment Intelligence Platform</span>
+                                    <span style="color:#C8A96A;font-size:11px;">Beratung & Angebotsplattform</span>
                                 </td>
                             </tr>
                         </table>
@@ -3374,7 +3374,7 @@ async def generate_expose_pdf(inp: SimulationInput):
         canvas.drawString(36*mm, page_h - 16*mm, "EUROADRIA CORPORATE SOLUTIONS")
         canvas.setFont('Helvetica', 7.5)
         canvas.setFillColor(ea_gold)
-        canvas.drawString(36*mm, page_h - 21*mm, "Investment Intelligence Platform")
+        canvas.drawString(36*mm, page_h - 21*mm, "Beratung & Angebotsplattform")
         
         # Footer
         canvas.setFillColor(HexColor('#071E2D'))

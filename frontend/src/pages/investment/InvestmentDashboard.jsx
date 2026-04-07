@@ -63,7 +63,7 @@ const InvestmentDashboard = () => {
         <div className="relative pt-24 pb-16 px-4">
           <div className="max-w-7xl mx-auto text-center">
             <p className="text-ea-gold text-sm font-bold tracking-widest uppercase mb-4">
-              Investment Intelligence
+              Marktanalysen & Beratung
             </p>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Balkan Investment Dashboard

@@ -32,7 +32,7 @@ const ImpressumPage = () => {
     <div className="min-h-screen pt-28 pb-20 bg-white" data-testid="impressum-page">
       <SEO 
         title="Impressum"
-        description="Impressum der EuroAdria Corporate Solutions - Investment & Business Beratung. Angaben gemäß § 5 TMG."
+        description="Impressum der EuroAdria Corporate Solutions - Beratung & Dienstleistungen. Angaben gemäß § 5 TMG."
         url="/impressum"
       />
       <div className="max-w-4xl mx-auto px-6">
@@ -126,7 +126,7 @@ const FallbackImpressum = () => (
             <a href="https://www.euroadria.me" className="text-ea-gold hover:underline">www.euroadria.me</a>
           </p>
           <p className="text-ea-dark/70">
-            <strong>Investment-Plattform:</strong>{' '}
+            <strong>Angebotsplattform:</strong>{' '}
             <a href="https://euroadria.me" className="text-ea-gold hover:underline">euroadria.me</a>
           </p>
         </div>

@@ -13,8 +13,8 @@ const SEO = ({
 }) => {
   const siteUrl = 'https://euroadria.me';
   const fullUrl = `${siteUrl}${url}`;
-  const fullTitle = title ? `${title} | EuroAdria Corporate Solutions` : 'EuroAdria Corporate Solutions | Investment Intelligence für Adria & Balkan';
-  const defaultDescription = 'Premium Investment Intelligence Platform für die Adria-Region. Exklusive Beratung für DACH-Investoren: Immobilien, Firmengründung, Relocation nach Montenegro & Serbien.';
+  const fullTitle = title ? `${title} | EuroAdria Corporate Solutions` : 'EuroAdria Corporate Solutions | Beratung & Angebote für Adria & Balkan';
+  const defaultDescription = 'Premium Beratung & Angebotsplattform für die Adria-Region. Exklusive Beratung für DACH-Investoren: Immobilien, Firmengründung, Relocation nach Montenegro & Serbien.';
   const metaDescription = description || defaultDescription;
   const metaImage = image || `${siteUrl}/euroadria-logo.png`;
 

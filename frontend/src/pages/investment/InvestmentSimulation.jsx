@@ -245,7 +245,7 @@ export default function InvestmentSimulation() {
 
           {/* Header */}
           <div className="text-center mb-10">
-            <p className="text-ea-gold text-sm font-bold tracking-widest uppercase mb-3">Investment Intelligence</p>
+            <p className="text-ea-gold text-sm font-bold tracking-widest uppercase mb-3">Marktanalysen & Beratung</p>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3">
               Investment-<span className="text-ea-gold">Simulation</span>
             </h1>
