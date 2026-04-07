@@ -4039,6 +4039,7 @@ const EventsAdmin = ({ credentials }) => {
   const [editing, setEditing] = useState(null);
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const API_URL = process.env.REACT_APP_BACKEND_URL || '';
   const authHeader = 'Basic ' + btoa(`${credentials.username}:${credentials.password}`);
 
@@ -4136,7 +4137,14 @@ const EventsAdmin = ({ credentials }) => {
       {/* Form */}
       {(creating || editing) && (
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4" data-testid="event-form">
-          <h3 className="font-semibold text-ea-dark">{editing ? 'Event bearbeiten' : 'Neues Event erstellen'}</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-ea-dark">{editing ? 'Event bearbeiten' : 'Neues Event erstellen'}</h3>
+            <button onClick={() => setShowPreview(p => !p)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${showPreview ? 'bg-ea-gold/10 text-ea-gold' : 'bg-gray-100 text-ea-dark/50'}`}
+              data-testid="event-preview-toggle">
+              <Eye className="w-3.5 h-3.5" /> Vorschau
+            </button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-ea-dark mb-1">Titel *</label>
@@ -4215,6 +4223,46 @@ const EventsAdmin = ({ credentials }) => {
               Abbrechen
             </button>
           </div>
+
+          {/* Live Preview */}
+          {showPreview && form.title && (
+            <div className="border-t border-gray-200 pt-4">
+              <p className="text-xs font-medium text-ea-dark/40 mb-3">LIVE-VORSCHAU</p>
+              <div className="max-w-sm bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+                {form.image && (
+                  <div className="relative h-40 overflow-hidden">
+                    <img src={form.image} alt={form.title} className="w-full h-full object-cover" />
+                    <div className="absolute top-3 left-3">
+                      <span className={`text-xs px-2.5 py-1 rounded-full font-medium border ${
+                        form.type === 'Webinar' ? 'bg-blue-500/10 text-blue-500 border-blue-500/30' :
+                        form.type === 'Workshop' ? 'bg-green-500/10 text-green-500 border-green-500/30' :
+                        'bg-ea-gold/10 text-ea-gold border-ea-gold/30'
+                      }`}>{form.type}</span>
+                    </div>
+                  </div>
+                )}
+                <div className="p-5">
+                  <div className="flex items-center gap-3 text-xs text-ea-dark/50 mb-2">
+                    {form.date && (
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(form.date).toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}
+                      </span>
+                    )}
+                    {form.time && <span>{form.time} Uhr</span>}
+                  </div>
+                  <h4 className="text-lg font-semibold text-ea-dark mb-1.5">{form.title}</h4>
+                  {form.description && <p className="text-ea-dark/60 text-sm leading-relaxed mb-3">{form.description}</p>}
+                  {form.location && <p className="text-ea-dark/40 text-xs mb-3">{form.location}</p>}
+                  {form.link && (
+                    <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-ea-dark text-white font-semibold rounded-lg text-sm">
+                      Jetzt anmelden
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
