@@ -568,8 +568,60 @@ async def submit_contact_form(form: ContactForm):
             "updated_at": contact_dict["submitted_at"]
         })
     
-    # Send email notification
+    # Send email notification to admin
     email_sent = await send_contact_email(contact_dict)
+    
+    # Send branded confirmation email to the customer
+    if RESEND_API_KEY:
+        try:
+            resend.api_key = RESEND_API_KEY
+            customer_name = contact_dict.get('name', '')
+            confirmation_html = f"""
+            <html>
+            <body style="margin:0;padding:0;background-color:#04151F;font-family:Arial,Helvetica,sans-serif;">
+                <div style="max-width:600px;margin:0 auto;background-color:#04151F;">
+                    <div style="background-color:#071E2D;padding:24px 30px;border-bottom:2px solid #C8A96A;">
+                        <span style="color:#FFFFFF;font-size:16px;font-weight:bold;letter-spacing:0.5px;">EUROADRIA CORPORATE SOLUTIONS</span><br/>
+                        <span style="color:#C8A96A;font-size:11px;">Investment Intelligence Platform</span>
+                    </div>
+                    <div style="padding:32px 30px;">
+                        <h1 style="color:#FFFFFF;font-size:22px;margin:0 0 8px 0;">Vielen Dank, {customer_name}!</h1>
+                        <p style="color:#8896A3;font-size:14px;margin:0 0 24px 0;">Wir haben Ihre Anfrage erhalten und melden uns zeitnah bei Ihnen.</p>
+                        <div style="background-color:#0D2A3D;border-radius:8px;padding:20px;border-left:3px solid #C8A96A;margin-bottom:24px;">
+                            <p style="color:#C8A96A;font-size:12px;margin:0 0 6px 0;text-transform:uppercase;letter-spacing:1px;">Ihre Anfrage</p>
+                            <p style="color:#FFFFFF;font-size:16px;margin:0 0 8px 0;font-weight:bold;">{contact_dict.get('subject', 'Allgemein')}</p>
+                            <p style="color:#D0D8E0;font-size:13px;margin:0;line-height:20px;">{contact_dict.get('message', '')[:300]}{'...' if len(contact_dict.get('message', '')) > 300 else ''}</p>
+                        </div>
+                        <p style="color:#D0D8E0;font-size:14px;line-height:22px;margin:0 0 24px 0;">
+                            Unser Team wird sich innerhalb von 24 Stunden bei Ihnen melden. In der Zwischenzeit können Sie unsere aktuellen Marktanalysen und Investment-Tools nutzen.
+                        </p>
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <td align="center" style="padding:8px 0 24px 0;">
+                                    <a href="https://invest.euroadria.me/investment/simulation" style="display:inline-block;background-color:#C8A96A;color:#04151F;font-size:14px;font-weight:bold;text-decoration:none;padding:14px 32px;border-radius:6px;">
+                                        Investment-Simulator starten
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="background-color:#071E2D;padding:20px 30px;border-top:1px solid #1A3040;">
+                        <p style="color:#8896A3;font-size:11px;margin:0 0 4px 0;">EuroAdria Corporate Solutions</p>
+                        <p style="color:#5A6A78;font-size:10px;margin:0;">invest.euroadria.me | office@euroadria.me | +382 68 559 776</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            resend.Emails.send({
+                "from": "EuroAdria Corporate Solutions <noreply@euroadria.me>",
+                "to": [contact_dict['email']],
+                "subject": f"Ihre Anfrage bei EuroAdria — {contact_dict.get('subject', 'Wir melden uns!')}",
+                "html": confirmation_html,
+                "reply_to": NOTIFICATION_EMAIL
+            })
+        except Exception as e:
+            logger.error(f"Contact confirmation email failed: {e}")
     
     return {
         "success": True,
