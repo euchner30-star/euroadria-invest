@@ -3069,50 +3069,104 @@ async def market_data_check(inp: MarketCheckInput):
 @api_router.post("/calculator/expose-pdf")
 async def generate_expose_pdf(inp: SimulationInput):
     """
-    Generiert ein professionelles PDF-Exposé mit ROI-Daten,
-    10-Jahres-Prognose und Investment-Kennzahlen.
+    Generiert ein professionelles PDF-Exposé im EuroAdria Corporate Branding
+    mit Logo, dunklem Header/Footer, Gold-Akzenten und 10-Jahres-Prognose.
     """
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.units import mm
-    from reportlab.lib.colors import HexColor
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.colors import HexColor, white, Color
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as RLImage
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+    from reportlab.platypus.flowables import HRFlowable
     from starlette.responses import Response
+    import urllib.request
+    import tempfile
     
-    # Simulation berechnen
     result = calculate_simulation(inp)
     
-    # PDF erstellen
     buffer = io.BytesIO()
+    
+    # Brand Colors
+    ea_dark = HexColor('#04151F')
+    ea_gold = HexColor('#C8A96A')
+    ea_gold_light = HexColor('#F5EDD8')
+    ea_gray = HexColor('#8896A3')
+    ea_light = HexColor('#F8F6F1')
+    text_white = HexColor('#FFFFFF')
+    border_color = HexColor('#1A3040')
+    
+    page_w, page_h = A4
+    
+    # Custom page background + header/footer
+    def page_template(canvas, doc):
+        canvas.saveState()
+        # Full page dark bg
+        canvas.setFillColor(ea_dark)
+        canvas.rect(0, 0, page_w, page_h, fill=1, stroke=0)
+        
+        # Header bar
+        canvas.setFillColor(HexColor('#071E2D'))
+        canvas.rect(0, page_h - 28*mm, page_w, 28*mm, fill=1, stroke=0)
+        
+        # Gold accent line under header
+        canvas.setStrokeColor(ea_gold)
+        canvas.setLineWidth(1.5)
+        canvas.line(15*mm, page_h - 28*mm, page_w - 15*mm, page_h - 28*mm)
+        
+        # Logo
+        try:
+            logo_path = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'public', 'euroadria-logo.png')
+            if not os.path.exists(logo_path):
+                logo_path = '/app/frontend/public/euroadria-logo.png'
+            if os.path.exists(logo_path):
+                canvas.drawImage(logo_path, 15*mm, page_h - 22*mm, width=18*mm, height=14*mm, preserveAspectRatio=True, mask='auto')
+        except:
+            pass
+        
+        # Company name in header
+        canvas.setFont('Helvetica-Bold', 11)
+        canvas.setFillColor(text_white)
+        canvas.drawString(36*mm, page_h - 16*mm, "EUROADRIA CORPORATE SOLUTIONS")
+        canvas.setFont('Helvetica', 7.5)
+        canvas.setFillColor(ea_gold)
+        canvas.drawString(36*mm, page_h - 21*mm, "Investment Intelligence Platform")
+        
+        # Footer
+        canvas.setFillColor(HexColor('#071E2D'))
+        canvas.rect(0, 0, page_w, 14*mm, fill=1, stroke=0)
+        canvas.setStrokeColor(ea_gold)
+        canvas.setLineWidth(0.5)
+        canvas.line(15*mm, 14*mm, page_w - 15*mm, 14*mm)
+        
+        canvas.setFont('Helvetica', 6.5)
+        canvas.setFillColor(ea_gray)
+        canvas.drawString(15*mm, 8*mm, "EuroAdria Corporate Solutions | invest.euroadria.me | office@euroadria.me")
+        canvas.drawRightString(page_w - 15*mm, 8*mm, f"Seite {doc.page}")
+        canvas.setFillColor(ea_gold)
+        canvas.setFont('Helvetica', 5.5)
+        canvas.drawCentredString(page_w / 2, 3.5*mm, "Vertraulich — Nur für den persönlichen Gebrauch bestimmt")
+        
+        canvas.restoreState()
+    
     doc = SimpleDocTemplate(buffer, pagesize=A4,
-                           leftMargin=20*mm, rightMargin=20*mm,
-                           topMargin=20*mm, bottomMargin=20*mm)
+                           leftMargin=15*mm, rightMargin=15*mm,
+                           topMargin=34*mm, bottomMargin=20*mm)
     
-    # Farben
-    dark = HexColor('#04151F')
-    gray = HexColor('#6B7280')
-    light_gray = HexColor('#F3F4F6')
-    
-    # Styles
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle('Title_EA', parent=styles['Title'],
-                              fontSize=22, textColor=dark, spaceAfter=4*mm))
-    styles.add(ParagraphStyle('Subtitle_EA', parent=styles['Normal'],
-                              fontSize=11, textColor=gray, spaceAfter=8*mm))
-    styles.add(ParagraphStyle('Section_EA', parent=styles['Heading2'],
-                              fontSize=14, textColor=dark, spaceBefore=8*mm, spaceAfter=4*mm,
-                              borderWidth=0, borderPadding=0))
-    styles.add(ParagraphStyle('Body_EA', parent=styles['Normal'],
-                              fontSize=10, textColor=dark, leading=14))
-    styles.add(ParagraphStyle('Small_EA', parent=styles['Normal'],
-                              fontSize=8, textColor=gray))
-    styles.add(ParagraphStyle('KPI_Value', parent=styles['Normal'],
-                              fontSize=16, textColor=dark, alignment=TA_CENTER))
-    styles.add(ParagraphStyle('KPI_Label', parent=styles['Normal'],
-                              fontSize=8, textColor=gray, alignment=TA_CENTER))
-    styles.add(ParagraphStyle('Right_EA', parent=styles['Normal'],
-                              fontSize=10, textColor=dark, alignment=TA_RIGHT))
+    styles.add(ParagraphStyle('EA_Title', parent=styles['Title'],
+                              fontSize=20, textColor=text_white, spaceAfter=2*mm, fontName='Helvetica-Bold'))
+    styles.add(ParagraphStyle('EA_Subtitle', parent=styles['Normal'],
+                              fontSize=10, textColor=ea_gray, spaceAfter=6*mm))
+    styles.add(ParagraphStyle('EA_Section', parent=styles['Heading2'],
+                              fontSize=12, textColor=ea_gold, spaceBefore=7*mm, spaceAfter=3*mm,
+                              fontName='Helvetica-Bold', borderWidth=0))
+    styles.add(ParagraphStyle('EA_Body', parent=styles['Normal'],
+                              fontSize=9, textColor=HexColor('#D0D8E0'), leading=13))
+    styles.add(ParagraphStyle('EA_Small', parent=styles['Normal'],
+                              fontSize=7, textColor=ea_gray, leading=10))
+    styles.add(ParagraphStyle('EA_Right', parent=styles['Normal'],
+                              fontSize=9, textColor=HexColor('#D0D8E0'), alignment=TA_RIGHT))
     
     elements = []
     
@@ -3123,15 +3177,18 @@ async def generate_expose_pdf(inp: SimulationInput):
             return f"{val:.2f}%"
         return str(val)
     
-    # HEADER
-    elements.append(Paragraph("INVESTMENT EXPOSÉ", styles['Title_EA']))
+    # TITLE
+    elements.append(Paragraph("INVESTMENT EXPOSÉ", styles['EA_Title']))
     elements.append(Paragraph(
-        f"10-Jahres-Prognose | Erstellt am {datetime.now(timezone.utc).strftime('%d.%m.%Y')}",
-        styles['Subtitle_EA']
+        f"Personalisierte 10-Jahres-Prognose  |  Erstellt am {datetime.now(timezone.utc).strftime('%d.%m.%Y')}",
+        styles['EA_Subtitle']
     ))
     
-    # KPI ÜBERSICHT
-    elements.append(Paragraph("Zusammenfassung", styles['Section_EA']))
+    # Gold divider
+    elements.append(HRFlowable(width="100%", thickness=1, color=ea_gold, spaceAfter=5*mm))
+    
+    # KPI OVERVIEW
+    elements.append(Paragraph("ZUSAMMENFASSUNG", styles['EA_Section']))
     
     kpi_data = [
         ['Gesamtinvestition', 'Eigenkapital', 'Fremdkapital', 'IRR'],
@@ -3144,26 +3201,34 @@ async def generate_expose_pdf(inp: SimulationInput):
     
     kpi_table = Table(kpi_data, colWidths=[42*mm]*4)
     kpi_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), light_gray),
-        ('BACKGROUND', (0, 2), (-1, 2), light_gray),
-        ('TEXTCOLOR', (0, 0), (-1, 0), gray),
-        ('TEXTCOLOR', (0, 2), (-1, 2), gray),
-        ('FONTSIZE', (0, 0), (-1, 0), 8),
-        ('FONTSIZE', (0, 2), (-1, 2), 8),
+        ('BACKGROUND', (0, 0), (-1, 0), HexColor('#0D2A3D')),
+        ('BACKGROUND', (0, 2), (-1, 2), HexColor('#0D2A3D')),
+        ('BACKGROUND', (0, 1), (-1, 1), HexColor('#081F2E')),
+        ('BACKGROUND', (0, 3), (-1, 3), HexColor('#081F2E')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), ea_gold),
+        ('TEXTCOLOR', (0, 2), (-1, 2), ea_gold),
+        ('TEXTCOLOR', (0, 1), (-1, 1), text_white),
+        ('TEXTCOLOR', (0, 3), (-1, 3), text_white),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica'),
+        ('FONTNAME', (0, 2), (-1, 2), 'Helvetica'),
+        ('FONTNAME', (0, 1), (-1, 1), 'Helvetica-Bold'),
+        ('FONTNAME', (0, 3), (-1, 3), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 7),
+        ('FONTSIZE', (0, 2), (-1, 2), 7),
         ('FONTSIZE', (0, 1), (-1, 1), 12),
         ('FONTSIZE', (0, 3), (-1, 3), 12),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('TOPPADDING', (0, 0), (-1, -1), 6),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-        ('GRID', (0, 0), (-1, -1), 0.5, HexColor('#E5E7EB')),
+        ('GRID', (0, 0), (-1, -1), 0.5, border_color),
         ('ROUNDEDCORNERS', [3, 3, 3, 3]),
     ]))
     elements.append(kpi_table)
-    elements.append(Spacer(1, 6*mm))
+    elements.append(Spacer(1, 4*mm))
     
-    # EINGABEPARAMETER
-    elements.append(Paragraph("Eingabeparameter", styles['Section_EA']))
+    # INPUT PARAMETERS
+    elements.append(Paragraph("EINGABEPARAMETER", styles['EA_Section']))
     
     param_data = [
         ['Parameter', 'Wert', 'Parameter', 'Wert'],
@@ -3175,23 +3240,25 @@ async def generate_expose_pdf(inp: SimulationInput):
         ['Haltedauer', f"{inp.holding_period} Jahre", 'Diskontierungszins', fmt(inp.discount_rate, '%')],
     ]
     
-    param_table = Table(param_data, colWidths=[35*mm, 35*mm, 40*mm, 30*mm])
+    param_table = Table(param_data, colWidths=[38*mm, 32*mm, 40*mm, 30*mm])
     param_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), dark),
-        ('TEXTCOLOR', (0, 0), (-1, 0), HexColor('#FFFFFF')),
-        ('FONTSIZE', (0, 0), (-1, -1), 9),
+        ('BACKGROUND', (0, 0), (-1, 0), ea_gold),
+        ('TEXTCOLOR', (0, 0), (-1, 0), ea_dark),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 8),
+        ('TEXTCOLOR', (0, 1), (-1, -1), HexColor('#D0D8E0')),
         ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
         ('ALIGN', (3, 0), (3, -1), 'RIGHT'),
         ('TOPPADDING', (0, 0), (-1, -1), 4),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
-        ('GRID', (0, 0), (-1, -1), 0.5, HexColor('#E5E7EB')),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [HexColor('#FFFFFF'), light_gray]),
+        ('GRID', (0, 0), (-1, -1), 0.5, border_color),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [HexColor('#081F2E'), HexColor('#0D2A3D')]),
     ]))
     elements.append(param_table)
-    elements.append(Spacer(1, 6*mm))
+    elements.append(Spacer(1, 4*mm))
     
-    # 10-JAHRES-PROGNOSE TABELLE
-    elements.append(Paragraph("10-Jahres-Cashflow-Prognose", styles['Section_EA']))
+    # 10-YEAR CASHFLOW TABLE
+    elements.append(Paragraph("10-JAHRES-CASHFLOW-PROGNOSE", styles['EA_Section']))
     
     cf_header = ['Jahr', 'Bruttomiete', 'Netto-Miete', 'Hypothek', 'Cashflow', 'Kum. CF', 'Immobilienwert']
     cf_rows = [cf_header]
@@ -3208,34 +3275,35 @@ async def generate_expose_pdf(inp: SimulationInput):
     
     col_w = [12*mm, 26*mm, 24*mm, 22*mm, 22*mm, 22*mm, 30*mm]
     cf_table = Table(cf_rows, colWidths=col_w)
-    cf_style = [
-        ('BACKGROUND', (0, 0), (-1, 0), dark),
-        ('TEXTCOLOR', (0, 0), (-1, 0), HexColor('#FFFFFF')),
-        ('FONTSIZE', (0, 0), (-1, -1), 8),
+    cf_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), ea_gold),
+        ('TEXTCOLOR', (0, 0), (-1, 0), ea_dark),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 7.5),
+        ('TEXTCOLOR', (0, 1), (-1, -1), HexColor('#D0D8E0')),
         ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
         ('ALIGN', (0, 0), (0, -1), 'CENTER'),
         ('TOPPADDING', (0, 0), (-1, -1), 3),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
-        ('GRID', (0, 0), (-1, -1), 0.5, HexColor('#E5E7EB')),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [HexColor('#FFFFFF'), light_gray]),
-    ]
-    cf_table.setStyle(TableStyle(cf_style))
+        ('GRID', (0, 0), (-1, -1), 0.5, border_color),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [HexColor('#081F2E'), HexColor('#0D2A3D')]),
+    ]))
     elements.append(cf_table)
-    elements.append(Spacer(1, 8*mm))
+    elements.append(Spacer(1, 6*mm))
     
     # DISCLAIMER
-    elements.append(Spacer(1, 6*mm))
+    elements.append(HRFlowable(width="100%", thickness=0.5, color=ea_gold, spaceBefore=4*mm, spaceAfter=3*mm))
     elements.append(Paragraph(
         "<b>WICHTIGER HINWEIS — KEINE ANLAGEBERATUNG</b>",
-        ParagraphStyle('Disclaimer_Title', parent=styles['Normal'],
-                      fontSize=9, textColor=HexColor('#B45309'), spaceBefore=4*mm, spaceAfter=2*mm)
+        ParagraphStyle('Disc_Title', parent=styles['Normal'],
+                      fontSize=8, textColor=ea_gold, spaceBefore=2*mm, spaceAfter=2*mm, fontName='Helvetica-Bold')
     ))
     elements.append(Paragraph(
         "Diese Simulation dient ausschließlich zu Informations- und Veranschaulichungszwecken und stellt "
         "keine Anlageberatung, Kaufempfehlung oder Renditegarantie dar. Alle dargestellten Zahlen, Prognosen "
         "und Ergebnisse basieren auf den vom Benutzer eingegebenen Annahmen und vereinfachten Modellen. "
         "<b>Tatsächliche Ergebnisse können erheblich abweichen.</b>",
-        styles['Small_EA']
+        styles['EA_Small']
     ))
     elements.append(Paragraph(
         "Insbesondere können Faktoren wie Steuern, Finanzierungskonditionen, Währungsrisiken, politische "
@@ -3243,18 +3311,17 @@ async def generate_expose_pdf(inp: SimulationInput):
         "Rendite wesentlich beeinflussen. Konsultieren Sie vor jeder Investitionsentscheidung einen qualifizierten "
         "und unabhängigen Finanzberater. Der Herausgeber übernimmt keine Haftung für Entscheidungen, die auf "
         "Grundlage dieser Berechnung getroffen werden.",
-        styles['Small_EA']
+        styles['EA_Small']
     ))
     
-    # PDF generieren
-    doc.build(elements)
+    doc.build(elements, onFirstPage=page_template, onLaterPages=page_template)
     pdf_bytes = buffer.getvalue()
     buffer.close()
     
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": "attachment; filename=Investment_Expose.pdf"}
+        headers={"Content-Disposition": "attachment; filename=EuroAdria_Investment_Expose.pdf"}
     )
 
 
