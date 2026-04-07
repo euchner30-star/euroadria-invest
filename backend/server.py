@@ -524,7 +524,24 @@ async def submit_contact_form(form: ContactForm):
     
     # Auto-create CRM lead + deal
     existing_crm = await db.crm_leads.find_one({"email": contact_dict.get("email", "")})
-    if not existing_crm:
+    if existing_crm:
+        # Same email exists — add a new deal to the existing lead
+        await db.crm_deals.insert_one({
+            "id": str(uuid.uuid4())[:8],
+            "lead_id": existing_crm["id"],
+            "stage": "new_lead",
+            "deal_value": 0,
+            "probability": 10,
+            "expected_revenue": 0,
+            "assigned_to": None,
+            "notes": f"Betreff: {contact_dict.get('subject', 'Allgemein')}",
+            "created_at": contact_dict["submitted_at"],
+            "updated_at": contact_dict["submitted_at"]
+        })
+        # Reactivate lead if it was lost
+        if existing_crm.get("status") == "lost":
+            await db.crm_leads.update_one({"id": existing_crm["id"]}, {"$set": {"status": "new"}})
+    else:
         crm_lead_id = str(uuid.uuid4())[:8]
         await db.crm_leads.insert_one({
             "id": crm_lead_id,
