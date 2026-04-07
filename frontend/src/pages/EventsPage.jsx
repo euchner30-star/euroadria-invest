@@ -176,7 +176,11 @@ const EventsPage = () => {
                   <h2 className="text-2xl font-semibold text-ea-dark mb-8">
                     Kommende <span className="text-ea-gold">Events</span>
                   </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className={`grid gap-8 ${
+                    upcomingEvents.length === 1 ? 'grid-cols-1 max-w-lg mx-auto' :
+                    upcomingEvents.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
+                    'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                  }`}>
                     {upcomingEvents.map(event => (
                       <EventCard key={event.id} event={event} />
                     ))}
@@ -190,7 +194,11 @@ const EventsPage = () => {
                   <h2 className="text-2xl font-semibold text-ea-dark/60 mb-8">
                     Vergangene Events
                   </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className={`grid gap-8 ${
+                    pastEvents.length === 1 ? 'grid-cols-1 max-w-lg mx-auto' :
+                    pastEvents.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
+                    'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                  }`}>
                     {pastEvents.map(event => (
                       <EventCard key={event.id} event={event} />
                     ))}
