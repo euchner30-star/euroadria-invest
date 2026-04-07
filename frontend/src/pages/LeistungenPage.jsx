@@ -301,7 +301,7 @@ const LeistungenPage = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-ea-dark">
+      <section className="py-20 bg-ea-dark -mb-px">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl sm:text-4xl font-semibold text-white mb-4">
             Kontaktieren Sie uns für eine <span className="text-ea-gold">Erstberatung</span>
