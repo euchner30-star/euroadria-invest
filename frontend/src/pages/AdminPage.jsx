@@ -1106,6 +1106,18 @@ const AdminPage = () => {
             <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Events</span>
           </button>
+          <button
+            onClick={() => setActiveTab('leistungen')}
+            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
+              activeTab === 'leistungen'
+                ? 'bg-ea-gold text-ea-dark font-semibold'
+                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
+            }`}
+            data-testid="tab-leistungen"
+          >
+            <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span>Leistungen</span>
+          </button>
         </div>
 
         {/* Dashboard Tab */}
@@ -2617,6 +2629,11 @@ const AdminPage = () => {
           <EventsAdmin credentials={credentials} />
         )}
 
+        {/* Leistungen CMS Tab */}
+        {activeTab === 'leistungen' && (
+          <LeistungenAdmin credentials={credentials} />
+        )}
+
     </div>
   );
 };
@@ -3776,6 +3793,244 @@ const SectionEditor = ({ section, onChange, onDataChange, credentials }) => {
 };
 
 export default AdminPage;
+
+// Leistungen CMS Admin Component
+const LeistungenAdmin = ({ credentials }) => {
+  const [content, setContent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
+  const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+  const authHeader = 'Basic ' + btoa(`${credentials.username}:${credentials.password}`);
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/leistungen-content`);
+        if (res.ok) setContent(await res.json());
+      } catch (err) {
+        console.error('Failed to fetch:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchContent();
+  }, [API_URL]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/leistungen-content`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
+        body: JSON.stringify(content)
+      });
+      if (res.ok) {
+        setContent(await res.json());
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      }
+    } catch (err) {
+      console.error('Failed to save:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const updateService = (idx, field, value) => {
+    setContent(prev => ({
+      ...prev,
+      services: prev.services.map((s, i) => i === idx ? { ...s, [field]: value } : s)
+    }));
+  };
+
+  const updateServicePoint = (sIdx, pIdx, value) => {
+    setContent(prev => ({
+      ...prev,
+      services: prev.services.map((s, i) =>
+        i === sIdx ? { ...s, points: s.points.map((p, j) => j === pIdx ? value : p) } : s
+      )
+    }));
+  };
+
+  const updateRiskItem = (section, idx, field, value) => {
+    setContent(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        items: prev[section].items.map((item, i) => i === idx ? { ...item, [field]: value } : item)
+      }
+    }));
+  };
+
+  if (loading) return <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 text-ea-gold animate-spin" /></div>;
+  if (!content) return <div className="text-center py-16 text-ea-dark/50">Fehler beim Laden</div>;
+
+  const sections = [
+    { key: 'hero', label: 'Hero-Bereich' },
+    { key: 'services', label: 'Leistungen (4)' },
+    { key: 'legal_risks', label: 'Rechtsrisiken' },
+    { key: 'compliance_risks', label: 'Compliance' },
+    { key: 'guarantee', label: 'Garantie' },
+    { key: 'cta', label: 'CTA' }
+  ];
+
+  return (
+    <div className="space-y-6" data-testid="leistungen-admin">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-ea-dark">Leistungen-Seite bearbeiten</h2>
+        <button onClick={handleSave} disabled={saving}
+          className="flex items-center gap-2 px-5 py-2.5 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all text-sm disabled:opacity-50"
+          data-testid="leistungen-save-btn">
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+          {saved ? 'Gespeichert!' : 'Speichern'}
+        </button>
+      </div>
+
+      {/* Section Tabs */}
+      <div className="flex gap-2 overflow-x-auto pb-2">
+        {sections.map(s => (
+          <button key={s.key} onClick={() => setActiveSection(s.key)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+              activeSection === s.key ? 'bg-ea-dark text-white' : 'bg-gray-100 text-ea-dark/60 hover:bg-gray-200'
+            }`}>
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Hero */}
+      {activeSection === 'hero' && (
+        <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+          <h3 className="font-semibold text-ea-dark">Hero-Bereich</h3>
+          <InputField label="Tagline" value={content.hero?.tagline} onChange={v => setContent(p => ({...p, hero: {...p.hero, tagline: v}}))} />
+          <TextareaField label="Beschreibung" value={content.hero?.description} onChange={v => setContent(p => ({...p, hero: {...p.hero, description: v}}))} />
+        </div>
+      )}
+
+      {/* Services */}
+      {activeSection === 'services' && (
+        <div className="space-y-6">
+          {content.services?.map((service, idx) => (
+            <div key={idx} className="bg-white border border-gray-200 rounded-xl p-6 space-y-4" data-testid={`admin-service-${idx}`}>
+              <h3 className="font-semibold text-ea-dark flex items-center gap-2">
+                <span className="bg-ea-gold/10 text-ea-gold w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold">{idx + 1}</span>
+                {service.title}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InputField label="Titel" value={service.title} onChange={v => updateService(idx, 'title', v)} />
+                <InputField label="Tagline" value={service.tagline} onChange={v => updateService(idx, 'tagline', v)} />
+              </div>
+              <TextareaField label="Beschreibung" value={service.description} onChange={v => updateService(idx, 'description', v)} />
+              <div>
+                <label className="block text-sm font-medium text-ea-dark mb-1">Bild-URL (optional)</label>
+                <input value={service.image || ''} onChange={e => updateService(idx, 'image', e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold"
+                  placeholder="https://i.ibb.co/..." data-testid={`service-image-${idx}`} />
+                {service.image && (
+                  <img src={service.image} alt="Vorschau" className="mt-2 h-20 w-auto rounded-lg object-cover border border-gray-200" />
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-ea-dark mb-2">Stichpunkte</label>
+                {service.points?.map((point, pIdx) => (
+                  <input key={pIdx} value={point} onChange={e => updateServicePoint(idx, pIdx, e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-2 focus:outline-none focus:border-ea-gold"
+                    placeholder={`Punkt ${pIdx + 1}`} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Legal Risks */}
+      {activeSection === 'legal_risks' && (
+        <div className="space-y-6">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+            <h3 className="font-semibold text-ea-dark">Überschriften</h3>
+            <TextareaField label="Beschreibung" value={content.legal_risks?.description} onChange={v => setContent(p => ({...p, legal_risks: {...p.legal_risks, description: v}}))} />
+            <InputField label="Fazit" value={content.legal_risks?.conclusion} onChange={v => setContent(p => ({...p, legal_risks: {...p.legal_risks, conclusion: v}}))} />
+          </div>
+          {content.legal_risks?.items?.map((item, idx) => (
+            <div key={idx} className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+              <h3 className="font-semibold text-ea-dark">{item.problem}</h3>
+              <InputField label="Problem" value={item.problem} onChange={v => updateRiskItem('legal_risks', idx, 'problem', v)} />
+              <TextareaField label="Risiko" value={item.risk} onChange={v => updateRiskItem('legal_risks', idx, 'risk', v)} />
+              <TextareaField label="Lösung" value={item.solution} onChange={v => updateRiskItem('legal_risks', idx, 'solution', v)} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Compliance Risks */}
+      {activeSection === 'compliance_risks' && (
+        <div className="space-y-6">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+            <h3 className="font-semibold text-ea-dark">Überschriften</h3>
+            <TextareaField label="Beschreibung" value={content.compliance_risks?.description} onChange={v => setContent(p => ({...p, compliance_risks: {...p.compliance_risks, description: v}}))} />
+            <InputField label="Fazit" value={content.compliance_risks?.conclusion} onChange={v => setContent(p => ({...p, compliance_risks: {...p.compliance_risks, conclusion: v}}))} />
+          </div>
+          {content.compliance_risks?.items?.map((item, idx) => (
+            <div key={idx} className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+              <h3 className="font-semibold text-ea-dark">{item.problem}</h3>
+              <InputField label="Problem" value={item.problem} onChange={v => updateRiskItem('compliance_risks', idx, 'problem', v)} />
+              <TextareaField label="Risiko" value={item.risk} onChange={v => updateRiskItem('compliance_risks', idx, 'risk', v)} />
+              <TextareaField label="Lösung" value={item.solution} onChange={v => updateRiskItem('compliance_risks', idx, 'solution', v)} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Guarantee */}
+      {activeSection === 'guarantee' && (
+        <div className="space-y-6">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+            <h3 className="font-semibold text-ea-dark">Überschriften</h3>
+            <InputField label="Untertitel" value={content.guarantee?.subtitle} onChange={v => setContent(p => ({...p, guarantee: {...p.guarantee, subtitle: v}}))} />
+          </div>
+          {['buyer', 'owner'].map(key => (
+            <div key={key} className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+              <h3 className="font-semibold text-ea-dark">{key === 'buyer' ? 'Vor dem Kauf' : 'Nach dem Kauf'}</h3>
+              <InputField label="Label" value={content.guarantee?.[key]?.label} onChange={v => setContent(p => ({...p, guarantee: {...p.guarantee, [key]: {...p.guarantee[key], label: v}}}))} />
+              <InputField label="Titel" value={content.guarantee?.[key]?.title} onChange={v => setContent(p => ({...p, guarantee: {...p.guarantee, [key]: {...p.guarantee[key], title: v}}}))} />
+              <TextareaField label="Beschreibung" value={content.guarantee?.[key]?.description} onChange={v => setContent(p => ({...p, guarantee: {...p.guarantee, [key]: {...p.guarantee[key], description: v}}}))} />
+              <TextareaField label="Highlight" value={content.guarantee?.[key]?.highlight} onChange={v => setContent(p => ({...p, guarantee: {...p.guarantee, [key]: {...p.guarantee[key], highlight: v}}}))} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* CTA */}
+      {activeSection === 'cta' && (
+        <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+          <h3 className="font-semibold text-ea-dark">Call-to-Action</h3>
+          <InputField label="Titel" value={content.cta?.title} onChange={v => setContent(p => ({...p, cta: {...p.cta, title: v}}))} />
+          <TextareaField label="Beschreibung" value={content.cta?.description} onChange={v => setContent(p => ({...p, cta: {...p.cta, description: v}}))} />
+          <InputField label="Button-Text" value={content.cta?.button_text} onChange={v => setContent(p => ({...p, cta: {...p.cta, button_text: v}}))} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Reusable field components for LeistungenAdmin
+const InputField = ({ label, value, onChange }) => (
+  <div>
+    <label className="block text-sm font-medium text-ea-dark mb-1">{label}</label>
+    <input value={value || ''} onChange={e => onChange(e.target.value)}
+      className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" />
+  </div>
+);
+
+const TextareaField = ({ label, value, onChange }) => (
+  <div>
+    <label className="block text-sm font-medium text-ea-dark mb-1">{label}</label>
+    <textarea value={value || ''} onChange={e => onChange(e.target.value)} rows={3}
+      className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold resize-none" />
+  </div>
+);
 
 // Events Admin Component
 const EventsAdmin = ({ credentials }) => {
