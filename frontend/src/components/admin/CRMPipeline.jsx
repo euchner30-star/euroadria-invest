@@ -185,11 +185,18 @@ export const PipelineView = ({ credentials }) => {
       {deals.filter(d => d.stage === 'lost').length > 0 && (
         <div className="border-t border-gray-200 pt-4">
           <h3 className="text-sm font-semibold text-ea-dark/40 mb-3">Verloren ({deals.filter(d => d.stage === 'lost').length})</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            {deals.filter(d => d.stage === 'lost').slice(0, 6).map(deal => (
-              <div key={deal.id} className="bg-gray-50 border border-gray-100 rounded-lg p-3 opacity-60">
-                <p className="text-sm font-medium text-ea-dark">{deal.lead?.name || 'Unbekannt'}</p>
-                <p className="text-xs text-ea-dark/40">{fmt(deal.deal_value)}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+            {deals.filter(d => d.stage === 'lost').map(deal => (
+              <div key={deal.id} className="bg-gray-50 border border-gray-100 rounded-lg p-3 opacity-60 hover:opacity-90 transition-opacity flex items-center justify-between group">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-ea-dark truncate">{deal.lead?.name || 'Unbekannt'}</p>
+                  <p className="text-xs text-ea-dark/40">{fmt(deal.deal_value)}</p>
+                </div>
+                <button onClick={() => deleteDeal(deal.id)}
+                  className="p-1.5 text-ea-dark/20 hover:text-red-500 transition-colors shrink-0 sm:opacity-0 sm:group-hover:opacity-100"
+                  data-testid={`delete-lost-${deal.id}`}>
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
               </div>
             ))}
           </div>
