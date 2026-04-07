@@ -468,7 +468,7 @@ async def send_contact_email(contact_data: dict):
         }
         
         email = resend.Emails.send(params)
-        logger.info(f"Contact email sent via Resend from {contact_data['name']}, id: {email.get('id')}")
+        logger.info(f"Contact email sent via Resend from {contact_data['name']}, id: {getattr(email, 'id', 'unknown')}")
         return True
     except Exception as e:
         logger.error(f"Failed to send contact email: {e}")
