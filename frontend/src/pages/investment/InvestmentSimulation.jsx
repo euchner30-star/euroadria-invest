@@ -1,8 +1,10 @@
 import React, { useState, useCallback, useTransition, useEffect } from 'react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
-import { Calculator, TrendingUp, Download, AlertTriangle, Info, Loader2, ChevronDown, ChevronUp, MapPin, Shield, Banknote, Mail } from 'lucide-react';
+import { Calculator, TrendingUp, Download, AlertTriangle, Info, Loader2, ChevronDown, ChevronUp, MapPin, Shield, Banknote, Mail, X, User } from 'lucide-react';
 import SEO from '../../components/SEO';
 import { simulationApi, investmentApi } from '../../services/api';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const DEFAULT_PARAMS = {
   purchase_price: 250000,
@@ -167,7 +169,20 @@ export default function InvestmentSimulation() {
     }
   };
 
+  const [showLeadGate, setShowLeadGate] = useState(false);
+  const [leadForm, setLeadForm] = useState({ name: '', email: '' });
+
   const downloadPdf = async () => {
+    // Check if lead already captured this session
+    const captured = sessionStorage.getItem('pdf_lead_captured');
+    if (!captured) {
+      setShowLeadGate(true);
+      return;
+    }
+    await startPdfDownload();
+  };
+
+  const startPdfDownload = async () => {
     setPdfLoading(true);
     try {
       const blob = await simulationApi.downloadExposePdf(params);
@@ -182,6 +197,27 @@ export default function InvestmentSimulation() {
     } finally {
       setPdfLoading(false);
     }
+  };
+
+  const submitLeadAndDownload = async () => {
+    if (!leadForm.name || !leadForm.email) return;
+    try {
+      await fetch(`${API_URL}/api/leads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: leadForm.name,
+          email: leadForm.email,
+          source: 'simulation_pdf',
+          expose_name: `Simulation PDF – ${params.purchase_price?.toLocaleString('de-DE')}€`
+        })
+      });
+      sessionStorage.setItem('pdf_lead_captured', 'true');
+    } catch (err) {
+      console.error('Lead capture failed:', err);
+    }
+    setShowLeadGate(false);
+    await startPdfDownload();
   };
 
   const chartData = result?.yearly_data?.map(y => ({
@@ -555,6 +591,40 @@ export default function InvestmentSimulation() {
           </div>
         </div>
       </div>
+    <>
+      {/* Lead Gate Modal */}
+      {showLeadGate && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" data-testid="pdf-lead-gate">
+          <div className="bg-[#0f1d32] border border-white/10 rounded-2xl p-6 w-full max-w-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-white font-bold text-base">PDF Exposé herunterladen</h3>
+              <button onClick={() => setShowLeadGate(false)} className="text-white/30 hover:text-white"><X className="w-5 h-5" /></button>
+            </div>
+            <p className="text-white/50 text-sm">Bitte geben Sie Ihre Daten ein, um das personalisierte Investment-Exposé als PDF zu erhalten.</p>
+            <div className="space-y-3">
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <input value={leadForm.name} onChange={e => setLeadForm(f => ({ ...f, name: e.target.value }))}
+                  placeholder="Ihr Name *" data-testid="pdf-lead-name"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-ea-gold" />
+              </div>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <input value={leadForm.email} onChange={e => setLeadForm(f => ({ ...f, email: e.target.value }))}
+                  placeholder="Ihre E-Mail *" type="email" data-testid="pdf-lead-email"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-ea-gold" />
+              </div>
+            </div>
+            <button onClick={submitLeadAndDownload} disabled={!leadForm.name || !leadForm.email || pdfLoading}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-ea-gold text-ea-dark font-semibold rounded-lg text-sm hover:bg-ea-gold/80 disabled:opacity-50 transition-all"
+              data-testid="pdf-lead-submit">
+              {pdfLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              PDF herunterladen
+            </button>
+            <p className="text-white/20 text-[10px] text-center">Ihre Daten werden vertraulich behandelt und nicht an Dritte weitergegeben.</p>
+          </div>
+        </div>
+      )}
     </>
   );
 }
