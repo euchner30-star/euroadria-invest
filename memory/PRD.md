@@ -1,15 +1,40 @@
-# EuroAdria Corporate Solutions — Investment Intelligence Platform
+# EuroAdria Corporate Solutions — PRD
 
 ## Original Problem Statement
-Professional "Investment Intelligence Platform" for the Balkan region with full CMS. Decoupled from Emergent, self-hosted on Render with MongoDB Atlas. Target: DACH investors interested in Montenegro/Serbia.
+Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS. Decoupled from Emergent, self-hosted on Render with MongoDB Atlas. Target: DACH investors interested in Montenegro/Serbia.
 
 ## Architecture
-- **Frontend**: React 19, TailwindCSS, Recharts → Render Static Site
-- **Backend**: FastAPI, Motor (async MongoDB) → Render Web Service
+- **Frontend**: React 19, TailwindCSS, Recharts -> Render Static Site
+- **Backend**: FastAPI, Motor (async MongoDB) -> Render Web Service
 - **Database**: MongoDB Atlas (remote)
 - **Email**: Resend API (noreply@euroadria.me)
 - **Newsletter**: Brevo API
-- **Domain**: euroadria.me (primary), invest.euroadria.me (legacy, still active)
+- **Domain**: euroadria.me (primary), invest.euroadria.me (legacy)
+
+## Backend Architecture (Refactored April 2026)
+```
+/app/backend/
+  server.py          # Slim entry point (~90 lines) - App, CORS, router includes
+  core.py            # DB connection, Auth (verify_admin), Storage helpers, Config
+  models.py          # All Pydantic models
+  emails.py          # Resend email logic + follow-up automation
+  investment_models.py  # Investment calculation models + seed data
+  routes/
+    analytics.py     # Page views, calculator tracking, analytics dashboard, reset
+    articles.py      # Article CRUD, clusters, categories, OG tags, sitemap, bulk import
+    comments.py      # Public + admin comment moderation
+    contact.py       # Contact form + lead capture + CRM auto-link
+    crm.py           # Kanban pipeline, deals, stats, migration, cleanup
+    events.py        # Events + Leistungen CMS
+    investment.py    # Locations, infrastructure, zones, ROI, simulation, PDF expose
+    newsletter.py    # Brevo integration (subscribe, unsubscribe, send campaigns)
+    pages.py         # CMS pages with defaults
+    regions.py       # Regions & apartments
+    settings.py      # Download settings, homepage settings, legal pages
+    translate.py     # Translation (Argos offline + MyMemory API fallback)
+    uploads.py       # Image upload, optimization, object storage, file serving
+    youtube.py       # YouTube Data API v3 with caching
+```
 
 ## Completed Features
 
@@ -22,68 +47,64 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - Dynamic Location Profiles (22 locations)
 
 ### CRM + Revenue Tracking (April 2026)
-- Kanban Pipeline: 7 stages (Neuer Lead → Qualifiziert → Termin → Erstgespräch → Angebot → Verhandlung → Gewonnen/Verloren)
+- Kanban Pipeline: 7 stages (Neuer Lead -> Gewonnen/Verloren)
 - Revenue Dashboard: KPI cards, bar/pie charts, source tracking
 - Auto CRM-Lead from ALL forms (contact, expose download, newsletter)
-- Won/Lost deals separated from active pipeline
 - CRM Reset functionality
-- Mobile-responsive UI
 
-### PDF Exposé (April 2026)
+### PDF Expose (April 2026)
 - EuroAdria branded PDF (dark bg, gold accents, white logo)
-- Dynamic location name based on customer selection
-- Lead-Gate: Name + Email required before PDF download
-- Confirmation email to customer after download
+- Dynamic location name, 10-year cashflow table
+- Lead-Gate: Name + Email required before download
+- Confirmation email to customer
 
 ### Email System (April 2026)
 - Admin notification on new contact/lead
-- Customer confirmation email (contact form)
-- Customer confirmation email (PDF download)
+- Customer confirmation emails (contact + PDF download)
+- Follow-up automation (3-day loop)
 - All via Resend with noreply@euroadria.me
-- EuroAdria branded HTML templates
 
 ### Domain Migration (April 2026)
-- euroadria.me as primary domain (was invest.euroadria.me)
-- All URLs, CORS, SEO, Sitemap, emails updated
-- Resend domain verification (pending DNS propagation)
-- invest.euroadria.me still active as legacy
+- euroadria.me as primary domain
+- All URLs, CORS, SEO, Sitemap updated
+
+### Backend Refactoring (April 2026)
+- Monolithic server.py (4509 lines) -> 18 modular files (3828 lines total)
+- Clean separation: core, models, emails, 14 route modules
+- All 39 API endpoints tested and verified (100% pass rate)
 
 ### Other
 - /leistungen page with CMS editor
 - /events page with CRUD API
-- Navigation dropdown (Leistungen → Unsere Leistungen + Events)
+- Navigation dropdown
 - Source maps disabled, CORS restricted
 - Global brand rename to "EuroAdria Corporate Solutions"
-- Number formatting (Mrd. vs Mio.)
-- Horizontal scroll fix on mobile
+- Analytics Dashboard with "Zurucksetzen" button
+- Cookie consent modal
 
 ## Pending
 - Resend domain verification (waiting for DNS propagation at Strato)
 - Google Search Console: add euroadria.me property
 
-## Recent Changes (April 2026)
-- Analytics Dashboard: Added "Zurücksetzen" button with confirmation modal to reset all page views, contacts, and tracking data
-
 ## Backlog (P2)
 - Apartment-Listing with real DB data
 - Video background for Hero section
 - Newsletter integration expansion
-- server.py refactoring (4000+ lines → API routers)
+- FunnelCockpit Tracking Integration (waiting for user tracking code)
 - Optional: api.euroadria.me subdomain for backend
-- Follow-up email automation (3 days after PDF download)
+- Follow-up email automation testing
 
 ## Credentials
 See /app/memory/test_credentials.md
 
 ## Key API Endpoints
-- /api/contact (POST) — Contact form + CRM auto-link
-- /api/leads (POST) — Expose download + CRM auto-link
+- /api/health - Health check + DB ping
+- /api/contact (POST) - Contact form + CRM auto-link
+- /api/leads (POST) - Expose download + CRM auto-link
 - /api/articles (GET/POST/PUT/DELETE)
-- /api/admin/crm/leads (GET/POST)
-- /api/admin/crm/deals (GET/POST/PUT/DELETE)
-- /api/admin/crm/stages (GET)
-- /api/admin/crm/stats (GET)
-- /api/admin/crm/reset (DELETE)
-- /api/admin/crm/migrate (POST)
-- /api/calculator/expose-pdf (POST)
-- /api/debug/email-test (GET)
+- /api/admin/crm/* - CRM pipeline management
+- /api/admin/analytics/* - Analytics dashboard
+- /api/calculator/roi, /api/calculator/simulation, /api/calculator/expose-pdf
+- /api/translate, /api/translate/batch, /api/translate/article/{slug}
+- /api/youtube/latest
+- /api/sitemap.xml
