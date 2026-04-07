@@ -460,7 +460,7 @@ async def send_contact_email(contact_data: dict):
         """
         
         params = {
-            "from": "EuroAdria Kontakt <onboarding@resend.dev>",
+            "from": "EuroAdria Kontakt <noreply@euroadria.me>",
             "to": [NOTIFICATION_EMAIL],
             "subject": f"Neue Kontaktanfrage: {contact_data['subject']}",
             "html": html_content,
@@ -655,7 +655,7 @@ async def capture_lead(lead: LeadForm):
             </html>
             """
             params = {
-                "from": "EuroAdria Leads <onboarding@resend.dev>",
+                "from": "EuroAdria Leads <noreply@euroadria.me>",
                 "to": [NOTIFICATION_EMAIL],
                 "subject": f"Neuer Lead: {lead_dict.get('expose_name', lead_dict['source'])} - {lead_dict['name']}",
                 "html": html_content,
@@ -721,7 +721,7 @@ async def capture_lead(lead: LeadForm):
             </html>
             """
             resend.Emails.send({
-                "from": "EuroAdria Corporate Solutions <onboarding@resend.dev>",
+                "from": "EuroAdria Corporate Solutions <noreply@euroadria.me>",
                 "to": [lead_dict['email']],
                 "subject": f"Ihr Investment Exposé — {lead_dict.get('expose_name', 'EuroAdria')}",
                 "html": confirmation_html,
