@@ -592,6 +592,46 @@ async def capture_lead(lead: LeadForm):
     # Store in database
     await db.leads.insert_one(lead_dict)
     
+    # Auto-create CRM lead + deal
+    existing_crm = await db.crm_leads.find_one({"email": lead_dict.get("email", "")})
+    if existing_crm:
+        await db.crm_deals.insert_one({
+            "id": str(uuid.uuid4())[:8],
+            "lead_id": existing_crm["id"],
+            "stage": "new_lead",
+            "deal_value": 0, "probability": 10, "expected_revenue": 0,
+            "assigned_to": None,
+            "notes": f"Exposé: {lead_dict.get('expose_name', lead_dict.get('source', ''))}",
+            "created_at": lead_dict["submitted_at"],
+            "updated_at": lead_dict["submitted_at"]
+        })
+        if existing_crm.get("status") == "lost":
+            await db.crm_leads.update_one({"id": existing_crm["id"]}, {"$set": {"status": "new"}})
+    else:
+        crm_lead_id = str(uuid.uuid4())[:8]
+        await db.crm_leads.insert_one({
+            "id": crm_lead_id,
+            "name": lead_dict.get("name", ""),
+            "email": lead_dict.get("email", ""),
+            "phone": lead_dict.get("phone"),
+            "lead_source": "expose_download",
+            "utm_source": None, "utm_medium": None, "utm_campaign": None,
+            "entry_page": None,
+            "tool_used": lead_dict.get("expose_name", lead_dict.get("source", "expose")),
+            "status": "new",
+            "created_at": lead_dict["submitted_at"]
+        })
+        await db.crm_deals.insert_one({
+            "id": str(uuid.uuid4())[:8],
+            "lead_id": crm_lead_id,
+            "stage": "new_lead",
+            "deal_value": 0, "probability": 10, "expected_revenue": 0,
+            "assigned_to": None,
+            "notes": f"Exposé: {lead_dict.get('expose_name', lead_dict.get('source', ''))}",
+            "created_at": lead_dict["submitted_at"],
+            "updated_at": lead_dict["submitted_at"]
+        })
+    
     # Send email notification
     email_sent = False
     if RESEND_API_KEY:
