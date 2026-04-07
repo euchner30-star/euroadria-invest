@@ -125,7 +125,7 @@ Der Balkan ist ideal für:
 
 **Nicht geeignet für:** Passive Buy-and-Hold-Strategien ohne lokale Expertise und aktives Management.
 
-## EuroAdria als strategischer Partner
+## EuroAdria Corporate Solutions als strategischer Partner
 EuroAdria Corporate Solutions fungiert als entscheidende Brücke für rechtlich sichere Implementierung, identifiziert und neutralisiert Compliance-Risiken und gewährleistet Bankability für DACH-Investoren.`,
     image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952',
     category: 'Makro & Strategie',
@@ -140,7 +140,7 @@ EuroAdria Corporate Solutions fungiert als entscheidende Brücke für rechtlich 
       semantic: ['strukturierte Growth-Investments', 'Forensische Due Diligence', 'Bankability Balkans']
     },
     dueDiligenceBox: {
-      title: 'EuroAdria Compliance Check',
+      title: 'EuroAdria Corporate Solutions Compliance Check',
       content: 'Wir prüfen Eigentumsketten bis 1945, verifizieren alle Genehmigungen (Occupancy Permits) und stellen KYC/AML-Compliance für internationale Bankability sicher. Keine versteckten Risiken bei Kataster oder Restitutionsansprüchen.'
     },
     expertTip: {
@@ -284,7 +284,7 @@ EuroAdria Corporate Solutions begleitet Sie durch jeden Schritt: Von der Struktu
       semantic: ['Strukturierte Growth-Investments', 'Forensische Due Diligence', 'Exit-Strategie']
     },
     dueDiligenceBox: {
-      title: 'EuroAdria Due Diligence Framework',
+      title: 'EuroAdria Corporate Solutions Due Diligence Framework',
       content: 'Unsere forensische Due Diligence umfasst: (1) Chain of Title bis 1945, (2) Vollständige Genehmigungsprüfung, (3) Restitutionsrisiko-Analyse, (4) Bankability-Pre-Check, (5) Partner-Background-Verification. Keine versteckten Überraschungen nach Signing.'
     },
     expertTip: {
@@ -446,7 +446,7 @@ EuroAdria Corporate Solutions ist Ihr Vor-Ort-Partner mit direktem Zugang zu Off
       semantic: ['Regulatory Changes', 'Investment-Window', 'Pre-Accession Opportunities']
     },
     dueDiligenceBox: {
-      title: 'EuroAdria Compliance Check: EU-Readiness',
+      title: 'EuroAdria Corporate Solutions Compliance Check: EU-Readiness',
       content: 'Wir analysieren die EU-Compliance jedes Assets: Sind Building Codes bereits EU-aligned? Entsprechen Energieeffizienz-Standards den kommenden EU-Normen? Ist die Dokumentation bankentauglich für EU-Finanzierungen? Volle Transparenz, keine Überraschungen.'
     },
     expertTip: {
@@ -570,7 +570,7 @@ EuroAdria Corporate Solutions ist Ihr Vor-Ort-Partner mit direktem Zugang zu Off
 - ❌ Negative lokale Reputation
 - ❌ Sanction List Matches
 
-## Der EuroAdria Forensic DD Process
+## Der EuroAdria Corporate Solutions Forensic DD Process
 
 ### Phase 1: Desktop DD (2 Wochen)
 - Dokumentensammlung & Initial Review
@@ -645,7 +645,7 @@ EuroAdria Corporate Solutions führt forensische Due Diligence für institutione
       semantic: ['Red Flags Balkans', 'Permit-Prüfung', 'Kataster-Check Montenegro']
     },
     dueDiligenceBox: {
-      title: 'EuroAdria Forensic DD Guarantee',
+      title: 'EuroAdria Corporate Solutions Forensic DD Guarantee',
       content: 'Unser forensisches DD-Verfahren deckt ALLE versteckten Risiken auf: (1) Full Chain of Title bis 1945, (2) Physical Site Inspection, (3) Restitution Risk Analysis, (4) Complete Permit Verification, (5) Seller Background Check. Wenn wir es geprüft haben, können Sie sicher investieren.'
     },
     expertTip: {

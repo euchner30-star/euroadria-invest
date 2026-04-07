@@ -141,7 +141,7 @@ const BudvaPage = () => {
                 <blockquote className="text-ea-dark/80 italic">
                   {en ? '"Budva offers the best combination of rental yield and value stability on the Montenegrin coast. Ideal for income-oriented investors."' : '"Budva bietet die beste Kombination aus Mietrendite und Wertstabilität an der montenegrinischen Küste. Ideal für ertragsorientierte Investoren."'}
                 </blockquote>
-                <p className="text-ea-dark/50 text-sm mt-3">EuroAdria Research Team</p>
+                <p className="text-ea-dark/50 text-sm mt-3">EuroAdria Corporate Solutions Research Team</p>
               </div>
             </div>
             <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">

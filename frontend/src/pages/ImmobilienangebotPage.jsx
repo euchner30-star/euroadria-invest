@@ -101,7 +101,7 @@ const ImmobilienangebotPage = () => {
             {en ? <>Real Estate <span className="text-ea-gold">Offering</span> Montenegro</> : <>Immobilien<span className="text-ea-gold">angebot</span> Montenegro</>}
           </h1>
           <p className="text-ea-dark/70 text-lg max-w-3xl mx-auto">
-            {en ? 'Discover exclusive apartments in the emerging regions of Montenegro. Each property has been evaluated by EuroAdria for investment potential.' : 'Entdecken Sie exklusive Apartments in den aufstrebenden Regionen Montenegros. Jedes Objekt wurde von EuroAdria auf Investment-Potenzial geprüft.'}
+            {en ? 'Discover exclusive apartments in the emerging regions of Montenegro. Each property has been evaluated by EuroAdria Corporate Solutions for investment potential.' : 'Entdecken Sie exklusive Apartments in den aufstrebenden Regionen Montenegros. Jedes Objekt wurde von EuroAdria Corporate Solutions auf Investment-Potenzial geprüft.'}
           </p>
         </div>
 

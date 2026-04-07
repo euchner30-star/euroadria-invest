@@ -55,7 +55,7 @@ const SEO = ({
     "image": metaImage,
     "author": {
       "@type": "Person",
-      "name": article.author || "EuroAdria Team"
+      "name": article.author || "EuroAdria Corporate Solutions Team"
     },
     "publisher": {
       "@type": "Organization",
@@ -72,7 +72,7 @@ const SEO = ({
       "@id": fullUrl
     },
     "articleSection": article.category,
-    "keywords": `${article.category}, Balkan Investment, Montenegro, Serbien, DACH Investoren, EuroAdria`
+    "keywords": `${article.category}, Balkan Investment, Montenegro, Serbien, DACH Investoren, EuroAdria Corporate Solutions`
   } : null;
 
   // Generate Service structured data
@@ -98,7 +98,7 @@ const SEO = ({
       <title>{fullTitle}</title>
       <meta name="title" content={fullTitle} />
       <meta name="description" content={metaDescription} />
-      <meta name="keywords" content="Investment Balkan, Montenegro Immobilien, Serbien Investment, Firmengründung Montenegro, Due Diligence Balkan, DACH Investoren, Adria Investment, EuroAdria, Serbia Executive Access" />
+      <meta name="keywords" content="Investment Balkan, Montenegro Immobilien, Serbien Investment, Firmengründung Montenegro, Due Diligence Balkan, DACH Investoren, Adria Investment, EuroAdria Corporate Solutions, Serbia Executive Access" />
       <meta name="author" content="EuroAdria Corporate Solutions" />
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
       <link rel="canonical" href={fullUrl} />

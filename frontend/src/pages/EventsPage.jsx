@@ -144,7 +144,7 @@ const EventsPage = () => {
             Wissen. Netzwerk. Chancen.
           </div>
           <h1 className="text-4xl sm:text-5xl font-semibold text-ea-dark mb-6 leading-tight">
-            EuroAdria <span className="text-ea-gold">Events</span>
+            EuroAdria Corporate Solutions <span className="text-ea-gold">Events</span>
           </h1>
           <p className="text-ea-dark/70 text-lg max-w-3xl mx-auto leading-relaxed">
             Aktuelle Events, Workshops und Webinare rund um Firmengründung, 

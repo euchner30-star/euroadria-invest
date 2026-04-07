@@ -77,7 +77,7 @@ const ContactPage = () => {
     <div className="min-h-screen pt-32 pb-20 px-6 bg-white">
       <SEO 
         title="Kontakt"
-        description="Kontaktieren Sie EuroAdria für Ihre Investment-Beratung. Wir beraten Sie zu Immobilien, Unternehmensgründung und Relocation in der Adria-Region."
+        description="Kontaktieren Sie EuroAdria Corporate Solutions für Ihre Investment-Beratung. Wir beraten Sie zu Immobilien, Unternehmensgründung und Relocation in der Adria-Region."
         url="/contact"
       />
       <div className="max-w-6xl mx-auto">

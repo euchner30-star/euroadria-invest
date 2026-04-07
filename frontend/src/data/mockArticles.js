@@ -830,7 +830,7 @@ export const blogArticles = [
   },
   {
     id: 60,
-    title: "Der EuroAdria-Jahresrückblick 2024: Märkte, Trends, Ausblick",
+    title: "Der EuroAdria Corporate Solutions Jahresrückblick 2024: Märkte, Trends, Ausblick",
     slug: "euroadria-review-2024",
     excerpt: "Was hat 2024 auf dem Balkan bewegt? Unser umfassender Jahresrückblick mit Ausblick auf 2025.",
     content: "2024 war ein spannendes Jahr für Balkan-Investments. Unsere Analyse...",

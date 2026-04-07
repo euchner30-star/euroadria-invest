@@ -3185,7 +3185,7 @@ LEISTUNGEN_DEFAULTS = {
         "description": "Das größte Risiko in Montenegro sind Immobilien, die zwar physisch existieren, aber formal nicht legalisiert, nicht abgenommen oder nicht nutzungsfähig sind.",
         "conclusion": "Ihr Vorteil: Aus einem juristischen Risiko wird ein rechtlich abgesichertes, werthaltiges Asset.",
         "items": [
-            {"id": "baugenehmigung", "problem": "Fehlende Baugenehmigung & Legalisierung", "risk": "Drohendes Nutzungsverbot, Abrissverfügung oder massiver Wertabschlag bei nicht legalisierten Objekten.", "solution": "Vollständige Legalisierungsprüfung und Nachholung aller behördlichen Genehmigungen durch unser Netzwerk."},
+            {"id": "baugenehmigung", "problem": "Fehlende Baugenehmigung & Legalisierung", "risk": "Drohendes Nutzungsverbot, Abrissverfügung oder massiver Wertabschlag bei nicht legalisierten Objekten.", "solution": "EuroAdria Corporate Solutions: Vollständige Legalisierungsprüfung und Nachholung aller behördlichen Genehmigungen durch unser Netzwerk."},
             {"id": "kataster", "problem": "Unklare Katastereinträge", "risk": "Der Verkäufer steht noch im Kataster, alte Grundschulden oder Dienstbarkeiten sind nicht gelöscht.", "solution": "Forensische Katasterrecherche bis 1945. Bereinigung aller Altlasten vor Vertragsunterzeichnung."},
             {"id": "erbchaos", "problem": "Erbchaos & Familienkonflikte", "risk": "Miteigentümer oder Dritte stellen den Deal nachträglich infrage und schaffen Erpressungspotenzial.", "solution": "Lückenlose Eigentümerkette. Notarielle Absicherung aller Parteien. Keine offenen Ansprüche."}
         ]

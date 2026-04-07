@@ -40,7 +40,7 @@ const Hero = ({ backgroundImage, overlayOpacity = 50, title, subtitle, ctaText, 
         <div className="flex justify-center mb-10">
           <img 
             src="/euroadria-logo-white.png" 
-            alt="EuroAdria - Shaping the Adriatic's Future" 
+            alt="EuroAdria Corporate Solutions - Shaping the Adriatic's Future" 
             className="h-64 md:h-96 w-auto cursor-pointer transition-transform duration-500 ease-in-out hover:scale-110"
           />
         </div>

@@ -331,11 +331,11 @@ const AdminPage = () => {
   // Homepage Content Functions
   const HOMEPAGE_DEFAULTS = {
     hero_title: 'Firmengründung, Aufenthalt & Investments in Montenegro und Serbien',
-    hero_subtitle: 'EuroAdria ist Ihre Brücke zu erfolgreichen Investitionen, rechtssicherer Auswanderung und internationaler Unternehmensstrukturierung, sowohl in der Adria-Region als auch in Asien. Wir sind Ihr Trusted Advisor für alle unternehmerischen und privaten Vorhaben im Ausland.',
+    hero_subtitle: 'EuroAdria Corporate Solutions ist Ihre Brücke zu erfolgreichen Investitionen, rechtssicherer Auswanderung und internationaler Unternehmensstrukturierung, sowohl in der Adria-Region als auch in Asien. Wir sind Ihr Trusted Advisor für alle unternehmerischen und privaten Vorhaben im Ausland.',
     hero_cta_text: 'Jetzt Beratung anfragen',
     testimonial_image: '',
     testimonial_image_position: 50,
-    testimonial_quote: 'Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen.',
+    testimonial_quote: 'Dank EuroAdria Corporate Solutions konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen.',
     testimonial_author: 'Maximilian R., Unternehmer aus Deutschland',
     stats_image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952',
     stats_image_position: 50,
@@ -705,7 +705,7 @@ const AdminPage = () => {
       <div className="min-h-screen pt-32 pb-20 px-6" data-testid="admin-login-page">
         <SEO 
           title="Admin Login"
-          description="EuroAdria Admin-Bereich"
+          description="EuroAdria Corporate Solutions Admin-Bereich"
           url="/admin"
           noindex={true}
         />
@@ -904,7 +904,7 @@ const AdminPage = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <img src="/euroadria-logo.png" alt="EuroAdria" className="h-10 mb-2" />
+            <img src="/euroadria-logo.png" alt="EuroAdria Corporate Solutions" className="h-10 mb-2" />
             <h1 className="text-2xl sm:text-4xl font-semibold font-bold text-ea-dark mb-1 sm:mb-2">
               Admin <span className="text-ea-gold">Dashboard</span>
             </h1>

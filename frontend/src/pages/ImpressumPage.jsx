@@ -32,7 +32,7 @@ const ImpressumPage = () => {
     <div className="min-h-screen pt-28 pb-20 bg-white" data-testid="impressum-page">
       <SEO 
         title="Impressum"
-        description="Impressum der EuroAdria - Investment & Business Beratung. Angaben gemäß § 5 TMG."
+        description="Impressum der EuroAdria Corporate Solutions - Investment & Business Beratung. Angaben gemäß § 5 TMG."
         url="/impressum"
       />
       <div className="max-w-4xl mx-auto px-6">

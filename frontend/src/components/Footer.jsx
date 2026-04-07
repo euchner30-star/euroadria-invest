@@ -16,7 +16,7 @@ const Footer = () => {
             <div className="flex items-center gap-2 mb-4">
               <img 
                 src="/euroadria-logo-white.png" 
-                alt="EuroAdria Logo" 
+                alt="EuroAdria Corporate Solutions Logo" 
                 className="h-20 w-auto"
               />
             </div>

@@ -43,7 +43,7 @@ const LeistungenPage = () => {
     <div className="min-h-screen pt-28 bg-white">
       <SEO
         title="Unsere Leistungen — Firmengründung, Immobilien, Legal & Investments"
-        description="EuroAdria begleitet Sie bei Unternehmensgründung, Aufenthalt, Immobilien & Investments in Montenegro und Serbien."
+        description="EuroAdria Corporate Solutions begleitet Sie bei Unternehmensgründung, Aufenthalt, Immobilien & Investments in Montenegro und Serbien."
         url="/leistungen"
       />
 
@@ -140,7 +140,7 @@ const LeistungenPage = () => {
                     <p className="text-white/50 text-sm leading-relaxed">{item.risk}</p>
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-ea-gold tracking-wider mb-1.5">EUROADRIA LÖSUNG</div>
+                    <div className="text-xs font-bold text-ea-gold tracking-wider mb-1.5">EUROADRIA CORPORATE SOLUTIONS</div>
                     <p className="text-white/70 text-sm leading-relaxed">{item.solution}</p>
                   </div>
                 </div>
@@ -181,7 +181,7 @@ const LeistungenPage = () => {
                     <p className="text-ea-dark/50 text-sm leading-relaxed">{item.risk}</p>
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-ea-gold tracking-wider mb-1.5">EUROADRIA LÖSUNG</div>
+                    <div className="text-xs font-bold text-ea-gold tracking-wider mb-1.5">EUROADRIA CORPORATE SOLUTIONS</div>
                     <p className="text-ea-dark/70 text-sm leading-relaxed">{item.solution}</p>
                   </div>
                 </div>

@@ -56,8 +56,8 @@ const Home = () => {
         url="/"
         faq={[
           {
-            question: "Was macht EuroAdria?",
-            answer: "EuroAdria ist ein Premium Investment Advisor für DACH-Investoren in der Adria-Region. Wir bieten forensische Due Diligence, Firmengründung in Montenegro (9% Körperschaftssteuer), und exklusiven Zugang zu Off-Market Investments in Montenegro und Serbien."
+            question: "Was macht EuroAdria Corporate Solutions?",
+            answer: "EuroAdria Corporate Solutions ist ein Premium Investment Advisor für DACH-Investoren in der Adria-Region. Wir bieten forensische Due Diligence, Firmengründung in Montenegro (9% Körperschaftssteuer), und exklusiven Zugang zu Off-Market Investments in Montenegro und Serbien."
           },
           {
             question: "Warum Balkan statt EU für Investments?",
@@ -124,7 +124,7 @@ const Home = () => {
               <figure className="relative">
                 <img
                   src={homeContent.stats_image || "https://images.unsplash.com/photo-1517048676732-d65bc937f952"}
-                  alt="Investment-Beratung für Balkan-Märkte - EuroAdria Team Meeting"
+                  alt="Investment-Beratung für Balkan-Märkte - EuroAdria Corporate Solutions Team Meeting"
                   className="rounded-xl shadow-lg"
                   style={{ objectPosition: `center ${homeContent.stats_image_position ?? 50}%` }}
                   itemProp="image"
@@ -132,7 +132,7 @@ const Home = () => {
                 <figcaption className="absolute -bottom-6 -left-6 bg-white border border-gray-200 rounded-xl p-6 shadow-lg max-w-xs">
                   <div className="text-3xl font-bold text-ea-gold mb-2">60-80%</div>
                   <div className="text-ea-dark/70 text-sm">
-                    {lang === 'en' ? 'Expected appreciation in Montenegro before EU accession (Source: EuroAdria Market Analysis)' : 'Erwartete Wertsteigerung in Montenegro vor EU-Beitritt (Quelle: EuroAdria Marktanalyse)'}
+                    {lang === 'en' ? 'Expected appreciation in Montenegro before EU accession (Source: EuroAdria Corporate Solutions Market Analysis)' : 'Erwartete Wertsteigerung in Montenegro vor EU-Beitritt (Quelle: EuroAdria Corporate Solutions Marktanalyse)'}
                   </div>
                 </figcaption>
               </figure>
@@ -272,8 +272,8 @@ const Home = () => {
           </div>
           <blockquote className="text-xl md:text-2xl text-ea-light font-semibold leading-relaxed mb-6">
             „{lang === 'en' 
-              ? 'Thanks to EuroAdria, I was able to set up my company in Montenegro quickly, safely, and completely stress-free. I felt extremely well looked after and can warmly recommend EuroAdria to every entrepreneur and investor.'
-              : (homeContent.testimonial_quote || 'Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen. Ich habe mich bestens betreut gefühlt und kann EuroAdria jedem Unternehmer und Investor wärmstens empfehlen.')
+              ? 'Thanks to EuroAdria Corporate Solutions, I was able to set up my company in Montenegro quickly, safely, and completely stress-free. I felt extremely well looked after and can warmly recommend EuroAdria Corporate Solutions to every entrepreneur and investor.'
+              : (homeContent.testimonial_quote || 'Dank EuroAdria Corporate Solutions konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen. Ich habe mich bestens betreut gefühlt und kann EuroAdria Corporate Solutions jedem Unternehmer und Investor wärmstens empfehlen.')
             }"
           </blockquote>
           <p className="text-ea-light/70">

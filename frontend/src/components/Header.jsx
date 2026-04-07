@@ -101,7 +101,7 @@ const Header = () => {
           <Link to="/" className="flex items-center group mr-8">
             <img 
               src="/euroadria-logo.png" 
-              alt="EuroAdria Logo" 
+              alt="EuroAdria Corporate Solutions Logo" 
               className="h-14 w-auto object-contain transition-transform duration-300 ease-in-out group-hover:scale-110"
             />
           </Link>

@@ -73,7 +73,7 @@ const LocationProfile = () => {
     
     <>
       <SEO 
-        title={`${location.city} Investment Profil | EuroAdria`}
+        title={`${location.city} Investment Profil | EuroAdria Corporate Solutions`}
         description={location.description || `Investment-Analyse für ${location.city}, ${location.country}`}
       />
       

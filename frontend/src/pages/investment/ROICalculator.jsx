@@ -64,7 +64,7 @@ const ROICalculator = () => {
   return (
     <>
       <SEO 
-        title="ROI-Rechner für Immobilien | EuroAdria"
+        title="ROI-Rechner für Immobilien | EuroAdria Corporate Solutions"
         description="Berechnen Sie die Rendite Ihrer Immobilieninvestition in Montenegro und Serbien."
       />
       

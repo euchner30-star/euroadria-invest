@@ -90,7 +90,7 @@ const TeamSection = () => {
         <div className="bg-white border border-gray-200 rounded-2xl p-8 md:p-12 mb-12 shadow-sm">
           <img
             src="/team-photo.jpg"
-            alt="Milena Bubanja & Holger Kuhlmann - EuroAdria Task Force"
+            alt="Milena Bubanja & Holger Kuhlmann - EuroAdria Corporate Solutions Task Force"
             className="w-full rounded-xl shadow-lg mb-8"
           />
           <div className="text-center">

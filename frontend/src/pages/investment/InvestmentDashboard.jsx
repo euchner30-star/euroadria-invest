@@ -54,7 +54,7 @@ const InvestmentDashboard = () => {
     
     <>
       <SEO 
-        title="Investment Dashboard | EuroAdria"
+        title="Investment Dashboard | EuroAdria Corporate Solutions"
         description="Übersicht der Top-Investmentstandorte in Montenegro und Serbien mit aktuellen Kennzahlen."
       />
       

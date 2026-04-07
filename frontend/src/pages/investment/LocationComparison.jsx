@@ -86,7 +86,7 @@ const LocationComparison = () => {
     
     <>
       <SEO 
-        title="Standortvergleich | EuroAdria Investment"
+        title="Standortvergleich | EuroAdria Corporate Solutions Investment"
         description="Vergleichen Sie Investmentstandorte in Montenegro und Serbien nach Preis, Rendite und Wachstum."
       />
       

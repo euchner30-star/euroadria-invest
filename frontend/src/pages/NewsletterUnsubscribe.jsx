@@ -58,7 +58,7 @@ const NewsletterUnsubscribe = () => {
             </div>
             <h1 className="text-3xl font-bold text-ea-dark mb-4">Newsletter abbestellen</h1>
             <p className="text-ea-dark/60 mb-2">
-              Möchten Sie den EuroAdria Newsletter wirklich abbestellen?
+              Möchten Sie den EuroAdria Corporate Solutions Newsletter wirklich abbestellen?
             </p>
             {email && (
               <p className="text-ea-dark/40 text-sm mb-8">

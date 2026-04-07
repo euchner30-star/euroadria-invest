@@ -280,7 +280,7 @@ const NewsletterAdmin = ({ credentials }) => {
             <div className="border border-gray-200 rounded-xl overflow-hidden bg-gray-100">
               {/* Header */}
               <div className="bg-white py-6 px-8 text-center border-b-2 border-ea-gold">
-                <img src="/euroadria-logo.png" alt="EuroAdria" className="h-16 mx-auto" />
+                <img src="/euroadria-logo.png" alt="EuroAdria Corporate Solutions" className="h-16 mx-auto" />
               </div>
               {/* Content */}
               <div className="bg-white px-8 py-6 text-sm text-ea-dark/80 leading-relaxed min-h-[80px]">
@@ -293,7 +293,7 @@ const NewsletterAdmin = ({ credentials }) => {
               {/* Signature */}
               <div className="bg-white px-8 pb-6 border-t border-gray-100">
                 <div className="flex gap-4 pt-4">
-                  <img src="/euroadria-logo.png" alt="EuroAdria" className="w-24 h-auto object-contain shrink-0" />
+                  <img src="/euroadria-logo.png" alt="EuroAdria Corporate Solutions" className="w-24 h-auto object-contain shrink-0" />
                   <div className="text-[11px] text-gray-500 leading-relaxed">
                     <p className="text-sm font-bold text-ea-dark mb-0.5">EuroAdria Corporate Solutions</p>
                     <p className="text-[10px] text-gray-400 mb-1">a brand of <strong className="text-gray-600">Montaris & Co. d.o.o.</strong></p>

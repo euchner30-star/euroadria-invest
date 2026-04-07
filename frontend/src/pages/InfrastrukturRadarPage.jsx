@@ -56,22 +56,22 @@ const InfrastrukturRadarPage = () => {
         url="/infrastruktur-radar"
         service={{
           name: "Montenegro Infrastruktur-Radar",
-          description: "Interaktive Premium-Karte mit Investment-Scores, Zeithorizonten und EuroAdria-Opportunitätszonen für strategische Investments in Montenegro",
+          description: "Interaktive Premium-Karte mit Investment-Scores, Zeithorizonten und EuroAdria Corporate Solutions Opportunitätszonen für strategische Investments in Montenegro",
           type: "Investment Analysis Tool",
           areaServed: ["Montenegro"]
         }}
         faq={[
           {
-            question: "Was zeigt der EuroAdria Infrastruktur-Radar?",
-            answer: "Der Infrastruktur-Radar ist eine interaktive Premium-Karte mit Investment-Scores (0-100) für alle montenegrinischen Standorte, Infrastrukturprojekten (Straßen, Bahnen, Häfen, Flughäfen), Zeithorizonten (kurz-, mittel-, langfristig) und EuroAdria-Opportunitätszonen."
+            question: "Was zeigt der EuroAdria Corporate Solutions Infrastruktur-Radar?",
+            answer: "Der Infrastruktur-Radar ist eine interaktive Premium-Karte mit Investment-Scores (0-100) für alle montenegrinischen Standorte, Infrastrukturprojekten (Straßen, Bahnen, Häfen, Flughäfen), Zeithorizonten (kurz-, mittel-, langfristig) und EuroAdria Corporate Solutions Opportunitätszonen."
           },
           {
             question: "Welche Standorte haben den höchsten Investment-Score?",
-            answer: "Laut EuroAdria V5-Analyse: Andrijevica (94/100) mit aggressivem Aufwertungshebel, Bar (92/100) als Küsten-Logistik-Hub, und Podgorica (90/100) als Hauptstadt mit diversifiziertem Potenzial."
+            answer: "Laut EuroAdria Corporate Solutions V5-Analyse: Andrijevica (94/100) mit aggressivem Aufwertungshebel, Bar (92/100) als Küsten-Logistik-Hub, und Podgorica (90/100) als Hauptstadt mit diversifiziertem Potenzial."
           },
           {
             question: "Wie werden die Investment-Scores berechnet?",
-            answer: "Die Scores basieren auf: Infrastruktur-Anbindung, EU-Konvergenz-Potenzial, Preisniveau vs. Entwicklungsperspektive, rechtliche Sicherheit, und EuroAdria-spezifische Due-Diligence-Faktoren."
+            answer: "Die Scores basieren auf: Infrastruktur-Anbindung, EU-Konvergenz-Potenzial, Preisniveau vs. Entwicklungsperspektive, rechtliche Sicherheit, und EuroAdria Corporate Solutions spezifische Due-Diligence-Faktoren."
           }
         ]}
       />
@@ -91,7 +91,7 @@ const InfrastrukturRadarPage = () => {
           </h1>
           
           <p className="text-ea-light/70 text-lg max-w-3xl mb-6">
-            {en ? <>Interactive premium map with investment scores, infrastructure projects and EuroAdria opportunity zones. Analyze locations like <strong className="text-ea-gold">Andrijevica (94/100)</strong>, <strong className="text-ea-gold"> Bar (92/100)</strong> and <strong className="text-ea-gold"> Podgorica (90/100)</strong>.</> : <>Interaktive Premium-Karte mit Investment-Scores, Infrastrukturprojekten und EuroAdria-Opportunitätszonen. Analysieren Sie Standorte wie <strong className="text-ea-gold">Andrijevica (94/100)</strong>, <strong className="text-ea-gold"> Bar (92/100)</strong> und <strong className="text-ea-gold"> Podgorica (90/100)</strong>.</>}
+            {en ? <>Interactive premium map with investment scores, infrastructure projects and EuroAdria opportunity zones. Analyze locations like <strong className="text-ea-gold">Andrijevica (94/100)</strong>, <strong className="text-ea-gold"> Bar (92/100)</strong> and <strong className="text-ea-gold"> Podgorica (90/100)</strong>.</> : <>Interaktive Premium-Karte mit Investment-Scores, Infrastrukturprojekten und EuroAdria Corporate Solutions Opportunitätszonen. Analysieren Sie Standorte wie <strong className="text-ea-gold">Andrijevica (94/100)</strong>, <strong className="text-ea-gold"> Bar (92/100)</strong> und <strong className="text-ea-gold"> Podgorica (90/100)</strong>.</>}
           </p>
 
           {/* Quick Stats */}
@@ -114,7 +114,7 @@ const InfrastrukturRadarPage = () => {
               <Shield className="w-5 h-5 text-ea-gold" />
               <div>
                 <div className="text-white font-semibold">5 Opportunitätszonen</div>
-                <div className="text-ea-light/50 text-xs">EuroAdria-exklusiv</div>
+                <div className="text-ea-light/50 text-xs">EuroAdria Corporate Solutions exklusiv</div>
               </div>
             </div>
           </div>

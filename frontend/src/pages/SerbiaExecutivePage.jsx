@@ -320,7 +320,7 @@ const SerbiaExecutivePage = () => {
             <div className="bg-white border border-gray-200 p-8 rounded-2xl shadow-sm">
               <p className="text-ea-gold text-sm font-medium mb-4">{en ? 'EXCLUSIVE FOR DACH INVESTORS' : 'EXKLUSIV FÜR DACH-INVESTOREN'}</p>
               <blockquote className="text-ea-dark/80 text-lg italic mb-6 leading-relaxed">
-                {en ? '"In Serbia, relationships determine business success. EuroAdria opened doors for us in three months that would have taken us years on our own."' : '"In Serbien entscheiden Beziehungen über Geschäftserfolg. EuroAdria hat uns in drei Monaten Türen geöffnet, für die wir allein Jahre gebraucht hätten."'}
+                {en ? '"In Serbia, relationships determine business success. EuroAdria opened doors for us in three months that would have taken us years on our own."' : '"In Serbien entscheiden Beziehungen über Geschäftserfolg. EuroAdria Corporate Solutions hat uns in drei Monaten Türen geöffnet, für die wir allein Jahre gebraucht hätten."'}
               </blockquote>
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-ea-gold/10 rounded-full flex items-center justify-center">
@@ -409,7 +409,7 @@ const SerbiaExecutivePage = () => {
       {/* Share & Comments */}
       <section className="py-12 px-6 border-t border-gray-200">
         <div className="max-w-4xl mx-auto">
-          <ShareButtons title="Serbia Executive Access | EuroAdria" url={window.location.href} excerpt={en ? "Privileged access to Serbia's economic elite." : "Privilegierter Zugang zu Serbiens wirtschaftlicher Elite."} />
+          <ShareButtons title="Serbia Executive Access | EuroAdria Corporate Solutions" url={window.location.href} excerpt={en ? "Privileged access to Serbia's economic elite." : "Privilegierter Zugang zu Serbiens wirtschaftlicher Elite."} />
           <div className="mt-12">
             <CommentsSection articleId={999} articleSlug="serbia-executive-access" />
           </div>
