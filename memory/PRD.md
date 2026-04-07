@@ -73,6 +73,11 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - Clean separation: core, models, emails, 14 route modules
 - All 39 API endpoints tested and verified (100% pass rate)
 
+### Smart Traffic Source Detection (April 2026)
+- 5-step source detection: UTM → Click-IDs (fbclid/ttclid/gclid) → User-Agent → Referrer → Direct
+- Auto-detects TikTok, Instagram, Facebook, LinkedIn, Twitter, Snapchat, Pinterest in-app browsers
+- Solves the problem of social media in-app browsers stripping the Referrer header
+
 ### Other
 - /leistungen page with CMS editor
 - /events page with CRUD API
