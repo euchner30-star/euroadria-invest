@@ -406,7 +406,7 @@ async def send_notification_email(comment_data: dict, article_title: str):
                     Dieser Kommentar wartet auf Freigabe im Admin-Panel.
                 </p>
                 
-                <a href="https://invest.euroadria.me/admin" 
+                <a href="https://euroadria.me/admin" 
                    style="display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #D4AF37; color: #002147; text-decoration: none; border-radius: 5px; font-weight: bold;">
                     Zum Admin-Panel
                 </a>
@@ -625,7 +625,7 @@ async def submit_contact_form(form: ContactForm):
                         <table cellpadding="0" cellspacing="0" border="0" width="100%">
                             <tr>
                                 <td align="center" style="padding:8px 0 24px 0;">
-                                    <a href="https://invest.euroadria.me/investment/simulation" style="display:inline-block;background-color:#C8A96A;color:#04151F;font-size:14px;font-weight:bold;text-decoration:none;padding:14px 32px;border-radius:6px;">
+                                    <a href="https://euroadria.me/investment/simulation" style="display:inline-block;background-color:#C8A96A;color:#04151F;font-size:14px;font-weight:bold;text-decoration:none;padding:14px 32px;border-radius:6px;">
                                         Investment-Simulator starten
                                     </a>
                                 </td>
@@ -634,7 +634,7 @@ async def submit_contact_form(form: ContactForm):
                     </div>
                     <div style="background-color:#071E2D;padding:20px 30px;border-top:1px solid #1A3040;">
                         <p style="color:#8896A3;font-size:11px;margin:0 0 4px 0;">EuroAdria Corporate Solutions</p>
-                        <p style="color:#5A6A78;font-size:10px;margin:0;">invest.euroadria.me | office@euroadria.me | +382 68 559 776</p>
+                        <p style="color:#5A6A78;font-size:10px;margin:0;">euroadria.me | office@euroadria.me | +382 68 559 776</p>
                     </div>
                 </div>
             </body>
@@ -728,7 +728,7 @@ async def capture_lead(lead: LeadForm):
                         <p style="color: #ffffff; margin-bottom: 10px;"><strong>Exposé:</strong> {lead_dict.get('expose_name', lead_dict['source'])}</p>
                     </div>
                     <hr style="border-color: #c8a96a; margin: 20px 0;">
-                    <p style="color: #888; font-size: 12px;">Dieser Lead wurde über den Exposé-Download auf invest.euroadria.me generiert.</p>
+                    <p style="color: #888; font-size: 12px;">Dieser Lead wurde über den Exposé-Download auf euroadria.me generiert.</p>
                 </div>
             </body>
             </html>
@@ -778,7 +778,7 @@ async def capture_lead(lead: LeadForm):
                         <table cellpadding="0" cellspacing="0" border="0" width="100%">
                             <tr>
                                 <td align="center" style="padding:8px 0 24px 0;">
-                                    <a href="https://invest.euroadria.me/kontakt" style="display:inline-block;background-color:#C8A96A;color:#04151F;font-size:14px;font-weight:bold;text-decoration:none;padding:14px 32px;border-radius:6px;">
+                                    <a href="https://euroadria.me/kontakt" style="display:inline-block;background-color:#C8A96A;color:#04151F;font-size:14px;font-weight:bold;text-decoration:none;padding:14px 32px;border-radius:6px;">
                                         Kostenlose Beratung anfragen
                                     </a>
                                 </td>
@@ -793,7 +793,7 @@ async def capture_lead(lead: LeadForm):
                     <!-- Footer -->
                     <div style="background-color:#071E2D;padding:20px 30px;border-top:1px solid #1A3040;">
                         <p style="color:#8896A3;font-size:11px;margin:0 0 4px 0;">EuroAdria Corporate Solutions</p>
-                        <p style="color:#5A6A78;font-size:10px;margin:0;">invest.euroadria.me | office@euroadria.me</p>
+                        <p style="color:#5A6A78;font-size:10px;margin:0;">euroadria.me | office@euroadria.me</p>
                     </div>
                 </div>
             </body>
@@ -1139,7 +1139,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
             <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
                 <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <div style="background: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #C8A96A;">
-                        <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 50px;">
+                        <img src="https://euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 50px;">
                     </div>
                     <div style="padding: 32px; color: #333; font-size: 15px; line-height: 1.7;">
                         <h2 style="color: #04151F; font-size: 22px; margin-bottom: 16px;">Willkommen bei EuroAdria Corporate Solutions!</h2>
@@ -1148,14 +1148,14 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
                         Sie erhalten ab sofort exklusive Investment-Insights, Marktanalysen 
                         und Neuigkeiten zu Immobilien-Projekten am Balkan.</p>
                         <p style="margin-top: 20px;">
-                            <a href="https://invest.euroadria.me" style="display: inline-block; background: #C8A96A; color: #04151F; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">Zur Plattform</a>
+                            <a href="https://euroadria.me" style="display: inline-block; background: #C8A96A; color: #04151F; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">Zur Plattform</a>
                         </p>
                     </div>
                     <div style="padding: 16px 32px; background: #f8f8f8; border-top: 1px solid #eee; border-bottom: 1px solid #eee;">
                         <p style="color: #999; font-size: 12px; margin: 0; text-align: center;">
                             Sie erhalten diese E-Mail, weil Sie sich für den EuroAdria Newsletter angemeldet haben.<br>
                             Sie können sich jederzeit mit einem Klick 
-                            <a href="https://invest.euroadria.me/newsletter/abmelden?email={sub.email}" style="color: #C8A96A;">hier abmelden</a> 
+                            <a href="https://euroadria.me/newsletter/abmelden?email={sub.email}" style="color: #C8A96A;">hier abmelden</a> 
                             , unkompliziert und sofort wirksam.
                         </p>
                     </div>
@@ -1163,7 +1163,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
                         <table style="width: 100%;">
                             <tr>
                                 <td style="vertical-align: top; padding-right: 20px; width: 130px;">
-                                    <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width: 110px;">
+                                    <img src="https://euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width: 110px;">
                                 </td>
                                 <td style="vertical-align: top; font-size: 12px; color: #555; line-height: 1.6;">
                                     <p style="margin: 0 0 2px; font-size: 14px; font-weight: bold; color: #04151F;">EuroAdria Corporate Solutions</p>
@@ -1173,7 +1173,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
                                         Tel.: <a href="tel:+38268559776" style="color: #C8A96A; text-decoration: none;">+382 68 559 776</a><br>
                                         E-Mail: <a href="mailto:office@euroadria.me" style="color: #C8A96A; text-decoration: none;">office@euroadria.me</a><br>
                                         Web: <a href="https://www.euroadria.me" style="color: #C8A96A; text-decoration: none;">www.euroadria.me</a><br>
-                                        Investment: <a href="https://invest.euroadria.me" style="color: #C8A96A; text-decoration: none;">invest.euroadria.me</a>
+                                        Investment: <a href="https://euroadria.me" style="color: #C8A96A; text-decoration: none;">euroadria.me</a>
                                     </p>
                                     <p style="margin: 0; font-size: 10px; color: #999; line-height: 1.5;">
                                         Company registration no.: 22147382 | Tax ID (PIB): 115356237<br>
@@ -1283,7 +1283,7 @@ async def send_newsletter(data: dict, admin: str = Depends(verify_admin)):
     <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
         <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
             <div style="background: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #C8A96A;">
-                <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 50px;">
+                <img src="https://euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 50px;">
             </div>
             <div style="padding: 32px; color: #333; font-size: 15px; line-height: 1.7;">
                 {content}
@@ -1292,7 +1292,7 @@ async def send_newsletter(data: dict, admin: str = Depends(verify_admin)):
                 <table style="width: 100%;">
                     <tr>
                         <td style="vertical-align: top; padding-right: 20px; width: 130px;">
-                            <img src="https://invest.euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width: 110px;">
+                            <img src="https://euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width: 110px;">
                         </td>
                         <td style="vertical-align: top; font-size: 12px; color: #555; line-height: 1.6;">
                             <p style="margin: 0 0 2px; font-size: 14px; font-weight: bold; color: #04151F;">EuroAdria Corporate Solutions</p>
@@ -1302,7 +1302,7 @@ async def send_newsletter(data: dict, admin: str = Depends(verify_admin)):
                                 Tel.: <a href="tel:+38268559776" style="color: #C8A96A; text-decoration: none;">+382 68 559 776</a><br>
                                 E-Mail: <a href="mailto:office@euroadria.me" style="color: #C8A96A; text-decoration: none;">office@euroadria.me</a><br>
                                 Web: <a href="https://www.euroadria.me" style="color: #C8A96A; text-decoration: none;">www.euroadria.me</a><br>
-                                Investment: <a href="https://invest.euroadria.me" style="color: #C8A96A; text-decoration: none;">invest.euroadria.me</a>
+                                Investment: <a href="https://euroadria.me" style="color: #C8A96A; text-decoration: none;">euroadria.me</a>
                             </p>
                             <p style="margin: 0; font-size: 10px; color: #999; line-height: 1.5;">
                                 Company registration no.: 22147382 | Tax ID (PIB): 115356237<br>
@@ -1465,7 +1465,7 @@ async def get_article_og_html(slug: str):
     if not article:
         raise HTTPException(status_code=404, detail="Article not found")
     
-    site_url = "https://invest.euroadria.me"
+    site_url = "https://euroadria.me"
     title = f"{article.get('title', '')} | EuroAdria Corporate Solutions"
     description = article.get('excerpt', '')[:200]
     image = article.get('image', f"{site_url}/euroadria-logo.png")
@@ -1592,7 +1592,7 @@ async def delete_article(article_id: int, admin: str = Depends(verify_admin)):
 # DYNAMIC SITEMAP
 # =============================================
 
-SITE_URL = "https://invest.euroadria.me"
+SITE_URL = "https://euroadria.me"
 
 # User-Agent parsing helper
 def parse_device_type(user_agent: str) -> str:
@@ -3284,7 +3284,7 @@ async def generate_expose_pdf(inp: SimulationInput):
         
         canvas.setFont('Helvetica', 6.5)
         canvas.setFillColor(ea_gray)
-        canvas.drawString(15*mm, 8*mm, "EuroAdria Corporate Solutions | invest.euroadria.me | office@euroadria.me")
+        canvas.drawString(15*mm, 8*mm, "EuroAdria Corporate Solutions | euroadria.me | office@euroadria.me")
         canvas.drawRightString(page_w - 15*mm, 8*mm, f"Seite {doc.page}")
         canvas.setFillColor(ea_gold)
         canvas.setFont('Helvetica', 5.5)
@@ -4372,7 +4372,7 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', 'https://invest.euroadria.me,https://euroadria.me').split(','),
+    allow_origins=os.environ.get('CORS_ORIGINS', 'https://euroadria.me,https://euroadria.me').split(','),
     allow_methods=["*"],
     allow_headers=["*"],
 )

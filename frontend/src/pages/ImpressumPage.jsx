@@ -127,7 +127,7 @@ const FallbackImpressum = () => (
           </p>
           <p className="text-ea-dark/70">
             <strong>Investment-Plattform:</strong>{' '}
-            <a href="https://invest.euroadria.me" className="text-ea-gold hover:underline">invest.euroadria.me</a>
+            <a href="https://euroadria.me" className="text-ea-gold hover:underline">euroadria.me</a>
           </p>
         </div>
         <div className="pt-4 border-t border-gray-200 space-y-1">

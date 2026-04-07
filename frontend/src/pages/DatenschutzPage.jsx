@@ -118,7 +118,7 @@ const FallbackDatenschutz = () => (
           <p className="text-ea-dark/70 leading-relaxed mt-2">
             Telefon: <a href="tel:+38268559776" className="text-ea-gold hover:underline">+382 68 559 776</a><br />
             E-Mail: <a href="mailto:office@euroadria.me" className="text-ea-gold hover:underline">office@euroadria.me</a><br />
-            Website: <a href="https://invest.euroadria.me" className="text-ea-gold hover:underline">invest.euroadria.me</a>
+            Website: <a href="https://euroadria.me" className="text-ea-gold hover:underline">euroadria.me</a>
           </p>
         </div>
       </div>

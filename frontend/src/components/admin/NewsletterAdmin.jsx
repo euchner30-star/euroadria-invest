@@ -302,7 +302,7 @@ const NewsletterAdmin = ({ credentials }) => {
                       Tel.: <span className="text-ea-gold">+382 68 559 776</span><br/>
                       E-Mail: <span className="text-ea-gold">office@euroadria.me</span><br/>
                       Web: <span className="text-ea-gold">www.euroadria.me</span><br/>
-                      Investment: <span className="text-ea-gold">invest.euroadria.me</span>
+                      Investment: <span className="text-ea-gold">euroadria.me</span>
                     </p>
                     <p className="text-[9px] text-gray-400">
                       Company registration no.: 22147382 | Tax ID (PIB): 115356237<br/>Director: Milena Bubanja
