@@ -98,7 +98,7 @@ const complianceRisks = [
 
 const LeistungenPage = () => {
   return (
-    <div className="min-h-screen pt-28 pb-20 bg-white">
+    <div className="min-h-screen pt-28 bg-white">
       <SEO
         title="Unsere Leistungen — Firmengründung, Immobilien, Legal & Investments"
         description="EuroAdria begleitet Sie bei Unternehmensgründung, Aufenthalt, Immobilien & Investments in Montenegro und Serbien — diskret, legal und individuell beraten."
