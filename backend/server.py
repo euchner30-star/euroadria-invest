@@ -3242,9 +3242,33 @@ async def get_crm_leads(admin: str = Depends(verify_admin)):
 @api_router.post("/admin/crm/leads")
 async def create_crm_lead(lead: CRMLeadCreate, admin: str = Depends(verify_admin)):
     lead_dict = lead.model_dump()
+    now = datetime.now(timezone.utc).isoformat()
+
+    # Check if email already exists in CRM
+    existing = await db.crm_leads.find_one({"email": lead_dict.get("email", "")})
+    if existing:
+        # Reactivate if lost
+        if existing.get("status") == "lost":
+            await db.crm_leads.update_one({"id": existing["id"]}, {"$set": {"status": "new"}})
+        # Create new deal for existing lead
+        await db.crm_deals.insert_one({
+            "id": str(uuid.uuid4())[:8],
+            "lead_id": existing["id"],
+            "stage": "new_lead",
+            "deal_value": 0,
+            "probability": 10,
+            "expected_revenue": 0,
+            "assigned_to": None,
+            "notes": None,
+            "created_at": now,
+            "updated_at": now
+        })
+        updated = await db.crm_leads.find_one({"id": existing["id"]}, {"_id": 0})
+        return updated
+
     lead_dict["id"] = str(uuid.uuid4())[:8]
     lead_dict["status"] = "new"
-    lead_dict["created_at"] = datetime.now(timezone.utc).isoformat()
+    lead_dict["created_at"] = now
     await db.crm_leads.insert_one(lead_dict)
 
     # Auto-create deal in "New Lead" stage
@@ -3257,8 +3281,8 @@ async def create_crm_lead(lead: CRMLeadCreate, admin: str = Depends(verify_admin
         "expected_revenue": 0,
         "assigned_to": None,
         "notes": None,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": now,
+        "updated_at": now
     }
     await db.crm_deals.insert_one(deal)
 
@@ -3407,43 +3431,52 @@ async def migrate_existing_leads(admin: str = Depends(verify_admin)):
     contacts = await db.contact_submissions.find({}, {"_id": 0}).to_list(1000)
     migrated = 0
 
+    # Existing CRM leads by email
+    existing = await db.crm_leads.find({}, {"_id": 0, "email": 1, "id": 1}).to_list(1000)
+    existing_map = {l["email"]: l["id"] for l in existing if l.get("email")}
     seen_emails = set()
-    # Existing CRM leads
-    existing = await db.crm_leads.find({}, {"_id": 0, "email": 1}).to_list(1000)
-    seen_emails = {l["email"] for l in existing}
 
     for lead in old_leads:
         email = lead.get("email", "")
         if not email or email in seen_emails:
             continue
         seen_emails.add(email)
-        crm_lead = {
-            "id": str(uuid.uuid4())[:8],
-            "name": lead.get("name", ""),
-            "email": email,
-            "phone": lead.get("phone"),
-            "lead_source": lead.get("source", "website"),
-            "utm_source": None,
-            "utm_medium": None,
-            "utm_campaign": None,
-            "entry_page": None,
-            "tool_used": lead.get("type", lead.get("source", "unknown")),
-            "status": "new",
-            "created_at": lead.get("submitted_at", datetime.now(timezone.utc).isoformat())
-        }
-        await db.crm_leads.insert_one(crm_lead)
-        await db.crm_deals.insert_one({
-            "id": str(uuid.uuid4())[:8],
-            "lead_id": crm_lead["id"],
-            "stage": "new_lead",
-            "deal_value": 0,
-            "probability": 10,
-            "expected_revenue": 0,
-            "assigned_to": None,
-            "notes": None,
-            "created_at": crm_lead["created_at"],
-            "updated_at": crm_lead["created_at"]
-        })
+        now = lead.get("submitted_at", datetime.now(timezone.utc).isoformat())
+
+        if email in existing_map:
+            # Lead exists — add new deal
+            await db.crm_deals.insert_one({
+                "id": str(uuid.uuid4())[:8],
+                "lead_id": existing_map[email],
+                "stage": "new_lead",
+                "deal_value": 0, "probability": 10, "expected_revenue": 0,
+                "assigned_to": None, "notes": None,
+                "created_at": now, "updated_at": now
+            })
+            await db.crm_leads.update_one({"id": existing_map[email]}, {"$set": {"status": "new"}})
+        else:
+            crm_lead = {
+                "id": str(uuid.uuid4())[:8],
+                "name": lead.get("name", ""),
+                "email": email,
+                "phone": lead.get("phone"),
+                "lead_source": lead.get("source", "website"),
+                "utm_source": None, "utm_medium": None, "utm_campaign": None,
+                "entry_page": None,
+                "tool_used": lead.get("type", lead.get("source", "unknown")),
+                "status": "new",
+                "created_at": now
+            }
+            await db.crm_leads.insert_one(crm_lead)
+            await db.crm_deals.insert_one({
+                "id": str(uuid.uuid4())[:8],
+                "lead_id": crm_lead["id"],
+                "stage": "new_lead",
+                "deal_value": 0, "probability": 10, "expected_revenue": 0,
+                "assigned_to": None, "notes": None,
+                "created_at": now, "updated_at": now
+            })
+            existing_map[email] = crm_lead["id"]
         migrated += 1
 
     for contact in contacts:
@@ -3451,33 +3484,41 @@ async def migrate_existing_leads(admin: str = Depends(verify_admin)):
         if not email or email in seen_emails:
             continue
         seen_emails.add(email)
-        crm_lead = {
-            "id": str(uuid.uuid4())[:8],
-            "name": contact.get("name", ""),
-            "email": email,
-            "phone": contact.get("phone"),
-            "lead_source": "kontaktformular",
-            "utm_source": None,
-            "utm_medium": None,
-            "utm_campaign": None,
-            "entry_page": None,
-            "tool_used": "contact_form",
-            "status": "new",
-            "created_at": contact.get("submitted_at", datetime.now(timezone.utc).isoformat())
-        }
-        await db.crm_leads.insert_one(crm_lead)
-        await db.crm_deals.insert_one({
-            "id": str(uuid.uuid4())[:8],
-            "lead_id": crm_lead["id"],
-            "stage": "new_lead",
-            "deal_value": 0,
-            "probability": 10,
-            "expected_revenue": 0,
-            "assigned_to": None,
-            "notes": f"Betreff: {contact.get('subject', '')}",
-            "created_at": crm_lead["created_at"],
-            "updated_at": crm_lead["created_at"]
-        })
+        now = contact.get("submitted_at", datetime.now(timezone.utc).isoformat())
+
+        if email in existing_map:
+            await db.crm_deals.insert_one({
+                "id": str(uuid.uuid4())[:8],
+                "lead_id": existing_map[email],
+                "stage": "new_lead",
+                "deal_value": 0, "probability": 10, "expected_revenue": 0,
+                "assigned_to": None, "notes": f"Betreff: {contact.get('subject', '')}",
+                "created_at": now, "updated_at": now
+            })
+            await db.crm_leads.update_one({"id": existing_map[email]}, {"$set": {"status": "new"}})
+        else:
+            crm_lead = {
+                "id": str(uuid.uuid4())[:8],
+                "name": contact.get("name", ""),
+                "email": email,
+                "phone": contact.get("phone"),
+                "lead_source": "kontaktformular",
+                "utm_source": None, "utm_medium": None, "utm_campaign": None,
+                "entry_page": None,
+                "tool_used": "contact_form",
+                "status": "new",
+                "created_at": now
+            }
+            await db.crm_leads.insert_one(crm_lead)
+            await db.crm_deals.insert_one({
+                "id": str(uuid.uuid4())[:8],
+                "lead_id": crm_lead["id"],
+                "stage": "new_lead",
+                "deal_value": 0, "probability": 10, "expected_revenue": 0,
+                "assigned_to": None, "notes": f"Betreff: {contact.get('subject', '')}",
+                "created_at": now, "updated_at": now
+            })
+            existing_map[email] = crm_lead["id"]
         migrated += 1
 
     return {"migrated": migrated, "total_crm_leads": await db.crm_leads.count_documents({})}
