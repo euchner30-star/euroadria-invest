@@ -207,6 +207,33 @@ class CommentAdminResponse(CommentResponse):
 
 
 # =============================================
+# EVENT MODELS
+# =============================================
+
+class EventCreate(BaseModel):
+    title: str
+    description: str
+    date: str  # ISO date string e.g. "2026-05-15"
+    time: Optional[str] = None  # e.g. "18:00"
+    location: Optional[str] = None
+    type: str = "Event"  # Event, Webinar, Workshop
+    image: Optional[str] = None
+    link: Optional[str] = None  # External registration link
+    status: str = "upcoming"  # upcoming, past, cancelled
+
+class EventUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    date: Optional[str] = None
+    time: Optional[str] = None
+    location: Optional[str] = None
+    type: Optional[str] = None
+    image: Optional[str] = None
+    link: Optional[str] = None
+    status: Optional[str] = None
+
+
+# =============================================
 # PAGE CMS MODELS
 # =============================================
 
@@ -1319,6 +1346,7 @@ STATIC_PAGES = [
     {"loc": "/contact", "priority": "0.8", "changefreq": "monthly"},
     {"loc": "/team", "priority": "0.7", "changefreq": "monthly"},
     {"loc": "/leistungen", "priority": "0.9", "changefreq": "monthly"},
+    {"loc": "/events", "priority": "0.7", "changefreq": "weekly"},
     {"loc": "/immobilien/budva", "priority": "0.8", "changefreq": "weekly"},
     {"loc": "/immobilien/niksic", "priority": "0.8", "changefreq": "weekly"},
     {"loc": "/immobilien/podgorica", "priority": "0.8", "changefreq": "weekly"},
@@ -3103,6 +3131,50 @@ async def generate_expose_pdf(inp: SimulationInput):
 
 
 # ---- DASHBOARD API ----
+
+# =============================================
+# EVENTS API
+# =============================================
+
+@api_router.get("/events")
+async def get_events():
+    events = await db.events.find({}, {"_id": 0}).sort("date", 1).to_list(100)
+    return events
+
+@api_router.get("/events/{event_id}")
+async def get_event(event_id: str):
+    event = await db.events.find_one({"id": event_id}, {"_id": 0})
+    if not event:
+        raise HTTPException(status_code=404, detail="Event nicht gefunden")
+    return event
+
+@api_router.post("/admin/events")
+async def create_event(event: EventCreate, admin: str = Depends(verify_admin)):
+    event_dict = event.model_dump()
+    event_dict["id"] = str(uuid.uuid4())[:8]
+    event_dict["created_at"] = datetime.now(timezone.utc).isoformat()
+    await db.events.insert_one(event_dict)
+    created = await db.events.find_one({"id": event_dict["id"]}, {"_id": 0})
+    return created
+
+@api_router.put("/admin/events/{event_id}")
+async def update_event(event_id: str, event: EventUpdate, admin: str = Depends(verify_admin)):
+    update_data = {k: v for k, v in event.model_dump().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Keine Änderungen")
+    result = await db.events.update_one({"id": event_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Event nicht gefunden")
+    updated = await db.events.find_one({"id": event_id}, {"_id": 0})
+    return updated
+
+@api_router.delete("/admin/events/{event_id}")
+async def delete_event(event_id: str, admin: str = Depends(verify_admin)):
+    result = await db.events.delete_one({"id": event_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Event nicht gefunden")
+    return {"message": "Event gelöscht"}
+
 
 @api_router.get("/dashboard/stats")
 async def get_dashboard_stats():

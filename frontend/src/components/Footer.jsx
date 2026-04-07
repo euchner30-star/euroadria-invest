@@ -55,6 +55,16 @@ const Footer = () => {
                   {t('footer.contact')}
                 </Link>
               </li>
+              <li>
+                <Link to="/leistungen" className="text-ea-light/70 hover:text-ea-gold transition-colors text-sm">
+                  Leistungen
+                </Link>
+              </li>
+              <li>
+                <Link to="/events" className="text-ea-light/70 hover:text-ea-gold transition-colors text-sm">
+                  Events
+                </Link>
+              </li>
             </ul>
           </div>
 
