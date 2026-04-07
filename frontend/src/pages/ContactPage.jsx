@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Mail, Phone, MapPin, Send, CheckSquare, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useLanguage } from '../context/LanguageContext';
@@ -8,11 +8,13 @@ const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const ContactPage = () => {
   const { lang, t } = useLanguage();
+  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    subject: '',
+    service: '',
+    subject: searchParams.get('betreff') || '',
     message: '',
     privacyConsent: false
   });
@@ -41,7 +43,7 @@ const ContactPage = () => {
           name: formData.name,
           email: formData.email,
           phone: formData.phone || null,
-          subject: formData.subject,
+          subject: formData.service ? `[${formData.service}] ${formData.subject}` : formData.subject,
           message: formData.message
         })
       });
@@ -216,6 +218,29 @@ const ContactPage = () => {
                   </div>
 
                   <div>
+                    <label htmlFor="service" className="block text-ea-dark text-sm font-medium mb-2">
+                      Dienstleistung
+                    </label>
+                    <select
+                      id="service"
+                      name="service"
+                      value={formData.service}
+                      onChange={handleChange}
+                      data-testid="contact-service-select"
+                      className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold focus:ring-2 focus:ring-ea-gold/20 transition-all"
+                    >
+                      <option value="">Bitte wählen...</option>
+                      <option value="Immobilien & Aufenthalt">Immobilien & Aufenthalt</option>
+                      <option value="Unternehmensgründung">Unternehmensgründung</option>
+                      <option value="Legal- & Finanzdienstleistungen">Legal- & Finanzdienstleistungen</option>
+                      <option value="Investor Relations & Projektvermittlung">Investor Relations & Projektvermittlung</option>
+                      <option value="Finanzierungsanfrage">Finanzierungsanfrage</option>
+                      <option value="Sonstiges">Sonstiges</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
                     <label htmlFor="subject" className="block text-ea-dark text-sm font-medium mb-2">
                       {lang === 'en' ? 'Subject *' : 'Betreff *'}
                     </label>
@@ -230,7 +255,6 @@ const ContactPage = () => {
                       className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark placeholder-ea-dark/40 focus:outline-none focus:border-ea-gold focus:ring-2 focus:ring-ea-gold/20 transition-all"
                       placeholder={lang === 'en' ? 'What is this about?' : 'Worum geht es?'}
                     />
-                  </div>
                 </div>
 
                 <div>

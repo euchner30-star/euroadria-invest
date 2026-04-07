@@ -73,6 +73,7 @@ const Header = () => {
 
   // Sekundäre Nav-Items (rechts vom Infrastruktur-Radar)
   const secondaryNavItems = [
+    { name: 'Leistungen', path: '/leistungen' },
     { name: t('nav.blog'), path: '/blog' },
     { name: t('nav.about'), path: '/team' },
     { name: t('nav.contact'), path: '/contact' },

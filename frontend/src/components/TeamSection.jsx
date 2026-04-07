@@ -36,6 +36,8 @@ const TeamSection = () => {
       title: lang === 'en' ? 'Advisor & DACH Lead' : 'Berater & Leitung DACH',
       subtitle: '',
       description: lang === 'en' ? '"I believe that sustainable projects and solid structures are the best foundation for long-term success."' : '„Ich glaube daran, dass nachhaltige Projekte und solide Strukturen die beste Basis für langfristigen Erfolg sind."',
+      bio: 'Holger Kuhlmann ist Unternehmer und Berater von EuroAdria Corporate Solutions. Er begleitet internationale Unternehmer, insbesondere aus der DACH-Region, beim rechtssicheren Markteintritt in Montenegro und Serbien — von der Unternehmensgründung und Aufenthaltsplanung über Banking, Immobilien und Fördermittel bis hin zum Investorenmatching. Seit 2007 arbeitet Holger an der Schnittstelle von Nachhaltigkeit, Industrieprojekten und Kapital. Als Gründer und Geschäftsführer von Evercraft Ecotechnologies mit Fokus auf Kreislaufwirtschaft und Waste-to-Energy bringt er operative Industrieerfahrung, Behördenkompetenz und Umsetzungsstärke in seine Beratung ein.',
+      usp: 'Strategie, Execution und Netzwerk — vereint in einem Mandat.',
       image: '/holger-kuhlmann.jpg',
       icon: 'trending-up',
       skills: ['Investment-Strategie', 'Bankability', 'Deal-Structuring', 'Off-Market Access']
@@ -46,6 +48,8 @@ const TeamSection = () => {
       title: lang === 'en' ? 'Co-Founder & Managing Director' : 'Co-Founderin und Geschäftsführerin',
       subtitle: 'Public Affairs und Balkan Relations',
       description: lang === 'en' ? '"Sustainable results emerge where local reality and European standards are cleanly brought together."' : '„Nachhaltige Ergebnisse entstehen dort, wo lokale Realität und europäische Standards sauber zusammengeführt werden."',
+      bio: 'Milena Bubanja ist Co-Founderin von EuroAdria Corporate Solutions und verfügt über einen Masterabschluss in Rechtswissenschaften der University of Novi Sad Faculty of Law (2007–2012). Sie steht für eine pragmatische, aber präzise Herangehensweise an grenzüberschreitende Vorhaben, insbesondere in Montenegro und Serbien. Durch ihre ausgeprägte Vernetzung in den Balkanstaaten, einschließlich politischer und institutioneller Schnittstellen, begleitet sie Mandanten dabei, Investitionen und Relocation-Vorhaben effizient und innerhalb klar definierter Rahmenbedingungen zu strukturieren.',
+      usp: 'Juristisch fundierte Balkan-Brückenkompetenz, operativer Zugang zu relevanten Stakeholdern und konsequente Umsetzung mit dokumentierter Absicherung.',
       image: '/milena-bubanja.jpg',
       icon: 'shield',
       skills: ['Due Diligence', 'Katasterprüfung', 'Restitutionsrecht', 'Compliance']
@@ -123,9 +127,21 @@ const TeamSection = () => {
                   </div>
                 </div>
 
-                <p className="text-ea-dark/70 leading-relaxed mb-6">
+                <p className="text-ea-dark/70 leading-relaxed mb-4 italic">
                   {member.description}
                 </p>
+
+                {member.bio && (
+                  <p className="text-ea-dark/60 text-sm leading-relaxed mb-4">
+                    {member.bio}
+                  </p>
+                )}
+
+                {member.usp && (
+                  <p className="text-ea-dark/80 text-sm font-medium mb-6">
+                    USP: {member.usp}
+                  </p>
+                )}
 
                 {member.skills && (
                   <div className="flex flex-wrap gap-2 mb-6">

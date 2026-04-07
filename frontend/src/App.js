@@ -33,6 +33,7 @@ import ROICalculator from "./pages/investment/ROICalculator";
 import LocationComparison from "./pages/investment/LocationComparison";
 import LocationProfile from "./pages/investment/LocationProfile";
 import InvestmentSimulation from "./pages/investment/InvestmentSimulation";
+import LeistungenPage from "./pages/LeistungenPage";
 
 function PageTracker() {
   usePageTracker();
@@ -52,6 +53,8 @@ function App() {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<ArticlePage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/kontakt" element={<ContactPage />} />
+          <Route path="/leistungen" element={<LeistungenPage />} />
           <Route path="/team" element={<TeamPage />} />
           <Route path="/investments" element={<Home />} />
           <Route path="/impressum" element={<ImpressumPage />} />

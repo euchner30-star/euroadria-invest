@@ -1318,6 +1318,7 @@ STATIC_PAGES = [
     {"loc": "/investment/vergleich", "priority": "0.8", "changefreq": "monthly"},
     {"loc": "/contact", "priority": "0.8", "changefreq": "monthly"},
     {"loc": "/team", "priority": "0.7", "changefreq": "monthly"},
+    {"loc": "/leistungen", "priority": "0.9", "changefreq": "monthly"},
     {"loc": "/immobilien/budva", "priority": "0.8", "changefreq": "weekly"},
     {"loc": "/immobilien/niksic", "priority": "0.8", "changefreq": "weekly"},
     {"loc": "/immobilien/podgorica", "priority": "0.8", "changefreq": "weekly"},
