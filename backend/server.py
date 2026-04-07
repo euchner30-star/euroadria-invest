@@ -3178,9 +3178,10 @@ async def generate_expose_pdf(inp: SimulationInput):
         return str(val)
     
     # TITLE
+    location_text = f"  |  Standort: {inp.location_name}" if inp.location_name else ""
     elements.append(Paragraph("INVESTMENT EXPOSÉ", styles['EA_Title']))
     elements.append(Paragraph(
-        f"Personalisierte 10-Jahres-Prognose  |  Erstellt am {datetime.now(timezone.utc).strftime('%d.%m.%Y')}",
+        f"Personalisierte 10-Jahres-Prognose{location_text}  |  Erstellt am {datetime.now(timezone.utc).strftime('%d.%m.%Y')}",
         styles['EA_Subtitle']
     ))
     

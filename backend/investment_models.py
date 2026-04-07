@@ -208,6 +208,8 @@ class SimulationInput(BaseModel):
     tax_rate: float = Field(9.0, ge=0, le=50, description="Steuersatz auf Mieteinnahmen in %")
     # B. Exit-Kosten (Verkaufsgebühren)
     exit_costs_percent: float = Field(3.0, ge=0, le=15, description="Verkaufskosten in % des Endwerts")
+    # C. Standort (für PDF-Exposé)
+    location_name: Optional[str] = Field(None, description="Standort-Name für das PDF-Exposé")
 
 
 class YearlyProjection(BaseModel):

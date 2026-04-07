@@ -185,7 +185,9 @@ export default function InvestmentSimulation() {
   const startPdfDownload = async () => {
     setPdfLoading(true);
     try {
-      const blob = await simulationApi.downloadExposePdf(params);
+      const pdfParams = { ...params };
+      if (selectedCity) pdfParams.location_name = selectedCity;
+      const blob = await simulationApi.downloadExposePdf(pdfParams);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -209,7 +211,7 @@ export default function InvestmentSimulation() {
           name: leadForm.name,
           email: leadForm.email,
           source: 'simulation_pdf',
-          expose_name: `Simulation PDF – ${params.purchase_price?.toLocaleString('de-DE')}€`
+          expose_name: `Simulation PDF – ${selectedCity || 'Allgemein'} – ${params.purchase_price?.toLocaleString('de-DE')}€`
         })
       });
       sessionStorage.setItem('pdf_lead_captured', 'true');
