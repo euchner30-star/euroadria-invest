@@ -1,75 +1,86 @@
-# EuroAdria Investment Intelligence Platform - PRD
+# EuroAdria Corporate Solutions — Investment Intelligence Platform
 
 ## Original Problem Statement
-Professional "Investment Intelligence Platform" for the Balkan region with full CMS. Features: ROI calculator, dynamic location profiles, contact form with email notifications, SEO-optimized blog, interactive investment maps, extensive CMS admin panel, YouTube Video Slider.
-
-## Tech Stack
-- **Frontend**: React, TailwindCSS
-- **Backend**: FastAPI, Motor (async MongoDB)
-- **Database**: MongoDB Atlas (Remote)
-- **Hosting**: Render (separate Frontend/Backend services)
-- **APIs**: YouTube Data API v3, Resend API
-
-## Environment Variables (Render)
-- `MONGO_URL`, `DB_NAME`, `RESEND_API_KEY`, `YOUTUBE_API_KEY`, `YOUTUBE_PLAYLIST_ID`, `CORS_ORIGINS`
-
-## Completed Features
-- [x] E2E Investment Dashboard
-- [x] ROI Calculator
-- [x] AEO-optimized Blog with Expert Tips
-- [x] Admin Panel with bulk article import (Duplikat-Schutz via Slug + Titel)
-- [x] Contact form with Resend email notifications
-- [x] YouTube Video Slider (dynamic via API)
-- [x] Cookie consent banner (GDPR)
-- [x] Article Download URL/Expose (Admin + public view)
-- [x] Translation system REMOVED per user request - app is strictly German-only
-- [x] Admin Panel Investment Data UI (2026-04-05): Locations, Infrastructure, Zones CRUD
-- [x] Newsletter Admin: Subscriber delete function (2026-04-05)
-- [x] ROI Calculator fix: Netto-Rendite based on Gesamtinvestition (2026-04-05)
-- [x] Bulk Import: Professional duplicate detection (slug + title + file-internal) (2026-04-05)
-- [x] 4 Pro-Features (2026-04-06):
-  - Dynamic Simulation: 10-year IRR/NPV/Cashflow projection with sliders + Recharts
-  - Predictive Infrastructure Score: Weighted algorithm (Airport +15%, Road +10%, Clinic +8%)
-  - Market Data Validation: /api/v1/market-check with deviation warnings >15%
-  - PDF Exposé Generator: Professional PDF with ReportLab (KPIs, parameters, 10-year table)
-  - Frontend: /investment/simulation page with real-time sliders + PDF download
-- [x] Simulation Erweiterungen (2026-04-06):
-  - Steuer-Toggle: 9% MNE Pauschalsteuer (ein/ausschaltbar mit variablem Steuersatz)
-  - Exit-Kosten: 3% Maklergebühr-Slider, abgezogen vom Endwert
-  - Hypotheken-Annuität: Dynamische Tabellenspalte bei Fremdfinanzierung (EK < 100%)
-  - Lead-Gen CTA: "Finanzierung für dieses Objekt anfragen" Button mit Kontaktformular-Link
-- [x] OnePage-Migration (2026-04-07):
-  - Neue /leistungen Seite: 4 Servicebereiche (Immobilien, Firmengründung, Legal, Investor Relations)
-  - Rechtsrisiken Problem/Lösung Sektion (Baugenehmigung, Kataster, Erbchaos)
-  - Exit-Sicherheit & Compliance Sektion (Airbnb, Grauzonen, politische Risiken)
-  - Doppelte Garantie: Vor dem Kauf / Nach dem Kauf
-  - Erweiterte Team-Bios (Holger: Evercraft/Industrie-Hintergrund, Milena: Master Rechtswissenschaften)
-  - Kontaktformular: Service-Auswahl Dropdown + Betreff-Prefill via URL-Parameter
-  - Navigation: "Leistungen" Link im Header
-  - Sitemap: /leistungen mit Priorität 0.9 + Sitemap-Index Fix (alte statische sitemap.xml → Redirect zur dynamischen API)
+Professional "Investment Intelligence Platform" for the Balkan region with full CMS. Decoupled from Emergent, self-hosted on Render with MongoDB Atlas. Target: DACH investors interested in Montenegro/Serbia.
 
 ## Architecture
-### Key Files
-- `/app/backend/server.py` - FastAPI monolith with all API routes
-- `/app/backend/investment_models.py` - Pydantic models + seed data
-- `/app/frontend/src/pages/AdminPage.jsx` - Monolithic CMS admin panel
-- `/app/frontend/src/services/api.js` - API bindings (investmentApi, adminApi, etc.)
+- **Frontend**: React 19, TailwindCSS, Recharts → Render Static Site
+- **Backend**: FastAPI, Motor (async MongoDB) → Render Web Service
+- **Database**: MongoDB Atlas (remote)
+- **Email**: Resend API (noreply@euroadria.me)
+- **Newsletter**: Brevo API
+- **Domain**: euroadria.me (primary), invest.euroadria.me (legacy, still active)
 
-## Pending/Backlog Tasks
+## Completed Features
 
-### P1 - Upcoming
-- Apartment-Listing functionality (currently "Coming Soon")
+### Core Platform
+- Investment Dashboard with ROI Calculator
+- Simulation Calculator (Tax, Exit Costs, Mortgage)
+- AEO-optimized Blog with Expert Tips
+- Admin Panel (Articles, Comments, Regions, Pages, Newsletter, Downloads, Pipeline, Revenue)
+- Contact Form with Resend email notifications
+- Dynamic Location Profiles (22 locations)
 
-### P2 - Future
-- Heatmap Visualizations on investment map
-- Video Background for Hero section
-- Newsletter Integration
-- WYSIWYG editor backward-text bug on mobile (recurring, testing pending)
+### CRM + Revenue Tracking (April 2026)
+- Kanban Pipeline: 7 stages (Neuer Lead → Qualifiziert → Termin → Erstgespräch → Angebot → Verhandlung → Gewonnen/Verloren)
+- Revenue Dashboard: KPI cards, bar/pie charts, source tracking
+- Auto CRM-Lead from ALL forms (contact, expose download, newsletter)
+- Won/Lost deals separated from active pipeline
+- CRM Reset functionality
+- Mobile-responsive UI
 
-### P3 - Nice to Have
-- Cloudinary/S3 for native file uploads (Render ephemeral storage)
-- AdminPage.jsx and server.py refactoring (monoliths >3000 lines)
+### PDF Exposé (April 2026)
+- EuroAdria branded PDF (dark bg, gold accents, white logo)
+- Dynamic location name based on customer selection
+- Lead-Gate: Name + Email required before PDF download
+- Confirmation email to customer after download
 
-## Deployment
-Git push to `euchner30-star/euroadria-invest` -> Render auto-deploy.
-Custom domain: invest.euroadria.me (LIVE)
+### Email System (April 2026)
+- Admin notification on new contact/lead
+- Customer confirmation email (contact form)
+- Customer confirmation email (PDF download)
+- All via Resend with noreply@euroadria.me
+- EuroAdria branded HTML templates
+
+### Domain Migration (April 2026)
+- euroadria.me as primary domain (was invest.euroadria.me)
+- All URLs, CORS, SEO, Sitemap, emails updated
+- Resend domain verification (pending DNS propagation)
+- invest.euroadria.me still active as legacy
+
+### Other
+- /leistungen page with CMS editor
+- /events page with CRUD API
+- Navigation dropdown (Leistungen → Unsere Leistungen + Events)
+- Source maps disabled, CORS restricted
+- Global brand rename to "EuroAdria Corporate Solutions"
+- Number formatting (Mrd. vs Mio.)
+- Horizontal scroll fix on mobile
+
+## Pending
+- Resend domain verification (waiting for DNS propagation at Strato)
+- Google Search Console: add euroadria.me property
+
+## Backlog (P2)
+- Apartment-Listing with real DB data
+- Video background for Hero section
+- Newsletter integration expansion
+- server.py refactoring (4000+ lines → API routers)
+- Optional: api.euroadria.me subdomain for backend
+- Follow-up email automation (3 days after PDF download)
+
+## Credentials
+See /app/memory/test_credentials.md
+
+## Key API Endpoints
+- /api/contact (POST) — Contact form + CRM auto-link
+- /api/leads (POST) — Expose download + CRM auto-link
+- /api/articles (GET/POST/PUT/DELETE)
+- /api/admin/crm/leads (GET/POST)
+- /api/admin/crm/deals (GET/POST/PUT/DELETE)
+- /api/admin/crm/stages (GET)
+- /api/admin/crm/stats (GET)
+- /api/admin/crm/reset (DELETE)
+- /api/admin/crm/migrate (POST)
+- /api/calculator/expose-pdf (POST)
+- /api/debug/email-test (GET)
