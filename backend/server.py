@@ -234,8 +234,50 @@ class EventUpdate(BaseModel):
 
 
 # =============================================
-# PAGE CMS MODELS
+# CRM / PIPELINE MODELS
 # =============================================
+
+DEFAULT_PIPELINE_STAGES = [
+    {"id": "new_lead", "name": "Neuer Lead", "order_index": 1, "probability": 10, "color": "#6B7280"},
+    {"id": "qualified", "name": "Qualifiziert", "order_index": 2, "probability": 20, "color": "#3B82F6"},
+    {"id": "call_scheduled", "name": "Termin vereinbart", "order_index": 3, "probability": 30, "color": "#8B5CF6"},
+    {"id": "consultation_done", "name": "Erstgespräch", "order_index": 4, "probability": 40, "color": "#F59E0B"},
+    {"id": "offer_sent", "name": "Angebot gesendet", "order_index": 5, "probability": 60, "color": "#F97316"},
+    {"id": "negotiation", "name": "Verhandlung", "order_index": 6, "probability": 80, "color": "#EF4444"},
+    {"id": "won", "name": "Gewonnen", "order_index": 7, "probability": 100, "color": "#10B981"},
+    {"id": "lost", "name": "Verloren", "order_index": 8, "probability": 0, "color": "#374151"},
+]
+
+class CRMLeadCreate(BaseModel):
+    name: str
+    email: str
+    phone: Optional[str] = None
+    lead_source: str = "direct"
+    utm_source: Optional[str] = None
+    utm_medium: Optional[str] = None
+    utm_campaign: Optional[str] = None
+    entry_page: Optional[str] = None
+    tool_used: Optional[str] = None
+
+class CRMLeadUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    lead_source: Optional[str] = None
+    status: Optional[str] = None
+
+class DealCreate(BaseModel):
+    lead_id: str
+    stage: str = "new_lead"
+    deal_value: float = 0
+    assigned_to: Optional[str] = None
+    notes: Optional[str] = None
+
+class DealUpdate(BaseModel):
+    stage: Optional[str] = None
+    deal_value: Optional[float] = None
+    assigned_to: Optional[str] = None
+    notes: Optional[str] = None
 
 class TeamMember(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4())[:8])
@@ -479,6 +521,35 @@ async def submit_contact_form(form: ContactForm):
         "type": "contact",
         "submitted_at": contact_dict["submitted_at"]
     })
+    
+    # Auto-create CRM lead + deal
+    existing_crm = await db.crm_leads.find_one({"email": contact_dict.get("email", "")})
+    if not existing_crm:
+        crm_lead_id = str(uuid.uuid4())[:8]
+        await db.crm_leads.insert_one({
+            "id": crm_lead_id,
+            "name": contact_dict.get("name", ""),
+            "email": contact_dict.get("email", ""),
+            "phone": contact_dict.get("phone"),
+            "lead_source": "kontaktformular",
+            "utm_source": None, "utm_medium": None, "utm_campaign": None,
+            "entry_page": None,
+            "tool_used": "contact_form",
+            "status": "new",
+            "created_at": contact_dict["submitted_at"]
+        })
+        await db.crm_deals.insert_one({
+            "id": str(uuid.uuid4())[:8],
+            "lead_id": crm_lead_id,
+            "stage": "new_lead",
+            "deal_value": 0,
+            "probability": 10,
+            "expected_revenue": 0,
+            "assigned_to": None,
+            "notes": f"Betreff: {contact_dict.get('subject', 'Allgemein')}",
+            "created_at": contact_dict["submitted_at"],
+            "updated_at": contact_dict["submitted_at"]
+        })
     
     # Send email notification
     email_sent = await send_contact_email(contact_dict)
@@ -3131,6 +3202,270 @@ async def generate_expose_pdf(inp: SimulationInput):
 
 
 # ---- DASHBOARD API ----
+
+# =============================================
+# CRM / PIPELINE API
+# =============================================
+
+def get_stage_probability(stage_id: str) -> int:
+    for s in DEFAULT_PIPELINE_STAGES:
+        if s["id"] == stage_id:
+            return s["probability"]
+    return 0
+
+@api_router.get("/admin/crm/stages")
+async def get_pipeline_stages(admin: str = Depends(verify_admin)):
+    return DEFAULT_PIPELINE_STAGES
+
+@api_router.get("/admin/crm/leads")
+async def get_crm_leads(admin: str = Depends(verify_admin)):
+    leads = await db.crm_leads.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return leads
+
+@api_router.post("/admin/crm/leads")
+async def create_crm_lead(lead: CRMLeadCreate, admin: str = Depends(verify_admin)):
+    lead_dict = lead.model_dump()
+    lead_dict["id"] = str(uuid.uuid4())[:8]
+    lead_dict["status"] = "new"
+    lead_dict["created_at"] = datetime.now(timezone.utc).isoformat()
+    await db.crm_leads.insert_one(lead_dict)
+
+    # Auto-create deal in "New Lead" stage
+    deal = {
+        "id": str(uuid.uuid4())[:8],
+        "lead_id": lead_dict["id"],
+        "stage": "new_lead",
+        "deal_value": 0,
+        "probability": 10,
+        "expected_revenue": 0,
+        "assigned_to": None,
+        "notes": None,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.crm_deals.insert_one(deal)
+
+    created = await db.crm_leads.find_one({"id": lead_dict["id"]}, {"_id": 0})
+    return created
+
+@api_router.put("/admin/crm/leads/{lead_id}")
+async def update_crm_lead(lead_id: str, lead: CRMLeadUpdate, admin: str = Depends(verify_admin)):
+    update_data = {k: v for k, v in lead.model_dump().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Keine Änderungen")
+    result = await db.crm_leads.update_one({"id": lead_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Lead nicht gefunden")
+    updated = await db.crm_leads.find_one({"id": lead_id}, {"_id": 0})
+    return updated
+
+@api_router.delete("/admin/crm/leads/{lead_id}")
+async def delete_crm_lead(lead_id: str, admin: str = Depends(verify_admin)):
+    await db.crm_deals.delete_many({"lead_id": lead_id})
+    result = await db.crm_leads.delete_one({"id": lead_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Lead nicht gefunden")
+    return {"message": "Lead und zugehörige Deals gelöscht"}
+
+# --- DEALS ---
+
+@api_router.get("/admin/crm/deals")
+async def get_crm_deals(admin: str = Depends(verify_admin)):
+    deals = await db.crm_deals.find({}, {"_id": 0}).sort("updated_at", -1).to_list(1000)
+    # Enrich with lead data
+    for deal in deals:
+        lead = await db.crm_leads.find_one({"id": deal.get("lead_id")}, {"_id": 0})
+        deal["lead"] = lead
+    return deals
+
+@api_router.post("/admin/crm/deals")
+async def create_crm_deal(deal: DealCreate, admin: str = Depends(verify_admin)):
+    probability = get_stage_probability(deal.stage)
+    deal_dict = deal.model_dump()
+    deal_dict["id"] = str(uuid.uuid4())[:8]
+    deal_dict["probability"] = probability
+    deal_dict["expected_revenue"] = round(deal_dict["deal_value"] * probability / 100, 2)
+    deal_dict["created_at"] = datetime.now(timezone.utc).isoformat()
+    deal_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.crm_deals.insert_one(deal_dict)
+    created = await db.crm_deals.find_one({"id": deal_dict["id"]}, {"_id": 0})
+    return created
+
+@api_router.put("/admin/crm/deals/{deal_id}")
+async def update_crm_deal(deal_id: str, deal: DealUpdate, admin: str = Depends(verify_admin)):
+    update_data = {k: v for k, v in deal.model_dump().items() if v is not None}
+    if "stage" in update_data:
+        update_data["probability"] = get_stage_probability(update_data["stage"])
+    # Get current deal to compute expected revenue
+    current = await db.crm_deals.find_one({"id": deal_id}, {"_id": 0})
+    if not current:
+        raise HTTPException(status_code=404, detail="Deal nicht gefunden")
+    new_value = update_data.get("deal_value", current.get("deal_value", 0))
+    new_prob = update_data.get("probability", current.get("probability", 0))
+    update_data["expected_revenue"] = round(new_value * new_prob / 100, 2)
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+
+    await db.crm_deals.update_one({"id": deal_id}, {"$set": update_data})
+    # Update lead status if deal won/lost
+    if update_data.get("stage") == "won":
+        await db.crm_leads.update_one({"id": current["lead_id"]}, {"$set": {"status": "won"}})
+    elif update_data.get("stage") == "lost":
+        await db.crm_leads.update_one({"id": current["lead_id"]}, {"$set": {"status": "lost"}})
+    elif update_data.get("stage") and update_data["stage"] not in ["new_lead"]:
+        await db.crm_leads.update_one({"id": current["lead_id"]}, {"$set": {"status": "qualified"}})
+
+    updated = await db.crm_deals.find_one({"id": deal_id}, {"_id": 0})
+    return updated
+
+@api_router.delete("/admin/crm/deals/{deal_id}")
+async def delete_crm_deal(deal_id: str, admin: str = Depends(verify_admin)):
+    result = await db.crm_deals.delete_one({"id": deal_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Deal nicht gefunden")
+    return {"message": "Deal gelöscht"}
+
+# --- CRM DASHBOARD STATS ---
+
+@api_router.get("/admin/crm/stats")
+async def get_crm_stats(admin: str = Depends(verify_admin)):
+    total_leads = await db.crm_leads.count_documents({})
+    active_deals = await db.crm_deals.count_documents({"stage": {"$nin": ["won", "lost"]}})
+    won_deals = await db.crm_deals.count_documents({"stage": "won"})
+    lost_deals = await db.crm_deals.count_documents({"stage": "lost"})
+
+    # Pipeline value & expected revenue
+    pipeline = db.crm_deals.aggregate([
+        {"$match": {"stage": {"$nin": ["lost"]}}},
+        {"$group": {
+            "_id": None,
+            "pipeline_value": {"$sum": "$deal_value"},
+            "expected_revenue": {"$sum": "$expected_revenue"},
+            "won_revenue": {"$sum": {"$cond": [{"$eq": ["$stage", "won"]}, "$deal_value", 0]}}
+        }}
+    ])
+    totals = await pipeline.to_list(1)
+    totals = totals[0] if totals else {"pipeline_value": 0, "expected_revenue": 0, "won_revenue": 0}
+
+    # By source
+    source_pipeline = db.crm_leads.aggregate([
+        {"$group": {"_id": "$lead_source", "count": {"$sum": 1}}}
+    ])
+    by_source = {doc["_id"]: doc["count"] async for doc in source_pipeline}
+
+    # By stage
+    stage_pipeline = db.crm_deals.aggregate([
+        {"$group": {
+            "_id": "$stage",
+            "count": {"$sum": 1},
+            "total_value": {"$sum": "$deal_value"},
+            "total_expected": {"$sum": "$expected_revenue"}
+        }}
+    ])
+    by_stage = {}
+    async for doc in stage_pipeline:
+        by_stage[doc["_id"]] = {"count": doc["count"], "value": doc["total_value"], "expected": doc["total_expected"]}
+
+    # Conversion rate
+    conversion_rate = round((won_deals / total_leads * 100), 1) if total_leads > 0 else 0
+
+    return {
+        "total_leads": total_leads,
+        "active_deals": active_deals,
+        "won_deals": won_deals,
+        "lost_deals": lost_deals,
+        "pipeline_value": totals.get("pipeline_value", 0),
+        "expected_revenue": totals.get("expected_revenue", 0),
+        "won_revenue": totals.get("won_revenue", 0),
+        "conversion_rate": conversion_rate,
+        "by_source": by_source,
+        "by_stage": by_stage
+    }
+
+# --- MIGRATE EXISTING LEADS ---
+
+@api_router.post("/admin/crm/migrate")
+async def migrate_existing_leads(admin: str = Depends(verify_admin)):
+    """Migrate existing leads from old leads collection to CRM"""
+    old_leads = await db.leads.find({}, {"_id": 0}).to_list(1000)
+    contacts = await db.contact_submissions.find({}, {"_id": 0}).to_list(1000)
+    migrated = 0
+
+    seen_emails = set()
+    # Existing CRM leads
+    existing = await db.crm_leads.find({}, {"_id": 0, "email": 1}).to_list(1000)
+    seen_emails = {l["email"] for l in existing}
+
+    for lead in old_leads:
+        email = lead.get("email", "")
+        if not email or email in seen_emails:
+            continue
+        seen_emails.add(email)
+        crm_lead = {
+            "id": str(uuid.uuid4())[:8],
+            "name": lead.get("name", ""),
+            "email": email,
+            "phone": lead.get("phone"),
+            "lead_source": lead.get("source", "website"),
+            "utm_source": None,
+            "utm_medium": None,
+            "utm_campaign": None,
+            "entry_page": None,
+            "tool_used": lead.get("type", lead.get("source", "unknown")),
+            "status": "new",
+            "created_at": lead.get("submitted_at", datetime.now(timezone.utc).isoformat())
+        }
+        await db.crm_leads.insert_one(crm_lead)
+        await db.crm_deals.insert_one({
+            "id": str(uuid.uuid4())[:8],
+            "lead_id": crm_lead["id"],
+            "stage": "new_lead",
+            "deal_value": 0,
+            "probability": 10,
+            "expected_revenue": 0,
+            "assigned_to": None,
+            "notes": None,
+            "created_at": crm_lead["created_at"],
+            "updated_at": crm_lead["created_at"]
+        })
+        migrated += 1
+
+    for contact in contacts:
+        email = contact.get("email", "")
+        if not email or email in seen_emails:
+            continue
+        seen_emails.add(email)
+        crm_lead = {
+            "id": str(uuid.uuid4())[:8],
+            "name": contact.get("name", ""),
+            "email": email,
+            "phone": contact.get("phone"),
+            "lead_source": "kontaktformular",
+            "utm_source": None,
+            "utm_medium": None,
+            "utm_campaign": None,
+            "entry_page": None,
+            "tool_used": "contact_form",
+            "status": "new",
+            "created_at": contact.get("submitted_at", datetime.now(timezone.utc).isoformat())
+        }
+        await db.crm_leads.insert_one(crm_lead)
+        await db.crm_deals.insert_one({
+            "id": str(uuid.uuid4())[:8],
+            "lead_id": crm_lead["id"],
+            "stage": "new_lead",
+            "deal_value": 0,
+            "probability": 10,
+            "expected_revenue": 0,
+            "assigned_to": None,
+            "notes": f"Betreff: {contact.get('subject', '')}",
+            "created_at": crm_lead["created_at"],
+            "updated_at": crm_lead["created_at"]
+        })
+        migrated += 1
+
+    return {"migrated": migrated, "total_crm_leads": await db.crm_leads.count_documents({})}
+
+# --- AUTO-LINK NEW CONTACT FORM LEADS TO CRM ---
 
 # =============================================
 # EVENTS API
