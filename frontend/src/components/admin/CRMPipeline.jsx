@@ -106,7 +106,7 @@ export const PipelineView = ({ credentials }) => {
 
   if (loading) return <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 text-ea-gold animate-spin" /></div>;
 
-  const activeStages = stages.filter(s => s.id !== 'lost');
+  const activeStages = stages.filter(s => s.id !== 'lost' && s.id !== 'won');
 
   return (
     <div className="space-y-6" data-testid="pipeline-view">
@@ -179,6 +179,28 @@ export const PipelineView = ({ credentials }) => {
       {/* Edit Deal Modal */}
       {editDeal && (
         <EditDealModal deal={editDeal} onSave={updateDealValue} onClose={() => setEditDeal(null)} />
+      )}
+
+      {/* Won Deals */}
+      {deals.filter(d => d.stage === 'won').length > 0 && (
+        <div className="border-t border-gray-200 pt-4">
+          <h3 className="text-sm font-semibold text-green-600 mb-3">Gewonnen ({deals.filter(d => d.stage === 'won').length}) — {fmt(deals.filter(d => d.stage === 'won').reduce((s, d) => s + (d.deal_value || 0), 0))}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+            {deals.filter(d => d.stage === 'won').map(deal => (
+              <div key={deal.id} className="bg-green-50 border border-green-100 rounded-lg p-3 flex items-center justify-between group">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-ea-dark truncate">{deal.lead?.name || 'Unbekannt'}</p>
+                  <p className="text-xs text-green-600 font-medium">{fmt(deal.deal_value)}</p>
+                </div>
+                <button onClick={() => deleteDeal(deal.id)}
+                  className="p-1.5 text-ea-dark/20 hover:text-red-500 transition-colors shrink-0 sm:opacity-0 sm:group-hover:opacity-100"
+                  data-testid={`delete-won-${deal.id}`}>
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Lost Deals */}
@@ -263,6 +285,12 @@ const DealCard = ({ deal, stages, currentStage, onMove, onEdit, onDelete }) => {
             <button onClick={() => onMove(deal.id, nextStage.id)}
               className="flex-1 text-xs py-1.5 rounded bg-ea-gold/10 text-ea-gold font-medium hover:bg-ea-gold/20 transition-colors truncate px-1">
               {nextStage.name}
+            </button>
+          )}
+          {!nextStage && (
+            <button onClick={() => onMove(deal.id, 'won')}
+              className="flex-1 text-xs py-1.5 rounded bg-green-50 text-green-600 font-medium hover:bg-green-100 transition-colors truncate px-1">
+              Gewonnen
             </button>
           )}
           <button onClick={onEdit} className="p-1.5 text-ea-dark/40 hover:text-ea-gold transition-colors">
