@@ -600,32 +600,6 @@ async def root():
     return {"message": "Hello World"}
 
 
-@api_router.get("/debug/email-test")
-async def debug_email_test(admin: str = Depends(verify_admin)):
-    """Debug endpoint to test email sending"""
-    result = {
-        "resend_key_set": bool(RESEND_API_KEY),
-        "resend_key_prefix": RESEND_API_KEY[:12] + "..." if RESEND_API_KEY else "NOT SET",
-        "notification_email": NOTIFICATION_EMAIL,
-    }
-    if RESEND_API_KEY:
-        try:
-            resend.api_key = RESEND_API_KEY
-            email = resend.Emails.send({
-                "from": "EuroAdria Test <noreply@euroadria.me>",
-                "to": [NOTIFICATION_EMAIL],
-                "subject": "EuroAdria Email Debug Test",
-                "html": "<p>This is a test email from the debug endpoint.</p>"
-            })
-            result["send_result"] = str(email)
-            result["email_id"] = getattr(email, 'id', str(email))
-            result["status"] = "SUCCESS"
-        except Exception as e:
-            result["status"] = "FAILED"
-            result["error"] = f"{type(e).__name__}: {str(e)}"
-    return result
-
-
 # =============================================
 # CONTACT FORM ENDPOINT
 # =============================================
@@ -639,16 +613,6 @@ async def submit_contact_form(form: ContactForm):
     
     # Store in database
     await db.contact_submissions.insert_one(contact_dict)
-    
-    # Also count as lead
-    await db.leads.insert_one({
-        "name": contact_dict.get("name", ""),
-        "email": contact_dict.get("email", ""),
-        "source": "kontaktformular",
-        "expose_name": f"Kontakt: {contact_dict.get('subject', 'Allgemein')}",
-        "type": "contact",
-        "submitted_at": contact_dict["submitted_at"]
-    })
     
     # Auto-create CRM lead + deal
     existing_crm = await db.crm_leads.find_one({"email": contact_dict.get("email", "")})
@@ -3892,6 +3856,47 @@ async def reset_crm_data(admin: str = Depends(verify_admin)):
         "deleted_leads": deleted_leads.deleted_count,
         "deleted_deals": deleted_deals.deleted_count
     }
+
+@api_router.post("/admin/db/cleanup")
+async def cleanup_database(admin: str = Depends(verify_admin)):
+    """Clean up old/redundant collections and data"""
+    results = {}
+    
+    # Remove old leads collection (now handled by CRM)
+    old_leads = await db.leads.count_documents({})
+    if old_leads > 0:
+        await db.leads.delete_many({})
+        results["old_leads_deleted"] = old_leads
+    
+    # Remove orphaned deals (deals without matching lead)
+    lead_ids = set()
+    async for l in db.crm_leads.find({}, {"_id": 0, "id": 1}):
+        lead_ids.add(l.get("id"))
+    
+    orphaned = 0
+    async for d in db.crm_deals.find({}, {"_id": 0, "id": 1, "lead_id": 1}):
+        if d.get("lead_id") not in lead_ids:
+            await db.crm_deals.delete_one({"id": d["id"]})
+            orphaned += 1
+    results["orphaned_deals_deleted"] = orphaned
+    
+    # Remove old empty collections
+    collections = await db.list_collection_names()
+    empty_removed = []
+    keep_collections = {"articles", "contact_submissions", "crm_leads", "crm_deals", 
+                       "pipeline_stages", "events", "pages", "site_settings",
+                       "newsletter_subscribers", "locations", "infrastructure_projects",
+                       "opportunity_zones", "leistungen_content", "comments", "page_views"}
+    for col in collections:
+        if col not in keep_collections:
+            count = await db[col].count_documents({})
+            if count == 0:
+                await db.drop_collection(col)
+                empty_removed.append(col)
+    results["empty_collections_removed"] = empty_removed
+    
+    return {"message": "Datenbank bereinigt", "details": results}
+
 
 
 # --- AUTO-LINK NEW CONTACT FORM LEADS TO CRM ---
