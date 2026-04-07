@@ -436,6 +436,7 @@ async def send_contact_email(contact_data: dict):
     
     try:
         resend.api_key = RESEND_API_KEY
+        logger.info(f"Attempting to send contact email with key: {RESEND_API_KEY[:8]}... from noreply@euroadria.me to {NOTIFICATION_EMAIL}")
         
         html_content = f"""
         <html>
@@ -468,10 +469,10 @@ async def send_contact_email(contact_data: dict):
         }
         
         email = resend.Emails.send(params)
-        logger.info(f"Contact email sent via Resend from {contact_data['name']}, id: {getattr(email, 'id', 'unknown')}")
+        logger.info(f"Contact email sent successfully, id: {getattr(email, 'id', 'unknown')}")
         return True
     except Exception as e:
-        logger.error(f"Failed to send contact email: {e}")
+        logger.error(f"RESEND FAILED: {type(e).__name__}: {e}")
         return False
 
 
@@ -496,6 +497,32 @@ class LeadForm(BaseModel):
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
+
+
+@api_router.get("/debug/email-test")
+async def debug_email_test(admin: str = Depends(verify_admin)):
+    """Debug endpoint to test email sending"""
+    result = {
+        "resend_key_set": bool(RESEND_API_KEY),
+        "resend_key_prefix": RESEND_API_KEY[:12] + "..." if RESEND_API_KEY else "NOT SET",
+        "notification_email": NOTIFICATION_EMAIL,
+    }
+    if RESEND_API_KEY:
+        try:
+            resend.api_key = RESEND_API_KEY
+            email = resend.Emails.send({
+                "from": "EuroAdria Test <noreply@euroadria.me>",
+                "to": [NOTIFICATION_EMAIL],
+                "subject": "EuroAdria Email Debug Test",
+                "html": "<p>This is a test email from the debug endpoint.</p>"
+            })
+            result["send_result"] = str(email)
+            result["email_id"] = getattr(email, 'id', str(email))
+            result["status"] = "SUCCESS"
+        except Exception as e:
+            result["status"] = "FAILED"
+            result["error"] = f"{type(e).__name__}: {str(e)}"
+    return result
 
 
 # =============================================
