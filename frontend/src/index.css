@@ -13,6 +13,11 @@
     --ea-white: #FFFFFF;
 }
 
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
 body {
     margin: 0;
     font-family: 'Figtree', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
