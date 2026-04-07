@@ -3180,9 +3180,9 @@ async def generate_expose_pdf(inp: SimulationInput):
         
         # Logo
         try:
-            logo_path = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'public', 'euroadria-logo.png')
+            logo_path = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'public', 'euroadria-logo-white.png')
             if not os.path.exists(logo_path):
-                logo_path = '/app/frontend/public/euroadria-logo.png'
+                logo_path = '/app/frontend/public/euroadria-logo-white.png'
             if os.path.exists(logo_path):
                 canvas.drawImage(logo_path, 15*mm, page_h - 22*mm, width=18*mm, height=14*mm, preserveAspectRatio=True, mask='auto')
         except:
