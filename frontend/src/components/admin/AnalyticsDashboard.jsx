@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import { 
   Eye, Users, Calculator, Mail, TrendingUp, Monitor, Smartphone, Tablet,
-  Download, ArrowUpRight, ArrowDownRight, FileText, Share2, Megaphone
+  Download, ArrowUpRight, ArrowDownRight, FileText, Share2, Megaphone, RotateCcw, AlertTriangle
 } from 'lucide-react';
 
 const COLORS = ['#C8A96A', '#04151F', '#6B7280', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
@@ -48,6 +48,8 @@ const AnalyticsDashboard = ({ credentials }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState(30);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     fetchAnalytics();
@@ -68,6 +70,23 @@ const AnalyticsDashboard = ({ credentials }) => {
       console.error('Analytics fetch failed:', err);
     }
     setLoading(false);
+  };
+
+  const resetAnalytics = async () => {
+    setResetting(true);
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/admin/analytics/reset`,
+        { method: 'DELETE', headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) } }
+      );
+      if (res.ok) {
+        setShowResetModal(false);
+        fetchAnalytics();
+      }
+    } catch (err) {
+      console.error('Analytics reset failed:', err);
+    }
+    setResetting(false);
   };
 
   const exportLeadsCSV = () => {
@@ -106,10 +125,44 @@ const AnalyticsDashboard = ({ credentials }) => {
 
   return (
     <div className="space-y-6" data-testid="analytics-dashboard">
-      {/* Period Selector */}
+      {/* Reset Confirmation Modal */}
+      {showResetModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" data-testid="reset-analytics-modal">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-red-500" />
+              </div>
+              <h3 className="text-lg font-bold text-ea-dark">Analytics zurücksetzen?</h3>
+            </div>
+            <p className="text-sm text-ea-dark/60 mb-6">
+              Alle Seitenaufrufe, Kontaktanfragen und Tracking-Daten werden unwiderruflich gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowResetModal(false)}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-ea-dark/70 hover:bg-gray-200 transition-all"
+                data-testid="reset-analytics-cancel"
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={resetAnalytics}
+                disabled={resetting}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-all disabled:opacity-50"
+                data-testid="reset-analytics-confirm"
+              >
+                {resetting ? 'Wird gelöscht...' : 'Ja, alles löschen'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Period Selector + Reset */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h2 className="text-xl font-bold text-ea-dark">Analytics Dashboard</h2>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           {[7, 30, 90].map(d => (
             <button
               key={d}
@@ -124,6 +177,14 @@ const AnalyticsDashboard = ({ credentials }) => {
               {d} Tage
             </button>
           ))}
+          <button
+            onClick={() => setShowResetModal(true)}
+            className="ml-2 flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-all"
+            data-testid="reset-analytics-button"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Zurücksetzen
+          </button>
         </div>
       </div>
 

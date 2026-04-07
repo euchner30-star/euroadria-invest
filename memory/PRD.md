@@ -61,6 +61,9 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - Resend domain verification (waiting for DNS propagation at Strato)
 - Google Search Console: add euroadria.me property
 
+## Recent Changes (April 2026)
+- Analytics Dashboard: Added "Zurücksetzen" button with confirmation modal to reset all page views, contacts, and tracking data
+
 ## Backlog (P2)
 - Apartment-Listing with real DB data
 - Video background for Hero section
