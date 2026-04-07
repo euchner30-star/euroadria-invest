@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import {
   Users, DollarSign, TrendingUp, Target, ArrowRight, Plus, Edit2, Trash2, Save,
   Loader2, GripVertical, Phone, Mail, Calendar, ChevronDown, X, AlertCircle, Check
@@ -19,13 +19,13 @@ const SOURCE_LABELS = {
 // KPI Card Component
 // ========================
 const KPI = ({ label, value, sub, icon: Icon, color = 'text-ea-gold' }) => (
-  <div className="bg-white border border-gray-200 rounded-xl p-5" data-testid={`kpi-${label.toLowerCase().replace(/\s/g, '-')}`}>
-    <div className="flex items-center justify-between mb-2">
-      <span className="text-xs font-medium text-ea-dark/40 uppercase tracking-wider">{label}</span>
-      {Icon && <Icon className={`w-4 h-4 ${color}`} />}
+  <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-5" data-testid={`kpi-${label.toLowerCase().replace(/\s/g, '-')}`}>
+    <div className="flex items-center justify-between mb-1 sm:mb-2">
+      <span className="text-[10px] sm:text-xs font-medium text-ea-dark/40 uppercase tracking-wider truncate mr-1">{label}</span>
+      {Icon && <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${color} shrink-0`} />}
     </div>
-    <p className="text-2xl font-bold text-ea-dark">{value}</p>
-    {sub && <p className="text-xs text-ea-dark/50 mt-1">{sub}</p>}
+    <p className="text-base sm:text-2xl font-bold text-ea-dark truncate">{value}</p>
+    {sub && <p className="text-[10px] sm:text-xs text-ea-dark/50 mt-1 truncate">{sub}</p>}
   </div>
 );
 
@@ -112,18 +112,19 @@ export const PipelineView = ({ credentials }) => {
     <div className="space-y-6" data-testid="pipeline-view">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h2 className="text-xl font-bold text-ea-dark">Sales Pipeline</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-ea-dark">Sales Pipeline</h2>
         <div className="flex gap-2">
           <button onClick={migrateLeads} disabled={migrating}
-            className="flex items-center gap-2 px-3 py-2 bg-gray-100 text-ea-dark/70 rounded-lg text-xs font-medium hover:bg-gray-200 transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-gray-100 text-ea-dark/70 rounded-lg text-[10px] sm:text-xs font-medium hover:bg-gray-200 transition-all disabled:opacity-50"
             data-testid="migrate-leads-btn">
-            {migrating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ArrowRight className="w-3.5 h-3.5" />}
-            Alte Leads importieren
+            {migrating ? <Loader2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-spin" /> : <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
+            <span className="hidden sm:inline">Alte Leads importieren</span>
+            <span className="sm:hidden">Import</span>
           </button>
           <button onClick={() => setShowNewLead(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-ea-gold text-ea-dark font-semibold rounded-lg text-sm hover:bg-ea-gold/80 transition-all"
+            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-ea-gold text-ea-dark font-semibold rounded-lg text-xs sm:text-sm hover:bg-ea-gold/80 transition-all"
             data-testid="add-lead-btn">
-            <Plus className="w-4 h-4" /> Neuer Lead
+            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> <span className="hidden sm:inline">Neuer Lead</span><span className="sm:hidden">Neu</span>
           </button>
         </div>
       </div>
@@ -132,21 +133,21 @@ export const PipelineView = ({ credentials }) => {
       {showNewLead && <NewLeadForm authHeader={authHeader} onClose={() => setShowNewLead(false)} onCreated={fetchAll} />}
 
       {/* Kanban Board */}
-      <div className="overflow-x-auto pb-4">
-        <div className="flex gap-4 min-w-max">
+      <div className="overflow-x-auto pb-4 -mx-2 px-2">
+        <div className="flex gap-3 sm:gap-4 min-w-max">
           {activeStages.map(stage => {
             const stageDeals = deals.filter(d => d.stage === stage.id);
             const stageValue = stageDeals.reduce((sum, d) => sum + (d.deal_value || 0), 0);
             return (
-              <div key={stage.id} className="w-72 shrink-0" data-testid={`stage-${stage.id}`}>
+              <div key={stage.id} className="w-56 sm:w-72 shrink-0" data-testid={`stage-${stage.id}`}>
                 {/* Stage Header */}
-                <div className="flex items-center justify-between mb-3 px-1">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: stage.color }} />
-                    <span className="font-semibold text-sm text-ea-dark">{stage.name}</span>
-                    <span className="bg-gray-100 text-ea-dark/50 text-xs px-2 py-0.5 rounded-full font-medium">{stageDeals.length}</span>
+                <div className="flex items-center justify-between mb-2 sm:mb-3 px-1">
+                  <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0" style={{ backgroundColor: stage.color }} />
+                    <span className="font-semibold text-xs sm:text-sm text-ea-dark truncate">{stage.name}</span>
+                    <span className="bg-gray-100 text-ea-dark/50 text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full font-medium shrink-0">{stageDeals.length}</span>
                   </div>
-                  <span className="text-xs text-ea-dark/40">{stage.probability}%</span>
+                  <span className="text-[10px] sm:text-xs text-ea-dark/40 shrink-0 ml-1">{stage.probability}%</span>
                 </div>
                 {stageValue > 0 && (
                   <p className="text-xs text-ea-dark/40 mb-2 px-1">{fmt(stageValue)}</p>
@@ -290,22 +291,22 @@ const NewLeadForm = ({ authHeader, onClose, onCreated }) => {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4" data-testid="new-lead-form">
+    <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-5 shadow-sm space-y-3 sm:space-y-4" data-testid="new-lead-form">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-ea-dark">Neuer Lead</h3>
+        <h3 className="font-semibold text-ea-dark text-sm sm:text-base">Neuer Lead</h3>
         <button onClick={onClose} className="text-ea-dark/40 hover:text-ea-dark"><X className="w-4 h-4" /></button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
         <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-          placeholder="Name *" className="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" data-testid="lead-name-input" />
+          placeholder="Name *" className="border border-gray-200 rounded-lg px-3 py-2 sm:py-2.5 text-sm focus:outline-none focus:border-ea-gold" data-testid="lead-name-input" />
         <input value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-          placeholder="E-Mail *" className="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" data-testid="lead-email-input" />
+          placeholder="E-Mail *" className="border border-gray-200 rounded-lg px-3 py-2 sm:py-2.5 text-sm focus:outline-none focus:border-ea-gold" data-testid="lead-email-input" />
         <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-          placeholder="Telefon" className="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" />
+          placeholder="Telefon" className="border border-gray-200 rounded-lg px-3 py-2 sm:py-2.5 text-sm focus:outline-none focus:border-ea-gold" />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
         <select value={form.lead_source} onChange={e => setForm(f => ({ ...f, lead_source: e.target.value }))}
-          className="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold">
+          className="border border-gray-200 rounded-lg px-3 py-2 sm:py-2.5 text-sm focus:outline-none focus:border-ea-gold">
           <option value="direct">Direkt</option>
           <option value="google">Google</option>
           <option value="instagram">Instagram</option>
@@ -316,10 +317,10 @@ const NewLeadForm = ({ authHeader, onClose, onCreated }) => {
           <option value="kontaktformular">Kontaktformular</option>
         </select>
         <input value={form.tool_used} onChange={e => setForm(f => ({ ...f, tool_used: e.target.value }))}
-          placeholder="Tool (z.B. ROI Rechner, Blog, Exposé)" className="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" />
+          placeholder="Tool (z.B. ROI Rechner, Blog)" className="border border-gray-200 rounded-lg px-3 py-2 sm:py-2.5 text-sm focus:outline-none focus:border-ea-gold" />
       </div>
       <button onClick={handleSubmit} disabled={saving || !form.name || !form.email}
-        className="flex items-center gap-2 px-5 py-2.5 bg-ea-gold text-ea-dark font-semibold rounded-lg text-sm hover:bg-ea-gold/80 disabled:opacity-50 transition-all"
+        className="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-ea-gold text-ea-dark font-semibold rounded-lg text-xs sm:text-sm hover:bg-ea-gold/80 disabled:opacity-50 transition-all"
         data-testid="save-lead-btn">
         {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Lead erstellen
       </button>
@@ -411,17 +412,17 @@ export const RevenueDashboard = ({ credentials }) => {
 
   return (
     <div className="space-y-6" data-testid="revenue-dashboard">
-      <h2 className="text-xl font-bold text-ea-dark">Revenue Dashboard</h2>
+      <h2 className="text-lg sm:text-xl font-bold text-ea-dark">Revenue Dashboard</h2>
 
       {/* KPI Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
         <KPI label="Leads" value={stats.total_leads} icon={Users} />
         <KPI label="Aktive Deals" value={stats.active_deals} icon={Target} color="text-blue-500" />
         <KPI label="Pipeline-Wert" value={fmt(stats.pipeline_value)} icon={DollarSign} />
         <KPI label="Erw. Revenue" value={fmt(stats.expected_revenue)} icon={TrendingUp} sub={`Gewonnen: ${fmt(stats.won_revenue)}`} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
         <KPI label="Gewonnene Deals" value={stats.won_deals} sub={fmt(stats.won_revenue)} color="text-green-500" />
         <KPI label="Verlorene Deals" value={stats.lost_deals} color="text-red-500" />
         <KPI label="Conversion Rate" value={`${stats.conversion_rate}%`} icon={TrendingUp}
@@ -429,17 +430,17 @@ export const RevenueDashboard = ({ credentials }) => {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* Revenue by Stage */}
         {stageData.length > 0 && (
-          <div className="bg-white border border-gray-200 rounded-xl p-5">
-            <h3 className="font-semibold text-ea-dark text-sm mb-4">Pipeline nach Phase</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={stageData}>
+          <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-5">
+            <h3 className="font-semibold text-ea-dark text-xs sm:text-sm mb-3 sm:mb-4">Pipeline nach Phase</h3>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={stageData} margin={{ top: 5, right: 5, left: -15, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(v) => fmt(v)} />
+                <XAxis dataKey="name" tick={{ fontSize: 9 }} angle={-30} textAnchor="end" height={50} interval={0} />
+                <YAxis tick={{ fontSize: 9 }} width={45} />
+                <Tooltip formatter={(v) => fmt(v)} contentStyle={{ fontSize: 12 }} />
                 <Bar dataKey="value" fill="#c8a96a" radius={[4, 4, 0, 0]} name="Deal-Wert" />
                 <Bar dataKey="expected" fill="#3B82F6" radius={[4, 4, 0, 0]} name="Erw. Revenue" />
               </BarChart>
@@ -449,19 +450,28 @@ export const RevenueDashboard = ({ credentials }) => {
 
         {/* Leads by Source */}
         {sourceData.length > 0 && (
-          <div className="bg-white border border-gray-200 rounded-xl p-5">
-            <h3 className="font-semibold text-ea-dark text-sm mb-4">Leads nach Quelle</h3>
-            <ResponsiveContainer width="100%" height={250}>
+          <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-5">
+            <h3 className="font-semibold text-ea-dark text-xs sm:text-sm mb-3 sm:mb-4">Leads nach Quelle</h3>
+            <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie data={sourceData} dataKey="value" nameKey="name" cx="50%" cy="50%"
-                  outerRadius={90} innerRadius={50} paddingAngle={2} label={({ name, value }) => `${name}: ${value}`}>
+                  outerRadius={65} innerRadius={35} paddingAngle={2} label={false}>
                   {sourceData.map((_, idx) => (
                     <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
               </PieChart>
             </ResponsiveContainer>
+            {/* Custom Legend */}
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-3 px-1">
+              {sourceData.map((entry, idx) => (
+                <div key={entry.name} className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
+                  <span className="text-xs text-ea-dark/70">{entry.name}: <strong>{entry.value}</strong></span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
