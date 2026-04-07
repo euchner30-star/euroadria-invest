@@ -2312,7 +2312,9 @@ const AdminPage = () => {
                                     <span className={`text-xs px-1.5 py-0.5 rounded ${statusColors[proj.status] || 'bg-gray-100 text-gray-700'}`}>{statusLabels[proj.status] || proj.status}</span>
                                   </div>
                                   <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs sm:text-sm text-ea-dark/60 mt-0.5">
-                                    {proj.investment_eur > 0 && <span>{(proj.investment_eur / 1000000).toFixed(0)} Mio. EUR</span>}
+                                    {proj.investment_eur > 0 && <span>{proj.investment_eur >= 1000000000
+                                      ? `${(proj.investment_eur / 1000000000).toLocaleString('de-DE', { minimumFractionDigits: proj.investment_eur % 1000000000 === 0 ? 0 : 1, maximumFractionDigits: 1 })} Mrd. EUR`
+                                      : `${(proj.investment_eur / 1000000).toFixed(0)} Mio. EUR`}</span>}
                                     {proj.completion_year && <span>Fertig: {proj.completion_year}</span>}
                                     <span>Radius: {proj.impact_radius_km} km</span>
                                   </div>

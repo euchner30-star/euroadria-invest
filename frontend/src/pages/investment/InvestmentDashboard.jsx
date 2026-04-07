@@ -249,7 +249,9 @@ const InvestmentDashboard = () => {
                   {proj.investment_eur && (
                     <p className="text-ea-gold text-sm font-medium mt-2">
                       <Euro className="w-3 h-3 inline mr-1" />
-                      {(proj.investment_eur / 1000000).toFixed(0)} Mio.
+                      {proj.investment_eur >= 1000000000
+                        ? `${(proj.investment_eur / 1000000000).toLocaleString('de-DE', { minimumFractionDigits: proj.investment_eur % 1000000000 === 0 ? 0 : 1, maximumFractionDigits: 1 })} Mrd.`
+                        : `${(proj.investment_eur / 1000000).toFixed(0)} Mio.`}
                     </p>
                   )}
                 </div>
