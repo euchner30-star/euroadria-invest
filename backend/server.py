@@ -11,7 +11,7 @@ from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional, Literal
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import secrets
 import io
 import resend
@@ -68,6 +68,107 @@ db = client[os.environ['DB_NAME']]
 
 # Create the main app without a prefix
 app = FastAPI()
+
+# Background follow-up email task
+async def followup_email_loop():
+    """Check every hour for leads that need a 3-day follow-up email"""
+    import asyncio
+    await asyncio.sleep(60)  # Wait 1 min after startup
+    while True:
+        try:
+            three_days_ago = (datetime.now(timezone.utc) - timedelta(days=3)).isoformat()
+            four_days_ago = (datetime.now(timezone.utc) - timedelta(days=4)).isoformat()
+            
+            # Find leads from ~3 days ago that haven't received follow-up
+            leads = await db.crm_leads.find({
+                "created_at": {"$gte": four_days_ago, "$lte": three_days_ago},
+                "follow_up_sent": {"$ne": True},
+                "lead_source": {"$in": ["expose_download", "simulation_pdf", "kontaktformular"]}
+            }, {"_id": 0}).to_list(50)
+            
+            if leads and RESEND_API_KEY:
+                resend.api_key = RESEND_API_KEY
+                for lead in leads:
+                    try:
+                        name = lead.get("name", "Investor")
+                        email = lead.get("email", "")
+                        if not email:
+                            continue
+                        
+                        followup_html = f"""
+                        <html>
+                        <body style="margin:0;padding:0;background-color:#04151F;font-family:Arial,Helvetica,sans-serif;">
+                            <div style="max-width:600px;margin:0 auto;background-color:#04151F;">
+                                <div style="background-color:#071E2D;padding:24px 30px;border-bottom:2px solid #C8A96A;">
+                                    <span style="color:#FFFFFF;font-size:16px;font-weight:bold;letter-spacing:0.5px;">EUROADRIA CORPORATE SOLUTIONS</span><br/>
+                                    <span style="color:#C8A96A;font-size:11px;">Investment Intelligence Platform</span>
+                                </div>
+                                <div style="padding:32px 30px;">
+                                    <h1 style="color:#FFFFFF;font-size:22px;margin:0 0 16px 0;">Hallo {name},</h1>
+                                    <p style="color:#D0D8E0;font-size:14px;line-height:22px;margin:0 0 20px 0;">
+                                        vor ein paar Tagen haben Sie unsere Investment-Analyse genutzt. Haben Sie noch Fragen zu den Ergebnissen oder zur Marktsituation in der Adria-Region?
+                                    </p>
+                                    <div style="background-color:#0D2A3D;border-radius:8px;padding:20px;border-left:3px solid #C8A96A;margin-bottom:24px;">
+                                        <p style="color:#C8A96A;font-size:13px;font-weight:bold;margin:0 0 8px 0;">Was wir für Sie tun können:</p>
+                                        <p style="color:#D0D8E0;font-size:13px;line-height:20px;margin:0;">
+                                            &#8226; Persönliche Analyse Ihrer Investment-Strategie<br/>
+                                            &#8226; Aktuelle Marktdaten und Standort-Empfehlungen<br/>
+                                            &#8226; Rechtliche und steuerliche Beratung vor Ort
+                                        </p>
+                                    </div>
+                                    <p style="color:#D0D8E0;font-size:14px;line-height:22px;margin:0 0 24px 0;">
+                                        Buchen Sie jetzt ein <strong style="color:#C8A96A;">kostenloses 15-Minuten-Gespräch</strong> mit einem unserer Experten — unverbindlich und vertraulich.
+                                    </p>
+                                    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                        <tr>
+                                            <td align="center" style="padding:8px 0 24px 0;">
+                                                <a href="https://euroadria.me/kontakt" style="display:inline-block;background-color:#C8A96A;color:#04151F;font-size:14px;font-weight:bold;text-decoration:none;padding:14px 32px;border-radius:6px;">
+                                                    Kostenloses Beratungsgespräch buchen
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <p style="color:#5A6A78;font-size:11px;margin:0;">
+                                        Sie erhalten diese E-Mail, weil Sie unsere Investment-Tools auf euroadria.me genutzt haben. 
+                                        Falls Sie keine weiteren E-Mails wünschen, antworten Sie einfach mit "Abmelden".
+                                    </p>
+                                </div>
+                                <div style="background-color:#071E2D;padding:20px 30px;border-top:1px solid #1A3040;">
+                                    <p style="color:#8896A3;font-size:11px;margin:0 0 4px 0;">EuroAdria Corporate Solutions</p>
+                                    <p style="color:#5A6A78;font-size:10px;margin:0;">euroadria.me | office@euroadria.me</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+                        """
+                        
+                        resend.Emails.send({
+                            "from": "EuroAdria Corporate Solutions <noreply@euroadria.me>",
+                            "to": [email],
+                            "subject": f"{name}, haben Sie noch Fragen zu Ihrer Investment-Analyse?",
+                            "html": followup_html,
+                            "reply_to": NOTIFICATION_EMAIL
+                        })
+                        
+                        await db.crm_leads.update_one(
+                            {"id": lead["id"]},
+                            {"$set": {"follow_up_sent": True, "follow_up_at": datetime.now(timezone.utc).isoformat()}}
+                        )
+                        logger.info(f"Follow-up email sent to {email}")
+                    except Exception as e:
+                        logger.error(f"Follow-up email failed for {email}: {e}")
+                
+                if leads:
+                    logger.info(f"Follow-up check: {len(leads)} emails processed")
+        except Exception as e:
+            logger.error(f"Follow-up loop error: {e}")
+        
+        await asyncio.sleep(3600)  # Check every hour
+
+@app.on_event("startup")
+async def startup_event():
+    import asyncio
+    asyncio.create_task(followup_email_loop())
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
