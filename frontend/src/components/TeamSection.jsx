@@ -56,7 +56,12 @@ const TeamSection = () => {
     }
   ];
 
-  const teamMembers = members.length > 0 ? members : defaultMembers;
+  const teamMembers = members.length > 0 
+    ? members.map(m => {
+        const fallback = defaultMembers.find(d => d.id === m.id);
+        return { ...fallback, ...m, bio: m.bio || fallback?.bio, usp: m.usp || fallback?.usp };
+      })
+    : defaultMembers;
 
   if (loading) {
     return (

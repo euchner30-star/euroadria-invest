@@ -38,6 +38,15 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
   - Exit-Kosten: 3% Maklergebühr-Slider, abgezogen vom Endwert
   - Hypotheken-Annuität: Dynamische Tabellenspalte bei Fremdfinanzierung (EK < 100%)
   - Lead-Gen CTA: "Finanzierung für dieses Objekt anfragen" Button mit Kontaktformular-Link
+- [x] OnePage-Migration (2026-04-07):
+  - Neue /leistungen Seite: 4 Servicebereiche (Immobilien, Firmengründung, Legal, Investor Relations)
+  - Rechtsrisiken Problem/Lösung Sektion (Baugenehmigung, Kataster, Erbchaos)
+  - Exit-Sicherheit & Compliance Sektion (Airbnb, Grauzonen, politische Risiken)
+  - Doppelte Garantie: Vor dem Kauf / Nach dem Kauf
+  - Erweiterte Team-Bios (Holger: Evercraft/Industrie-Hintergrund, Milena: Master Rechtswissenschaften)
+  - Kontaktformular: Service-Auswahl Dropdown + Betreff-Prefill via URL-Parameter
+  - Navigation: "Leistungen" Link im Header
+  - Sitemap: /leistungen mit Priorität 0.9 + Sitemap-Index Fix (alte statische sitemap.xml → Redirect zur dynamischen API)
 
 ## Architecture
 ### Key Files
