@@ -3414,18 +3414,25 @@ async def get_crm_stats(admin: str = Depends(verify_admin)):
     won_deals = await db.crm_deals.count_documents({"stage": "won"})
     lost_deals = await db.crm_deals.count_documents({"stage": "lost"})
 
-    # Pipeline value & expected revenue
+    # Pipeline value (only active deals, not won/lost)
     pipeline = db.crm_deals.aggregate([
-        {"$match": {"stage": {"$nin": ["lost"]}}},
+        {"$match": {"stage": {"$nin": ["lost", "won"]}}},
         {"$group": {
             "_id": None,
             "pipeline_value": {"$sum": "$deal_value"},
-            "expected_revenue": {"$sum": "$expected_revenue"},
-            "won_revenue": {"$sum": {"$cond": [{"$eq": ["$stage", "won"]}, "$deal_value", 0]}}
+            "expected_revenue": {"$sum": "$expected_revenue"}
         }}
     ])
     totals = await pipeline.to_list(1)
-    totals = totals[0] if totals else {"pipeline_value": 0, "expected_revenue": 0, "won_revenue": 0}
+    totals = totals[0] if totals else {"pipeline_value": 0, "expected_revenue": 0}
+
+    # Won revenue (separate)
+    won_pipeline = db.crm_deals.aggregate([
+        {"$match": {"stage": "won"}},
+        {"$group": {"_id": None, "won_revenue": {"$sum": "$deal_value"}}}
+    ])
+    won_totals = await won_pipeline.to_list(1)
+    won_revenue = won_totals[0]["won_revenue"] if won_totals else 0
 
     # By source
     source_pipeline = db.crm_leads.aggregate([
@@ -3456,7 +3463,7 @@ async def get_crm_stats(admin: str = Depends(verify_admin)):
         "lost_deals": lost_deals,
         "pipeline_value": totals.get("pipeline_value", 0),
         "expected_revenue": totals.get("expected_revenue", 0),
-        "won_revenue": totals.get("won_revenue", 0),
+        "won_revenue": won_revenue,
         "conversion_rate": conversion_rate,
         "by_source": by_source,
         "by_stage": by_stage
