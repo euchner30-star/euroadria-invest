@@ -156,10 +156,50 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
     }
   }, [notifyParent, saveToHistory]);
 
-  // Format as heading
-  const formatHeading = (level) => {
-    execCommand('formatBlock', `h${level}`);
-  };
+  // Format as heading - supports partial selection (splits block if needed)
+  const formatHeading = useCallback((level) => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+      execCommand('formatBlock', `h${level}`);
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const selectedText = range.toString().trim();
+
+    if (!selectedText) {
+      execCommand('formatBlock', `h${level}`);
+      return;
+    }
+
+    // Find the parent block element
+    const editor = editorRef.current;
+    let block = range.commonAncestorContainer;
+    if (block.nodeType === 3) block = block.parentNode;
+    while (block && block !== editor &&
+           !['P', 'H1', 'H2', 'H3', 'DIV', 'LI', 'BLOCKQUOTE'].includes(block.nodeName)) {
+      block = block.parentNode;
+    }
+
+    // If entire block is selected or no block found, use default
+    if (!block || (block !== editor && range.toString().trim() === block.textContent.trim())) {
+      execCommand('formatBlock', `h${level}`);
+      return;
+    }
+
+    // Partial selection — use insertHTML to let browser handle block splitting
+    const tempDiv = document.createElement('div');
+    tempDiv.appendChild(range.cloneContents());
+    const selectedHtml = tempDiv.innerHTML;
+
+    range.deleteContents();
+    document.execCommand('insertHTML', false, `<h${level}>${selectedHtml}</h${level}>`);
+
+    editor.focus();
+    const newContent = editor.innerHTML;
+    notifyParent(newContent);
+    saveToHistory(newContent);
+  }, [execCommand, notifyParent, saveToHistory]);
 
   // Handle content change - preserve cursor position naturally
   const handleInput = () => {
