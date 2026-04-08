@@ -232,7 +232,7 @@ async def reset_analytics(admin: str = Depends(verify_admin)):
     """Reset all analytics data (page views, contact submissions, calculator tracking, leads)"""
     pv = await db.page_views.delete_many({})
     cs = await db.contact_submissions.delete_many({})
-    ct = await db.calculator_tracking.delete_many({})
+    ct = await db.calculator_usage.delete_many({})
     ld = await db.leads.delete_many({})
     return {
         "message": "Analytics zurückgesetzt",
