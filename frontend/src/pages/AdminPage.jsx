@@ -5,7 +5,7 @@ import {
   FileText, Loader2, AlertCircle, Check, MessageSquare,
   CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image as ImageIcon,
   Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield, Send, Eye, Upload, Calendar, DollarSign, Target,
-  ChevronDown, ChevronRight, Menu, X as XIcon
+  ChevronDown, ChevronRight, Menu, X as XIcon, Printer
 } from 'lucide-react';
 import { PipelineView, RevenueDashboard } from '../components/admin/CRMPipeline';
 import SEO from '../components/SEO';
@@ -13,6 +13,7 @@ import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHt
 import ImageUploader, { ImageGalleryUploader } from '../components/admin/ImageUploader';
 import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
 import NewsletterAdmin from '../components/admin/NewsletterAdmin';
+import PDFGenerator from '../components/admin/PDFGenerator';
 
 const NAV_GROUPS = [
   {
@@ -31,6 +32,7 @@ const NAV_GROUPS = [
       { key: 'homepage', icon: Home, label: 'Homepage' },
       { key: 'downloads', icon: Download, label: 'Downloads' },
       { key: 'leistungen', icon: Shield, label: 'Leistungen' },
+      { key: 'pdfgenerator', icon: Printer, label: 'PDF Generator' },
     ]
   },
   {
@@ -2617,6 +2619,11 @@ const AdminPage = () => {
         {/* Leistungen CMS Tab */}
         {activeTab === 'leistungen' && (
           <LeistungenAdmin credentials={credentials} />
+        )}
+
+        {/* PDF Generator Tab */}
+        {activeTab === 'pdfgenerator' && (
+          <PDFGenerator credentials={credentials} />
         )}
 
         {/* Pipeline Tab */}
