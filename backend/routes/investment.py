@@ -351,42 +351,47 @@ async def generate_expose_pdf(inp: SimulationInput):
     result = calculate_simulation(inp)
     buffer = io.BytesIO()
 
-    ea_dark = HexColor('#04151F')
+    ea_white = HexColor('#FFFFFF')
     ea_gold = HexColor('#C8A96A')
-    ea_gray = HexColor('#8896A3')
-    text_white = HexColor('#FFFFFF')
-    border_color = HexColor('#1A3040')
+    ea_dark = HexColor('#04151F')
+    ea_gray = HexColor('#888888')
+    ea_light_bg = HexColor('#F8F9FA')
+    ea_lighter_bg = HexColor('#FFFFFF')
+    ea_border = HexColor('#E5E7EB')
+    ea_text = HexColor('#333333')
 
     page_w, page_h = A4
 
     def page_template(canvas, doc):
         canvas.saveState()
-        canvas.setFillColor(ea_dark)
+        # White page background
+        canvas.setFillColor(ea_white)
         canvas.rect(0, 0, page_w, page_h, fill=1, stroke=0)
-        canvas.setFillColor(HexColor('#071E2D'))
+        # Header bar - white with gold bottom border
+        canvas.setFillColor(ea_white)
         canvas.rect(0, page_h - 28*mm, page_w, 28*mm, fill=1, stroke=0)
         canvas.setStrokeColor(ea_gold)
-        canvas.setLineWidth(1.5)
-        canvas.line(15*mm, page_h - 28*mm, page_w - 15*mm, page_h - 28*mm)
+        canvas.setLineWidth(2)
+        canvas.line(0, page_h - 28*mm, page_w, page_h - 28*mm)
+        # Logo (regular version)
         try:
-            logo_path = os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'public', 'euroadria-logo-white.png')
-            if not os.path.exists(logo_path):
-                logo_path = '/app/frontend/public/euroadria-logo-white.png'
+            logo_path = '/app/frontend/public/euroadria-logo.png'
             if os.path.exists(logo_path):
-                canvas.drawImage(logo_path, 15*mm, page_h - 22*mm, width=18*mm, height=14*mm, preserveAspectRatio=True, mask='auto')
+                canvas.drawImage(logo_path, 15*mm, page_h - 23*mm, width=18*mm, height=16*mm, preserveAspectRatio=True, mask='auto')
         except:
             pass
         canvas.setFont('Helvetica-Bold', 11)
-        canvas.setFillColor(text_white)
+        canvas.setFillColor(ea_dark)
         canvas.drawString(36*mm, page_h - 16*mm, "EUROADRIA CORPORATE SOLUTIONS")
         canvas.setFont('Helvetica', 7.5)
         canvas.setFillColor(ea_gold)
         canvas.drawString(36*mm, page_h - 21*mm, "Beratung & Angebotsplattform")
-        canvas.setFillColor(HexColor('#071E2D'))
+        # Footer bar - light gray
+        canvas.setFillColor(ea_light_bg)
         canvas.rect(0, 0, page_w, 14*mm, fill=1, stroke=0)
-        canvas.setStrokeColor(ea_gold)
+        canvas.setStrokeColor(ea_border)
         canvas.setLineWidth(0.5)
-        canvas.line(15*mm, 14*mm, page_w - 15*mm, 14*mm)
+        canvas.line(0, 14*mm, page_w, 14*mm)
         canvas.setFont('Helvetica', 6.5)
         canvas.setFillColor(ea_gray)
         canvas.drawString(15*mm, 8*mm, "EuroAdria Corporate Solutions | euroadria.me | office@euroadria.me")
@@ -399,10 +404,10 @@ async def generate_expose_pdf(inp: SimulationInput):
     doc = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=15*mm, rightMargin=15*mm, topMargin=34*mm, bottomMargin=20*mm)
 
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle('EA_Title', parent=styles['Title'], fontSize=20, textColor=text_white, spaceAfter=2*mm, fontName='Helvetica-Bold'))
+    styles.add(ParagraphStyle('EA_Title', parent=styles['Title'], fontSize=20, textColor=ea_dark, spaceAfter=2*mm, fontName='Helvetica-Bold'))
     styles.add(ParagraphStyle('EA_Subtitle', parent=styles['Normal'], fontSize=10, textColor=ea_gray, spaceAfter=6*mm))
     styles.add(ParagraphStyle('EA_Section', parent=styles['Heading2'], fontSize=12, textColor=ea_gold, spaceBefore=7*mm, spaceAfter=3*mm, fontName='Helvetica-Bold', borderWidth=0))
-    styles.add(ParagraphStyle('EA_Body', parent=styles['Normal'], fontSize=9, textColor=HexColor('#D0D8E0'), leading=13))
+    styles.add(ParagraphStyle('EA_Body', parent=styles['Normal'], fontSize=9, textColor=ea_text, leading=13))
     styles.add(ParagraphStyle('EA_Small', parent=styles['Normal'], fontSize=7, textColor=ea_gray, leading=10))
 
     elements = []
@@ -428,17 +433,17 @@ async def generate_expose_pdf(inp: SimulationInput):
     ]
     kpi_table = Table(kpi_data, colWidths=[42*mm]*4)
     kpi_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), HexColor('#0D2A3D')), ('BACKGROUND', (0, 2), (-1, 2), HexColor('#0D2A3D')),
-        ('BACKGROUND', (0, 1), (-1, 1), HexColor('#081F2E')), ('BACKGROUND', (0, 3), (-1, 3), HexColor('#081F2E')),
+        ('BACKGROUND', (0, 0), (-1, 0), ea_light_bg), ('BACKGROUND', (0, 2), (-1, 2), ea_light_bg),
+        ('BACKGROUND', (0, 1), (-1, 1), ea_lighter_bg), ('BACKGROUND', (0, 3), (-1, 3), ea_lighter_bg),
         ('TEXTCOLOR', (0, 0), (-1, 0), ea_gold), ('TEXTCOLOR', (0, 2), (-1, 2), ea_gold),
-        ('TEXTCOLOR', (0, 1), (-1, 1), text_white), ('TEXTCOLOR', (0, 3), (-1, 3), text_white),
+        ('TEXTCOLOR', (0, 1), (-1, 1), ea_dark), ('TEXTCOLOR', (0, 3), (-1, 3), ea_dark),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica'), ('FONTNAME', (0, 2), (-1, 2), 'Helvetica'),
         ('FONTNAME', (0, 1), (-1, 1), 'Helvetica-Bold'), ('FONTNAME', (0, 3), (-1, 3), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 7), ('FONTSIZE', (0, 2), (-1, 2), 7),
         ('FONTSIZE', (0, 1), (-1, 1), 12), ('FONTSIZE', (0, 3), (-1, 3), 12),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('TOPPADDING', (0, 0), (-1, -1), 6), ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-        ('GRID', (0, 0), (-1, -1), 0.5, border_color), ('ROUNDEDCORNERS', [3, 3, 3, 3]),
+        ('GRID', (0, 0), (-1, -1), 0.5, ea_border), ('ROUNDEDCORNERS', [3, 3, 3, 3]),
     ]))
     elements.append(kpi_table)
     elements.append(Spacer(1, 4*mm))
@@ -455,13 +460,13 @@ async def generate_expose_pdf(inp: SimulationInput):
     ]
     param_table = Table(param_data, colWidths=[38*mm, 32*mm, 40*mm, 30*mm])
     param_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), ea_gold), ('TEXTCOLOR', (0, 0), (-1, 0), ea_dark),
+        ('BACKGROUND', (0, 0), (-1, 0), ea_gold), ('TEXTCOLOR', (0, 0), (-1, 0), ea_white),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'), ('FONTSIZE', (0, 0), (-1, -1), 8),
-        ('TEXTCOLOR', (0, 1), (-1, -1), HexColor('#D0D8E0')),
+        ('TEXTCOLOR', (0, 1), (-1, -1), ea_text),
         ('ALIGN', (1, 0), (1, -1), 'RIGHT'), ('ALIGN', (3, 0), (3, -1), 'RIGHT'),
         ('TOPPADDING', (0, 0), (-1, -1), 4), ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
-        ('GRID', (0, 0), (-1, -1), 0.5, border_color),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [HexColor('#081F2E'), HexColor('#0D2A3D')]),
+        ('GRID', (0, 0), (-1, -1), 0.5, ea_border),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [ea_lighter_bg, ea_light_bg]),
     ]))
     elements.append(param_table)
     elements.append(Spacer(1, 4*mm))
@@ -474,13 +479,13 @@ async def generate_expose_pdf(inp: SimulationInput):
 
     cf_table = Table(cf_rows, colWidths=[12*mm, 26*mm, 24*mm, 22*mm, 22*mm, 22*mm, 30*mm])
     cf_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), ea_gold), ('TEXTCOLOR', (0, 0), (-1, 0), ea_dark),
+        ('BACKGROUND', (0, 0), (-1, 0), ea_gold), ('TEXTCOLOR', (0, 0), (-1, 0), ea_white),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'), ('FONTSIZE', (0, 0), (-1, -1), 7.5),
-        ('TEXTCOLOR', (0, 1), (-1, -1), HexColor('#D0D8E0')),
+        ('TEXTCOLOR', (0, 1), (-1, -1), ea_text),
         ('ALIGN', (0, 0), (-1, -1), 'RIGHT'), ('ALIGN', (0, 0), (0, -1), 'CENTER'),
         ('TOPPADDING', (0, 0), (-1, -1), 3), ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
-        ('GRID', (0, 0), (-1, -1), 0.5, border_color),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [HexColor('#081F2E'), HexColor('#0D2A3D')]),
+        ('GRID', (0, 0), (-1, -1), 0.5, ea_border),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [ea_lighter_bg, ea_light_bg]),
     ]))
     elements.append(cf_table)
     elements.append(Spacer(1, 6*mm))

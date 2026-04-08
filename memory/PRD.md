@@ -73,6 +73,17 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - Clean separation: core, models, emails, 14 route modules
 - All 39 API endpoints tested and verified (100% pass rate)
 
+### Unified Light Email Branding (April 2026)
+- All 6 email templates converted from dark to light design
+- Consistent branding: white background, logo header, gold accents, professional footer
+- PDF Exposé also converted to light design with regular logo
+- Shared `wrap_email()` helper in emails.py for consistent layout
+
+### Resend Domain Verification (April 2026)
+- DKIM, SPF TXT, and SPF MX all verified for euroadria.me
+- MX record set via Strato subdomain `send.euroadria.me` → `feedback-smtp.eu-west-1.amazonses.com`
+- Emails sending via `noreply@euroadria.me`
+
 ### Smart Traffic Source Detection (April 2026)
 - 5-step source detection: UTM → Click-IDs (fbclid/ttclid/gclid) → User-Agent → Referrer → Direct
 - Auto-detects TikTok, Instagram, Facebook, LinkedIn, Twitter, Snapchat, Pinterest in-app browsers
