@@ -4,7 +4,8 @@ import {
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
   FileText, Loader2, AlertCircle, Check, MessageSquare,
   CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image as ImageIcon,
-  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield, Send, Eye, Upload, Calendar, DollarSign, Target
+  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield, Send, Eye, Upload, Calendar, DollarSign, Target,
+  ChevronDown, ChevronRight, Menu, X as XIcon
 } from 'lucide-react';
 import { PipelineView, RevenueDashboard } from '../components/admin/CRMPipeline';
 import SEO from '../components/SEO';
@@ -13,6 +14,114 @@ import ImageUploader, { ImageGalleryUploader } from '../components/admin/ImageUp
 import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
 import NewsletterAdmin from '../components/admin/NewsletterAdmin';
 
+const NAV_GROUPS = [
+  {
+    label: 'Überblick',
+    items: [
+      { key: 'dashboard', icon: BarChart3, label: 'Dashboard' },
+      { key: 'pipeline', icon: Target, label: 'Pipeline' },
+      { key: 'revenue', icon: DollarSign, label: 'Revenue' },
+    ]
+  },
+  {
+    label: 'Inhalte',
+    items: [
+      { key: 'articles', icon: FileText, label: 'Artikel', badge: 'articles' },
+      { key: 'pages', icon: Layout, label: 'Seiten', badge: 'pages' },
+      { key: 'homepage', icon: Home, label: 'Homepage' },
+      { key: 'downloads', icon: Download, label: 'Downloads' },
+      { key: 'leistungen', icon: Shield, label: 'Leistungen' },
+    ]
+  },
+  {
+    label: 'Kommunikation',
+    items: [
+      { key: 'comments', icon: MessageSquare, label: 'Kommentare', badge: 'comments' },
+      { key: 'newsletter', icon: Send, label: 'Newsletter' },
+      { key: 'events', icon: Calendar, label: 'Events' },
+    ]
+  },
+  {
+    label: 'Daten & Recht',
+    items: [
+      { key: 'regions', icon: MapPin, label: 'Regionen', badge: 'regions' },
+      { key: 'investment', icon: TrendingUp, label: 'Investment' },
+      { key: 'legal', icon: Shield, label: 'Rechtliches' },
+    ]
+  }
+];
+
+const AdminSidebar = ({ activeTab, setActiveTab, badges, sidebarOpen, setSidebarOpen }) => {
+  const [openGroups, setOpenGroups] = useState(() => {
+    const open = {};
+    NAV_GROUPS.forEach(g => { open[g.label] = true; });
+    return open;
+  });
+
+  const toggleGroup = (label) => {
+    setOpenGroups(prev => ({ ...prev, [label]: !prev[label] }));
+  };
+
+  return (
+    <>
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+      <aside className={`
+        fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-200 z-50 
+        transform transition-transform duration-200 ease-in-out overflow-y-auto
+        lg:sticky lg:top-0 lg:transform-none lg:z-auto lg:h-screen lg:shrink-0
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `} data-testid="admin-sidebar">
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+          <span className="font-bold text-ea-dark text-sm tracking-wide">ADMIN PANEL</span>
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1 rounded hover:bg-gray-100" data-testid="sidebar-close">
+            <XIcon className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+        <nav className="p-2">
+          {NAV_GROUPS.map(group => (
+            <div key={group.label} className="mb-1">
+              <button
+                onClick={() => toggleGroup(group.label)}
+                className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-gray-600 rounded"
+              >
+                <span>{group.label}</span>
+                {openGroups[group.label] ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+              </button>
+              {openGroups[group.label] && (
+                <div className="space-y-0.5 mt-0.5">
+                  {group.items.map(item => {
+                    const Icon = item.icon;
+                    const isActive = activeTab === item.key;
+                    const badgeCount = item.badge ? badges[item.badge] : null;
+                    return (
+                      <button
+                        key={item.key}
+                        onClick={() => { setActiveTab(item.key); setSidebarOpen(false); }}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
+                          isActive ? 'bg-ea-gold/10 text-ea-dark font-semibold' : 'text-gray-600 hover:bg-gray-50 hover:text-ea-dark'
+                        }`}
+                        data-testid={`nav-${item.key}`}
+                      >
+                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-ea-gold' : 'text-gray-400'}`} />
+                        <span className="truncate">{item.label}</span>
+                        {badgeCount != null && badgeCount > 0 && (
+                          <span className="ml-auto text-xs px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500">{badgeCount}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ))}
+        </nav>
+      </aside>
+    </>
+  );
+};
+
 const AdminPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -20,6 +129,7 @@ const AdminPage = () => {
   const [loading, setLoading] = useState(false);
   
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // Homepage Content State
   const [homepageContent, setHomepageContent] = useState({});
@@ -967,45 +1077,32 @@ const AdminPage = () => {
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="flex gap-2 sm:gap-4 mb-6 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
-          {[
-            { key: 'dashboard', icon: BarChart3, label: 'Dashboard' },
-            { key: 'articles', icon: FileText, label: `Artikel (${articles.length})` },
-            { key: 'comments', icon: MessageSquare, label: 'Kommentare', badge: commentsStats.pending },
-            { key: 'regions', icon: MapPin, label: `Regionen (${regions.length})` },
-            { key: 'pages', icon: Layout, label: `Seiten (${pages.length})` },
-            { key: 'downloads', icon: Download, label: 'Downloads' },
-            { key: 'homepage', icon: Home, label: 'Homepage' },
-            { key: 'investment', icon: TrendingUp, label: `Investment (${investLocations.length + infraProjects.length + zones.length})` },
-            { key: 'legal', icon: Shield, label: 'Rechtliches' },
-            { key: 'newsletter', icon: Send, label: 'Newsletter' },
-            { key: 'events', icon: Calendar, label: 'Events' },
-            { key: 'leistungen', icon: Shield, label: 'Leistungen' },
-            { key: 'pipeline', icon: Target, label: 'Pipeline' },
-            { key: 'revenue', icon: DollarSign, label: 'Revenue' },
-          ].map(tab => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-                  activeTab === tab.key
-                    ? 'bg-ea-gold text-ea-dark font-semibold'
-                    : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-                }`}
-                data-testid={`tab-${tab.key}`}
-              >
-                <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span>{tab.label}</span>
-                {tab.badge > 0 && (
-                  <span className="ml-1 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full">{tab.badge}</span>
-                )}
-              </button>
-            );
-          })}
-        </div>
+        {/* Sidebar + Content Layout */}
+        <div className="flex gap-0 lg:gap-6">
+          <AdminSidebar 
+            activeTab={activeTab} 
+            setActiveTab={setActiveTab} 
+            badges={{
+              articles: articles.length,
+              comments: commentsStats.pending,
+              regions: regions.length,
+              pages: pages.length,
+            }}
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+          />
+          <div className="flex-1 min-w-0">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden mb-4 flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark hover:bg-gray-50 transition-all"
+              data-testid="mobile-menu-btn"
+            >
+              <Menu className="w-5 h-5" />
+              <span className="text-sm font-medium">
+                {NAV_GROUPS.flatMap(g => g.items).find(i => i.key === activeTab)?.label || 'Menu'}
+              </span>
+            </button>
 
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
@@ -2347,7 +2444,6 @@ const AdminPage = () => {
             )}
           </div>
         )}
-      </div>
 
         {/* Legal Tab */}
         {activeTab === 'legal' && (
@@ -2533,6 +2629,9 @@ const AdminPage = () => {
           <RevenueDashboard credentials={credentials} />
         )}
 
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
