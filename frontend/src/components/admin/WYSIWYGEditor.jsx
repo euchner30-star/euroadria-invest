@@ -309,6 +309,22 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
         continue;
       }
 
+      // "Seite N:" pattern → H2 heading
+      const seiteMatch = trimmed.match(/^Seite\s+\d+[:\.]?\s*(.+)/i);
+      if (seiteMatch) {
+        closeList();
+        result.push(`<h2>${inlineFormat(trimmed)}</h2>`);
+        continue;
+      }
+
+      // Standalone label on its own line (e.g. "Inhalt:" or "Fazit:")
+      const standaloneLabel = trimmed.match(/^([A-ZÄÖÜa-zäöüß][\w\-äöüÄÖÜß]*):$/);
+      if (standaloneLabel) {
+        closeList();
+        result.push(`<p><b>${standaloneLabel[1]}:</b></p>`);
+        continue;
+      }
+
       // Bullet list: - item, * item, • item, ‣ item
       const bulletMatch = trimmed.match(/^[-*•‣]\s+(.+)/);
       if (bulletMatch) {
