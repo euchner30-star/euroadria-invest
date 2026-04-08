@@ -373,11 +373,19 @@ async def generate_expose_pdf(inp: SimulationInput):
         canvas.setStrokeColor(ea_gold)
         canvas.setLineWidth(2)
         canvas.line(0, page_h - 28*mm, page_w, page_h - 28*mm)
-        # Logo (regular version)
+        # Logo (download from web if not local)
         try:
             logo_path = '/app/frontend/public/euroadria-logo.png'
+            if not os.path.exists(logo_path):
+                logo_path = '/tmp/euroadria-logo.png'
+                if not os.path.exists(logo_path):
+                    import requests as _req
+                    r = _req.get('https://euroadria.me/euroadria-logo.png', timeout=5)
+                    if r.ok:
+                        with open(logo_path, 'wb') as f:
+                            f.write(r.content)
             if os.path.exists(logo_path):
-                canvas.drawImage(logo_path, 15*mm, page_h - 23*mm, width=18*mm, height=16*mm, preserveAspectRatio=True, mask='auto')
+                canvas.drawImage(logo_path, 15*mm, page_h - 24*mm, width=18*mm, height=18*mm, preserveAspectRatio=True, mask='auto')
         except:
             pass
         canvas.setFont('Helvetica-Bold', 11)
