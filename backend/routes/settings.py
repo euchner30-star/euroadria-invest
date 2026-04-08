@@ -300,8 +300,12 @@ def _html_to_flowables(html_content, styles, colors):
             elif tag == 'br':
                 elements.append(Spacer(1, 2 * mm))
             elif tag in ('div', 'section', 'article', 'main'):
-                for child in el.children:
-                    process_element(child)
+                if el.get('data-pagebreak') == 'true':
+                    from reportlab.platypus import PageBreak
+                    elements.append(PageBreak())
+                else:
+                    for child in el.children:
+                        process_element(child)
             elif tag == 'hr':
                 from reportlab.platypus.flowables import HRFlowable
                 elements.append(Spacer(1, 3 * mm))

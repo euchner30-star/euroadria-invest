@@ -535,6 +535,26 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
               <Link2 className="w-4 h-4" />
             </button>
           </Tooltip>
+          <Tooltip text="Seitenumbruch einfügen (neue PDF-Seite)">
+            <button
+              type="button"
+              onClick={() => {
+                document.execCommand('insertHTML', false,
+                  '<div data-pagebreak="true" contenteditable="false" style="border-top:2px dashed #C8A96A;text-align:center;padding:8px 0;margin:16px 0;color:#C8A96A;font-size:12px;user-select:none;">--- Seitenumbruch ---</div><p><br></p>'
+                );
+                if (editorRef.current) {
+                  const c = editorRef.current.innerHTML;
+                  notifyParent(c);
+                  saveToHistory(c);
+                }
+              }}
+              className="p-2 rounded hover:bg-ea-gold/20 text-ea-dark/70"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12h4m10 0h4M8 12h8" /><path d="M3 4v4m0 8v4M21 4v4m0 8v4" />
+              </svg>
+            </button>
+          </Tooltip>
         </div>
 
         {/* Undo/Redo */}
