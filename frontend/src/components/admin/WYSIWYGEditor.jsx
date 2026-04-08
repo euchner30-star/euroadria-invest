@@ -218,13 +218,146 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
     // Moving cursor to end on focus causes backward text on mobile
   };
 
-  // Handle paste - clean up formatting
+  // ── Smart Paste: Rich HTML + Markdown auto-detection ──────────────────
+
+  // Clean pasted HTML — keep formatting, remove junk styles/classes
+  const cleanPastedHtml = useCallback((html) => {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    // Remove script, style, meta, link elements
+    doc.querySelectorAll('script, style, meta, link, svg, img').forEach(el => el.remove());
+
+    const allowed = new Set([
+      'B', 'STRONG', 'I', 'EM', 'U', 'S', 'STRIKE', 'A', 'BR', 'HR',
+      'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'DIV',
+      'UL', 'OL', 'LI', 'BLOCKQUOTE', 'PRE', 'CODE'
+    ]);
+
+    const clean = (node) => {
+      if (node.nodeType === 3) return; // text node — keep
+      if (node.nodeType !== 1) { node.remove(); return; }
+
+      // Remove all attributes except href on <a>
+      const tag = node.tagName;
+      const attrs = [...node.attributes];
+      attrs.forEach(a => {
+        if (!(tag === 'A' && a.name === 'href')) node.removeAttribute(a.name);
+      });
+
+      // Unwrap non-allowed tags (keep their children)
+      if (!allowed.has(tag)) {
+        const parent = node.parentNode;
+        while (node.firstChild) parent.insertBefore(node.firstChild, node);
+        parent.removeChild(node);
+        return;
+      }
+
+      // Recurse into children (copy array since DOM changes during iteration)
+      [...node.childNodes].forEach(clean);
+    };
+
+    [...doc.body.childNodes].forEach(clean);
+    return doc.body.innerHTML;
+  }, []);
+
+  // Convert markdown-style plain text to HTML
+  const markdownToHtml = useCallback((text) => {
+    const lines = text.split('\n');
+    const result = [];
+    let inUl = false;
+    let inOl = false;
+
+    const closeList = () => {
+      if (inUl) { result.push('</ul>'); inUl = false; }
+      if (inOl) { result.push('</ol>'); inOl = false; }
+    };
+
+    // Convert inline markdown
+    const inlineFormat = (line) => {
+      return line
+        .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')     // **bold**
+        .replace(/__(.+?)__/g, '<b>$1</b>')           // __bold__
+        .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<i>$1</i>') // *italic*
+        .replace(/(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g, '<i>$1</i>');      // _italic_
+    };
+
+    for (let i = 0; i < lines.length; i++) {
+      const raw = lines[i];
+      const trimmed = raw.trim();
+
+      // Empty line = close lists, add spacing
+      if (!trimmed) {
+        closeList();
+        continue;
+      }
+
+      // Headings: # ## ###
+      const headingMatch = trimmed.match(/^(#{1,3})\s+(.+)/);
+      if (headingMatch) {
+        closeList();
+        const lvl = headingMatch[1].length;
+        result.push(`<h${lvl}>${inlineFormat(headingMatch[2])}</h${lvl}>`);
+        continue;
+      }
+
+      // Numbered heading-like pattern: "1. Bold Title" or "Seite 1: ..."
+      const numberedHeading = trimmed.match(/^(?:Seite\s+)?\d+[\.\:\)]\s*(.+)/);
+
+      // Bullet list: - item, * item, • item
+      const bulletMatch = trimmed.match(/^[-*•]\s+(.+)/);
+      if (bulletMatch) {
+        if (inOl) { result.push('</ol>'); inOl = false; }
+        if (!inUl) { result.push('<ul>'); inUl = true; }
+        result.push(`<li>${inlineFormat(bulletMatch[1])}</li>`);
+        continue;
+      }
+
+      // Ordered list: 1. item, 2) item
+      const olMatch = trimmed.match(/^\d+[\.\)]\s+(.+)/);
+      if (olMatch && !numberedHeading) {
+        if (inUl) { result.push('</ul>'); inUl = false; }
+        if (!inOl) { result.push('<ol>'); inOl = true; }
+        result.push(`<li>${inlineFormat(olMatch[1])}</li>`);
+        continue;
+      }
+
+      // Check if this looks like a section heading (short, bold, no period at end)
+      const isBoldLine = /^\*\*(.+)\*\*$/.test(trimmed);
+      const isShortLine = trimmed.length < 80 && !trimmed.endsWith('.');
+      if (numberedHeading && isShortLine) {
+        closeList();
+        result.push(`<h2>${inlineFormat(trimmed)}</h2>`);
+        continue;
+      }
+
+      // Regular paragraph
+      closeList();
+      result.push(`<p>${inlineFormat(trimmed)}</p>`);
+    }
+
+    closeList();
+    return result.join('');
+  }, []);
+
+  // Handle paste - rich HTML or smart markdown detection
   const handlePaste = (e) => {
     e.preventDefault();
-    const text = e.clipboardData.getData('text/plain');
-    document.execCommand('insertText', false, text);
+
+    const html = e.clipboardData.getData('text/html');
+    const plainText = e.clipboardData.getData('text/plain');
+
+    if (html && html.trim()) {
+      // Rich paste — clean and insert HTML
+      const cleaned = cleanPastedHtml(html);
+      document.execCommand('insertHTML', false, cleaned);
+    } else if (plainText) {
+      // Plain text — detect markdown patterns and convert
+      const converted = markdownToHtml(plainText);
+      document.execCommand('insertHTML', false, converted);
+    }
+
     if (editorRef.current) {
       const newContent = editorRef.current.innerHTML;
+      notifyParent(newContent);
       saveToHistory(newContent);
     }
   };
