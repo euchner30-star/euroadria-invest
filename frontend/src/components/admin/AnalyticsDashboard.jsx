@@ -473,10 +473,10 @@ const AnalyticsDashboard = ({ credentials }) => {
                         onClick={async () => {
                           if (!window.confirm(`Lead "${lead.name}" wirklich löschen?`)) return;
                           try {
-                            const leadId = lead.id || lead._id;
+                            const leadId = lead.lead_id;
                             if (!leadId) { alert('Lead-ID nicht gefunden'); return; }
                             await fetch(
-                              `${process.env.REACT_APP_BACKEND_URL}/api/admin/crm/leads/${leadId}`,
+                              `${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${leadId}`,
                               { method: 'DELETE', headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) } }
                             );
                             setData(prev => ({

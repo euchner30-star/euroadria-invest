@@ -143,8 +143,12 @@ async def get_analytics_overview(days: int = 30, admin: str = Depends(verify_adm
     # Contact form submissions count
     total_contacts = await db.contact_submissions.count_documents({"submitted_at": {"$gte": cutoff}})
 
-    # Recent leads
-    recent_leads = await db.leads.find({}, {"_id": 0}).sort("submitted_at", -1).to_list(20)
+    # Recent leads (include _id as string for deletion)
+    recent_leads_raw = await db.leads.find({}).sort("submitted_at", -1).to_list(20)
+    recent_leads = []
+    for l in recent_leads_raw:
+        l["lead_id"] = str(l.pop("_id"))
+        recent_leads.append(l)
 
     # Conversion rate
     conversion_rate = round((total_leads / total_views * 100), 2) if total_views > 0 else 0
@@ -233,6 +237,20 @@ async def reset_analytics(admin: str = Depends(verify_admin)):
         "deleted_page_views": pv.deleted_count,
         "deleted_contact_submissions": cs.deleted_count
     }
+
+
+@router.delete("/admin/leads/{lead_id}")
+async def delete_lead(lead_id: str, admin: str = Depends(verify_admin)):
+    """Delete a lead from the leads collection"""
+    from bson import ObjectId
+    try:
+        result = await db.leads.delete_one({"_id": ObjectId(lead_id)})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Lead nicht gefunden")
+        return {"message": "Lead gelöscht", "id": lead_id}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 
 
 # ── Status Checks (legacy) ─────────────────────────────────────────────
