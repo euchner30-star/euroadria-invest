@@ -40,6 +40,8 @@ export const PipelineView = ({ credentials }) => {
   const [showNewLead, setShowNewLead] = useState(false);
   const [editDeal, setEditDeal] = useState(null);
   const [migrating, setMigrating] = useState(false);
+  const [collapsedStages, setCollapsedStages] = useState({});
+  const [expandedStages, setExpandedStages] = useState({});
   const authHeader = 'Basic ' + btoa(`${credentials.username}:${credentials.password}`);
 
   const fetchAll = useCallback(async () => {
@@ -138,38 +140,72 @@ export const PipelineView = ({ credentials }) => {
           {activeStages.map(stage => {
             const stageDeals = deals.filter(d => d.stage === stage.id);
             const stageValue = stageDeals.reduce((sum, d) => sum + (d.deal_value || 0), 0);
+            const isCollapsed = collapsedStages[stage.id];
+            const visibleCount = expandedStages[stage.id] ? stageDeals.length : 5;
+            const visibleDeals = stageDeals.slice(0, visibleCount);
+            const hasMore = stageDeals.length > visibleCount;
             return (
               <div key={stage.id} className="w-56 sm:w-72 shrink-0" data-testid={`stage-${stage.id}`}>
-                {/* Stage Header */}
-                <div className="flex items-center justify-between mb-2 sm:mb-3 px-1">
+                {/* Stage Header - clickable to collapse */}
+                <button
+                  onClick={() => setCollapsedStages(prev => ({ ...prev, [stage.id]: !prev[stage.id] }))}
+                  className="w-full flex items-center justify-between mb-2 sm:mb-3 px-1 hover:opacity-80 transition-opacity cursor-pointer"
+                  data-testid={`stage-toggle-${stage.id}`}
+                >
                   <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                    <ChevronDown className={`w-3.5 h-3.5 text-ea-dark/40 transition-transform ${isCollapsed ? '-rotate-90' : ''}`} />
                     <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0" style={{ backgroundColor: stage.color }} />
                     <span className="font-semibold text-xs sm:text-sm text-ea-dark truncate">{stage.name}</span>
                     <span className="bg-gray-100 text-ea-dark/50 text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full font-medium shrink-0">{stageDeals.length}</span>
                   </div>
                   <span className="text-[10px] sm:text-xs text-ea-dark/40 shrink-0 ml-1">{stage.probability}%</span>
-                </div>
-                {stageValue > 0 && (
+                </button>
+                {!isCollapsed && stageValue > 0 && (
                   <p className="text-xs text-ea-dark/40 mb-2 px-1">{fmt(stageValue)}</p>
                 )}
 
-                {/* Deal Cards */}
-                <div className="space-y-2 min-h-[80px] bg-gray-50 rounded-xl p-2">
-                  {stageDeals.map(deal => (
-                    <DealCard
-                      key={deal.id}
-                      deal={deal}
-                      stages={activeStages}
-                      currentStage={stage}
-                      onMove={moveDeal}
-                      onEdit={() => setEditDeal(deal)}
-                      onDelete={() => deleteDeal(deal.id)}
-                    />
-                  ))}
-                  {stageDeals.length === 0 && (
-                    <p className="text-xs text-ea-dark/30 text-center py-6">Keine Deals</p>
-                  )}
-                </div>
+                {/* Deal Cards - collapsible */}
+                {!isCollapsed && (
+                  <div className="space-y-2 min-h-[80px] bg-gray-50 rounded-xl p-2">
+                    {visibleDeals.map(deal => (
+                      <DealCard
+                        key={deal.id}
+                        deal={deal}
+                        stages={activeStages}
+                        currentStage={stage}
+                        onMove={moveDeal}
+                        onEdit={() => setEditDeal(deal)}
+                        onDelete={() => deleteDeal(deal.id)}
+                      />
+                    ))}
+                    {stageDeals.length === 0 && (
+                      <p className="text-xs text-ea-dark/30 text-center py-6">Keine Deals</p>
+                    )}
+                    {hasMore && (
+                      <button
+                        onClick={() => setExpandedStages(prev => ({ ...prev, [stage.id]: true }))}
+                        className="w-full py-2 text-xs text-ea-gold hover:text-ea-dark font-medium transition-colors rounded-lg hover:bg-white"
+                        data-testid={`show-more-${stage.id}`}
+                      >
+                        + {stageDeals.length - visibleCount} weitere anzeigen
+                      </button>
+                    )}
+                    {expandedStages[stage.id] && stageDeals.length > 5 && (
+                      <button
+                        onClick={() => setExpandedStages(prev => ({ ...prev, [stage.id]: false }))}
+                        className="w-full py-2 text-xs text-ea-dark/40 hover:text-ea-dark font-medium transition-colors rounded-lg hover:bg-white"
+                        data-testid={`show-less-${stage.id}`}
+                      >
+                        Weniger anzeigen
+                      </button>
+                    )}
+                  </div>
+                )}
+                {isCollapsed && (
+                  <div className="bg-gray-50 rounded-xl p-3 text-center">
+                    <p className="text-xs text-ea-dark/40">{stageDeals.length} Deals{stageValue > 0 ? ` · ${fmt(stageValue)}` : ''}</p>
+                  </div>
+                )}
               </div>
             );
           })}
