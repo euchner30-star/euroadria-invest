@@ -156,7 +156,72 @@ def _get_inline_html(element):
     return result
 
 
-def _html_to_flowables(html_content, styles):
+from reportlab.platypus import Flowable as _Flowable
+
+
+class _GoldAccentHeading(_Flowable):
+    """Heading with a gold accent bar on the left."""
+    def __init__(self, text, style, accent_color, bar_width=3, bar_gap=6):
+        _Flowable.__init__(self)
+        from reportlab.platypus import Paragraph
+        self.para = Paragraph(text, style)
+        self.accent_color = accent_color
+        self.bar_width = bar_width
+        self.bar_gap = bar_gap
+        self._height = 0
+
+    def wrap(self, aw, ah):
+        w, h = self.para.wrap(aw - self.bar_width - self.bar_gap, ah)
+        self._height = h + 2
+        return aw, self._height
+
+    def draw(self):
+        self.canv.saveState()
+        self.canv.setFillColor(self.accent_color)
+        self.canv.roundRect(0, 0, self.bar_width, self._height, 1, fill=1, stroke=0)
+        self.para.drawOn(self.canv, self.bar_width + self.bar_gap, 0)
+        self.canv.restoreState()
+
+
+class _HighlightBox(_Flowable):
+    """Content in a rounded box with subtle background."""
+    def __init__(self, flowables, bg_color, border_color=None, padding=10):
+        _Flowable.__init__(self)
+        self.flowables = flowables
+        self.bg_color = bg_color
+        self.border_color = border_color
+        self.padding = padding
+        self._height = 0
+
+    def wrap(self, aw, ah):
+        self.width = aw
+        total_h = 0
+        inner_w = aw - 2 * self.padding
+        for f in self.flowables:
+            _, h = f.wrap(inner_w, ah)
+            total_h += h
+        self._height = total_h + 2 * self.padding
+        return aw, self._height
+
+    def draw(self):
+        self.canv.saveState()
+        self.canv.setFillColor(self.bg_color)
+        if self.border_color:
+            self.canv.setStrokeColor(self.border_color)
+            self.canv.setLineWidth(0.5)
+            self.canv.roundRect(0, 0, self.width, self._height, 6, fill=1, stroke=1)
+        else:
+            self.canv.roundRect(0, 0, self.width, self._height, 6, fill=1, stroke=0)
+        self.canv.restoreState()
+        cy = self._height - self.padding
+        inner_w = self.width - 2 * self.padding
+        for f in self.flowables:
+            _, h = f.wrap(inner_w, self._height)
+            cy -= h
+            f.drawOn(self.canv, self.padding, cy)
+
+
+def _html_to_flowables(html_content, styles, colors):
     """Convert HTML from WYSIWYG editor to reportlab flowables."""
     from bs4 import BeautifulSoup, NavigableString, Tag
     from reportlab.platypus import Paragraph, Spacer
@@ -179,35 +244,59 @@ def _html_to_flowables(html_content, styles):
             tag = el.name.lower()
 
             if tag == 'h1':
+                elements.append(Spacer(1, 5 * mm))
+                heading = _GoldAccentHeading(
+                    _get_inline_html(el), styles['EA_H1'],
+                    colors['gold'], bar_width=4, bar_gap=8
+                )
+                elements.append(heading)
                 elements.append(Spacer(1, 4 * mm))
-                elements.append(Paragraph(_get_inline_html(el), styles['EA_H1']))
-                elements.append(Spacer(1, 3 * mm))
             elif tag == 'h2':
+                elements.append(Spacer(1, 4 * mm))
+                heading = _GoldAccentHeading(
+                    _get_inline_html(el), styles['EA_H2'],
+                    colors['gold'], bar_width=3, bar_gap=6
+                )
+                elements.append(heading)
                 elements.append(Spacer(1, 3 * mm))
-                elements.append(Paragraph(_get_inline_html(el), styles['EA_H2']))
-                elements.append(Spacer(1, 2 * mm))
             elif tag == 'h3':
-                elements.append(Spacer(1, 2 * mm))
-                elements.append(Paragraph(_get_inline_html(el), styles['EA_H3']))
+                elements.append(Spacer(1, 3 * mm))
+                h3_text = f'<font color="#C8A96A">\u25C6</font>\u00a0\u00a0{_get_inline_html(el)}'
+                elements.append(Paragraph(h3_text, styles['EA_H3']))
                 elements.append(Spacer(1, 2 * mm))
             elif tag == 'p':
                 inline = _get_inline_html(el)
                 if inline.strip():
                     elements.append(Paragraph(inline, styles['EA_Body']))
-                    elements.append(Spacer(1, 2 * mm))
+                    elements.append(Spacer(1, 2.5 * mm))
             elif tag == 'ul':
-                for li in el.find_all('li', recursive=False):
-                    bullet_text = f"\u2022\u00a0\u00a0{_get_inline_html(li)}"
-                    elements.append(Paragraph(bullet_text, styles['EA_Bullet']))
-                elements.append(Spacer(1, 2 * mm))
+                items = el.find_all('li', recursive=False)
+                bullet_flows = []
+                for li in items:
+                    bt = f'<font color="#C8A96A">\u25CF</font>\u00a0\u00a0{_get_inline_html(li)}'
+                    bullet_flows.append(Paragraph(bt, styles['EA_Bullet']))
+                    bullet_flows.append(Spacer(1, 1.5 * mm))
+                if bullet_flows:
+                    box = _HighlightBox(bullet_flows, colors['card_bg'], colors['card_border'], padding=10)
+                    elements.append(box)
+                    elements.append(Spacer(1, 3 * mm))
             elif tag == 'ol':
-                for i, li in enumerate(el.find_all('li', recursive=False), 1):
-                    num_text = f"{i}.\u00a0\u00a0{_get_inline_html(li)}"
-                    elements.append(Paragraph(num_text, styles['EA_Bullet']))
-                elements.append(Spacer(1, 2 * mm))
+                items = el.find_all('li', recursive=False)
+                ol_flows = []
+                for i, li in enumerate(items, 1):
+                    nt = f'<font color="#C8A96A"><b>{i}.</b></font>\u00a0\u00a0{_get_inline_html(li)}'
+                    ol_flows.append(Paragraph(nt, styles['EA_Bullet']))
+                    ol_flows.append(Spacer(1, 1.5 * mm))
+                if ol_flows:
+                    box = _HighlightBox(ol_flows, colors['card_bg'], colors['card_border'], padding=10)
+                    elements.append(box)
+                    elements.append(Spacer(1, 3 * mm))
             elif tag == 'blockquote':
-                elements.append(Paragraph(_get_inline_html(el), styles['EA_Quote']))
+                q_flows = [Paragraph(_get_inline_html(el), styles['EA_Quote'])]
+                box = _HighlightBox(q_flows, colors['quote_bg'], colors['gold'], padding=12)
                 elements.append(Spacer(1, 2 * mm))
+                elements.append(box)
+                elements.append(Spacer(1, 3 * mm))
             elif tag == 'br':
                 elements.append(Spacer(1, 2 * mm))
             elif tag in ('div', 'section', 'article', 'main'):
@@ -215,9 +304,8 @@ def _html_to_flowables(html_content, styles):
                     process_element(child)
             elif tag == 'hr':
                 from reportlab.platypus.flowables import HRFlowable
-                from reportlab.lib.colors import HexColor
                 elements.append(Spacer(1, 3 * mm))
-                elements.append(HRFlowable(width="100%", thickness=1, color=HexColor('#E5E7EB')))
+                elements.append(HRFlowable(width="60%", thickness=1, color=colors['gold']))
                 elements.append(Spacer(1, 3 * mm))
             elif tag in ('style', 'script'):
                 pass
@@ -247,29 +335,45 @@ async def generate_branded_pdf(request: Request, admin: str = Depends(verify_adm
     title = data.get("title", "Dokument")
     subtitle = data.get("subtitle", "")
     content_html = data.get("content", "")
+    preview = data.get("preview", False)
 
     buffer = io.BytesIO()
 
-    ea_white = HexColor('#FFFFFF')
-    ea_gold = HexColor('#C8A96A')
-    ea_dark = HexColor('#04151F')
-    ea_gray = HexColor('#888888')
-    ea_light_bg = HexColor('#F8F9FA')
-    ea_border = HexColor('#E5E7EB')
-    ea_text = HexColor('#333333')
+    colors = {
+        'white': HexColor('#FFFFFF'),
+        'gold': HexColor('#C8A96A'),
+        'gold_light': HexColor('#F5EFE0'),
+        'dark': HexColor('#04151F'),
+        'gray': HexColor('#6B7280'),
+        'text': HexColor('#374151'),
+        'light_bg': HexColor('#F9FAFB'),
+        'card_bg': HexColor('#F8F6F1'),
+        'card_border': HexColor('#E8E0D0'),
+        'quote_bg': HexColor('#FFFBF0'),
+        'border': HexColor('#E5E7EB'),
+    }
 
     page_w, page_h = A4
 
     def page_template(canvas, doc):
         canvas.saveState()
-        canvas.setFillColor(ea_white)
+        # White background
+        canvas.setFillColor(colors['white'])
         canvas.rect(0, 0, page_w, page_h, fill=1, stroke=0)
-        # Header
-        canvas.setFillColor(ea_white)
+
+        # ── Header ──
+        canvas.setFillColor(colors['white'])
         canvas.rect(0, page_h - 28 * mm, page_w, 28 * mm, fill=1, stroke=0)
-        canvas.setStrokeColor(ea_gold)
+        # Gold line under header
+        canvas.setStrokeColor(colors['gold'])
         canvas.setLineWidth(2)
         canvas.line(0, page_h - 28 * mm, page_w, page_h - 28 * mm)
+        # Subtle gold gradient dot (decorative)
+        canvas.setFillColor(colors['gold'])
+        canvas.circle(page_w - 20 * mm, page_h - 14 * mm, 2, fill=1, stroke=0)
+        canvas.setFillColor(HexColor('#D4BC82'))
+        canvas.circle(page_w - 25 * mm, page_h - 14 * mm, 1.2, fill=1, stroke=0)
+
         # Logo
         try:
             logo_path = '/app/frontend/public/euroadria-logo.png'
@@ -288,96 +392,88 @@ async def generate_branded_pdf(request: Request, admin: str = Depends(verify_adm
         except Exception:
             pass
         canvas.setFont('Helvetica-Bold', 11)
-        canvas.setFillColor(ea_dark)
+        canvas.setFillColor(colors['dark'])
         canvas.drawString(36 * mm, page_h - 16 * mm, "EUROADRIA CORPORATE SOLUTIONS")
         canvas.setFont('Helvetica', 7.5)
-        canvas.setFillColor(ea_gold)
+        canvas.setFillColor(colors['gold'])
         canvas.drawString(36 * mm, page_h - 21 * mm, "Beratung & Angebotsplattform")
-        # Footer
-        canvas.setFillColor(ea_light_bg)
-        canvas.rect(0, 0, page_w, 14 * mm, fill=1, stroke=0)
-        canvas.setStrokeColor(ea_border)
-        canvas.setLineWidth(0.5)
-        canvas.line(0, 14 * mm, page_w, 14 * mm)
+
+        # ── Footer ──
+        canvas.setFillColor(colors['light_bg'])
+        canvas.rect(0, 0, page_w, 16 * mm, fill=1, stroke=0)
+        canvas.setStrokeColor(colors['gold'])
+        canvas.setLineWidth(1)
+        canvas.line(15 * mm, 16 * mm, page_w - 15 * mm, 16 * mm)
+        # Footer text
         canvas.setFont('Helvetica', 6.5)
-        canvas.setFillColor(ea_gray)
-        canvas.drawString(15 * mm, 8 * mm,
-                          "EuroAdria Corporate Solutions | euroadria.me | office@euroadria.me")
-        canvas.drawRightString(page_w - 15 * mm, 8 * mm, f"Seite {doc.page}")
-        canvas.setFillColor(ea_gold)
+        canvas.setFillColor(colors['gray'])
+        canvas.drawString(15 * mm, 10 * mm,
+                          "EuroAdria Corporate Solutions  |  euroadria.me  |  office@euroadria.me")
+        canvas.drawRightString(page_w - 15 * mm, 10 * mm, f"Seite {doc.page}")
+        canvas.setFillColor(colors['gold'])
         canvas.setFont('Helvetica', 5.5)
-        canvas.drawCentredString(page_w / 2, 3.5 * mm,
+        canvas.drawCentredString(page_w / 2, 4 * mm,
                                  "Vertraulich \u2014 Nur f\u00fcr den pers\u00f6nlichen Gebrauch bestimmt")
         canvas.restoreState()
 
     doc = SimpleDocTemplate(buffer, pagesize=A4,
-                            leftMargin=15 * mm, rightMargin=15 * mm,
-                            topMargin=34 * mm, bottomMargin=20 * mm)
+                            leftMargin=18 * mm, rightMargin=18 * mm,
+                            topMargin=36 * mm, bottomMargin=22 * mm)
 
     styles = getSampleStyleSheet()
     styles.add(ParagraphStyle('EA_Title', parent=styles['Title'],
-                              fontSize=22, textColor=ea_dark,
+                              fontSize=22, textColor=colors['dark'],
                               spaceAfter=2 * mm, fontName='Helvetica-Bold',
-                              alignment=TA_CENTER))
+                              alignment=TA_CENTER, leading=28))
     styles.add(ParagraphStyle('EA_Subtitle', parent=styles['Normal'],
-                              fontSize=10, textColor=ea_gold,
+                              fontSize=10, textColor=colors['gold'],
                               spaceAfter=4 * mm, fontName='Helvetica',
-                              alignment=TA_CENTER))
+                              alignment=TA_CENTER, leading=14))
     styles.add(ParagraphStyle('EA_H1', parent=styles['Heading1'],
-                              fontSize=16, textColor=ea_dark,
+                              fontSize=15, textColor=colors['dark'],
                               fontName='Helvetica-Bold',
-                              spaceAfter=1 * mm, spaceBefore=2 * mm,
-                              borderColor=ea_gold, borderWidth=0,
-                              borderPadding=0))
+                              spaceAfter=1 * mm, spaceBefore=0, leading=20))
     styles.add(ParagraphStyle('EA_H2', parent=styles['Heading2'],
-                              fontSize=13, textColor=ea_dark,
+                              fontSize=12.5, textColor=colors['dark'],
                               fontName='Helvetica-Bold',
-                              spaceAfter=1 * mm, spaceBefore=1 * mm))
+                              spaceAfter=1 * mm, spaceBefore=0, leading=17))
     styles.add(ParagraphStyle('EA_H3', parent=styles['Heading3'],
-                              fontSize=11, textColor=ea_gold,
+                              fontSize=10.5, textColor=colors['dark'],
                               fontName='Helvetica-Bold',
-                              spaceAfter=1 * mm, spaceBefore=1 * mm))
+                              spaceAfter=1 * mm, spaceBefore=0, leading=15))
     styles.add(ParagraphStyle('EA_Body', parent=styles['Normal'],
-                              fontSize=9.5, textColor=ea_text,
+                              fontSize=9.5, textColor=colors['text'],
                               fontName='Helvetica',
-                              leading=14, spaceAfter=1 * mm))
+                              leading=15, spaceAfter=0))
     styles.add(ParagraphStyle('EA_Bullet', parent=styles['Normal'],
-                              fontSize=9.5, textColor=ea_text,
+                              fontSize=9.5, textColor=colors['text'],
                               fontName='Helvetica',
-                              leading=14, leftIndent=12,
-                              spaceAfter=1 * mm))
+                              leading=15, leftIndent=8, spaceAfter=0))
     styles.add(ParagraphStyle('EA_Quote', parent=styles['Normal'],
-                              fontSize=9.5, textColor=ea_gray,
+                              fontSize=9.5, textColor=colors['gray'],
                               fontName='Helvetica-Oblique',
-                              leading=14, leftIndent=15,
-                              borderColor=ea_gold, borderWidth=1,
-                              borderPadding=(5, 5, 5, 10),
-                              spaceAfter=1 * mm))
+                              leading=15, leftIndent=4, spaceAfter=0))
     styles.add(ParagraphStyle('EA_Date', parent=styles['Normal'],
-                              fontSize=8, textColor=ea_gray,
+                              fontSize=8, textColor=colors['gray'],
                               fontName='Helvetica',
-                              alignment=TA_CENTER, spaceAfter=6 * mm))
+                              alignment=TA_CENTER, spaceAfter=4 * mm))
 
     story = []
 
-    # Title
-    story.append(Spacer(1, 6 * mm))
+    # ── Title block ──
+    story.append(Spacer(1, 4 * mm))
     story.append(Paragraph(title, styles['EA_Title']))
-
-    # Subtitle
     if subtitle:
         story.append(Paragraph(subtitle, styles['EA_Subtitle']))
-
-    # Date
     now = datetime.now(timezone.utc).strftime('%d.%m.%Y')
     story.append(Paragraph(f"Erstellt am {now}", styles['EA_Date']))
 
-    # Gold separator line
-    story.append(HRFlowable(width="100%", thickness=1.5, color=ea_gold,
+    # Gold separator
+    story.append(HRFlowable(width="40%", thickness=1.5, color=colors['gold'],
                              spaceAfter=6 * mm, spaceBefore=2 * mm))
 
-    # Content from WYSIWYG editor
-    content_elements = _html_to_flowables(content_html, styles)
+    # ── Content ──
+    content_elements = _html_to_flowables(content_html, styles, colors)
     story.extend(content_elements)
 
     doc.build(story, onFirstPage=page_template, onLaterPages=page_template)
@@ -391,5 +487,7 @@ async def generate_branded_pdf(request: Request, admin: str = Depends(verify_adm
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+        headers={
+            "Content-Disposition": f'{"inline" if preview else "attachment"}; filename="{filename}"'
+        }
     )

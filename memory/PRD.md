@@ -98,6 +98,14 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - Analytics Dashboard with "Zurucksetzen" button
 - Cookie consent modal
 
+### PDF Generator Upgrade (April 2026)
+- Professionelles PDF-Design: Goldene Akzent-Bars bei Überschriften, Bullet-Points in Highlight-Boxen, Blockquotes in gold-umrandeten Boxen
+- PDF-Vorschau direkt im Browser (iframe)
+- Smart Paste: Rich HTML aus Google Docs + Markdown-Erkennung aus Gemini/ChatGPT
+- Teiltext-Überschriften: Nur markierter Text wird zu H1/H2/H3
+- "Normal" und "Klein" Buttons im Editor
+- Endpoint: POST /api/admin/generate-pdf (preview=true für Inline-Anzeige)
+
 ### PDF Generator im Admin Panel (April 2026)
 - Neuer "PDF Generator" Tab in der Sidebar unter "Inhalte"
 - WYSIWYG-Editor für formatierten Inhalt (H1-H3, Listen, fett, kursiv, Links, Zitate)
