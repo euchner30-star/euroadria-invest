@@ -202,7 +202,7 @@ const Header = () => {
                   ? 'bg-green-500/20 text-ea-dark'
                   : 'bg-green-500/10 text-ea-dark hover:bg-green-500/20'
               }`}
-              data-testid="nav-investment"
+              data-testid="header-nav-investment"
             >
               <TrendingUp className="w-4 h-4 text-green-500" />
               INVESTMENT

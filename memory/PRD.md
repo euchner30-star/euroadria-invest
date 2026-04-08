@@ -98,8 +98,14 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - Analytics Dashboard with "Zurucksetzen" button
 - Cookie consent modal
 
+### Admin Panel Sidebar Navigation (April 2026)
+- Replaced tab-based navigation with sidebar layout
+- Collapsible groups: Überblick, Inhalte, Kommunikation, Daten & Recht
+- 14 navigation items with badges (article count, pending comments, etc.)
+- Mobile responsive: slide-in sidebar with hamburger menu
+- Active state highlighting with gold accent
+
 ## Pending
-- Resend domain verification (waiting for DNS propagation at Strato)
 - Google Search Console: add euroadria.me property
 
 ## Backlog (P2)
