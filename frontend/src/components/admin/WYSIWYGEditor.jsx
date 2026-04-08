@@ -250,7 +250,7 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
           />
         </div>
 
-        {/* Headings */}
+        {/* Headings & Text Size */}
         <div className="flex items-center gap-1 px-2 border-r border-gray-300">
           <Tooltip text="H1 = Hauptüberschrift für SEO/GEO. Nur 1x pro Artikel verwenden!">
             <button
@@ -279,13 +279,22 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
               H3
             </button>
           </Tooltip>
-          <Tooltip text="Normaler Absatz (Fließtext)">
+          <Tooltip text="Normaler Fließtext (Standard-Größe)">
             <button
               type="button"
               onClick={() => execCommand('formatBlock', 'p')}
-              className="px-2 py-1 text-sm rounded hover:bg-ea-gold/20 text-ea-dark/70"
+              className="px-2 py-1 text-xs font-medium rounded hover:bg-ea-gold/20 text-ea-dark/70 bg-gray-100"
             >
-              ¶
+              Normal
+            </button>
+          </Tooltip>
+          <Tooltip text="Kleiner Text (für Hinweise, Fußnoten, Disclaimer)">
+            <button
+              type="button"
+              onClick={() => execCommand('fontSize', '2')}
+              className="px-2 py-1 text-xs rounded hover:bg-ea-gold/20 text-ea-dark/70"
+            >
+              Klein
             </button>
           </Tooltip>
         </div>

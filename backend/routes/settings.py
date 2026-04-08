@@ -145,7 +145,12 @@ def _get_inline_html(element):
             elif tag == 'br':
                 result += '<br/>'
             elif tag in ('span', 'font'):
-                result += _get_inline_html(child)
+                size_attr = child.get('size', '')
+                inner = _get_inline_html(child)
+                if size_attr and int(size_attr) <= 2:
+                    result += f'<font size="7">{inner}</font>'
+                else:
+                    result += inner
             else:
                 result += _get_inline_html(child)
     return result

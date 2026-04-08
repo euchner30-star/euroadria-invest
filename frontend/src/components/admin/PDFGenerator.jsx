@@ -13,11 +13,15 @@ const PDFGenerator = ({ credentials }) => {
   const [success, setSuccess] = useState('');
 
   const handleGenerate = async () => {
+    // Get content directly from editor DOM to avoid debounce timing issues
+    const editorEl = document.querySelector('[contenteditable="true"]');
+    const currentContent = editorEl ? editorEl.innerHTML : content;
+
     if (!title.trim()) {
       setError('Bitte geben Sie einen Titel ein.');
       return;
     }
-    if (!content.trim()) {
+    if (!currentContent || !currentContent.trim() || currentContent === '<br>' || currentContent === '<div><br></div>') {
       setError('Bitte geben Sie Inhalt ein.');
       return;
     }
@@ -33,7 +37,7 @@ const PDFGenerator = ({ credentials }) => {
           'Content-Type': 'application/json',
           'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
         },
-        body: JSON.stringify({ title, subtitle, content })
+        body: JSON.stringify({ title, subtitle, content: currentContent })
       });
 
       if (!response.ok) {
@@ -155,7 +159,7 @@ const PDFGenerator = ({ credentials }) => {
       <div className="flex items-center gap-4">
         <button
           onClick={handleGenerate}
-          disabled={generating || !title.trim() || !content.trim()}
+          disabled={generating || !title.trim()}
           className="flex items-center gap-3 px-8 py-3.5 bg-ea-dark text-white rounded-xl font-semibold hover:bg-ea-dark/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-ea-dark/10"
           data-testid="pdf-generate-btn"
         >
