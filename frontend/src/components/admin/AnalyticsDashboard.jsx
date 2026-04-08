@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import { 
   Eye, Users, Calculator, Mail, TrendingUp, Monitor, Smartphone, Tablet,
-  Download, ArrowUpRight, ArrowDownRight, FileText, Share2, Megaphone, RotateCcw, AlertTriangle
+  Download, ArrowUpRight, ArrowDownRight, FileText, Share2, Megaphone, RotateCcw, AlertTriangle, Trash2
 } from 'lucide-react';
 
 const COLORS = ['#C8A96A', '#04151F', '#6B7280', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
@@ -451,11 +451,12 @@ const AnalyticsDashboard = ({ credentials }) => {
                   <th className="text-left py-2.5 text-ea-dark/50 font-medium hidden sm:table-cell">Telefon</th>
                   <th className="text-left py-2.5 text-ea-dark/50 font-medium">Exposé</th>
                   <th className="text-left py-2.5 text-ea-dark/50 font-medium hidden md:table-cell">Datum</th>
+                  <th className="text-right py-2.5 text-ea-dark/50 font-medium w-10"></th>
                 </tr>
               </thead>
               <tbody>
                 {data.recent_leads.map((lead, i) => (
-                  <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50">
+                  <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 group">
                     <td className="py-2.5 font-medium text-ea-dark">{lead.name}</td>
                     <td className="py-2.5 text-ea-dark/70">{lead.email}</td>
                     <td className="py-2.5 text-ea-dark/70 hidden sm:table-cell">{lead.phone || '-'}</td>
@@ -466,6 +467,30 @@ const AnalyticsDashboard = ({ credentials }) => {
                     </td>
                     <td className="py-2.5 text-ea-dark/50 text-xs hidden md:table-cell">
                       {lead.submitted_at ? new Date(lead.submitted_at).toLocaleDateString('de-DE') : '-'}
+                    </td>
+                    <td className="py-2.5 text-right">
+                      <button
+                        onClick={async () => {
+                          if (!window.confirm(`Lead "${lead.name}" wirklich löschen?`)) return;
+                          try {
+                            const leadId = lead.id || lead._id;
+                            if (!leadId) { alert('Lead-ID nicht gefunden'); return; }
+                            await fetch(
+                              `${process.env.REACT_APP_BACKEND_URL}/api/admin/crm/leads/${leadId}`,
+                              { method: 'DELETE', headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) } }
+                            );
+                            setData(prev => ({
+                              ...prev,
+                              recent_leads: prev.recent_leads.filter((_, idx) => idx !== i)
+                            }));
+                          } catch (e) { alert('Fehler beim Löschen'); }
+                        }}
+                        className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-all"
+                        data-testid={`delete-lead-${i}`}
+                        title="Lead löschen"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}
