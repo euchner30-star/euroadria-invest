@@ -360,3 +360,7 @@ frontend/node_modules/.cache/default-development/111.pack
 *.env
 *.env.*
 frontend/node_modules/.cache/default-development/112.pack
+-e 
+# Environment files
+*.env
+*.env.*
