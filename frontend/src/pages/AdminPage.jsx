@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { adminApi, articlesApi, commentsApi, regionsApi, pagesApi, settingsApi, investmentApi } from '../services/api';
 import { 
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
   FileText, Loader2, AlertCircle, Check, MessageSquare,
   CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image as ImageIcon,
-  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield, Send, Eye, Upload, Calendar, DollarSign, Target
+  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield, Send, Eye, Upload, Calendar, DollarSign, Target,
+  ChevronDown, ChevronRight, Menu, X as XIcon, PanelLeftClose
 } from 'lucide-react';
 import { PipelineView, RevenueDashboard } from '../components/admin/CRMPipeline';
 import SEO from '../components/SEO';
@@ -13,14 +14,141 @@ import ImageUploader, { ImageGalleryUploader } from '../components/admin/ImageUp
 import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
 import NewsletterAdmin from '../components/admin/NewsletterAdmin';
 
+const NAV_GROUPS = [
+  {
+    label: 'Überblick',
+    items: [
+      { key: 'dashboard', icon: BarChart3, label: 'Dashboard' },
+      { key: 'pipeline', icon: Target, label: 'Pipeline' },
+      { key: 'revenue', icon: DollarSign, label: 'Revenue' },
+    ]
+  },
+  {
+    label: 'Inhalte',
+    items: [
+      { key: 'articles', icon: FileText, label: 'Artikel', badge: 'articles' },
+      { key: 'pages', icon: Layout, label: 'Seiten', badge: 'pages' },
+      { key: 'homepage', icon: Home, label: 'Homepage' },
+      { key: 'downloads', icon: Download, label: 'Downloads' },
+      { key: 'leistungen', icon: Shield, label: 'Leistungen' },
+    ]
+  },
+  {
+    label: 'Kommunikation',
+    items: [
+      { key: 'comments', icon: MessageSquare, label: 'Kommentare', badge: 'comments' },
+      { key: 'newsletter', icon: Send, label: 'Newsletter' },
+      { key: 'events', icon: Calendar, label: 'Events' },
+    ]
+  },
+  {
+    label: 'Daten & Recht',
+    items: [
+      { key: 'regions', icon: MapPin, label: 'Regionen', badge: 'regions' },
+      { key: 'investment', icon: TrendingUp, label: 'Investment' },
+      { key: 'legal', icon: Shield, label: 'Rechtliches' },
+    ]
+  }
+];
+
+const AdminSidebar = ({ activeTab, setActiveTab, badges, sidebarOpen, setSidebarOpen }) => {
+  const [openGroups, setOpenGroups] = useState(() => {
+    const open = {};
+    NAV_GROUPS.forEach(g => { open[g.label] = true; });
+    return open;
+  });
+
+  const toggleGroup = (label) => {
+    setOpenGroups(prev => ({ ...prev, [label]: !prev[label] }));
+  };
+
+  return (
+    <>
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/30 z-40 lg:hidden" 
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      <aside className={`
+        fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-200 z-50 
+        transform transition-transform duration-200 ease-in-out overflow-y-auto
+        lg:sticky lg:top-0 lg:transform-none lg:z-auto lg:h-screen
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}
+        data-testid="admin-sidebar"
+      >
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+          <span className="font-bold text-ea-dark text-sm tracking-wide">ADMIN PANEL</span>
+          <button 
+            onClick={() => setSidebarOpen(false)} 
+            className="lg:hidden p-1 rounded hover:bg-gray-100"
+            data-testid="sidebar-close"
+          >
+            <XIcon className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+        <nav className="p-2">
+          {NAV_GROUPS.map(group => (
+            <div key={group.label} className="mb-1">
+              <button
+                onClick={() => toggleGroup(group.label)}
+                className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-gray-600 rounded"
+                data-testid={`nav-group-${group.label}`}
+              >
+                <span>{group.label}</span>
+                {openGroups[group.label] 
+                  ? <ChevronDown className="w-3.5 h-3.5" /> 
+                  : <ChevronRight className="w-3.5 h-3.5" />
+                }
+              </button>
+              {openGroups[group.label] && (
+                <div className="space-y-0.5 mt-0.5">
+                  {group.items.map(item => {
+                    const Icon = item.icon;
+                    const isActive = activeTab === item.key;
+                    const badgeCount = item.badge ? badges[item.badge] : null;
+                    return (
+                      <button
+                        key={item.key}
+                        onClick={() => { setActiveTab(item.key); setSidebarOpen(false); }}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
+                          isActive
+                            ? 'bg-ea-gold/10 text-ea-dark font-semibold border-l-3 border-ea-gold'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-ea-dark'
+                        }`}
+                        data-testid={`nav-${item.key}`}
+                      >
+                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-ea-gold' : 'text-gray-400'}`} />
+                        <span className="truncate">{item.label}</span>
+                        {badgeCount != null && badgeCount > 0 && (
+                          <span className={`ml-auto text-xs px-1.5 py-0.5 rounded-full ${
+                            item.key === 'comments' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500'
+                          }`}>
+                            {badgeCount}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ))}
+        </nav>
+      </aside>
+    </>
+  );
+};
+
 const AdminPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  // Active Tab: 'dashboard', 'articles', 'comments', 'regions', 'pages', 'downloads', 'investment', 'homepage', 'legal'
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // Homepage Content State
   const [homepageContent, setHomepageContent] = useState({});
@@ -968,182 +1096,32 @@ const AdminPage = () => {
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="flex gap-2 sm:gap-4 mb-6 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'dashboard'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-dashboard"
-          >
-            <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Dashboard</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('articles')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'articles'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-articles"
-          >
-            <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Artikel ({articles.length})</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('comments')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'comments'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-comments"
-          >
-            <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Kommentare</span>
-            {commentsStats.pending > 0 && (
-              <span className="ml-1 px-2 py-0.5 bg-red-500 text-ea-dark text-xs rounded-full">
-                {commentsStats.pending}
+        {/* Sidebar + Content Layout */}
+        <div className="flex gap-0 lg:gap-6 -mx-4 sm:-mx-6 lg:mx-0">
+          <AdminSidebar 
+            activeTab={activeTab} 
+            setActiveTab={setActiveTab} 
+            badges={{
+              articles: articles.length,
+              comments: commentsStats.pending,
+              regions: regions.length,
+              pages: pages.length,
+            }}
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+          />
+          <div className="flex-1 min-w-0 px-4 sm:px-6 lg:px-0">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden mb-4 flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark hover:bg-gray-50 transition-all"
+              data-testid="mobile-menu-btn"
+            >
+              <Menu className="w-5 h-5" />
+              <span className="text-sm font-medium">
+                {NAV_GROUPS.flatMap(g => g.items).find(i => i.key === activeTab)?.label || 'Menu'}
               </span>
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab('regions')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'regions'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-regions"
-          >
-            <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Regionen ({regions.length})</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('pages')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'pages'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-pages"
-          >
-            <Layout className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Seiten ({pages.length})</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('downloads')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'downloads'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-downloads"
-          >
-            <Download className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Downloads</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('homepage')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'homepage'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-homepage"
-          >
-            <Layout className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Homepage</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('investment')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'investment'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-investment"
-          >
-            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Investment ({investLocations.length + infraProjects.length + zones.length})</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('legal')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'legal'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-legal"
-          >
-            <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Rechtliches</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('newsletter')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'newsletter'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-newsletter"
-          >
-            <Send className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Newsletter</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('events')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'events'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-events"
-          >
-            <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Events</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('leistungen')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'leistungen'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-leistungen"
-          >
-            <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Leistungen</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('pipeline')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'pipeline'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-pipeline"
-          >
-            <Target className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Pipeline</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('revenue')}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base shrink-0 ${
-              activeTab === 'revenue'
-                ? 'bg-ea-gold text-ea-dark font-semibold'
-                : 'bg-white border border-gray-200 rounded-xl shadow-sm text-ea-dark/70 hover:text-ea-dark'
-            }`}
-            data-testid="tab-revenue"
-          >
-            <DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Revenue</span>
-          </button>
-        </div>
+            </button>
 
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
@@ -2671,6 +2649,8 @@ const AdminPage = () => {
           <RevenueDashboard credentials={credentials} />
         )}
 
+          </div>{/* End content area */}
+        </div>{/* End sidebar + content layout */}
     </div>
   );
 };
