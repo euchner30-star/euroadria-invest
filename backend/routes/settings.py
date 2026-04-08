@@ -261,7 +261,7 @@ def _html_to_flowables(html_content, styles, colors):
                 elements.append(Spacer(1, 3 * mm))
             elif tag == 'h3':
                 elements.append(Spacer(1, 3 * mm))
-                h3_text = f'<font color="#C8A96A">\u25C6</font>\u00a0\u00a0{_get_inline_html(el)}'
+                h3_text = f'<font color="#C8A96A" name="Helvetica-Bold">\u2014</font>\u00a0\u00a0{_get_inline_html(el)}'
                 elements.append(Paragraph(h3_text, styles['EA_H3']))
                 elements.append(Spacer(1, 2 * mm))
             elif tag == 'p':
@@ -273,11 +273,11 @@ def _html_to_flowables(html_content, styles, colors):
                 items = el.find_all('li', recursive=False)
                 bullet_flows = []
                 for li in items:
-                    bt = f'<font color="#C8A96A">\u25CF</font>\u00a0\u00a0{_get_inline_html(li)}'
+                    bt = f'<font color="#C8A96A" name="Helvetica-Bold">\u2013</font>\u00a0\u00a0{_get_inline_html(li)}'
                     bullet_flows.append(Paragraph(bt, styles['EA_Bullet']))
-                    bullet_flows.append(Spacer(1, 1.5 * mm))
+                    bullet_flows.append(Spacer(1, 2 * mm))
                 if bullet_flows:
-                    box = _HighlightBox(bullet_flows, colors['card_bg'], colors['card_border'], padding=10)
+                    box = _HighlightBox(bullet_flows, colors['card_bg'], colors['card_border'], padding=12)
                     elements.append(box)
                     elements.append(Spacer(1, 3 * mm))
             elif tag == 'ol':
@@ -286,9 +286,9 @@ def _html_to_flowables(html_content, styles, colors):
                 for i, li in enumerate(items, 1):
                     nt = f'<font color="#C8A96A"><b>{i}.</b></font>\u00a0\u00a0{_get_inline_html(li)}'
                     ol_flows.append(Paragraph(nt, styles['EA_Bullet']))
-                    ol_flows.append(Spacer(1, 1.5 * mm))
+                    ol_flows.append(Spacer(1, 2 * mm))
                 if ol_flows:
-                    box = _HighlightBox(ol_flows, colors['card_bg'], colors['card_border'], padding=10)
+                    box = _HighlightBox(ol_flows, colors['card_bg'], colors['card_border'], padding=12)
                     elements.append(box)
                     elements.append(Spacer(1, 3 * mm))
             elif tag == 'blockquote':
@@ -351,8 +351,8 @@ async def generate_branded_pdf(request: Request, admin: str = Depends(verify_adm
         'gray': HexColor('#6B7280'),
         'text': HexColor('#374151'),
         'light_bg': HexColor('#F9FAFB'),
-        'card_bg': HexColor('#F8F6F1'),
-        'card_border': HexColor('#E8E0D0'),
+        'card_bg': HexColor('#F0ECE2'),
+        'card_border': HexColor('#D4C9B0'),
         'quote_bg': HexColor('#FFFBF0'),
         'border': HexColor('#E5E7EB'),
     }
@@ -426,9 +426,9 @@ async def generate_branded_pdf(request: Request, admin: str = Depends(verify_adm
 
     styles = getSampleStyleSheet()
     styles.add(ParagraphStyle('EA_Title', parent=styles['Title'],
-                              fontSize=22, textColor=colors['dark'],
+                              fontSize=20, textColor=colors['dark'],
                               spaceAfter=2 * mm, fontName='Helvetica-Bold',
-                              alignment=TA_CENTER, leading=28))
+                              alignment=TA_CENTER, leading=26))
     styles.add(ParagraphStyle('EA_Subtitle', parent=styles['Normal'],
                               fontSize=10, textColor=colors['gold'],
                               spaceAfter=4 * mm, fontName='Helvetica',
