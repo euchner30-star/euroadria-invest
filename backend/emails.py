@@ -40,7 +40,9 @@ def wrap_email(content: str) -> str:
     <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
         <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
             <div style="background: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #C8A96A;">
-                <img src="https://euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 50px;">
+                <img src="https://euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 50px; margin-bottom: 8px;"><br>
+                <span style="font-size: 14px; font-weight: bold; color: #04151F; letter-spacing: 1.5px;">EUROADRIA CORPORATE SOLUTIONS</span><br>
+                <span style="font-size: 11px; color: #C8A96A; letter-spacing: 0.5px;">Beratung &amp; Angebotsplattform</span>
             </div>
             <div style="padding: 32px; color: #333; font-size: 15px; line-height: 1.7;">
                 {content}
