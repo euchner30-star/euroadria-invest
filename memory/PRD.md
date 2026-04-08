@@ -98,6 +98,14 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - Analytics Dashboard with "Zurucksetzen" button
 - Cookie consent modal
 
+### PDF Generator im Admin Panel (April 2026)
+- Neuer "PDF Generator" Tab in der Sidebar unter "Inhalte"
+- WYSIWYG-Editor für formatierten Inhalt (H1-H3, Listen, fett, kursiv, Links, Zitate)
+- Automatisches EuroAdria-Branding: Logo, goldene Akzente, Header/Footer, "Vertraulich"-Hinweis
+- Titel + optionaler Untertitel + Datum wird automatisch eingefügt
+- Backend: HTML-zu-PDF Konvertierung mit reportlab + BeautifulSoup
+- Endpoint: POST /api/admin/generate-pdf (Auth required)
+
 ### Admin Panel Sidebar Navigation (April 2026)
 - Replaced tab-based navigation with sidebar layout
 - Collapsible groups: Überblick, Inhalte, Kommunikation, Daten & Recht
