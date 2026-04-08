@@ -271,20 +271,30 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
       if (inOl) { result.push('</ol>'); inOl = false; }
     };
 
-    // Convert inline markdown
+    // Convert inline markdown + auto-bold labels before colons
     const inlineFormat = (line) => {
-      return line
-        .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')     // **bold**
-        .replace(/__(.+?)__/g, '<b>$1</b>')           // __bold__
-        .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<i>$1</i>') // *italic*
-        .replace(/(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g, '<i>$1</i>');      // _italic_
+      let formatted = line
+        .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+        .replace(/__(.+?)__/g, '<b>$1</b>')
+        .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<i>$1</i>')
+        .replace(/(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g, '<i>$1</i>');
+      return formatted;
+    };
+
+    // Auto-bold: "Label: rest of text" → "<b>Label:</b> rest of text"
+    const autoBoldLabel = (line) => {
+      // If line starts with 1-4 words followed by a colon, bold the label
+      const labelMatch = line.match(/^([A-ZÄÖÜa-zäöüß][\w\-äöüÄÖÜß]*(?:\s+[\w\-äöüÄÖÜß]+){0,3}):\s+(.+)/);
+      if (labelMatch && !line.includes('<b>')) {
+        return `<b>${labelMatch[1]}:</b> ${labelMatch[2]}`;
+      }
+      return line;
     };
 
     for (let i = 0; i < lines.length; i++) {
       const raw = lines[i];
       const trimmed = raw.trim();
 
-      // Empty line = close lists, add spacing
       if (!trimmed) {
         closeList();
         continue;
@@ -299,39 +309,43 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
         continue;
       }
 
-      // Numbered heading-like pattern: "1. Bold Title" or "Seite 1: ..."
-      const numberedHeading = trimmed.match(/^(?:Seite\s+)?\d+[\.\:\)]\s*(.+)/);
-
-      // Bullet list: - item, * item, • item
-      const bulletMatch = trimmed.match(/^[-*•]\s+(.+)/);
+      // Bullet list: - item, * item, • item, ‣ item
+      const bulletMatch = trimmed.match(/^[-*•‣]\s+(.+)/);
       if (bulletMatch) {
         if (inOl) { result.push('</ol>'); inOl = false; }
         if (!inUl) { result.push('<ul>'); inUl = true; }
-        result.push(`<li>${inlineFormat(bulletMatch[1])}</li>`);
+        result.push(`<li>${autoBoldLabel(inlineFormat(bulletMatch[1]))}</li>`);
         continue;
       }
 
-      // Ordered list: 1. item, 2) item
-      const olMatch = trimmed.match(/^\d+[\.\)]\s+(.+)/);
-      if (olMatch && !numberedHeading) {
+      // Numbered section heading: "1. Short Title" (short, no period at end)
+      const numberedHeading = trimmed.match(/^(\d+)\.\s+(.+)/);
+      if (numberedHeading) {
+        const content = numberedHeading[2];
+        const isShort = content.length < 70 && !content.endsWith('.');
+        if (isShort) {
+          closeList();
+          result.push(`<h3>${numberedHeading[1]}. ${inlineFormat(content)}</h3>`);
+          continue;
+        }
+        // Long numbered item → ordered list
         if (inUl) { result.push('</ul>'); inUl = false; }
         if (!inOl) { result.push('<ol>'); inOl = true; }
-        result.push(`<li>${inlineFormat(olMatch[1])}</li>`);
+        result.push(`<li>${autoBoldLabel(inlineFormat(content))}</li>`);
         continue;
       }
 
-      // Check if this looks like a section heading (short, bold, no period at end)
-      const isBoldLine = /^\*\*(.+)\*\*$/.test(trimmed);
-      const isShortLine = trimmed.length < 80 && !trimmed.endsWith('.');
-      if (numberedHeading && isShortLine) {
+      // Standalone bold line: **Title** or entirely bold → heading
+      const boldLine = trimmed.match(/^\*\*(.+)\*\*$/);
+      if (boldLine && trimmed.length < 100) {
         closeList();
-        result.push(`<h2>${inlineFormat(trimmed)}</h2>`);
+        result.push(`<h2>${boldLine[1]}</h2>`);
         continue;
       }
 
-      // Regular paragraph
+      // Regular paragraph — still apply auto-bold for "Label: text" patterns
       closeList();
-      result.push(`<p>${inlineFormat(trimmed)}</p>`);
+      result.push(`<p>${autoBoldLabel(inlineFormat(trimmed))}</p>`);
     }
 
     closeList();
