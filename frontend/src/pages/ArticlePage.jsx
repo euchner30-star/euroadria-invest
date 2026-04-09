@@ -91,8 +91,12 @@ const ArticlePage = () => {
         type="article"
         article={{
           date: article.date,
+          dateModified: article.updatedAt || article.date,
           author: article.author,
-          category: article.category
+          category: article.category,
+          lang: lang,
+          readTime: article.readTime ? parseInt(article.readTime) : undefined,
+          wordCount: article.content ? article.content.split(/\s+/).length : undefined
         }}
       />
       <div className="max-w-4xl mx-auto">

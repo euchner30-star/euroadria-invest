@@ -161,6 +161,7 @@ const BlogPage = () => {
         title="Blog & Insights"
         description="Tiefgehende Analysen, Marktberichte und praktische Guides für erfolgreiche Investments an der Adria."
         url="/blog"
+        blogList={articles}
       />
       <div className="max-w-7xl mx-auto">
         {/* Page Header */}

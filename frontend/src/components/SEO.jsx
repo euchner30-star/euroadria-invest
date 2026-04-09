@@ -9,7 +9,8 @@ const SEO = ({
   type = 'website',
   article = null,
   service = null,
-  faq = null
+  faq = null,
+  blogList = null
 }) => {
   const siteUrl = 'https://euroadria.me';
   const fullUrl = `${siteUrl}${url}`;
@@ -46,13 +47,18 @@ const SEO = ({
     ]
   };
 
-  // Generate Article structured data
+  // Generate BlogPosting structured data
   const articleSchema = article ? {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     "headline": title,
     "description": metaDescription,
-    "image": metaImage,
+    "image": {
+      "@type": "ImageObject",
+      "url": metaImage,
+      "width": 1200,
+      "height": 630
+    },
     "author": {
       "@type": "Person",
       "name": article.author || "EuroAdria Corporate Solutions Team"
@@ -66,13 +72,40 @@ const SEO = ({
       }
     },
     "datePublished": article.date,
-    "dateModified": article.date,
+    "dateModified": article.dateModified || article.date,
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": fullUrl
     },
     "articleSection": article.category,
+    "inLanguage": article.lang || "de",
+    ...(article.wordCount ? { "wordCount": article.wordCount } : {}),
+    ...(article.readTime ? { "timeRequired": `PT${article.readTime}M` } : {}),
     "keywords": `${article.category}, Balkan Investment, Montenegro, Serbien, DACH Investoren, EuroAdria Corporate Solutions`
+  } : null;
+
+  // Generate Blog CollectionPage + ItemList structured data
+  const blogListSchema = blogList && blogList.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": fullTitle,
+    "description": metaDescription,
+    "url": fullUrl,
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "EuroAdria Corporate Solutions",
+      "url": siteUrl
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "numberOfItems": blogList.length,
+      "itemListElement": blogList.slice(0, 20).map((item, idx) => ({
+        "@type": "ListItem",
+        "position": idx + 1,
+        "url": `${siteUrl}/blog/${item.slug}`,
+        "name": item.title
+      }))
+    }
   } : null;
 
   // Generate Service structured data
@@ -151,6 +184,11 @@ const SEO = ({
       {serviceSchema && (
         <script type="application/ld+json">
           {JSON.stringify(serviceSchema)}
+        </script>
+      )}
+      {blogListSchema && (
+        <script type="application/ld+json">
+          {JSON.stringify(blogListSchema)}
         </script>
       )}
     </Helmet>
