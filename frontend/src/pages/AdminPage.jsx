@@ -2847,7 +2847,9 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
                     src={formData.image} 
                     alt="Vorschau" 
                     className="w-full h-full object-cover"
-                    style={{ objectPosition: `${formData.imagePositionX ?? 50}% ${formData.imagePosition ?? 50}%` }}
+                    style={{ 
+                      transform: `scale(1.3) translate(${((formData.imagePositionX ?? 50) - 50) * -0.4}%, ${((formData.imagePosition ?? 50) - 50) * -0.4}%)`,
+                    }}
                   />
                   <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
                     H: {formData.imagePositionX ?? 50}% | V: {formData.imagePosition ?? 50}%
