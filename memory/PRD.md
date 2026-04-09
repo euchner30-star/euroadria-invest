@@ -9,117 +9,102 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - **Database**: MongoDB Atlas (remote)
 - **Email**: Resend API (noreply@euroadria.me)
 - **Newsletter**: Brevo API
-- **Domain**: euroadria.me (primary), invest.euroadria.me (legacy)
+- **Domain**: euroadria.me (primary)
+- **PDF**: ReportLab (branded Exposés + universal PDF Generator)
+- **SEO**: Dynamic Sitemap, Open Graph, Twitter Cards, Schema.org (BlogPosting, ProfessionalService, LocalBusiness, Organization, FAQPage, NewsArticle, CollectionPage)
+- **Tracking**: Custom Analytics (no Google Analytics)
+- **Translation**: Argos (offline) + MyMemory API (fallback)
+- **Video**: YouTube Data API v3 with caching
 
-## Backend Architecture (Refactored April 2026)
+## Backend Architecture (18 Modules)
 ```
 /app/backend/
-  server.py          # Slim entry point (~90 lines) - App, CORS, router includes
-  core.py            # DB connection, Auth (verify_admin), Storage helpers, Config
-  models.py          # All Pydantic models
-  emails.py          # Resend email logic + follow-up automation
-  investment_models.py  # Investment calculation models + seed data
+  server.py          # Slim entry point (~90 lines)
+  core.py            # DB, Auth, Storage, Config
+  models.py          # Pydantic models
+  emails.py          # Resend email + follow-up automation
+  investment_models.py  # Investment calc models + seed data
   routes/
-    analytics.py     # Page views, calculator tracking, analytics dashboard, reset
+    analytics.py     # Pageview tracking, calculator tracking, dashboard, reset
     articles.py      # Article CRUD, clusters, categories, OG tags, sitemap, bulk import
     comments.py      # Public + admin comment moderation
     contact.py       # Contact form + lead capture + CRM auto-link
     crm.py           # Kanban pipeline, deals, stats, migration, cleanup
     events.py        # Events + Leistungen CMS
     investment.py    # Locations, infrastructure, zones, ROI, simulation, PDF expose
-    newsletter.py    # Brevo integration (subscribe, unsubscribe, send campaigns)
+    newsletter.py    # Brevo integration
     pages.py         # CMS pages with defaults
     regions.py       # Regions & apartments
-    settings.py      # Download settings, homepage settings, legal pages
-    translate.py     # Translation (Argos offline + MyMemory API fallback)
-    uploads.py       # Image upload, optimization, object storage, file serving
-    youtube.py       # YouTube Data API v3 with caching
+    settings.py      # Download settings, homepage settings, legal pages, PDF Generator
+    translate.py     # Translation (Argos + MyMemory)
+    uploads.py       # Image upload, optimization, object storage
+    youtube.py       # YouTube Data API v3
 ```
 
 ## Completed Features
 
 ### Core Platform
-- Investment Dashboard with ROI Calculator
-- Simulation Calculator (Tax, Exit Costs, Mortgage)
+- Investment Dashboard with 22 locations + Investment Heatmap
+- ROI Calculator with live calculation
+- Simulation Calculator (Tax, Exit Costs, Mortgage, 10-year cashflow, IRR, NPV)
 - AEO-optimized Blog with Expert Tips
-- Admin Panel (Articles, Comments, Regions, Pages, Newsletter, Downloads, Pipeline, Revenue)
+- Admin Panel with Sidebar Navigation (14 sections)
 - Contact Form with Resend email notifications
-- Dynamic Location Profiles (22 locations)
+- Dynamic Location Profiles
 
-### CRM + Revenue Tracking (April 2026)
+### CRM + Revenue Tracking
 - Kanban Pipeline: 7 stages (Neuer Lead -> Gewonnen/Verloren)
 - Revenue Dashboard: KPI cards, bar/pie charts, source tracking
-- Auto CRM-Lead from ALL forms (contact, expose download, newsletter)
+- Auto CRM-Lead from ALL forms
 - CRM Reset functionality
 
-### PDF Expose (April 2026)
-- EuroAdria branded PDF (dark bg, gold accents, white logo)
-- Dynamic location name, 10-year cashflow table
-- Lead-Gate: Name + Email required before download
-- Confirmation email to customer
+### PDF System
+- Branded PDF Exposé with Lead-Gate (dark bg, gold accents)
+- Universal PDF Generator in Admin Panel (WYSIWYG -> ReportLab)
+- PDF Preview in browser
 
-### Email System (April 2026)
-- Admin notification on new contact/lead
-- Customer confirmation emails (contact + PDF download)
+### Email System
+- Admin notification on new contact/lead/comment
+- Customer confirmation emails
 - Follow-up automation (3-day loop)
-- All via Resend with noreply@euroadria.me
+- Unified light branding (white bg, logo header, gold accents)
 
-### Domain Migration (April 2026)
-- euroadria.me as primary domain
-- All URLs, CORS, SEO, Sitemap updated
+### Schema.org SEO (April 2026)
+- Organization schema with full address, founders, sameAs, knowsAbout
+- ProfessionalService with priceRange, hasOfferCatalog, areaServed
+- LocalBusiness with openingHours, aggregateRating
+- BlogPosting for individual articles (datePublished with timezone, author with URL, wordCount, timeRequired)
+- CollectionPage + ItemList for blog overview
+- NewsArticle for 5 media mentions (n-tv, RTL, Focus, VC Magazin, Kosmo) with image, author, datePublished
+- FAQPage with structured Q&A
+- BreadcrumbList, ItemList for investment projects
 
-### Backend Refactoring (April 2026)
-- Monolithic server.py (4509 lines) -> 18 modular files (3828 lines total)
-- Clean separation: core, models, emails, 14 route modules
-- All 39 API endpoints tested and verified (100% pass rate)
-
-### Unified Light Email Branding (April 2026)
-- All 6 email templates converted from dark to light design
-- Consistent branding: white background, logo header, gold accents, professional footer
-- PDF Exposé also converted to light design with regular logo
-- Shared `wrap_email()` helper in emails.py for consistent layout
-
-### Resend Domain Verification (April 2026)
-- DKIM, SPF TXT, and SPF MX all verified for euroadria.me
-- MX record set via Strato subdomain `send.euroadria.me` → `feedback-smtp.eu-west-1.amazonses.com`
-- Emails sending via `noreply@euroadria.me`
-
-### Smart Traffic Source Detection (April 2026)
-- 5-step source detection: UTM → Click-IDs (fbclid/ttclid/gclid) → User-Agent → Referrer → Direct
-- Auto-detects TikTok, Instagram, Facebook, LinkedIn, Twitter, Snapchat, Pinterest in-app browsers
-- Solves the problem of social media in-app browsers stripping the Referrer header
+### WYSIWYG Editor
+- Bold, Italic, H1/H2/H3, Normal, Klein
+- Lists (ordered/unordered), Blockquotes, Links
+- Page Break for PDF
+- Smart Paste: Rich HTML + Markdown auto-detection
+- Partial-text heading selection
+- Undo/Redo with History
+- Mobile responsive: tooltips disabled on touch, horizontal scroll toolbar, hidden history counter
 
 ### Other
-- /leistungen page with CMS editor
-- /events page with CRUD API
-- Navigation dropdown
-- Source maps disabled, CORS restricted
-- Global brand rename to "EuroAdria Corporate Solutions"
-- Analytics Dashboard with "Zurucksetzen" button
-- Cookie consent modal
+- /leistungen, /events pages (CMS)
+- /infrastruktur-radar page with request form
+- /serbia-executive, crypto-banking, crypto-compliance pages
+- 5 Immobilien region pages (Budva, Podgorica, Zabljak, Skadar Lake, Niksic)
+- Navigation mega-menu with 3 region categories
+- Smart Traffic Source Detection (UTM, Click-IDs, User-Agent, Referrer)
+- Cookie Consent, Impressum, Datenschutz, AGB
+- Multilingual (DE/EN via LanguageContext + i18n)
+- YouTube integration, WhatsApp button
+- Newsletter (Brevo), ShareButtons, CommentsSection
 
-### PDF Generator Upgrade (April 2026)
-- Professionelles PDF-Design: Goldene Akzent-Bars bei Überschriften, Bullet-Points in Highlight-Boxen, Blockquotes in gold-umrandeten Boxen
-- PDF-Vorschau direkt im Browser (iframe)
-- Smart Paste: Rich HTML aus Google Docs + Markdown-Erkennung aus Gemini/ChatGPT
-- Teiltext-Überschriften: Nur markierter Text wird zu H1/H2/H3
-- "Normal" und "Klein" Buttons im Editor
-- Endpoint: POST /api/admin/generate-pdf (preview=true für Inline-Anzeige)
-
-### PDF Generator im Admin Panel (April 2026)
-- Neuer "PDF Generator" Tab in der Sidebar unter "Inhalte"
-- WYSIWYG-Editor für formatierten Inhalt (H1-H3, Listen, fett, kursiv, Links, Zitate)
-- Automatisches EuroAdria-Branding: Logo, goldene Akzente, Header/Footer, "Vertraulich"-Hinweis
-- Titel + optionaler Untertitel + Datum wird automatisch eingefügt
-- Backend: HTML-zu-PDF Konvertierung mit reportlab + BeautifulSoup
-- Endpoint: POST /api/admin/generate-pdf (Auth required)
-
-### Admin Panel Sidebar Navigation (April 2026)
-- Replaced tab-based navigation with sidebar layout
-- Collapsible groups: Überblick, Inhalte, Kommunikation, Daten & Recht
-- 14 navigation items with badges (article count, pending comments, etc.)
-- Mobile responsive: slide-in sidebar with hamburger menu
-- Active state highlighting with gold accent
+### Domain & Deployment
+- euroadria.me as primary domain
+- Render (Frontend + Backend separate services)
+- GitHub auto-deploy on push
+- DKIM + SPF verified for noreply@euroadria.me
 
 ## Pending
 - Google Search Console: add euroadria.me property
@@ -127,10 +112,8 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 ## Backlog (P2)
 - Apartment-Listing with real DB data
 - Video background for Hero section
-- Newsletter integration expansion
 - FunnelCockpit Tracking Integration (waiting for user tracking code)
-- Optional: api.euroadria.me subdomain for backend
-- Follow-up email automation testing
+- Newsletter integration expansion
 
 ## Credentials
 See /app/memory/test_credentials.md
@@ -143,6 +126,7 @@ See /app/memory/test_credentials.md
 - /api/admin/crm/* - CRM pipeline management
 - /api/admin/analytics/* - Analytics dashboard
 - /api/calculator/roi, /api/calculator/simulation, /api/calculator/expose-pdf
+- /api/admin/generate-pdf - Universal PDF Generator
 - /api/translate, /api/translate/batch, /api/translate/article/{slug}
 - /api/youtube/latest
 - /api/sitemap.xml

@@ -5,11 +5,11 @@ import {
   HelpCircle
 } from 'lucide-react';
 
-// Tooltip Component
+// Tooltip Component — only shows on devices that support hover (no touch flicker)
 const Tooltip = ({ text, children }) => (
   <div className="relative group inline-flex items-center">
     {children}
-    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-ea-dark text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 max-w-xs">
+    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-ea-dark text-white text-xs rounded-lg opacity-0 invisible [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-hover:visible transition-all whitespace-nowrap z-50 max-w-xs pointer-events-none">
       {text}
       <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-ea-dark"></div>
     </div>
@@ -437,10 +437,10 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
 
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1 p-2 bg-ea-light border-b border-gray-200">
+      {/* Toolbar — scrollable on mobile, wraps on desktop */}
+      <div className="flex items-center gap-0.5 md:gap-1 md:flex-wrap p-1.5 md:p-2 bg-ea-light border-b border-gray-200 overflow-x-auto scrollbar-hide">
         {/* Text Formatting */}
-        <div className="flex items-center gap-1 pr-2 border-r border-gray-300">
+        <div className="flex items-center gap-0.5 md:gap-1 pr-1 md:pr-2 md:border-r md:border-gray-300 shrink-0">
           <ToolbarButton 
             onClick={() => execCommand('bold')} 
             icon={Bold} 
@@ -454,56 +454,51 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
         </div>
 
         {/* Headings & Text Size */}
-        <div className="flex items-center gap-1 px-2 border-r border-gray-300">
-          <Tooltip text="H1 = Hauptüberschrift für SEO/GEO. Nur 1x pro Artikel verwenden!">
-            <button
-              type="button"
-              onClick={() => formatHeading(1)}
-              className="px-2 py-1 text-sm font-bold rounded hover:bg-ea-gold/20 text-ea-dark/70"
-            >
-              H1
-            </button>
-          </Tooltip>
-          <Tooltip text="H2 = Sektions-Überschrift. Für Hauptabschnitte verwenden.">
-            <button
-              type="button"
-              onClick={() => formatHeading(2)}
-              className="px-2 py-1 text-sm font-bold rounded hover:bg-ea-gold/20 text-ea-dark/70"
-            >
-              H2
-            </button>
-          </Tooltip>
-          <Tooltip text="H3 = Unter-Überschrift. Für Unterabschnitte verwenden.">
-            <button
-              type="button"
-              onClick={() => formatHeading(3)}
-              className="px-2 py-1 text-sm font-bold rounded hover:bg-ea-gold/20 text-ea-dark/70"
-            >
-              H3
-            </button>
-          </Tooltip>
-          <Tooltip text="Normaler Fließtext (Standard-Größe)">
-            <button
-              type="button"
-              onClick={() => execCommand('formatBlock', 'p')}
-              className="px-2 py-1 text-xs font-medium rounded hover:bg-ea-gold/20 text-ea-dark/70 bg-gray-100"
-            >
-              Normal
-            </button>
-          </Tooltip>
-          <Tooltip text="Kleiner Text (für Hinweise, Fußnoten, Disclaimer)">
-            <button
-              type="button"
-              onClick={() => execCommand('fontSize', '2')}
-              className="px-2 py-1 text-xs rounded hover:bg-ea-gold/20 text-ea-dark/70"
-            >
-              Klein
-            </button>
-          </Tooltip>
+        <div className="flex items-center gap-0.5 md:gap-1 px-1 md:px-2 md:border-r md:border-gray-300 shrink-0">
+          <button
+            type="button"
+            onClick={() => formatHeading(1)}
+            className="px-1.5 md:px-2 py-1 text-xs md:text-sm font-bold rounded hover:bg-ea-gold/20 text-ea-dark/70"
+            data-testid="editor-h1-btn"
+          >
+            H1
+          </button>
+          <button
+            type="button"
+            onClick={() => formatHeading(2)}
+            className="px-1.5 md:px-2 py-1 text-xs md:text-sm font-bold rounded hover:bg-ea-gold/20 text-ea-dark/70"
+            data-testid="editor-h2-btn"
+          >
+            H2
+          </button>
+          <button
+            type="button"
+            onClick={() => formatHeading(3)}
+            className="px-1.5 md:px-2 py-1 text-xs md:text-sm font-bold rounded hover:bg-ea-gold/20 text-ea-dark/70"
+            data-testid="editor-h3-btn"
+          >
+            H3
+          </button>
+          <button
+            type="button"
+            onClick={() => execCommand('formatBlock', 'p')}
+            className="hidden md:inline-block px-2 py-1 text-xs font-medium rounded hover:bg-ea-gold/20 text-ea-dark/70 bg-gray-100"
+            data-testid="editor-normal-btn"
+          >
+            Normal
+          </button>
+          <button
+            type="button"
+            onClick={() => execCommand('fontSize', '2')}
+            className="hidden md:inline-block px-2 py-1 text-xs rounded hover:bg-ea-gold/20 text-ea-dark/70"
+            data-testid="editor-small-btn"
+          >
+            Klein
+          </button>
         </div>
 
         {/* Lists */}
-        <div className="flex items-center gap-1 px-2 border-r border-gray-300">
+        <div className="flex items-center gap-0.5 md:gap-1 px-1 md:px-2 md:border-r md:border-gray-300 shrink-0">
           <ToolbarButton 
             onClick={() => execCommand('insertUnorderedList')} 
             icon={List} 
@@ -516,49 +511,47 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
           />
         </div>
 
-        {/* Quote & Link */}
-        <div className="flex items-center gap-1 px-2 border-r border-gray-300">
+        {/* Quote & Link & Page Break */}
+        <div className="flex items-center gap-0.5 md:gap-1 px-1 md:px-2 md:border-r md:border-gray-300 shrink-0">
           <ToolbarButton 
             onClick={() => execCommand('formatBlock', 'blockquote')} 
             icon={Quote} 
-            tooltip="Zitat-Block (für wichtige Aussagen)" 
+            tooltip="Zitat-Block" 
           />
-          <Tooltip text="Link einfügen">
-            <button
-              type="button"
-              onClick={() => {
-                const url = prompt('URL eingeben:');
-                if (url) execCommand('createLink', url);
-              }}
-              className="p-2 rounded hover:bg-ea-gold/20 text-ea-dark/70"
-            >
-              <Link2 className="w-4 h-4" />
-            </button>
-          </Tooltip>
-          <Tooltip text="Seitenumbruch einfügen (neue PDF-Seite)">
-            <button
-              type="button"
-              onClick={() => {
-                document.execCommand('insertHTML', false,
-                  '<div data-pagebreak="true" contenteditable="false" style="border-top:2px dashed #C8A96A;text-align:center;padding:8px 0;margin:16px 0;color:#C8A96A;font-size:12px;user-select:none;">--- Seitenumbruch ---</div><p><br></p>'
-                );
-                if (editorRef.current) {
-                  const c = editorRef.current.innerHTML;
-                  notifyParent(c);
-                  saveToHistory(c);
-                }
-              }}
-              className="p-2 rounded hover:bg-ea-gold/20 text-ea-dark/70"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 12h4m10 0h4M8 12h8" /><path d="M3 4v4m0 8v4M21 4v4m0 8v4" />
-              </svg>
-            </button>
-          </Tooltip>
+          <button
+            type="button"
+            onClick={() => {
+              const url = prompt('URL eingeben:');
+              if (url) execCommand('createLink', url);
+            }}
+            className="p-1.5 md:p-2 rounded hover:bg-ea-gold/20 text-ea-dark/70"
+            data-testid="editor-link-btn"
+          >
+            <Link2 className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              document.execCommand('insertHTML', false,
+                '<div data-pagebreak="true" contenteditable="false" style="border-top:2px dashed #C8A96A;text-align:center;padding:8px 0;margin:16px 0;color:#C8A96A;font-size:12px;user-select:none;">--- Seitenumbruch ---</div><p><br></p>'
+              );
+              if (editorRef.current) {
+                const c = editorRef.current.innerHTML;
+                notifyParent(c);
+                saveToHistory(c);
+              }
+            }}
+            className="p-1.5 md:p-2 rounded hover:bg-ea-gold/20 text-ea-dark/70"
+            data-testid="editor-pagebreak-btn"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 12h4m10 0h4M8 12h8" /><path d="M3 4v4m0 8v4M21 4v4m0 8v4" />
+            </svg>
+          </button>
         </div>
 
         {/* Undo/Redo */}
-        <div className="flex items-center gap-1 pl-2">
+        <div className="flex items-center gap-0.5 md:gap-1 pl-1 md:pl-2 shrink-0">
           <ToolbarButton 
             onClick={handleUndo} 
             icon={Undo} 
@@ -571,7 +564,7 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
             tooltip={`Wiederholen (Strg+Y)${canRedo ? '' : ' - Nichts zu wiederholen'}`}
             disabled={!canRedo}
           />
-          <span className="text-xs text-ea-dark/40 ml-2">
+          <span className="hidden md:inline text-xs text-ea-dark/40 ml-1">
             {historyIndex + 1}/{history.length}
           </span>
         </div>
@@ -608,8 +601,9 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
       />
 
       {/* Helper Text */}
-      <div className="px-4 py-2 bg-ea-light/50 border-t border-gray-100 text-xs text-ea-dark/50">
-        💡 Enter = Neuer Absatz | Shift+Enter = Zeilenumbruch | Strg+B = Fett | Strg+I = Kursiv
+      <div className="px-3 md:px-4 py-2 bg-ea-light/50 border-t border-gray-100 text-xs text-ea-dark/50">
+        <span className="hidden md:inline">Enter = Neuer Absatz | Shift+Enter = Zeilenumbruch | Strg+B = Fett | Strg+I = Kursiv</span>
+        <span className="md:hidden">Enter = Absatz | Strg+B = Fett</span>
       </div>
     </div>
   );
