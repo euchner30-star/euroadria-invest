@@ -199,9 +199,7 @@ const ArticlePage = () => {
           {/* Expert Tip Box */}
           {article.expertTip && (
             <ExpertTipBox
-              author={article.expertTip.author}
-              title={article.expertTip.title}
-              content={article.expertTip.content}
+              expertTip={article.expertTip}
             />
           )}
 
