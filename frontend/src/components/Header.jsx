@@ -12,15 +12,28 @@ const Header = () => {
   const [isMobileLeistungenOpen, setIsMobileLeistungenOpen] = useState(false);
   const dropdownRef = useRef(null);
   const leistungenRef = useRef(null);
+  const isScrollingRef = useRef(false);
+  const scrollTimerRef = useRef(null);
   const location = useLocation();
   const { t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
+      // Mark as scrolling and close dropdowns
+      isScrollingRef.current = true;
+      setIsImmobilienOpen(false);
+      setIsLeistungenOpen(false);
+      clearTimeout(scrollTimerRef.current);
+      scrollTimerRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 150);
     };
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(scrollTimerRef.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -125,7 +138,7 @@ const Header = () => {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsImmobilienOpen(!isImmobilienOpen)}
-                onMouseEnter={() => setIsImmobilienOpen(true)}
+                onMouseEnter={() => { if (!isScrollingRef.current) setIsImmobilienOpen(true); }}
                 className={`flex items-center gap-1.5 text-sm font-semibold tracking-wider transition-colors duration-300 px-4 py-2 rounded-lg
                   ${location.pathname.startsWith('/immobilien') 
                     ? 'text-ea-gold bg-ea-gold/10' 
