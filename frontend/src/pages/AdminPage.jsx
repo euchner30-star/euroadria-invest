@@ -2847,14 +2847,24 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
                     src={formData.image} 
                     alt="Vorschau" 
                     className="w-full h-full object-cover"
-                    style={{ objectPosition: `center ${formData.imagePosition ?? 50}%` }}
+                    style={{ objectPosition: `${formData.imagePositionX ?? 50}% ${formData.imagePosition ?? 50}%` }}
                   />
                   <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
-                    Position: {formData.imagePosition ?? 50}%
+                    H: {formData.imagePositionX ?? 50}% | V: {formData.imagePosition ?? 50}%
                   </div>
                 </div>
                 <div>
-                  <label className="block text-ea-dark/80 text-xs mb-1">Bildposition (vertikal)</label>
+                  <label className="block text-ea-dark/80 text-xs mb-1">Horizontal (links/rechts)</label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-ea-dark/40">Links</span>
+                    <input type="range" min="0" max="100" value={formData.imagePositionX ?? 50}
+                      onChange={(e) => handleChange('imagePositionX', parseInt(e.target.value))}
+                      className="flex-1 accent-[#C8A96A]" />
+                    <span className="text-xs text-ea-dark/40">Rechts</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-ea-dark/80 text-xs mb-1">Vertikal (oben/unten)</label>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-ea-dark/40">Oben</span>
                     <input type="range" min="0" max="100" value={formData.imagePosition ?? 50}

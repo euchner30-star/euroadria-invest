@@ -6,7 +6,7 @@ import SEO from '../components/SEO';
 import { useLanguage } from '../context/LanguageContext';
 
 // Lazy-loaded image component
-const LazyImage = ({ src, alt, className, imagePosition }) => {
+const LazyImage = ({ src, alt, className, imagePosition, imagePositionX }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const imgRef = React.useRef();
@@ -38,7 +38,7 @@ const LazyImage = ({ src, alt, className, imagePosition }) => {
           className={`w-full h-full object-cover transition-opacity duration-300 ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
-          style={{ objectPosition: `center ${imagePosition ?? 50}%` }}
+          style={{ objectPosition: `${imagePositionX ?? 50}% ${imagePosition ?? 50}%` }}
           onLoad={() => setIsLoaded(true)}
           onError={() => setIsLoaded(false)}
           loading="lazy"
@@ -296,6 +296,7 @@ const BlogPage = () => {
                             alt={article.title}
                             className="w-full h-full relative"
                             imagePosition={article.imagePosition}
+                            imagePositionX={article.imagePositionX}
                           />
                           <div className="absolute top-3 left-3">
                             <span className="bg-white/90 backdrop-blur-sm text-xs text-ea-dark px-2.5 py-1 rounded-full font-medium">

@@ -148,7 +148,7 @@ const ArticlePage = () => {
               src={article.image}
               alt={article.title}
               className="w-full h-full object-cover"
-              style={{ objectPosition: `center ${article.imagePosition ?? 50}%` }}
+              style={{ objectPosition: `${article.imagePositionX ?? 50}% ${article.imagePosition ?? 50}%` }}
             />
           </div>
 

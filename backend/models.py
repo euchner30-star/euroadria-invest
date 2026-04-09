@@ -52,6 +52,7 @@ class ArticleBase(BaseModel):
     downloadUrl: Optional[str] = None
     sortOrder: int = 0
     imagePosition: Optional[int] = 50
+    imagePositionX: Optional[int] = 50
 
 
 class ArticleCreate(ArticleBase):
@@ -78,6 +79,7 @@ class ArticleUpdate(BaseModel):
     downloadUrl: Optional[str] = None
     sortOrder: Optional[int] = None
     imagePosition: Optional[int] = None
+    imagePositionX: Optional[int] = None
 
 
 class Article(ArticleBase):
