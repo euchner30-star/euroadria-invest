@@ -290,7 +290,7 @@ const BlogPage = () => {
                       data-testid={`article-card-${article.slug}`}
                     >
                       <article className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full">
-                        <div className="relative h-44 overflow-hidden">
+                        <div className="relative h-52 overflow-hidden">
                           <LazyImage
                             src={article.image}
                             alt={article.title}
