@@ -160,13 +160,29 @@ export const LeadMagnetBox = () => {
 // Expert Tip Component
 export const ExpertTipBox = ({ expertTip }) => {
   if (!expertTip || !expertTip.content) return null;
+  
+  // Map known experts to their profile images
+  const getExpertImage = (name) => {
+    if (!name) return null;
+    const n = name.toLowerCase();
+    if (n.includes('holger')) return '/holger-kuhlmann.jpg';
+    if (n.includes('milena')) return '/milena-bubanja.jpg';
+    return null;
+  };
+  
+  const expertImage = getExpertImage(expertTip.author);
+  
   return (
     <div className="my-8 md:my-12 bg-gradient-to-br from-ea-dark to-ea-dark/90 rounded-xl p-6 md:p-8 border border-ea-gold/20">
       <div className="flex items-start gap-3 md:gap-4 mb-3 md:mb-4">
-        <div className="w-10 h-10 md:w-12 md:h-12 bg-ea-gold/10 rounded-full flex items-center justify-center flex-shrink-0">
-          <span className="text-ea-gold text-sm md:text-base font-bold">
-            {expertTip.author?.charAt(0) || 'E'}
-          </span>
+        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex-shrink-0 overflow-hidden bg-ea-gold/10 flex items-center justify-center">
+          {expertImage ? (
+            <img src={expertImage} alt={expertTip.author} className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-ea-gold text-sm md:text-base font-bold">
+              {expertTip.author?.charAt(0) || 'E'}
+            </span>
+          )}
         </div>
         <div>
           <h4 className="text-ea-gold text-sm md:text-base font-semibold">{expertTip.title || 'Experten-Einschaetzung'}</h4>
