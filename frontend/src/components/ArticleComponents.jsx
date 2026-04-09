@@ -161,23 +161,24 @@ export const LeadMagnetBox = () => {
 export const ExpertTipBox = ({ expertTip }) => {
   if (!expertTip || !expertTip.content) return null;
   
-  // Map known experts to their profile images
-  const getExpertImage = (name) => {
-    if (!name) return null;
-    const n = name.toLowerCase();
+  // Use custom image from DB, or fallback to known experts
+  const getExpertImage = (tip) => {
+    if (tip.image) return tip.image;
+    if (!tip.author) return null;
+    const n = tip.author.toLowerCase();
     if (n.includes('holger')) return '/holger-kuhlmann.jpg';
     if (n.includes('milena')) return '/milena-bubanja.jpg';
     return null;
   };
   
-  const expertImage = getExpertImage(expertTip.author);
+  const expertImage = getExpertImage(expertTip);
   
   return (
     <div className="my-8 md:my-12 bg-gradient-to-br from-ea-dark to-ea-dark/90 rounded-xl p-6 md:p-8 border border-ea-gold/20">
       <div className="flex items-start gap-3 md:gap-4 mb-3 md:mb-4">
         <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex-shrink-0 overflow-hidden bg-ea-gold/10 flex items-center justify-center">
           {expertImage ? (
-            <img src={expertImage} alt={expertTip.author} className="w-full h-full object-cover" />
+            <img src={expertImage} alt={expertTip.author} className="w-full h-full object-cover object-top" />
           ) : (
             <span className="text-ea-gold text-sm md:text-base font-bold">
               {expertTip.author?.charAt(0) || 'E'}

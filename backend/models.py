@@ -31,6 +31,7 @@ class ExpertTip(BaseModel):
     author: str
     title: str
     content: str
+    image: Optional[str] = None
 
 
 class ArticleBase(BaseModel):

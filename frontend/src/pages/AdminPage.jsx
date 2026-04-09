@@ -2996,6 +2996,7 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
               value={formData.expertTip?.author || ''}
               onChange={(e) => handleNestedChange('expertTip', 'author', e.target.value)}
               className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              placeholder="z.B. Holger Kuhlmann"
             />
           </div>
           <div>
@@ -3005,8 +3006,27 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
               value={formData.expertTip?.title || ''}
               onChange={(e) => handleNestedChange('expertTip', 'title', e.target.value)}
               className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+              placeholder="z.B. Leitung DACH-Beratung"
             />
           </div>
+        </div>
+        <div>
+          <label className="block text-ea-dark/80 text-sm mb-2">Bild-URL (optional)</label>
+          <input
+            type="text"
+            value={formData.expertTip?.image || ''}
+            onChange={(e) => handleNestedChange('expertTip', 'image', e.target.value)}
+            className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold"
+            placeholder="/holger-kuhlmann.jpg oder imgBB-Link"
+          />
+          {formData.expertTip?.image && (
+            <div className="mt-2 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-ea-light border border-gray-200">
+                <img src={formData.expertTip.image} alt="Vorschau" className="w-full h-full object-cover object-top" />
+              </div>
+              <span className="text-xs text-ea-dark/50">Vorschau</span>
+            </div>
+          )}
         </div>
         <div>
           <label className="block text-ea-dark/80 text-sm mb-2">Inhalt</label>
