@@ -594,7 +594,7 @@ EuroAdria Corporate Solutions ist Ihr Vor-Ort-Partner mit direktem Zugang zu Off
 - Documentation Package für Banken
 
 ### Phase 5: Final Report & Risk Rating
-- Comprehensive DD Report (50-80 Seiten)
+- Comprehensive DD Report (30+ Seiten)
 - Risk Matrix (Legal, Financial, Operational, Reputational)
 - Go/No-Go Recommendation
 - If Go: Mitigation Roadmap

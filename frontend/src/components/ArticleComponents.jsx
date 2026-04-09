@@ -53,7 +53,7 @@ export const LeadMagnetBox = () => {
         </h3>
         <p className="text-ea-light/80 text-sm md:text-lg mb-4 md:mb-6 max-w-2xl mx-auto">
           Laden Sie unseren umfassenden Praxisleitfaden fuer DACH-Investoren herunter. 
-          80+ Seiten geballtes Wissen zu Due Diligence, Bankability und rechtlichen Strukturen.
+          30+ Seiten geballtes Wissen zu Due Diligence, Bankability und rechtlichen Strukturen.
         </p>
         <button 
           onClick={() => setShowModal(true)}
@@ -63,7 +63,7 @@ export const LeadMagnetBox = () => {
           Jetzt kostenlos herunterladen
         </button>
         <p className="text-ea-light/50 text-xs md:text-sm mt-3 md:mt-4">
-          PDF, 80+ Seiten
+          PDF, 30+ Seiten
         </p>
       </div>
 
