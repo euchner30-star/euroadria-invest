@@ -8,7 +8,8 @@ const ImageUploader = ({
   credentials, 
   currentImage = null,
   label = "Bild hochladen",
-  acceptedFormats = ".jpg,.jpeg,.png,.webp,.gif"
+  acceptedFormats = ".jpg,.jpeg,.png,.webp,.gif",
+  hidePreview = false
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -108,7 +109,7 @@ const ImageUploader = ({
       <label className="block text-ea-dark/80 text-sm font-medium">{label}</label>
       
       {/* Preview */}
-      {uploadedImage && (
+      {uploadedImage && !hidePreview && (
         <div className="relative group">
           <img 
             src={uploadedImage.startsWith('/') ? uploadedImage : uploadedImage}

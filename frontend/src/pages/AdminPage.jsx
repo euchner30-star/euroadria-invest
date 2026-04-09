@@ -2839,6 +2839,7 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
               currentImage={formData.image}
               onImageUploaded={(url) => handleChange('image', url || '')}
               credentials={credentials}
+              hidePreview={true}
             />
             {formData.image && (
               <div className="mt-2 space-y-3">
