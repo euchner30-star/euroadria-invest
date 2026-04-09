@@ -35,12 +35,10 @@ const LazyImage = ({ src, alt, className, imagePosition, imagePositionX }) => {
         <img
           src={src}
           alt={alt}
-          className={`w-full h-full object-cover transition-all duration-300 ${
+          className={`w-full h-full object-cover transition-opacity duration-300 ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
-          style={{ 
-            transform: `scale(1.3) translate(${((imagePositionX ?? 50) - 50) * -0.4}%, ${((imagePosition ?? 50) - 50) * -0.4}%)`,
-          }}
+          style={{ objectPosition: `${imagePositionX ?? 50}% ${imagePosition ?? 50}%` }}
           onLoad={() => setIsLoaded(true)}
           onError={() => setIsLoaded(false)}
           loading="lazy"
