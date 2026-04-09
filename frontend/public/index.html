@@ -233,13 +233,25 @@
             "@context": "https://schema.org",
             "@type": "ProfessionalService",
             "name": "EuroAdria Investment Beratung",
-            "serviceType": ["Investment Consulting", "Business Setup", "Real Estate Advisory", "Relocation Services"],
-            "provider": {
-                "@type": "Organization",
-                "name": "EuroAdria Corporate Solutions"
+            "url": "https://euroadria.me",
+            "logo": "https://euroadria.me/euroadria-logo.png",
+            "image": "https://euroadria.me/euroadria-logo.png",
+            "telephone": "+382-68-559-776",
+            "email": "office@euroadria.me",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Marka Miljanova 12",
+                "addressLocality": "Novi Sad",
+                "postalCode": "21000",
+                "addressCountry": "RS"
             },
-            "areaServed": ["Montenegro", "Serbia", "Balkan Region"],
+            "areaServed": [
+                {"@type": "Country", "name": "Montenegro"},
+                {"@type": "Country", "name": "Serbia"},
+                {"@type": "Place", "name": "Balkan Region"}
+            ],
             "description": "Forensische Due Diligence, Firmengründung, Immobilien-Investments und Relocation-Services für DACH-Investoren in der Adria-Region.",
+            "knowsAbout": ["Investment Consulting", "Business Setup", "Real Estate Advisory", "Relocation Services"],
             "hasOfferCatalog": {
                 "@type": "OfferCatalog",
                 "name": "Investment Services",
