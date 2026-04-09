@@ -30,7 +30,7 @@ const LazyImage = ({ src, alt, className, imagePosition }) => {
   }, []);
 
   return (
-    <div ref={imgRef} className={`${className} bg-ea-dark`}>
+    <div ref={imgRef} className={`${className} bg-gradient-to-br from-ea-gold/10 to-ea-gold/5`}>
       {isInView && src && (
         <img
           src={src}
@@ -45,7 +45,7 @@ const LazyImage = ({ src, alt, className, imagePosition }) => {
         />
       )}
       {(!src || (!isLoaded && isInView)) && (
-        <div className="absolute inset-0 flex items-center justify-center bg-ea-dark">
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-ea-gold/10 to-ea-gold/5">
           <img src="/euroadria-logo.png" alt="EuroAdria" className="w-2/3 max-w-[180px] opacity-60" />
         </div>
       )}
@@ -290,7 +290,7 @@ const BlogPage = () => {
                       data-testid={`article-card-${article.slug}`}
                     >
                       <article className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full">
-                        <div className="relative h-52 overflow-hidden">
+                        <div className="relative h-56 overflow-hidden">
                           <LazyImage
                             src={article.image}
                             alt={article.title}
