@@ -47,6 +47,15 @@ const SEO = ({
     ]
   };
 
+  // Format date with timezone for schema.org (ISO 8601)
+  const formatSchemaDate = (dateStr) => {
+    if (!dateStr) return undefined;
+    // If already has time/timezone, return as-is
+    if (dateStr.includes('T')) return dateStr;
+    // Add time and CET timezone for DACH region
+    return `${dateStr}T08:00:00+01:00`;
+  };
+
   // Generate BlogPosting structured data
   const articleSchema = article ? {
     "@context": "https://schema.org",
@@ -61,7 +70,8 @@ const SEO = ({
     },
     "author": {
       "@type": "Person",
-      "name": article.author || "EuroAdria Corporate Solutions Team"
+      "name": article.author || "EuroAdria Corporate Solutions Team",
+      "url": "https://euroadria.me/team"
     },
     "publisher": {
       "@type": "Organization",
@@ -71,8 +81,8 @@ const SEO = ({
         "url": `${siteUrl}/euroadria-logo.png`
       }
     },
-    "datePublished": article.date,
-    "dateModified": article.dateModified || article.date,
+    "datePublished": formatSchemaDate(article.date),
+    "dateModified": formatSchemaDate(article.dateModified || article.date),
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": fullUrl
