@@ -168,6 +168,7 @@ export const ExpertTipBox = ({ expertTip }) => {
     const n = tip.author.toLowerCase();
     if (n.includes('holger')) return '/holger-kuhlmann.jpg';
     if (n.includes('milena')) return '/milena-bubanja.jpg';
+    if (n.includes('alexandra')) return '/alexandra-kons.png';
     return null;
   };
   
