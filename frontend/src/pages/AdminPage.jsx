@@ -2841,7 +2841,35 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
               credentials={credentials}
             />
             {formData.image && (
-              <div className="mt-2 space-y-2">
+              <div className="mt-2 space-y-3">
+                {/* Preview 1: Blog card view */}
+                <div>
+                  <label className="block text-ea-dark/80 text-xs font-semibold mb-1">Blog-Karte (Vorschau)</label>
+                  <div className="rounded-lg overflow-hidden h-32 relative">
+                    <img 
+                      src={formData.image} 
+                      alt="Blog-Vorschau" 
+                      className="w-full h-full object-cover"
+                      style={{ objectPosition: `${formData.imagePositionX ?? 50}% ${formData.imagePosition ?? 50}%` }}
+                    />
+                    <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
+                      H: {formData.imagePositionX ?? 50}% | V: {formData.imagePosition ?? 50}%
+                    </div>
+                  </div>
+                </div>
+                {/* Preview 2: Article page view */}
+                <div>
+                  <label className="block text-ea-dark/80 text-xs font-semibold mb-1">Artikel-Seite (Vorschau)</label>
+                  <div className="rounded-lg overflow-hidden h-40 relative">
+                    <img 
+                      src={formData.image} 
+                      alt="Artikel-Vorschau" 
+                      className="w-full h-full object-cover"
+                      style={{ objectPosition: `${formData.imagePositionX ?? 50}% ${formData.imagePosition ?? 50}%` }}
+                    />
+                  </div>
+                </div>
+                {/* Sliders */}
                 <div>
                   <label className="block text-ea-dark/80 text-xs mb-1">Horizontal (links/rechts)</label>
                   <div className="flex items-center gap-2">
