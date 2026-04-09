@@ -33,6 +33,7 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
   const isInitialized = useRef(false);
   const onChangeRef = useRef(onChange);
   const onChangeTimer = useRef(null);
+  const lastSelectionRef = useRef(null);
 
   // Keep onChange ref in sync without causing re-renders
   useEffect(() => {
@@ -146,11 +147,22 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
 
   // Execute formatting command
   const execCommand = useCallback((command, value = null) => {
+    const editor = editorRef.current;
+    // Restore selection if lost (mobile: tapping toolbar steals focus)
+    const selection = window.getSelection();
+    if (editor && (!selection || selection.rangeCount === 0 || !editor.contains(selection.anchorNode))) {
+      if (lastSelectionRef.current && editor.contains(lastSelectionRef.current.startContainer)) {
+        selection.removeAllRanges();
+        selection.addRange(lastSelectionRef.current);
+      } else {
+        editor.focus();
+      }
+    }
     document.execCommand(command, false, value);
-    editorRef.current?.focus();
+    editor?.focus();
     // Trigger onChange with new content (debounced)
-    if (editorRef.current) {
-      const newContent = editorRef.current.innerHTML;
+    if (editor) {
+      const newContent = editor.innerHTML;
       notifyParent(newContent);
       saveToHistory(newContent);
     }
@@ -158,12 +170,22 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
 
   // Format as heading — reliable direct DOM replacement (no execCommand quirks)
   const formatHeading = useCallback((level) => {
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
-
-    const range = selection.getRangeAt(0);
     const editor = editorRef.current;
     if (!editor) return;
+
+    // Restore selection if lost (mobile: tapping toolbar steals focus)
+    let selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0 || !editor.contains(selection.anchorNode)) {
+      if (lastSelectionRef.current && editor.contains(lastSelectionRef.current.startContainer)) {
+        selection.removeAllRanges();
+        selection.addRange(lastSelectionRef.current);
+      } else {
+        editor.focus();
+        return;
+      }
+    }
+
+    const range = selection.getRangeAt(0);
 
     // Find the node containing the cursor/selection start
     let node = range.startContainer;
@@ -172,25 +194,13 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
     // Walk up to find the direct child of editor that contains the cursor
     let block = null;
     for (const child of editor.childNodes) {
-      if (child === node || child.contains(node)) {
+      if (child === node || (child.contains && child.contains(node))) {
         block = child;
         break;
       }
     }
 
-    // If cursor is on a bare text node that's a direct child of editor
-    if (!block && node === editor) {
-      // Wrap the text node at cursor position in a <p> first
-      const textNode = range.startContainer.nodeType === 3 ? range.startContainer : null;
-      if (textNode && textNode.parentNode === editor) {
-        const p = document.createElement('p');
-        textNode.parentNode.insertBefore(p, textNode);
-        p.appendChild(textNode);
-        block = p;
-      }
-    }
-
-    // Also handle bare text nodes directly
+    // Handle bare text nodes that are direct children of editor
     if (!block) {
       for (const child of editor.childNodes) {
         if (child.nodeType === 3 && child === range.startContainer) {
@@ -203,6 +213,16 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
       }
     }
 
+    // Handle cursor at editor level
+    if (!block && (node === editor || node.parentNode === editor)) {
+      document.execCommand('formatBlock', false, `h${level}`);
+      editor.focus();
+      const newContent = editor.innerHTML;
+      notifyParent(newContent);
+      saveToHistory(newContent);
+      return;
+    }
+
     // Fallback: use execCommand
     if (!block) {
       document.execCommand('formatBlock', false, `h${level}`);
@@ -213,7 +233,7 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
       return;
     }
 
-    // If the block is a text node (shouldn't happen after above, but safety)
+    // If the block is a text node, wrap it
     if (block.nodeType === 3) {
       const p = document.createElement('p');
       block.parentNode.insertBefore(p, block);
@@ -252,6 +272,21 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
       saveToHistory(newContent);
     }
   };
+
+  // Track selection changes so toolbar buttons can restore it on mobile
+  useEffect(() => {
+    const trackSelection = () => {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0 && editorRef.current) {
+        const range = sel.getRangeAt(0);
+        if (editorRef.current.contains(range.startContainer)) {
+          lastSelectionRef.current = range.cloneRange();
+        }
+      }
+    };
+    document.addEventListener('selectionchange', trackSelection);
+    return () => document.removeEventListener('selectionchange', trackSelection);
+  }, []);
 
   // Handle focus - do NOT move cursor on mobile to prevent backward text issue
   const handleFocus = () => {
@@ -478,8 +513,12 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
 
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-      {/* Toolbar — scrollable on mobile, wraps on desktop */}
-      <div className="flex items-center gap-0.5 md:gap-1 md:flex-wrap p-1.5 md:p-2 bg-ea-light border-b border-gray-200 overflow-x-auto scrollbar-hide">
+      {/* Toolbar — scrollable on mobile, wraps on desktop. preventDefault stops focus theft */}
+      <div
+        className="flex items-center gap-0.5 md:gap-1 md:flex-wrap p-1.5 md:p-2 bg-ea-light border-b border-gray-200 overflow-x-auto scrollbar-hide"
+        onMouseDown={(e) => e.preventDefault()}
+        onTouchStart={(e) => { /* allow scroll but mark for focus keep */ }}
+      >
         {/* Text Formatting */}
         <div className="flex items-center gap-0.5 md:gap-1 pr-1 md:pr-2 md:border-r md:border-gray-300 shrink-0">
           <ToolbarButton 
@@ -523,7 +562,7 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
           <button
             type="button"
             onClick={() => execCommand('formatBlock', 'p')}
-            className="hidden md:inline-block px-2 py-1 text-xs font-medium rounded hover:bg-ea-gold/20 text-ea-dark/70 bg-gray-100"
+            className="px-1.5 md:px-2 py-1 text-xs font-medium rounded hover:bg-ea-gold/20 text-ea-dark/70 bg-gray-100"
             data-testid="editor-normal-btn"
           >
             Normal
@@ -531,7 +570,7 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
           <button
             type="button"
             onClick={() => execCommand('fontSize', '2')}
-            className="hidden md:inline-block px-2 py-1 text-xs rounded hover:bg-ea-gold/20 text-ea-dark/70"
+            className="px-1.5 md:px-2 py-1 text-xs rounded hover:bg-ea-gold/20 text-ea-dark/70"
             data-testid="editor-small-btn"
           >
             Klein
