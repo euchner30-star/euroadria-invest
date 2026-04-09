@@ -2851,7 +2851,7 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
                       src={formData.image} 
                       alt="Blog-Vorschau" 
                       className="w-full h-full object-cover"
-                      style={{ objectPosition: `${formData.imagePositionX ?? 50}% ${formData.imagePosition ?? 50}%` }}
+                      style={{ objectPosition: `${((formData.imagePositionX ?? 50) * 1.6) - 30}% ${((formData.imagePosition ?? 50) * 1.6) - 30}%` }}
                     />
                     <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
                       H: {formData.imagePositionX ?? 50}% | V: {formData.imagePosition ?? 50}%
@@ -2866,7 +2866,7 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
                       src={formData.image} 
                       alt="Artikel-Vorschau" 
                       className="w-full h-full object-cover"
-                      style={{ objectPosition: `${formData.imagePositionX ?? 50}% ${formData.imagePosition ?? 50}%` }}
+                      style={{ objectPosition: `${((formData.imagePositionX ?? 50) * 1.6) - 30}% ${((formData.imagePosition ?? 50) * 1.6) - 30}%` }}
                     />
                   </div>
                 </div>

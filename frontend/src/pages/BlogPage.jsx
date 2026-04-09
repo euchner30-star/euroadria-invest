@@ -7,6 +7,8 @@ import { useLanguage } from '../context/LanguageContext';
 
 // Lazy-loaded image component
 const LazyImage = ({ src, alt, className, imagePosition, imagePositionX }) => {
+  // Map 0-100 slider to -30% to 130% for more range
+  const mapPos = (val) => ((val ?? 50) * 1.6) - 30;
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const imgRef = React.useRef();
@@ -38,7 +40,7 @@ const LazyImage = ({ src, alt, className, imagePosition, imagePositionX }) => {
           className={`w-full h-full object-cover transition-opacity duration-300 ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
-          style={{ objectPosition: `${imagePositionX ?? 50}% ${imagePosition ?? 50}%` }}
+          style={{ objectPosition: `${mapPos(imagePositionX)}% ${mapPos(imagePosition)}%` }}
           onLoad={() => setIsLoaded(true)}
           onError={() => setIsLoaded(false)}
           loading="lazy"
