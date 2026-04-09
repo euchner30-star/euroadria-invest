@@ -163,7 +163,15 @@ export const ExpertTipBox = ({ expertTip }) => {
   
   // Use custom image from DB, or fallback to known experts
   const getExpertImage = (tip) => {
-    if (tip.image) return tip.image;
+    const img = tip.image?.toLowerCase()?.trim();
+    if (img) {
+      // Short name shortcuts
+      if (img === 'holger') return '/holger-kuhlmann.jpg';
+      if (img === 'alex' || img === 'alexandra') return '/alexandra-kons.png';
+      if (img === 'milena') return '/milena-bubanja.jpg';
+      // Full URL or path
+      return tip.image;
+    }
     if (!tip.author) return null;
     const n = tip.author.toLowerCase();
     if (n.includes('holger')) return '/holger-kuhlmann.jpg';
