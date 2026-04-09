@@ -30,8 +30,8 @@ const LazyImage = ({ src, alt, className, imagePosition }) => {
   }, []);
 
   return (
-    <div ref={imgRef} className={`${className} bg-ea-light`}>
-      {isInView && (
+    <div ref={imgRef} className={`${className} bg-ea-dark`}>
+      {isInView && src && (
         <img
           src={src}
           alt={alt}
@@ -40,10 +40,16 @@ const LazyImage = ({ src, alt, className, imagePosition }) => {
           }`}
           style={{ objectPosition: `center ${imagePosition ?? 50}%` }}
           onLoad={() => setIsLoaded(true)}
+          onError={() => setIsLoaded(false)}
           loading="lazy"
         />
       )}
-      {!isLoaded && isInView && (
+      {(!src || (!isLoaded && isInView)) && (
+        <div className="absolute inset-0 flex items-center justify-center bg-ea-dark">
+          <img src="/euroadria-logo.png" alt="EuroAdria" className="w-2/3 max-w-[180px] opacity-60" />
+        </div>
+      )}
+      {src && !isLoaded && isInView && (
         <div className="absolute inset-0 flex items-center justify-center">
           <Loader2 className="w-6 h-6 text-ea-gold/50 animate-spin" />
         </div>
