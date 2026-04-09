@@ -143,12 +143,11 @@ const ArticlePage = () => {
           </div>
 
           {/* Featured Image */}
-          <div className="relative h-48 md:h-72 lg:h-96 rounded-lg md:rounded-xl overflow-hidden mb-6 md:mb-10">
+          <div className="rounded-lg md:rounded-xl overflow-hidden mb-6 md:mb-10">
             <img
               src={article.image}
               alt={article.title}
-              className="w-full h-full object-cover"
-              style={{ objectPosition: '50% 50%' }}
+              className="w-full h-auto"
             />
           </div>
 
