@@ -77,7 +77,7 @@ const Home = () => {
       <TrustBar />
 
       {/* Balkan vs EU Section - GEO-optimiert mit Fakten */}
-      <section className="py-20 bg-ea-light" itemScope itemType="https://schema.org/Article">
+      <section className="py-20 bg-ea-light">
         <div className="max-w-7xl mx-auto px-6">
           <article className="bg-white border border-gray-200 rounded-2xl p-8 md:p-12 shadow-sm">
             <div className="grid md:grid-cols-2 gap-12 items-center">
