@@ -2842,19 +2842,6 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
             />
             {formData.image && (
               <div className="mt-2 space-y-2">
-                <div className="rounded-lg overflow-hidden h-32 relative">
-                  <img 
-                    src={formData.image} 
-                    alt="Vorschau" 
-                    className="w-full h-full object-cover"
-                    style={{ 
-                      transform: `scale(1.3) translate(${((formData.imagePositionX ?? 50) - 50) * -0.4}%, ${((formData.imagePosition ?? 50) - 50) * -0.4}%)`,
-                    }}
-                  />
-                  <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
-                    H: {formData.imagePositionX ?? 50}% | V: {formData.imagePosition ?? 50}%
-                  </div>
-                </div>
                 <div>
                   <label className="block text-ea-dark/80 text-xs mb-1">Horizontal (links/rechts)</label>
                   <div className="flex items-center gap-2">
