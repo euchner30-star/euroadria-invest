@@ -2858,15 +2858,15 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
                     </div>
                   </div>
                 </div>
-                {/* Preview 2: Article page view */}
+                {/* Preview 2: Article page view (always centered/original) */}
                 <div>
-                  <label className="block text-ea-dark/80 text-xs font-semibold mb-1">Artikel-Seite (Vorschau)</label>
+                  <label className="block text-ea-dark/80 text-xs font-semibold mb-1">Artikel-Seite (immer Original)</label>
                   <div className="rounded-lg overflow-hidden h-40 relative">
                     <img 
                       src={formData.image} 
                       alt="Artikel-Vorschau" 
                       className="w-full h-full object-cover"
-                      style={{ objectPosition: `${((formData.imagePositionX ?? 50) * 1.6) - 30}% ${((formData.imagePosition ?? 50) * 1.6) - 30}%` }}
+                      style={{ objectPosition: '50% 50%' }}
                     />
                   </div>
                 </div>
