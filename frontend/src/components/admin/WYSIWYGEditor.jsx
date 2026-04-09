@@ -156,50 +156,91 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
     }
   }, [notifyParent, saveToHistory]);
 
-  // Format as heading - supports partial selection (splits block if needed)
+  // Format as heading — reliable direct DOM replacement (no execCommand quirks)
   const formatHeading = useCallback((level) => {
     const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
-      execCommand('formatBlock', `h${level}`);
-      return;
-    }
+    if (!selection || selection.rangeCount === 0) return;
 
     const range = selection.getRangeAt(0);
-    const selectedText = range.toString().trim();
-
-    if (!selectedText) {
-      execCommand('formatBlock', `h${level}`);
-      return;
-    }
-
-    // Find the parent block element
     const editor = editorRef.current;
-    let block = range.commonAncestorContainer;
-    if (block.nodeType === 3) block = block.parentNode;
-    while (block && block !== editor &&
-           !['P', 'H1', 'H2', 'H3', 'DIV', 'LI', 'BLOCKQUOTE'].includes(block.nodeName)) {
-      block = block.parentNode;
+    if (!editor) return;
+
+    // Find the node containing the cursor/selection start
+    let node = range.startContainer;
+    if (node.nodeType === 3) node = node.parentNode;
+
+    // Walk up to find the direct child of editor that contains the cursor
+    let block = null;
+    for (const child of editor.childNodes) {
+      if (child === node || child.contains(node)) {
+        block = child;
+        break;
+      }
     }
 
-    // If entire block is selected or no block found, use default
-    if (!block || (block !== editor && range.toString().trim() === block.textContent.trim())) {
-      execCommand('formatBlock', `h${level}`);
+    // If cursor is on a bare text node that's a direct child of editor
+    if (!block && node === editor) {
+      // Wrap the text node at cursor position in a <p> first
+      const textNode = range.startContainer.nodeType === 3 ? range.startContainer : null;
+      if (textNode && textNode.parentNode === editor) {
+        const p = document.createElement('p');
+        textNode.parentNode.insertBefore(p, textNode);
+        p.appendChild(textNode);
+        block = p;
+      }
+    }
+
+    // Also handle bare text nodes directly
+    if (!block) {
+      for (const child of editor.childNodes) {
+        if (child.nodeType === 3 && child === range.startContainer) {
+          const p = document.createElement('p');
+          child.parentNode.insertBefore(p, child);
+          p.appendChild(child);
+          block = p;
+          break;
+        }
+      }
+    }
+
+    // Fallback: use execCommand
+    if (!block) {
+      document.execCommand('formatBlock', false, `h${level}`);
+      editor.focus();
+      const newContent = editor.innerHTML;
+      notifyParent(newContent);
+      saveToHistory(newContent);
       return;
     }
 
-    // Partial selection — use insertHTML to let browser handle block splitting
-    const tempDiv = document.createElement('div');
-    tempDiv.appendChild(range.cloneContents());
-    const selectedHtml = tempDiv.innerHTML;
+    // If the block is a text node (shouldn't happen after above, but safety)
+    if (block.nodeType === 3) {
+      const p = document.createElement('p');
+      block.parentNode.insertBefore(p, block);
+      p.appendChild(block);
+      block = p;
+    }
 
-    range.deleteContents();
-    document.execCommand('insertHTML', false, `<h${level}>${selectedHtml}</h${level}>`);
+    const targetTag = `H${level}`;
+
+    // Toggle: if already this heading level, revert to <p>
+    const newTag = block.nodeName === targetTag ? 'p' : `h${level}`;
+    const newEl = document.createElement(newTag);
+    newEl.innerHTML = block.innerHTML;
+    block.replaceWith(newEl);
+
+    // Restore cursor inside the new element
+    const newRange = document.createRange();
+    newRange.selectNodeContents(newEl);
+    newRange.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
 
     editor.focus();
     const newContent = editor.innerHTML;
     notifyParent(newContent);
     saveToHistory(newContent);
-  }, [execCommand, notifyParent, saveToHistory]);
+  }, [notifyParent, saveToHistory]);
 
   // Handle content change - preserve cursor position naturally
   const handleInput = () => {
