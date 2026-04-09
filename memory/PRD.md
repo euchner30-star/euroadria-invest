@@ -106,6 +106,9 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - GitHub auto-deploy on push
 - DKIM + SPF verified for noreply@euroadria.me
 
+## Recent Fixes (April 2026)
+- Fixed BLOG_LIST_FIELDS missing `imagePosition` and `imagePositionX` projection fields, causing sliders to have no effect on Blog cards
+
 ## Pending
 - Google Search Console: add euroadria.me property
 

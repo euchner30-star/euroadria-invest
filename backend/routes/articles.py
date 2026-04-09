@@ -15,7 +15,8 @@ router = APIRouter()
 BLOG_LIST_FIELDS = {
     "_id": 0, "id": 1, "slug": 1, "title": 1, "excerpt": 1,
     "image": 1, "category": 1, "cluster": 1, "date": 1,
-    "readTime": 1, "featured": 1, "author": 1
+    "readTime": 1, "featured": 1, "author": 1,
+    "imagePosition": 1, "imagePositionX": 1
 }
 
 
