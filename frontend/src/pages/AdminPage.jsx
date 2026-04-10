@@ -2843,31 +2843,28 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
             />
             {formData.image && (
               <div className="mt-2 space-y-3">
-                {/* Preview 1: Blog card view */}
+                {/* Preview: Blog card view — uses oversized wrapper for reliable positioning */}
                 <div>
                   <label className="block text-ea-dark/80 text-xs font-semibold mb-1">Blog-Karte (Vorschau)</label>
-                  <div className="rounded-lg overflow-hidden h-32 relative">
-                    <img 
-                      src={formData.image} 
-                      alt="Blog-Vorschau" 
-                      className="w-full h-full object-cover"
-                      style={{ objectPosition: `${((formData.imagePositionX ?? 50) * 1.6) - 30}% ${((formData.imagePosition ?? 50) * 1.6) - 30}%` }}
-                    />
-                    <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
+                  <div className="rounded-lg overflow-hidden h-40 relative">
+                    <div
+                      className="absolute"
+                      style={{
+                        width: '140%',
+                        height: '140%',
+                        left: `${-40 * (formData.imagePositionX ?? 50) / 100}%`,
+                        top: `${-40 * (formData.imagePosition ?? 50) / 100}%`,
+                      }}
+                    >
+                      <img
+                        src={formData.image}
+                        alt="Blog-Vorschau"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full z-10">
                       H: {formData.imagePositionX ?? 50}% | V: {formData.imagePosition ?? 50}%
                     </div>
-                  </div>
-                </div>
-                {/* Preview 2: Article page view (always centered/original) */}
-                <div>
-                  <label className="block text-ea-dark/80 text-xs font-semibold mb-1">Artikel-Seite (immer Original)</label>
-                  <div className="rounded-lg overflow-hidden h-40 relative">
-                    <img 
-                      src={formData.image} 
-                      alt="Artikel-Vorschau" 
-                      className="w-full h-full object-cover"
-                      style={{ objectPosition: '50% 50%' }}
-                    />
                   </div>
                 </div>
                 {/* Sliders */}

@@ -7,8 +7,6 @@ import { useLanguage } from '../context/LanguageContext';
 
 // Lazy-loaded image component
 const LazyImage = ({ src, alt, className, imagePosition, imagePositionX }) => {
-  // Map 0-100 slider to -30% to 130% for more range
-  const mapPos = (val) => ((val ?? 50) * 1.6) - 30;
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const imgRef = React.useRef();
@@ -34,17 +32,24 @@ const LazyImage = ({ src, alt, className, imagePosition, imagePositionX }) => {
   return (
     <div ref={imgRef} className={`${className} bg-gradient-to-br from-ea-gold/10 to-ea-gold/5`}>
       {isInView && src && (
-        <img
-          src={src}
-          alt={alt}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{ objectPosition: `${mapPos(imagePositionX)}% ${mapPos(imagePosition)}%` }}
-          onLoad={() => setIsLoaded(true)}
-          onError={() => setIsLoaded(false)}
-          loading="lazy"
-        />
+        <div className="absolute inset-0 overflow-hidden">
+          <img
+            src={src}
+            alt={alt}
+            className={`absolute object-cover transition-opacity duration-300 ${
+              isLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{
+              width: '140%',
+              height: '140%',
+              left: `${-40 * (imagePositionX ?? 50) / 100}%`,
+              top: `${-40 * (imagePosition ?? 50) / 100}%`,
+            }}
+            onLoad={() => setIsLoaded(true)}
+            onError={() => setIsLoaded(false)}
+            loading="lazy"
+          />
+        </div>
       )}
       {(!src || (!isLoaded && isInView)) && (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-ea-gold/10 to-ea-gold/5">
