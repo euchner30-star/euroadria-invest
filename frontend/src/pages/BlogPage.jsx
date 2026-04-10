@@ -32,24 +32,17 @@ const LazyImage = ({ src, alt, className, imagePosition, imagePositionX }) => {
   return (
     <div ref={imgRef} className={`${className} bg-gradient-to-br from-ea-gold/10 to-ea-gold/5`}>
       {isInView && src && (
-        <div className="absolute inset-0 overflow-hidden">
-          <img
-            src={src}
-            alt={alt}
-            className={`absolute object-cover transition-opacity duration-300 ${
-              isLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
-            style={{
-              width: '115%',
-              height: '115%',
-              left: `${-15 * (imagePositionX ?? 50) / 100}%`,
-              top: `${-15 * (imagePosition ?? 50) / 100}%`,
-            }}
-            onLoad={() => setIsLoaded(true)}
-            onError={() => setIsLoaded(false)}
-            loading="lazy"
-          />
-        </div>
+        <img
+          src={src}
+          alt={alt}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{ objectPosition: `${imagePositionX ?? 50}% ${imagePosition ?? 50}%` }}
+          onLoad={() => setIsLoaded(true)}
+          onError={() => setIsLoaded(false)}
+          loading="lazy"
+        />
       )}
       {(!src || (!isLoaded && isInView)) && (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-ea-gold/10 to-ea-gold/5">
