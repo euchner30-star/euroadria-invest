@@ -333,7 +333,24 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
       if (pre) span.innerHTML = pre + span.innerHTML + post;
     });
 
-    // ── Phase 3: Convert heading paragraphs by font-size ──
+    // ── Phase 3: Convert heading paragraphs by font-size (dynamic baseline) ──
+    // Find the most common font-size = normal body text, then only promote much larger ones
+    const sizeCounts = {};
+    doc.querySelectorAll('span[style], p[style]').forEach(el => {
+      const m = (el.getAttribute('style') || '').match(/font-size\s*:\s*([\d.]+)\s*(pt|px)/i);
+      if (m) {
+        let s = parseFloat(m[1]);
+        if (m[2].toLowerCase() === 'px') s *= 0.75;
+        const rounded = Math.round(s);
+        sizeCounts[rounded] = (sizeCounts[rounded] || 0) + 1;
+      }
+    });
+    let normalPt = 11;
+    let maxCount = 0;
+    for (const [size, count] of Object.entries(sizeCounts)) {
+      if (count > maxCount) { maxCount = count; normalPt = parseInt(size); }
+    }
+
     doc.querySelectorAll('p').forEach(p => {
       let maxPt = 0;
       const checkSize = (style) => {
@@ -346,10 +363,11 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
       };
       checkSize(p.getAttribute('style'));
       p.querySelectorAll('span').forEach(sp => checkSize(sp.getAttribute('style')));
+      // Only convert if significantly larger than body text
       let tag = null;
-      if (maxPt >= 20) tag = 'h1';
-      else if (maxPt >= 15) tag = 'h2';
-      else if (maxPt >= 13) tag = 'h3';
+      if (maxPt >= normalPt + 10) tag = 'h1';
+      else if (maxPt >= normalPt + 5) tag = 'h2';
+      else if (maxPt >= normalPt + 3) tag = 'h3';
       if (tag) {
         const h = doc.createElement(tag);
         h.innerHTML = p.innerHTML;
