@@ -3000,9 +3000,15 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
             }
             onChange={(e) => {
               const lines = e.target.value.split('\n');
-              const nonEmpty = lines.filter(l => l.trim());
-              const html = nonEmpty.length > 0 
-                ? '<ul>' + nonEmpty.map(l => `<li>${l}</li>`).join('') + '</ul>'
+              const html = lines.some(l => l.trim())
+                ? '<ul>' + lines.map(l => `<li>${l}</li>`).join('') + '</ul>'
+                : '';
+              handleNestedChange('dueDiligenceBox', 'content', html);
+            }}
+            onBlur={(e) => {
+              const lines = e.target.value.split('\n').filter(l => l.trim());
+              const html = lines.length > 0
+                ? '<ul>' + lines.map(l => `<li>${l}</li>`).join('') + '</ul>'
                 : '';
               handleNestedChange('dueDiligenceBox', 'content', html);
             }}
