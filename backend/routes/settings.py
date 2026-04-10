@@ -12,6 +12,13 @@ from reportlab.pdfbase.ttfonts import TTFont
 pdfmetrics.registerFont(TTFont('LiberationSans', '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf'))
 pdfmetrics.registerFont(TTFont('LiberationSans-Bold', '/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf'))
 pdfmetrics.registerFont(TTFont('LiberationSans-Oblique', '/usr/share/fonts/truetype/liberation/LiberationSans-Italic.ttf'))
+pdfmetrics.registerFont(TTFont('LiberationSans-BoldOblique', '/usr/share/fonts/truetype/liberation/LiberationSans-BoldItalic.ttf'))
+pdfmetrics.registerFontFamily('LiberationSans',
+    normal='LiberationSans',
+    bold='LiberationSans-Bold',
+    italic='LiberationSans-Oblique',
+    boldItalic='LiberationSans-BoldOblique'
+)
 
 router = APIRouter()
 
