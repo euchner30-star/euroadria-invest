@@ -1666,7 +1666,7 @@ const AdminPage = () => {
                         const formData = new FormData();
                         formData.append('file', file);
                         try {
-                          const res = await fetch(`${API_URL}/api/admin/settings/upload-pdf-file?pdf_key=praxisleitfaden`, {
+                          const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/settings/upload-pdf-file?pdf_key=praxisleitfaden`, {
                             method: 'POST',
                             headers: { 'Authorization': 'Basic ' + btoa(credentials.username + ':' + credentials.password) },
                             body: formData
