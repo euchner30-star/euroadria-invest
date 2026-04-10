@@ -31,12 +31,13 @@ export const LeadMagnetBox = () => {
           name: name.trim(),
           email: email.trim(),
           source: 'praxisleitfaden',
-          expose_name: 'Praxisleitfaden DACH-Investoren'
+          expose_name: 'Praxisleitfaden — Strategischer Plan 2026'
         })
       });
       setSubmitted(true);
       if (downloadUrl) {
-        setTimeout(() => window.open(downloadUrl, '_blank'), 500);
+        const fullUrl = downloadUrl.startsWith('http') ? downloadUrl : `${API_URL}${downloadUrl}`;
+        setTimeout(() => window.open(fullUrl, '_blank'), 500);
       }
     } catch (err) {
       console.error(err);
@@ -52,8 +53,8 @@ export const LeadMagnetBox = () => {
           Kostenloser <span className="text-ea-gold">Praxisleitfaden</span>
         </h3>
         <p className="text-ea-light/80 text-sm md:text-lg mb-4 md:mb-6 max-w-2xl mx-auto">
-          Laden Sie unseren umfassenden Praxisleitfaden fuer DACH-Investoren herunter. 
-          30+ Seiten geballtes Wissen zu Due Diligence, Bankability und rechtlichen Strukturen.
+          Strategischer Plan 2026: Markteintritt & Investitionssicherheit Westbalkan.
+          Geballtes Expertenwissen zu Due Diligence, Steuerstruktur, Banking und rechtlichen Rahmenbedingungen.
         </p>
         <button 
           onClick={() => setShowModal(true)}
@@ -63,7 +64,7 @@ export const LeadMagnetBox = () => {
           Jetzt kostenlos herunterladen
         </button>
         <p className="text-ea-light/50 text-xs md:text-sm mt-3 md:mt-4">
-          PDF, 30+ Seiten
+          PDF — Vertraulich, nur fuer den persoenlichen Gebrauch
         </p>
       </div>
 
@@ -139,7 +140,7 @@ export const LeadMagnetBox = () => {
                 </p>
                 {downloadUrl && (
                   <a
-                    href={downloadUrl}
+                    href={downloadUrl.startsWith('http') ? downloadUrl : `${API_URL}${downloadUrl}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block px-6 py-2.5 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all"

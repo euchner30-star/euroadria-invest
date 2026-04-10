@@ -130,6 +130,8 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - PDF Generator template save/load feature (P2)
 
 ## Zuletzt erledigt
+- **11.04.2026**: Praxisleitfaden PDF in Object Storage hochgeladen + Lead-Gate Download-Flow getestet (E2E: CTA → Modal → Lead-Capture → PDF-Download)
+- **11.04.2026**: Download-URL-Prefix-Fix für Render-Kompatibilität (API_URL prepend)
 - **10.04.2026**: PDF-Generator Serbische Sonderzeichen Fix + Font-Family Registrierung für Bold/Italic
 - **10.04.2026**: WYSIWYG Smart Paste Fix — Google Docs Formatierung 1:1 übernehmen
 - **10.04.2026**: Image Slider Desktop Fix — von object-position auf 140%-Wrapper-Ansatz umgestellt
