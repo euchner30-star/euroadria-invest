@@ -16,6 +16,8 @@ const ImageUploader = ({
   const [uploadedImage, setUploadedImage] = useState(currentImage);
   const [error, setError] = useState(null);
   const [uploadInfo, setUploadInfo] = useState(null);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [urlValue, setUrlValue] = useState('');
   const fileInputRef = useRef(null);
 
   const handleUpload = useCallback(async (file) => {
@@ -99,8 +101,24 @@ const ImageUploader = ({
   const handleRemove = () => {
     setUploadedImage(null);
     setUploadInfo(null);
+    setShowUrlInput(false);
+    setUrlValue('');
     if (onImageUploaded) {
       onImageUploaded(null);
+    }
+  };
+
+  const handleUrlSubmit = () => {
+    const url = urlValue.trim();
+    if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+      setUploadedImage(url);
+      setShowUrlInput(false);
+      setUrlValue('');
+      if (onImageUploaded) {
+        onImageUploaded(url);
+      }
+    } else {
+      setError('Bitte eine gültige URL eingeben (https://...)');
     }
   };
 
@@ -110,7 +128,7 @@ const ImageUploader = ({
       
       {/* Preview */}
       {uploadedImage && !hidePreview && (
-        <div className="relative group">
+        <div className="relative">
           <img 
             src={uploadedImage.startsWith('/') ? uploadedImage : uploadedImage}
             alt="Vorschau" 
@@ -119,22 +137,25 @@ const ImageUploader = ({
               e.target.src = 'https://via.placeholder.com/400x200?text=Bild+nicht+gefunden';
             }}
           />
-          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center gap-4">
+          {/* Action buttons — always visible */}
+          <div className="absolute top-2 right-2 flex gap-2">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="p-3 bg-white rounded-full hover:bg-ea-gold transition-colors"
-              title="Ersetzen"
+              className="p-2 bg-white/90 rounded-full shadow hover:bg-ea-gold transition-colors"
+              title="Datei ersetzen"
+              data-testid="image-replace-btn"
             >
-              <Upload className="w-5 h-5 text-ea-dark" />
+              <Upload className="w-4 h-4 text-ea-dark" />
             </button>
             <button
               type="button"
               onClick={handleRemove}
-              className="p-3 bg-white rounded-full hover:bg-red-500 hover:text-white transition-colors"
+              className="p-2 bg-white/90 rounded-full shadow hover:bg-red-500 hover:text-white transition-colors"
               title="Entfernen"
+              data-testid="image-remove-btn"
             >
-              <Trash2 className="w-5 h-5" />
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
           
@@ -151,6 +172,89 @@ const ImageUploader = ({
               </span>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Compact controls when preview is hidden but image exists (e.g. AdminPage dual-preview mode) */}
+      {uploadedImage && hidePreview && (
+        <div className="flex flex-wrap items-center gap-2 py-2">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-ea-light border border-gray-200 rounded-lg hover:border-ea-gold transition-colors"
+            data-testid="image-replace-file-btn"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            Neue Datei
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUrlInput(!showUrlInput)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-ea-light border border-gray-200 rounded-lg hover:border-ea-gold transition-colors"
+            data-testid="image-url-toggle-btn-compact"
+          >
+            <Image className="w-3.5 h-3.5" />
+            URL einfügen
+          </button>
+          <button
+            type="button"
+            onClick={handleRemove}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+            data-testid="image-remove-compact-btn"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            Entfernen
+          </button>
+          <span className="text-xs text-ea-dark/40 truncate max-w-[200px]" title={uploadedImage}>
+            {uploadedImage.length > 40 ? '...' + uploadedImage.slice(-35) : uploadedImage}
+          </span>
+        </div>
+      )}
+
+      {/* URL input for pasting external image links */}
+      {uploadedImage && (showUrlInput || !hidePreview) && (
+        <>
+          {!showUrlInput && !hidePreview && (
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setShowUrlInput(true)}
+                className="text-xs text-ea-gold hover:text-ea-dark underline"
+                data-testid="image-url-toggle-btn"
+              >
+                URL ersetzen
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {showUrlInput && (
+        <div className="flex gap-2">
+          <input
+            type="url"
+            value={urlValue}
+            onChange={(e) => setUrlValue(e.target.value)}
+            placeholder="https://i.ibb.co/... oder andere Bild-URL"
+            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-ea-gold focus:border-ea-gold"
+            onKeyDown={(e) => e.key === 'Enter' && handleUrlSubmit()}
+            data-testid="image-url-input"
+          />
+          <button
+            type="button"
+            onClick={handleUrlSubmit}
+            className="px-3 py-2 text-sm bg-ea-gold text-white rounded-lg hover:bg-ea-gold/80"
+            data-testid="image-url-submit-btn"
+          >
+            OK
+          </button>
+          <button
+            type="button"
+            onClick={() => { setShowUrlInput(false); setUrlValue(''); }}
+            className="px-2 py-2 text-sm text-ea-dark/50 hover:text-ea-dark"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 
