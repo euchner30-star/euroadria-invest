@@ -130,8 +130,9 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - PDF Generator template save/load feature (P2)
 
 ## Zuletzt erledigt
-- **11.04.2026**: Praxisleitfaden PDF-Anhang in Bestätigungs-E-Mail integriert (Resend API + Base64 Attachment)
-- **11.04.2026**: Praxisleitfaden PDF in Object Storage hochgeladen + Lead-Gate Download-Flow getestet (E2E: CTA → Modal → Lead-Capture → PDF per E-Mail)
+- **11.04.2026**: PDF-Anhang in E-Mail — MongoDB-basiert statt Object Storage (funktioniert auf Render)
+- **11.04.2026**: Admin Panel: "PDF hochladen" Button in Downloads-Sektion (speichert base64 in MongoDB Atlas)
+- **11.04.2026**: Praxisleitfaden PDF in Object Storage hochgeladen + Lead-Gate Download-Flow getestet
 - **11.04.2026**: Download-URL-Prefix-Fix für Render-Kompatibilität (API_URL prepend)
 - **10.04.2026**: PDF-Generator Serbische Sonderzeichen Fix + Font-Family Registrierung für Bold/Italic
 - **10.04.2026**: WYSIWYG Smart Paste Fix — Google Docs Formatierung 1:1 übernehmen
