@@ -296,12 +296,68 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
 
   // ── Smart Paste: Rich HTML + Markdown auto-detection ──────────────────
 
-  // Clean pasted HTML — keep formatting, remove junk styles/classes
+  // Clean pasted HTML — extract formatting from Google Docs/Word styles, then strip junk
   const cleanPastedHtml = useCallback((html) => {
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    // Remove script, style, meta, link elements
-    doc.querySelectorAll('script, style, meta, link, svg, img').forEach(el => el.remove());
+    // Remove script, meta, link, svg, img — keep <style> for class resolution first
+    doc.querySelectorAll('script, meta, link, svg, img').forEach(el => el.remove());
 
+    // ── Phase 1: Resolve Google Docs class-based styles ──
+    const styleEls = doc.querySelectorAll('style');
+    const classStyles = {};
+    styleEls.forEach(styleEl => {
+      const ruleRegex = /\.([\w-]+)\s*\{([^}]+)\}/g;
+      let m;
+      while ((m = ruleRegex.exec(styleEl.textContent)) !== null) {
+        classStyles[m[1]] = m[2];
+      }
+    });
+    if (Object.keys(classStyles).length > 0) {
+      doc.querySelectorAll('[class]').forEach(el => {
+        let inline = el.getAttribute('style') || '';
+        el.className.split(/\s+/).forEach(cls => {
+          if (classStyles[cls]) inline += ';' + classStyles[cls];
+        });
+        if (inline) el.setAttribute('style', inline);
+      });
+    }
+    styleEls.forEach(el => el.remove());
+
+    // ── Phase 2: Convert styled spans to semantic HTML (bold/italic/underline) ──
+    doc.querySelectorAll('span').forEach(span => {
+      const style = span.getAttribute('style') || '';
+      let pre = '', post = '';
+      if (/font-weight\s*:\s*(700|800|900|bold)/i.test(style)) { pre += '<b>'; post = '</b>' + post; }
+      if (/font-style\s*:\s*italic/i.test(style)) { pre += '<i>'; post = '</i>' + post; }
+      if (/text-decoration[^:]*:[^;]*underline/i.test(style)) { pre += '<u>'; post = '</u>' + post; }
+      if (pre) span.innerHTML = pre + span.innerHTML + post;
+    });
+
+    // ── Phase 3: Convert heading paragraphs by font-size ──
+    doc.querySelectorAll('p').forEach(p => {
+      let maxPt = 0;
+      const checkSize = (style) => {
+        const m = (style || '').match(/font-size\s*:\s*([\d.]+)\s*(pt|px)/i);
+        if (m) {
+          let s = parseFloat(m[1]);
+          if (m[2].toLowerCase() === 'px') s *= 0.75;
+          maxPt = Math.max(maxPt, s);
+        }
+      };
+      checkSize(p.getAttribute('style'));
+      p.querySelectorAll('span').forEach(sp => checkSize(sp.getAttribute('style')));
+      let tag = null;
+      if (maxPt >= 20) tag = 'h1';
+      else if (maxPt >= 15) tag = 'h2';
+      else if (maxPt >= 13) tag = 'h3';
+      if (tag) {
+        const h = doc.createElement(tag);
+        h.innerHTML = p.innerHTML;
+        p.replaceWith(h);
+      }
+    });
+
+    // ── Phase 4: Clean tags (existing logic) ──
     const allowed = new Set([
       'B', 'STRONG', 'I', 'EM', 'U', 'S', 'STRIKE', 'A', 'BR', 'HR',
       'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'DIV',
@@ -309,25 +365,19 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
     ]);
 
     const clean = (node) => {
-      if (node.nodeType === 3) return; // text node — keep
+      if (node.nodeType === 3) return;
       if (node.nodeType !== 1) { node.remove(); return; }
-
-      // Remove all attributes except href on <a>
       const tag = node.tagName;
       const attrs = [...node.attributes];
       attrs.forEach(a => {
         if (!(tag === 'A' && a.name === 'href')) node.removeAttribute(a.name);
       });
-
-      // Unwrap non-allowed tags (keep their children)
       if (!allowed.has(tag)) {
         const parent = node.parentNode;
         while (node.firstChild) parent.insertBefore(node.firstChild, node);
         parent.removeChild(node);
         return;
       }
-
-      // Recurse into children (copy array since DOM changes during iteration)
       [...node.childNodes].forEach(clean);
     };
 
@@ -385,8 +435,19 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
         continue;
       }
 
+      // ALL-CAPS line → heading (Google Docs / Word pasted text)
+      const isAllCaps = trimmed.length >= 5 && trimmed.length < 120 &&
+        /^[A-ZÄÖÜŠŽĆČĐ0-9\s:.\-–—,&()/]+$/.test(trimmed) &&
+        (trimmed.match(/[A-ZÄÖÜŠŽĆČĐ]/g) || []).length > trimmed.length * 0.4;
+      if (isAllCaps) {
+        closeList();
+        const tag = trimmed.length > 50 ? 'h1' : 'h2';
+        result.push(`<${tag}>${inlineFormat(trimmed)}</${tag}>`);
+        continue;
+      }
+
       // "Seite N:" pattern → H2 heading
-      const seiteMatch = trimmed.match(/^Seite\s+\d+[:\.]?\s*(.+)/i);
+      const seiteMatch = trimmed.match(/^Seite\s+\d+[:.']?\s*(.+)/i);
       if (seiteMatch) {
         closeList();
         result.push(`<h2>${inlineFormat(trimmed)}</h2>`);
@@ -414,10 +475,13 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
       const numberedHeading = trimmed.match(/^(\d+)\.\s+(.+)/);
       if (numberedHeading) {
         const content = numberedHeading[2];
-        const isShort = content.length < 70 && !content.endsWith('.');
+        const isShort = content.length < 80 && !content.endsWith('.');
         if (isShort) {
           closeList();
-          result.push(`<h3>${numberedHeading[1]}. ${inlineFormat(content)}</h3>`);
+          // ALL-CAPS numbered heading → H2, normal case → H3
+          const isUpper = /^[A-ZÄÖÜŠŽĆČĐ0-9\s:.\-–—,&()/]+$/.test(content);
+          const tag = isUpper ? 'h2' : 'h3';
+          result.push(`<${tag}>${numberedHeading[1]}. ${inlineFormat(content)}</${tag}>`);
           continue;
         }
         // Long numbered item → ordered list
@@ -450,15 +514,27 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
 
     const html = e.clipboardData.getData('text/html');
     const plainText = e.clipboardData.getData('text/plain');
+    let insertHtml = '';
 
     if (html && html.trim()) {
-      // Rich paste — clean and insert HTML
       const cleaned = cleanPastedHtml(html);
-      document.execCommand('insertHTML', false, cleaned);
+      // Check if cleaning preserved any real formatting
+      const hasFormatting = /<(h[1-6]|b|strong|i|em|u|ul|ol|li|blockquote)/i.test(cleaned);
+      if (hasFormatting) {
+        insertHtml = cleaned;
+      } else if (plainText) {
+        // Formatting lost (Google Docs classes without inline styles?) — use smart converter
+        insertHtml = markdownToHtml(plainText);
+      } else {
+        insertHtml = cleaned;
+      }
     } else if (plainText) {
-      // Plain text — detect markdown patterns and convert
-      const converted = markdownToHtml(plainText);
-      document.execCommand('insertHTML', false, converted);
+      // Plain text — detect markdown / document patterns and convert
+      insertHtml = markdownToHtml(plainText);
+    }
+
+    if (insertHtml) {
+      document.execCommand('insertHTML', false, insertHtml);
     }
 
     if (editorRef.current) {

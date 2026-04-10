@@ -130,7 +130,8 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - PDF Generator template save/load feature (P2)
 
 ## Zuletzt erledigt
-- **10.04.2026**: PDF-Generator Serbische Sonderzeichen Fix — Font von Helvetica auf Liberation Sans umgestellt. Hängenden Einzug für nummerierte/Aufzählungslisten hinzugefügt (Textumbruch unter dem Textbeginn, nicht unter der Nummer). Dateinamen-Sanitierung für ASCII-Only Headers.
+- **10.04.2026**: PDF-Generator Serbische Sonderzeichen Fix — Font von Helvetica auf Liberation Sans umgestellt. Hängenden Einzug für nummerierte/Aufzählungslisten hinzugefügt. Dateinamen-Sanitierung für ASCII-Only Headers.
+- **10.04.2026**: WYSIWYG Smart Paste Fix — Google Docs Formatierung wird jetzt 1:1 übernommen (Überschriften H1-H3 via Font-Size, Fett/Kursiv/Unterstrichen via Style-Konvertierung, Listen). Fallback für reinen Text mit GROSSBUCHSTABEN-Erkennung als Überschriften.
 
 ## Credentials
 See /app/memory/test_credentials.md
