@@ -40,10 +40,10 @@ const LazyImage = ({ src, alt, className, imagePosition, imagePositionX }) => {
               isLoaded ? 'opacity-100' : 'opacity-0'
             }`}
             style={{
-              width: '140%',
-              height: '140%',
-              left: `${-40 * (imagePositionX ?? 50) / 100}%`,
-              top: `${-40 * (imagePosition ?? 50) / 100}%`,
+              width: '115%',
+              height: '115%',
+              left: `${-15 * (imagePositionX ?? 50) / 100}%`,
+              top: `${-15 * (imagePosition ?? 50) / 100}%`,
             }}
             onLoad={() => setIsLoaded(true)}
             onError={() => setIsLoaded(false)}

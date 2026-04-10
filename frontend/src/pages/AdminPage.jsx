@@ -2852,10 +2852,10 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
                     <div
                       className="absolute"
                       style={{
-                        width: '140%',
-                        height: '140%',
-                        left: `${-40 * (formData.imagePositionX ?? 50) / 100}%`,
-                        top: `${-40 * (formData.imagePosition ?? 50) / 100}%`,
+                        width: '115%',
+                        height: '115%',
+                        left: `${-15 * (formData.imagePositionX ?? 50) / 100}%`,
+                        top: `${-15 * (formData.imagePosition ?? 50) / 100}%`,
                       }}
                     >
                       <img
