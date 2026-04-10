@@ -1,0 +1,72 @@
+{
+  "summary": "Tested Space and Enter key functionality in admin panel on desktop. WYSIWYG editors (article content, PDF generator) work correctly. Due Diligence textarea has a BUG: Enter key does not create new lines because the onChange handler strips empty lines.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Due Diligence Textarea",
+        "issue": "Enter key does not create new lines - newlines are stripped by onChange handler",
+        "selector": "textarea[placeholder*='Grundbucheintrag']",
+        "priority": "HIGH",
+        "file": "/app/frontend/src/pages/AdminPage.jsx",
+        "line": "3001-3008",
+        "root_cause": "The onChange handler filters out empty lines with `lines.filter(l => l.trim())` and removes trailing newlines with `.replace(/\\n$/, '')`. When user presses Enter, the empty line is filtered out, causing the cursor to jump back."
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_18.json"
+  ],
+  "action_items": [
+    "Fix Due Diligence textarea onChange handler to preserve newlines while typing. The current implementation strips empty lines immediately, preventing users from pressing Enter to create new checklist items. Suggested fix: Only filter empty lines when converting to HTML for storage, but preserve the raw textarea value with newlines for display."
+  ],
+  "critical_code_review_comments": [
+    "Due Diligence textarea onChange (line 3001-3008): The `lines.filter(l => l.trim())` removes empty lines immediately, which breaks Enter key functionality. The value prop also removes trailing newlines with `.replace(/\\n$/, '')` (line 2998).",
+    "WYSIWYG Editor handleKeyDown (line 566-578): Correctly lets browser handle Enter natively - no e.preventDefault() called.",
+    "Form onKeyDown (line 2711-2712): Correctly prevents Enter from submitting form only for INPUT elements, not TEXTAREA."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A - frontend only testing",
+    "frontend": "87.5% - 7/8 tests passed"
+  },
+  "test_credentials": {
+    "admin_username": "admin",
+    "admin_password": "euroadria2025"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Due Diligence textarea Enter key bug confirmed. The issue is in AdminPage.jsx lines 3001-3008. The onChange handler immediately filters empty lines, preventing Enter from creating new lines. All other Space/Enter key tests pass: WYSIWYG editors, Expert Tip textarea, PDF Generator, and form submission prevention.",
+  "tests_performed": {
+    "wysiwyg_editor_space": "PASS - 'Hello World Test' typed correctly with spaces",
+    "wysiwyg_editor_enter": "PASS - Creates <div>Second paragraph</div>",
+    "due_diligence_title_space": "PASS - 'Test Title With Spaces' typed correctly",
+    "due_diligence_textarea_space": "PASS - 'First item with spaces' typed correctly",
+    "due_diligence_textarea_enter": "FAIL - Newlines stripped, text concatenated on same line",
+    "expert_tip_textarea_space": "PASS - Works correctly",
+    "expert_tip_textarea_enter": "PASS - Creates newline",
+    "pdf_generator_wysiwyg_space": "PASS - 'PDF content with spaces' typed correctly",
+    "pdf_generator_wysiwyg_enter": "PASS - Creates <div>Second paragraph</div>",
+    "form_input_enter_no_submit": "PASS - Form stays on edit page"
+  },
+  "rca_of_the_issue": {
+    "bug": "Due Diligence textarea Enter key not creating new lines",
+    "reproduction_steps": [
+      "1. Go to /admin and login",
+      "2. Click 'Neuer Artikel' to create new article",
+      "3. Scroll down to 'Due Diligence Box' section",
+      "4. Click in the 'Checkliste' textarea",
+      "5. Type 'First item' and press Enter",
+      "6. Type 'Second item'",
+      "7. Observe: Text shows 'First itemSecond item' on same line instead of two lines"
+    ],
+    "root_cause": "The textarea's onChange handler (line 3001-3008) immediately processes the input: splits by newline, filters out empty lines with `lines.filter(l => l.trim())`, then converts to HTML. When Enter is pressed, the value becomes 'First item\\n', which splits to ['First item', ''], filters to ['First item'], and the empty line is lost. Additionally, the value prop removes trailing newlines with `.replace(/\\n$/, '')` (line 2998).",
+    "suggested_fix": "Option 1: Use uncontrolled textarea with onBlur to convert to HTML only when user leaves the field. Option 2: Track raw text separately from HTML content, only convert on save. Option 3: Preserve trailing newlines in the value computation and only filter empty lines when generating final HTML."
+  }
+}

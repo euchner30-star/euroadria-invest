@@ -2708,7 +2708,9 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
   );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6" onKeyDown={(e) => {
+      if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'submit') e.preventDefault();
+    }}>
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-6">
         <h3 className="text-xl font-bold text-ea-gold flex items-center">
           Grundinformationen
@@ -2993,13 +2995,14 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
                     .replace(/<li>/g, '')
                     .replace(/<\/li>/g, '\n')
                     .replace(/✅\s?/g, '')
-                    .trim()
+                    .replace(/\n$/, '')
                 : ''
             }
             onChange={(e) => {
-              const lines = e.target.value.split('\n').filter(l => l.trim());
-              const html = lines.length > 0 
-                ? '<ul>' + lines.map(l => `<li>${l.trim()}</li>`).join('') + '</ul>'
+              const lines = e.target.value.split('\n');
+              const nonEmpty = lines.filter(l => l.trim());
+              const html = nonEmpty.length > 0 
+                ? '<ul>' + nonEmpty.map(l => `<li>${l}</li>`).join('') + '</ul>'
                 : '';
               handleNestedChange('dueDiligenceBox', 'content', html);
             }}
@@ -3134,7 +3137,9 @@ const RegionForm = ({ initialData, onSave, onCancel, saveStatus, isCreating, cre
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6" onKeyDown={(e) => {
+      if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'submit') e.preventDefault();
+    }}>
       {/* Basic Info */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
         <h3 className="text-xl font-bold text-ea-gold flex items-center space-x-2">
@@ -3389,7 +3394,9 @@ const PageEditor = ({ page, onSave, onCancel, saveStatus, credentials }) => {
   const currentSection = pageData.sections?.find(s => s.id === activeSection);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6" onKeyDown={(e) => {
+      if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'submit') e.preventDefault();
+    }}>
       {/* SEO Fields */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
         <h3 className="text-xl font-bold text-ea-gold flex items-center space-x-2">

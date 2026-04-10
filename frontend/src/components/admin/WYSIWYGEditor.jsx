@@ -565,22 +565,16 @@ const WYSIWYGEditor = ({ value, onChange, placeholder }) => {
   // Handle Enter key for new lines
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      e.preventDefault();
-      
-      if (e.shiftKey) {
-        // Shift+Enter = line break <br>
-        document.execCommand('insertLineBreak');
-      } else {
-        // Enter = new paragraph
-        document.execCommand('insertParagraph');
-      }
-      
-      // Update content after Enter
-      if (editorRef.current) {
-        const newContent = editorRef.current.innerHTML;
-        notifyParent(newContent);
-        saveToHistory(newContent);
-      }
+      // Let the browser handle Enter natively in contenteditable
+      // This creates proper paragraphs and line breaks
+      // Just save history after the DOM updates
+      setTimeout(() => {
+        if (editorRef.current) {
+          const newContent = editorRef.current.innerHTML;
+          notifyParent(newContent);
+          saveToHistory(newContent);
+        }
+      }, 0);
     }
   };
 
