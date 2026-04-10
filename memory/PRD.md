@@ -132,7 +132,9 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 ## Zuletzt erledigt
 - **10.04.2026**: PDF-Generator Serbische Sonderzeichen Fix + Font-Family Registrierung für Bold/Italic
 - **10.04.2026**: WYSIWYG Smart Paste Fix — Google Docs Formatierung 1:1 übernehmen
-- **10.04.2026**: Image Slider Desktop Fix — von object-position auf 140%-Wrapper-Ansatz umgestellt, funktioniert jetzt auf Desktop UND Mobile zuverlässig
+- **10.04.2026**: Image Slider Desktop Fix — von object-position auf 140%-Wrapper-Ansatz umgestellt
+- **10.04.2026**: Navbar Anpassungen — KONTAKT entfernt, Immobilienangebot nur bei Klick
+- **10.04.2026**: Space/Enter Desktop Fix — WYSIWYG Editor nutzt native Enter-Behandlung, Due Diligence Textarea preserviert Zeilenumbrüche während Tippen (Aufräumung bei Blur), Form-Submit bei Enter in Inputs verhindert, funktioniert jetzt auf Desktop UND Mobile zuverlässig
 
 ## Credentials
 See /app/memory/test_credentials.md
