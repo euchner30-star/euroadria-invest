@@ -386,7 +386,7 @@ async def generate_expose_pdf(inp: SimulationInput):
                             f.write(r.content)
             if os.path.exists(logo_path):
                 canvas.drawImage(logo_path, 15*mm, page_h - 24*mm, width=18*mm, height=18*mm, preserveAspectRatio=True, mask='auto')
-        except:
+        except Exception:
             pass
         canvas.setFont('Helvetica-Bold', 11)
         canvas.setFillColor(ea_dark)
