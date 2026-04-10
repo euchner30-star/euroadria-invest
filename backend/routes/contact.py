@@ -2,9 +2,10 @@
 from fastapi import APIRouter, Depends
 from datetime import datetime, timezone
 import uuid
+import base64
 import resend
 
-from core import db, logger, verify_admin, RESEND_API_KEY, NOTIFICATION_EMAIL
+from core import db, logger, verify_admin, get_object, RESEND_API_KEY, NOTIFICATION_EMAIL
 from models import ContactForm, LeadForm
 from emails import send_contact_email, wrap_email
 
@@ -185,20 +186,24 @@ async def capture_lead(lead: LeadForm):
             })
             email_sent = True
 
-            # Send branded confirmation email to the lead
+            # Send branded confirmation email to the lead (with PDF attachment if available)
             lead_name = lead_dict.get('name', 'Investor')
-            content = f"""
+            expose_name = lead_dict.get('expose_name', 'Investment Exposé')
+            is_praxisleitfaden = lead_dict.get('source', '') == 'praxisleitfaden'
+
+            if is_praxisleitfaden:
+                content = f"""
             <h2 style="color: #04151F; margin: 0 0 8px 0;">Vielen Dank, {lead_name}!</h2>
-            <p style="color: #555; font-size: 14px; margin: 0 0 24px 0;">Ihr persönliches Investment Exposé wurde erstellt.</p>
+            <p style="color: #555; font-size: 14px; margin: 0 0 24px 0;">Ihr Praxisleitfaden ist als PDF im Anhang dieser E-Mail beigefuegt.</p>
             <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 3px solid #C8A96A; margin-bottom: 24px;">
-                <p style="color: #C8A96A; font-size: 12px; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 1px;">Ihr Download</p>
-                <p style="color: #04151F; font-size: 16px; margin: 0; font-weight: bold;">{lead_dict.get('expose_name', 'Investment Exposé')}</p>
+                <p style="color: #C8A96A; font-size: 12px; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 1px;">Ihr Dokument</p>
+                <p style="color: #04151F; font-size: 16px; margin: 0; font-weight: bold;">Strategischer Plan 2026: Markteintritt &amp; Investitionssicherheit Westbalkan</p>
             </div>
             <p style="color: #333; font-size: 14px; line-height: 22px; margin: 0 0 20px 0;">
-                Sie haben soeben Ihr personalisiertes Investment Exposé heruntergeladen. Dieses Dokument enthält eine detaillierte 10-Jahres-Prognose basierend auf Ihren individuellen Eingaben.
+                Dieses vertrauliche Dokument enthaelt geballtes Expertenwissen zu Due Diligence, Steuerstruktur, Banking und rechtlichen Rahmenbedingungen fuer Ihren Markteintritt auf dem Westbalkan.
             </p>
             <p style="color: #333; font-size: 14px; line-height: 22px; margin: 0 0 24px 0;">
-                Möchten Sie die Analyse mit einem unserer Experten besprechen? Wir beraten Sie gerne persönlich und unverbindlich.
+                Moechten Sie die Strategie mit einem unserer Experten besprechen? Wir beraten Sie gerne persoenlich und unverbindlich.
             </p>
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
                 <tr><td align="center" style="padding: 8px 0 24px 0;">
@@ -206,16 +211,61 @@ async def capture_lead(lead: LeadForm):
                 </td></tr>
             </table>
             <p style="color: #999; font-size: 11px; margin: 0;">
-                <strong style="color: #C8A96A;">Hinweis:</strong> Die im Exposé dargestellten Zahlen dienen ausschließlich zu Informationszwecken und stellen keine Anlageberatung dar.
+                <strong style="color: #C8A96A;">Hinweis:</strong> Dieses Dokument ist vertraulich und nur fuer den persoenlichen Gebrauch bestimmt.
             </p>
             """
-            resend.Emails.send({
+            else:
+                content = f"""
+            <h2 style="color: #04151F; margin: 0 0 8px 0;">Vielen Dank, {lead_name}!</h2>
+            <p style="color: #555; font-size: 14px; margin: 0 0 24px 0;">Ihr persoenliches Investment Expose wurde erstellt.</p>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 3px solid #C8A96A; margin-bottom: 24px;">
+                <p style="color: #C8A96A; font-size: 12px; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 1px;">Ihr Download</p>
+                <p style="color: #04151F; font-size: 16px; margin: 0; font-weight: bold;">{expose_name}</p>
+            </div>
+            <p style="color: #333; font-size: 14px; line-height: 22px; margin: 0 0 20px 0;">
+                Sie haben soeben Ihr personalisiertes Investment Expose heruntergeladen. Dieses Dokument enthaelt eine detaillierte 10-Jahres-Prognose basierend auf Ihren individuellen Eingaben.
+            </p>
+            <p style="color: #333; font-size: 14px; line-height: 22px; margin: 0 0 24px 0;">
+                Moechten Sie die Analyse mit einem unserer Experten besprechen? Wir beraten Sie gerne persoenlich und unverbindlich.
+            </p>
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr><td align="center" style="padding: 8px 0 24px 0;">
+                    <a href="https://euroadria.me/kontakt" style="display: inline-block; background-color: #C8A96A; color: #04151F; font-size: 14px; font-weight: bold; text-decoration: none; padding: 14px 32px; border-radius: 6px;">Kostenlose Beratung anfragen</a>
+                </td></tr>
+            </table>
+            <p style="color: #999; font-size: 11px; margin: 0;">
+                <strong style="color: #C8A96A;">Hinweis:</strong> Die im Expose dargestellten Zahlen dienen ausschliesslich zu Informationszwecken und stellen keine Anlageberatung dar.
+            </p>
+            """
+
+            # Build email payload
+            email_payload = {
                 "from": "EuroAdria Corporate Solutions <noreply@euroadria.me>",
                 "to": [lead_dict['email']],
-                "subject": f"Ihr Investment Exposé — {lead_dict.get('expose_name', 'EuroAdria')}",
+                "subject": f"Ihr Praxisleitfaden — EuroAdria" if is_praxisleitfaden else f"Ihr Investment Exposé — {expose_name}",
                 "html": wrap_email(content),
                 "reply_to": NOTIFICATION_EMAIL
-            })
+            }
+
+            # Attach PDF for Praxisleitfaden downloads
+            if is_praxisleitfaden:
+                try:
+                    settings = await db.site_settings.find_one({"key": "downloads"}, {"_id": 0})
+                    pdf_path = settings.get("praxisleitfaden_url", "") if settings else ""
+                    if pdf_path:
+                        storage_path = pdf_path.replace("/api/files/", "")
+                        pdf_data, _ = get_object(storage_path)
+                        pdf_b64 = base64.b64encode(pdf_data).decode("utf-8")
+                        email_payload["attachments"] = [{
+                            "filename": "EuroAdria-Praxisleitfaden-Strategischer-Plan-2026.pdf",
+                            "content": pdf_b64,
+                            "content_type": "application/pdf"
+                        }]
+                        logger.info(f"PDF attachment added ({len(pdf_data)} bytes)")
+                except Exception as pdf_err:
+                    logger.error(f"Failed to attach PDF: {pdf_err}")
+
+            resend.Emails.send(email_payload)
         except Exception as e:
             logger.error(f"Failed to send lead email: {e}")
 

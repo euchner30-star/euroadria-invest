@@ -35,10 +35,6 @@ export const LeadMagnetBox = () => {
         })
       });
       setSubmitted(true);
-      if (downloadUrl) {
-        const fullUrl = downloadUrl.startsWith('http') ? downloadUrl : `${API_URL}${downloadUrl}`;
-        setTimeout(() => window.open(fullUrl, '_blank'), 500);
-      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -134,21 +130,13 @@ export const LeadMagnetBox = () => {
                 <div className="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Download className="w-7 h-7 text-green-500" />
                 </div>
-                <h3 className="text-lg font-semibold text-ea-dark mb-2">Ihr Download startet!</h3>
-                <p className="text-sm text-ea-dark/60 mb-4">
-                  Falls der Download nicht automatisch startet:
+                <h3 className="text-lg font-semibold text-ea-dark mb-2">Vielen Dank!</h3>
+                <p className="text-sm text-ea-dark/60 mb-2">
+                  Der Praxisleitfaden wurde an <strong>{email}</strong> gesendet.
                 </p>
-                {downloadUrl && (
-                  <a
-                    href={downloadUrl.startsWith('http') ? downloadUrl : `${API_URL}${downloadUrl}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block px-6 py-2.5 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all"
-                    data-testid="lead-modal-manual-download"
-                  >
-                    Hier klicken zum Download
-                  </a>
-                )}
+                <p className="text-xs text-ea-dark/40">
+                  Pruefen Sie auch Ihren Spam-Ordner, falls die E-Mail nicht sofort ankommt.
+                </p>
               </div>
             )}
           </div>
