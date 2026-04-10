@@ -5,7 +5,7 @@ import uuid
 import base64
 import resend
 
-from core import db, logger, verify_admin, get_object, RESEND_API_KEY, NOTIFICATION_EMAIL
+from core import db, logger, verify_admin, RESEND_API_KEY, NOTIFICATION_EMAIL
 from models import ContactForm, LeadForm
 from emails import send_contact_email, wrap_email
 
@@ -247,21 +247,19 @@ async def capture_lead(lead: LeadForm):
                 "reply_to": NOTIFICATION_EMAIL
             }
 
-            # Attach PDF for Praxisleitfaden downloads
+            # Attach PDF for Praxisleitfaden downloads (from MongoDB)
             if is_praxisleitfaden:
                 try:
-                    settings = await db.site_settings.find_one({"key": "downloads"}, {"_id": 0})
-                    pdf_path = settings.get("praxisleitfaden_url", "") if settings else ""
-                    if pdf_path:
-                        storage_path = pdf_path.replace("/api/files/", "")
-                        pdf_data, _ = get_object(storage_path)
-                        pdf_b64 = base64.b64encode(pdf_data).decode("utf-8")
+                    pdf_doc = await db.site_settings.find_one({"key": "pdf_praxisleitfaden"}, {"_id": 0})
+                    if pdf_doc and pdf_doc.get("base64"):
                         email_payload["attachments"] = [{
-                            "filename": "EuroAdria-Praxisleitfaden-Strategischer-Plan-2026.pdf",
-                            "content": pdf_b64,
+                            "filename": pdf_doc.get("filename", "EuroAdria-Praxisleitfaden.pdf"),
+                            "content": pdf_doc["base64"],
                             "content_type": "application/pdf"
                         }]
-                        logger.info(f"PDF attachment added ({len(pdf_data)} bytes)")
+                        logger.info(f"PDF attachment added from MongoDB ({pdf_doc.get('size', 0)} bytes)")
+                    else:
+                        logger.warning("No PDF found in MongoDB for praxisleitfaden")
                 except Exception as pdf_err:
                     logger.error(f"Failed to attach PDF: {pdf_err}")
 
