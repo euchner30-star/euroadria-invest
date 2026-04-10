@@ -6,6 +6,12 @@ import io
 import os
 
 from core import db, verify_admin
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+pdfmetrics.registerFont(TTFont('LiberationSans', '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf'))
+pdfmetrics.registerFont(TTFont('LiberationSans-Bold', '/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf'))
+pdfmetrics.registerFont(TTFont('LiberationSans-Oblique', '/usr/share/fonts/truetype/liberation/LiberationSans-Italic.ttf'))
 
 router = APIRouter()
 
@@ -261,7 +267,7 @@ def _html_to_flowables(html_content, styles, colors):
                 elements.append(Spacer(1, 3 * mm))
             elif tag == 'h3':
                 elements.append(Spacer(1, 3 * mm))
-                h3_text = f'<font color="#C8A96A" name="Helvetica-Bold">\u2014</font>\u00a0\u00a0{_get_inline_html(el)}'
+                h3_text = f'<font color="#C8A96A" name="LiberationSans-Bold">\u2014</font>\u00a0\u00a0{_get_inline_html(el)}'
                 elements.append(Paragraph(h3_text, styles['EA_H3']))
                 elements.append(Spacer(1, 2 * mm))
             elif tag == 'p':
@@ -273,7 +279,7 @@ def _html_to_flowables(html_content, styles, colors):
                 items = el.find_all('li', recursive=False)
                 bullet_flows = []
                 for li in items:
-                    bt = f'<font color="#C8A96A" name="Helvetica-Bold">\u2013</font>\u00a0\u00a0{_get_inline_html(li)}'
+                    bt = f'<font color="#C8A96A" name="LiberationSans-Bold">\u2013</font>\u00a0\u00a0{_get_inline_html(li)}'
                     bullet_flows.append(Paragraph(bt, styles['EA_Bullet']))
                     bullet_flows.append(Spacer(1, 2 * mm))
                 if bullet_flows:
@@ -395,10 +401,10 @@ async def generate_branded_pdf(request: Request, admin: str = Depends(verify_adm
                                  preserveAspectRatio=True, mask='auto')
         except Exception:
             pass
-        canvas.setFont('Helvetica-Bold', 11)
+        canvas.setFont('LiberationSans-Bold', 11)
         canvas.setFillColor(colors['dark'])
         canvas.drawString(36 * mm, page_h - 16 * mm, "EUROADRIA CORPORATE SOLUTIONS")
-        canvas.setFont('Helvetica', 7.5)
+        canvas.setFont('LiberationSans', 7.5)
         canvas.setFillColor(colors['gold'])
         canvas.drawString(36 * mm, page_h - 21 * mm, "Beratung & Angebotsplattform")
 
@@ -409,13 +415,13 @@ async def generate_branded_pdf(request: Request, admin: str = Depends(verify_adm
         canvas.setLineWidth(1)
         canvas.line(15 * mm, 16 * mm, page_w - 15 * mm, 16 * mm)
         # Footer text
-        canvas.setFont('Helvetica', 6.5)
+        canvas.setFont('LiberationSans', 6.5)
         canvas.setFillColor(colors['gray'])
         canvas.drawString(15 * mm, 10 * mm,
                           "EuroAdria Corporate Solutions  |  euroadria.me  |  office@euroadria.me")
         canvas.drawRightString(page_w - 15 * mm, 10 * mm, f"Seite {doc.page}")
         canvas.setFillColor(colors['gold'])
-        canvas.setFont('Helvetica', 5.5)
+        canvas.setFont('LiberationSans', 5.5)
         canvas.drawCentredString(page_w / 2, 4 * mm,
                                  "Vertraulich \u2014 Nur f\u00fcr den pers\u00f6nlichen Gebrauch bestimmt")
         canvas.restoreState()
@@ -427,39 +433,39 @@ async def generate_branded_pdf(request: Request, admin: str = Depends(verify_adm
     styles = getSampleStyleSheet()
     styles.add(ParagraphStyle('EA_Title', parent=styles['Title'],
                               fontSize=20, textColor=colors['dark'],
-                              spaceAfter=2 * mm, fontName='Helvetica-Bold',
+                              spaceAfter=2 * mm, fontName='LiberationSans-Bold',
                               alignment=TA_CENTER, leading=26))
     styles.add(ParagraphStyle('EA_Subtitle', parent=styles['Normal'],
                               fontSize=10, textColor=colors['gold'],
-                              spaceAfter=4 * mm, fontName='Helvetica',
+                              spaceAfter=4 * mm, fontName='LiberationSans',
                               alignment=TA_CENTER, leading=14))
     styles.add(ParagraphStyle('EA_H1', parent=styles['Heading1'],
                               fontSize=15, textColor=colors['dark'],
-                              fontName='Helvetica-Bold',
+                              fontName='LiberationSans-Bold',
                               spaceAfter=1 * mm, spaceBefore=0, leading=20))
     styles.add(ParagraphStyle('EA_H2', parent=styles['Heading2'],
                               fontSize=12.5, textColor=colors['dark'],
-                              fontName='Helvetica-Bold',
+                              fontName='LiberationSans-Bold',
                               spaceAfter=1 * mm, spaceBefore=0, leading=17))
     styles.add(ParagraphStyle('EA_H3', parent=styles['Heading3'],
                               fontSize=10.5, textColor=colors['dark'],
-                              fontName='Helvetica-Bold',
+                              fontName='LiberationSans-Bold',
                               spaceAfter=1 * mm, spaceBefore=0, leading=15))
     styles.add(ParagraphStyle('EA_Body', parent=styles['Normal'],
                               fontSize=9.5, textColor=colors['text'],
-                              fontName='Helvetica',
+                              fontName='LiberationSans',
                               leading=15, spaceAfter=0))
     styles.add(ParagraphStyle('EA_Bullet', parent=styles['Normal'],
                               fontSize=9.5, textColor=colors['text'],
-                              fontName='Helvetica',
+                              fontName='LiberationSans',
                               leading=15, leftIndent=8, spaceAfter=0))
     styles.add(ParagraphStyle('EA_Quote', parent=styles['Normal'],
                               fontSize=9.5, textColor=colors['gray'],
-                              fontName='Helvetica-Oblique',
+                              fontName='LiberationSans-Oblique',
                               leading=15, leftIndent=4, spaceAfter=0))
     styles.add(ParagraphStyle('EA_Date', parent=styles['Normal'],
                               fontSize=8, textColor=colors['gray'],
-                              fontName='Helvetica',
+                              fontName='LiberationSans',
                               alignment=TA_CENTER, spaceAfter=4 * mm))
 
     story = []
@@ -485,7 +491,7 @@ async def generate_branded_pdf(request: Request, admin: str = Depends(verify_adm
     pdf_bytes = buffer.getvalue()
     buffer.close()
 
-    safe_title = "".join(c if c.isalnum() or c in (' ', '-', '_') else '' for c in title).strip().replace(' ', '_')
+    safe_title = "".join(c if (c.isascii() and c.isalnum()) or c in (' ', '-', '_') else '' for c in title).strip().replace(' ', '_')
     filename = f"EuroAdria_{safe_title}_{now.replace('.', '-')}.pdf"
 
     return Response(

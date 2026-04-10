@@ -129,6 +129,9 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - Newsletter integration expansion (P2)
 - PDF Generator template save/load feature (P2)
 
+## Zuletzt erledigt
+- **10.04.2026**: PDF-Generator Serbische Sonderzeichen Fix — Font von Helvetica auf Liberation Sans umgestellt. Alle ć, č, š, ž, đ Zeichen werden jetzt korrekt in generierten PDFs angezeigt. Dateinamen-Sanitierung für ASCII-Only Headers angepasst.
+
 ## Credentials
 See /app/memory/test_credentials.md
 
