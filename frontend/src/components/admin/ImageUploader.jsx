@@ -109,11 +109,28 @@ const ImageUploader = ({
   };
 
   const handleUrlSubmit = () => {
-    const url = urlValue.trim();
-    if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+    let url = urlValue.trim();
+    if (!url) return;
+    
+    // Auto-extract URL from imgBB embed code or any HTML with <img src="...">
+    if (url.includes('<img') || url.includes('<a ')) {
+      const match = url.match(/src=["']([^"']+)["']/);
+      if (match) {
+        url = match[1];
+      }
+    }
+    
+    // Auto-extract URL from imgBB viewer page URL (https://ibb.co/xxx → image URL)
+    if (url.match(/^https?:\/\/ibb\.co\/[a-zA-Z0-9]+$/)) {
+      setError('Bitte die direkte Bild-URL verwenden (i.ibb.co/...), nicht den ibb.co-Viewer-Link. Klicken Sie auf imgBB "Direct Link".');
+      return;
+    }
+    
+    if (url.startsWith('http://') || url.startsWith('https://')) {
       setUploadedImage(url);
       setShowUrlInput(false);
       setUrlValue('');
+      setError(null);
       if (onImageUploaded) {
         onImageUploaded(url);
       }
