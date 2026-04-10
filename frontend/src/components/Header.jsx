@@ -96,7 +96,6 @@ const Header = () => {
   const secondaryNavItems = [
     { name: t('nav.blog'), path: '/blog' },
     { name: t('nav.about'), path: '/team' },
-    { name: t('nav.contact'), path: '/contact' },
     { name: t('nav.serbiaExecutive'), path: '/serbia-executive', icon: Shield, isExclusive: true },
   ];
 
@@ -138,7 +137,6 @@ const Header = () => {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsImmobilienOpen(!isImmobilienOpen)}
-                onMouseEnter={() => { if (!isScrollingRef.current) setIsImmobilienOpen(true); }}
                 className={`flex items-center gap-1.5 text-sm font-semibold tracking-wider transition-colors duration-300 px-4 py-2 rounded-lg
                   ${location.pathname.startsWith('/immobilien') 
                     ? 'text-ea-gold bg-ea-gold/10' 
@@ -155,7 +153,6 @@ const Header = () => {
               {isImmobilienOpen && (
                 <div 
                   className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-100 py-3 z-50"
-                  onMouseLeave={() => setIsImmobilienOpen(false)}
                   style={{ width: '420px' }}
                 >
                   <div className="grid grid-cols-3 gap-1 px-3">
