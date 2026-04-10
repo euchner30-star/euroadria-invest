@@ -9,12 +9,25 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - **Database**: MongoDB Atlas (remote)
 - **Email**: Resend API (noreply@euroadria.me)
 - **Newsletter**: Brevo API
-- **Domain**: euroadria.me (primary)
+- **Domain**: euroadria.me (ACTIVE, primary — NICHT MEHR ÄNDERN)
 - **PDF**: ReportLab (branded Exposés + universal PDF Generator)
 - **SEO**: Dynamic Sitemap, Open Graph, Twitter Cards, Schema.org (BlogPosting, ProfessionalService, LocalBusiness, Organization, FAQPage, NewsArticle, CollectionPage)
 - **Tracking**: Custom Analytics (no Google Analytics)
 - **Translation**: Argos (offline) + MyMemory API (fallback)
 - **Video**: YouTube Data API v3 with caching
+- **Images**: User uploads via imgBB (external), Object Storage endpoint for internal uploads
+
+## IMPORTANT: Already Done — DO NOT re-ask user about these
+- Domain euroadria.me is ACTIVE and configured
+- Render deployment is working (Frontend + Backend separate)
+- MongoDB Atlas is connected
+- Resend email is configured with DKIM/SPF
+- All 15 articles are in the live DB
+- Image position sliders (horizontal + vertical) are working
+- WYSIWYG Editor works on mobile with unlimited headings
+- ImageUploader has URL-paste, file-upload, and delete buttons (mobile-friendly)
+- DB cleanup done (no test/placeholder images)
+- Code lint: Frontend 100% clean, Backend bugs fixed (HTTPException import, bare except)
 
 ## Backend Architecture (18 Modules)
 ```
@@ -70,23 +83,25 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - Unified light branding (white bg, logo header, gold accents)
 
 ### Schema.org SEO (April 2026)
-- Organization schema with full address, founders, sameAs, knowsAbout
-- ProfessionalService with priceRange, hasOfferCatalog, areaServed
-- LocalBusiness with openingHours, aggregateRating
-- BlogPosting for individual articles (datePublished with timezone, author with URL, wordCount, timeRequired)
-- CollectionPage + ItemList for blog overview
-- NewsArticle for 5 media mentions (n-tv, RTL, Focus, VC Magazin, Kosmo) with image, author, datePublished
-- FAQPage with structured Q&A
-- BreadcrumbList, ItemList for investment projects
+- Organization, ProfessionalService, LocalBusiness
+- BlogPosting, CollectionPage, NewsArticle, FAQPage
+- BreadcrumbList, ItemList
 
-### WYSIWYG Editor
+### WYSIWYG Editor (fully working on Desktop + Mobile)
 - Bold, Italic, H1/H2/H3, Normal, Klein
 - Lists (ordered/unordered), Blockquotes, Links
 - Page Break for PDF
 - Smart Paste: Rich HTML + Markdown auto-detection
-- Partial-text heading selection
+- Direct DOM manipulation for headings (no execCommand quirks)
+- Selection restore on mobile (lastSelectionRef + onMouseDown preventDefault)
 - Undo/Redo with History
-- Mobile responsive: tooltips disabled on touch, horizontal scroll toolbar, hidden history counter
+
+### Image Management
+- ImageUploader with 3 always-visible buttons: Neue Datei / URL einfügen / Entfernen
+- Auto-extraction of image URL from imgBB embed code
+- Image position sliders (horizontal + vertical) with -30% to 130% range
+- Blog cards use slider position, Article page shows original (50%/50%)
+- hidePreview mode shows compact controls (no blank UI)
 
 ### Other
 - /leistungen, /events pages (CMS)
@@ -94,6 +109,7 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - /serbia-executive, crypto-banking, crypto-compliance pages
 - 5 Immobilien region pages (Budva, Podgorica, Zabljak, Skadar Lake, Niksic)
 - Navigation mega-menu with 3 region categories
+- Header dropdown closed on scroll (no accidental open)
 - Smart Traffic Source Detection (UTM, Click-IDs, User-Agent, Referrer)
 - Cookie Consent, Impressum, Datenschutz, AGB
 - Multilingual (DE/EN via LanguageContext + i18n)
@@ -101,35 +117,32 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - Newsletter (Brevo), ShareButtons, CommentsSection
 
 ### Domain & Deployment
-- euroadria.me as primary domain
+- euroadria.me as primary domain (DONE)
 - Render (Frontend + Backend separate services)
 - GitHub auto-deploy on push
-- DKIM + SPF verified for noreply@euroadria.me
 
-## Recent Fixes (April 2026)
-- Fixed BLOG_LIST_FIELDS missing `imagePosition` and `imagePositionX` projection fields, causing sliders to have no effect on Blog cards
-
-## Pending
-- Google Search Console: add euroadria.me property
-
-## Backlog (P2)
-- Apartment-Listing with real DB data
-- Video background for Hero section
-- FunnelCockpit Tracking Integration (waiting for user tracking code)
-- Newsletter integration expansion
+## Pending / Backlog
+- Google Search Console: add euroadria.me property (P2)
+- Apartment-Listing with real DB data (P1)
+- Video background for Hero section (P1)
+- FunnelCockpit Tracking Integration (BLOCKED — waiting for user tracking code)
+- Newsletter integration expansion (P2)
+- PDF Generator template save/load feature (P2)
 
 ## Credentials
 See /app/memory/test_credentials.md
 
 ## Key API Endpoints
-- /api/health - Health check + DB ping
-- /api/contact (POST) - Contact form + CRM auto-link
-- /api/leads (POST) - Expose download + CRM auto-link
+- /api/health
+- /api/contact (POST)
+- /api/leads (POST)
 - /api/articles (GET/POST/PUT/DELETE)
-- /api/admin/crm/* - CRM pipeline management
-- /api/admin/analytics/* - Analytics dashboard
+- /api/articles/list (GET — includes imagePosition fields)
+- /api/admin/crm/*
+- /api/admin/analytics/*
 - /api/calculator/roi, /api/calculator/simulation, /api/calculator/expose-pdf
-- /api/admin/generate-pdf - Universal PDF Generator
-- /api/translate, /api/translate/batch, /api/translate/article/{slug}
+- /api/admin/generate-pdf
+- /api/admin/storage/upload
+- /api/translate, /api/translate/batch
 - /api/youtube/latest
 - /api/sitemap.xml
