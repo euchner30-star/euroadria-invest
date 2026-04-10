@@ -458,7 +458,7 @@ async def generate_branded_pdf(request: Request, admin: str = Depends(verify_adm
     styles.add(ParagraphStyle('EA_Bullet', parent=styles['Normal'],
                               fontSize=9.5, textColor=colors['text'],
                               fontName='LiberationSans',
-                              leading=15, leftIndent=8, spaceAfter=0))
+                              leading=15, leftIndent=22, firstLineIndent=-14, spaceAfter=0))
     styles.add(ParagraphStyle('EA_Quote', parent=styles['Normal'],
                               fontSize=9.5, textColor=colors['gray'],
                               fontName='LiberationSans-Oblique',
