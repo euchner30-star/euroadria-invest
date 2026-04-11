@@ -154,3 +154,88 @@ code {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+
+/* Article Content: Gold-styled bullet point lists */
+.article-content ul,
+.article-content ol {
+  background: linear-gradient(135deg, rgba(200, 169, 106, 0.08) 0%, rgba(200, 169, 106, 0.04) 100%);
+  border-left: 3px solid #C8A96A;
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px 16px 28px;
+  margin: 20px 0;
+  list-style: none;
+}
+
+.article-content ul li,
+.article-content ol li {
+  position: relative;
+  padding: 6px 0 6px 20px;
+  color: rgba(4, 21, 31, 0.85);
+  line-height: 1.7;
+}
+
+.article-content ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  width: 8px;
+  height: 8px;
+  background-color: #C8A96A;
+  border-radius: 50%;
+}
+
+.article-content ol {
+  counter-reset: article-counter;
+}
+
+.article-content ol li {
+  counter-increment: article-counter;
+}
+
+.article-content ol li::before {
+  content: counter(article-counter) '.';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  font-weight: 700;
+  color: #C8A96A;
+}
+
+/* Article Content: Styled headings */
+.article-content h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #04151F;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(200, 169, 106, 0.3);
+}
+
+.article-content h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #04151F;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Article Content: Bold text styling */
+.article-content b,
+.article-content strong {
+  color: #04151F;
+  font-weight: 600;
+}
+
+/* Article Content: Blockquotes */
+.article-content blockquote {
+  background: linear-gradient(135deg, rgba(200, 169, 106, 0.1) 0%, rgba(200, 169, 106, 0.03) 100%);
+  border-left: 3px solid #C8A96A;
+  padding: 16px 20px;
+  border-radius: 0 8px 8px 0;
+  margin: 20px 0;
+  font-style: italic;
+  color: rgba(4, 21, 31, 0.75);
+}

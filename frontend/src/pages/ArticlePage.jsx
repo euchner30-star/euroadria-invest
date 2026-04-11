@@ -159,7 +159,7 @@ const ArticlePage = () => {
           {/* Article Content - Semantic HTML */}
           <section className="prose prose-sm md:prose-lg max-w-none" itemProp="articleBody">
             <div 
-              className="text-ea-dark/80 leading-relaxed space-y-4 md:space-y-6 text-sm md:text-base"
+              className="article-content text-ea-dark/80 leading-relaxed space-y-4 md:space-y-6 text-sm md:text-base"
               dangerouslySetInnerHTML={{ __html: parseContentToHTML(article.content) }}
             />
           </section>
