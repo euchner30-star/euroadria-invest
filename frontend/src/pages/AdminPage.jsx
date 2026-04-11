@@ -2709,9 +2709,8 @@ const ArticleForm = ({ initialData, onSave, onCancel, saveStatus, credentials })
 
   const handleEditorChange = (html) => {
     setEditorContent(html);
-    // Convert HTML to clean content for storage
-    const cleanContent = htmlToCleanContent(html);
-    setFormData(prev => ({ ...prev, content: cleanContent }));
+    // Store HTML directly — preserves all formatting (bold, headings, lists)
+    setFormData(prev => ({ ...prev, content: html }));
   };
 
   const handleSubmit = (e) => {

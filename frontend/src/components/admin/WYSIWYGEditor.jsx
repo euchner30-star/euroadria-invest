@@ -894,6 +894,12 @@ export const htmlToCleanContent = (html) => {
 export const contentToHtml = (content) => {
   if (!content) return '';
   
+  // If content is already HTML, return as-is
+  if (/<(h[1-6]|p|div|b|strong|em|i|ul|ol|li|blockquote|a|br)\b/i.test(content)) {
+    return content;
+  }
+  
+  // Otherwise convert markdown to HTML (legacy articles)
   let html = content;
   
   // Convert headers
