@@ -53,6 +53,19 @@ async def create_comment(comment: CommentCreate, background_tasks: BackgroundTas
 
     await db.comments.insert_one(comment_dict)
 
+    # Create lead from comment (if email not already in leads)
+    existing_lead = await db.leads.find_one({"email": comment.email})
+    if not existing_lead:
+        lead_dict = {
+            "id": str(uuid.uuid4()),
+            "name": comment.name,
+            "email": comment.email,
+            "source": "blog_comment",
+            "expose_name": article_title,
+            "submitted_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.leads.insert_one(lead_dict)
+
     if not auto_approved:
         background_tasks.add_task(send_notification_email, comment_dict, article_title)
 
