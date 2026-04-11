@@ -1,7 +1,14 @@
-// Content Parser Utility - Converts Markdown to semantic HTML
+// Content Parser Utility - Handles both HTML and Markdown content
 export const parseContentToHTML = (content) => {
   if (!content) return '';
   
+  // If content is already HTML (from WYSIWYG editor), pass through directly
+  const hasHtmlTags = /<(h[1-6]|p|div|b|strong|em|i|ul|ol|li|blockquote|a|br)\b/i.test(content);
+  if (hasHtmlTags) {
+    return content;
+  }
+  
+  // Otherwise, convert Markdown to HTML
   let html = content;
   
   // Convert headers - ### to <h3>, ## to <h2>
