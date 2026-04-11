@@ -125,11 +125,15 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - Google Search Console: add euroadria.me property (P2)
 - Apartment-Listing with real DB data (P1)
 - Video background for Hero section (P1)
+- Podcast-Integration (P1) — NEU
 - FunnelCockpit Tracking Integration (BLOCKED — waiting for user tracking code)
 - Newsletter integration expansion (P2)
 - PDF Generator template save/load feature (P2)
+- Google Docs Import via URL (P2)
 
 ## Zuletzt erledigt
+- **11.04.2026**: Gefällt-mir-Button (Like) für Kommentare + Antworten
+- **11.04.2026**: Lead-Erstellung aus Blog-Kommentaren (Quelle: blog_comment)
 - **11.04.2026**: Kommentar-Antworten (Threading) + Auto-Freigabe-System implementiert
 - **11.04.2026**: Content-Parser Fix — HTML-Artikel werden direkt angezeigt statt als Markdown konvertiert
 - **11.04.2026**: Goldene Aufzählungslisten-Styling für Artikel (CSS)
