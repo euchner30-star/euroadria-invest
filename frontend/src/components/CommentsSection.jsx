@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { MessageSquare, User, Mail, Send, Loader2, CheckCircle, AlertCircle, Clock, Reply, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageSquare, User, Mail, Send, Loader2, CheckCircle, AlertCircle, Clock, Reply, ChevronDown, ChevronUp, ThumbsUp } from 'lucide-react';
 import { commentsApi } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const formatDate = (dateString, lang) => {
   return new Date(dateString).toLocaleDateString(
@@ -66,6 +68,44 @@ const ReplyForm = ({ articleId, articleSlug, parentId, parentName, onSubmitted, 
   );
 };
 
+// Like button hook
+const useLike = (commentId, initialLikes) => {
+  const storageKey = 'liked_comments';
+  const getLiked = () => {
+    try { return JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch { return []; }
+  };
+  const [liked, setLiked] = useState(() => getLiked().includes(commentId));
+  const [likes, setLikes] = useState(initialLikes || 0);
+
+  const toggleLike = async () => {
+    if (liked) return;
+    try {
+      const res = await fetch(API_URL + '/api/comments/' + commentId + '/like', { method: 'POST' });
+      const data = await res.json();
+      setLikes(data.likes);
+      setLiked(true);
+      const arr = getLiked();
+      arr.push(commentId);
+      localStorage.setItem(storageKey, JSON.stringify(arr));
+    } catch (err) { console.error(err); }
+  };
+  return { liked, likes, toggleLike };
+};
+
+const LikeButton = ({ commentId, initialLikes }) => {
+  const { liked, likes, toggleLike } = useLike(commentId, initialLikes);
+  return (
+    <button
+      onClick={toggleLike}
+      className={'flex items-center space-x-1 text-xs font-medium transition-colors ' + (liked ? 'text-ea-gold' : 'text-ea-dark/40 hover:text-ea-gold')}
+      data-testid={'like-btn-' + commentId}
+    >
+      <ThumbsUp className={'w-3.5 h-3.5' + (liked ? ' fill-current' : '')} />
+      {likes > 0 && <span>{likes}</span>}
+    </button>
+  );
+};
+
 // Single reply (no nesting)
 const ReplyItem = ({ comment, lang }) => (
   <div className="bg-white border-l-2 border-ea-gold/40 p-4 rounded-lg" data-testid={'comment-' + comment.id}>
@@ -82,6 +122,7 @@ const ReplyItem = ({ comment, lang }) => (
       </div>
     </div>
     <p className="text-ea-dark/80 leading-relaxed text-sm">{comment.content}</p>
+    <div className="mt-2"><LikeButton commentId={comment.id} initialLikes={comment.likes} /></div>
   </div>
 );
 
@@ -110,14 +151,17 @@ const CommentItem = ({ comment, replies, articleId, articleSlug, onReplySubmitte
           </div>
         </div>
         <p className="text-ea-dark/80 leading-relaxed">{comment.content}</p>
-        <button
-          onClick={() => setShowReplyForm(!showReplyForm)}
-          className="mt-3 text-xs text-ea-gold hover:text-ea-dark/70 font-medium flex items-center space-x-1 transition-colors"
-          data-testid={'reply-btn-' + comment.id}
-        >
-          <Reply className="w-3.5 h-3.5" />
-          <span>{en ? 'Reply' : 'Antworten'}</span>
-        </button>
+        <div className="mt-3 flex items-center space-x-4">
+          <LikeButton commentId={comment.id} initialLikes={comment.likes} />
+          <button
+            onClick={() => setShowReplyForm(!showReplyForm)}
+            className="text-xs text-ea-gold hover:text-ea-dark/70 font-medium flex items-center space-x-1 transition-colors"
+            data-testid={'reply-btn-' + comment.id}
+          >
+            <Reply className="w-3.5 h-3.5" />
+            <span>{en ? 'Reply' : 'Antworten'}</span>
+          </button>
+        </div>
       </div>
 
       {replies.length > 0 && (

@@ -73,6 +73,19 @@ async def create_comment(comment: CommentCreate, background_tasks: BackgroundTas
     return {"message": "Comment submitted", "id": comment_id, "status": status_msg, "autoApproved": auto_approved}
 
 
+@router.post("/comments/{comment_id}/like")
+async def like_comment(comment_id: str):
+    """Toggle like on a comment (uses localStorage on frontend to prevent duplicates)"""
+    result = await db.comments.update_one(
+        {"id": comment_id},
+        {"$inc": {"likes": 1}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    doc = await db.comments.find_one({"id": comment_id}, {"_id": 0, "likes": 1})
+    return {"likes": doc.get("likes", 0)}
+
+
 @router.get("/admin/comments")
 async def get_all_comments(status: Optional[str] = None, admin: str = Depends(verify_admin)):
     """Get all comments with optional status filter (Admin only)"""
