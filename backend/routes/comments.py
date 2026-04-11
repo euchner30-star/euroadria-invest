@@ -13,43 +13,51 @@ router = APIRouter()
 
 @router.get("/comments/article/{article_id}")
 async def get_approved_comments(article_id: int):
-    """Get all approved comments for an article (Public)"""
+    """Get all approved comments for an article (Public), including replies"""
     comments = await db.comments.find(
         {"articleId": article_id, "status": "approved"},
         {"_id": 0, "email": 0}
-    ).sort("createdAt", -1).to_list(100)
+    ).sort("createdAt", 1).to_list(200)
     return comments
 
 
 @router.get("/comments/slug/{article_slug}")
 async def get_approved_comments_by_slug(article_slug: str):
-    """Get all approved comments for an article by slug (Public)"""
+    """Get all approved comments for an article by slug (Public), including replies"""
     comments = await db.comments.find(
         {"articleSlug": article_slug, "status": "approved"},
         {"_id": 0, "email": 0}
-    ).sort("createdAt", -1).to_list(100)
+    ).sort("createdAt", 1).to_list(200)
     return comments
 
 
 @router.post("/comments")
 async def create_comment(comment: CommentCreate, background_tasks: BackgroundTasks):
-    """Create a new comment (requires moderation)"""
+    """Create a new comment. Auto-approves if the email has a previously approved comment."""
     article = await db.articles.find_one({"id": comment.articleId}, {"title": 1})
     article_title = article.get("title", "Unknown Article") if article else "Unknown Article"
+
+    # Auto-approve: check if this email already has an approved comment
+    previously_approved = await db.comments.find_one(
+        {"email": comment.email, "status": "approved"}
+    )
+    auto_approved = previously_approved is not None
 
     comment_id = str(uuid.uuid4())
     comment_dict = {
         "id": comment_id,
         **comment.model_dump(),
-        "status": "pending",
+        "status": "approved" if auto_approved else "pending",
         "createdAt": datetime.now(timezone.utc).isoformat()
     }
 
     await db.comments.insert_one(comment_dict)
 
-    background_tasks.add_task(send_notification_email, comment_dict, article_title)
+    if not auto_approved:
+        background_tasks.add_task(send_notification_email, comment_dict, article_title)
 
-    return {"message": "Comment submitted for moderation", "id": comment_id}
+    status_msg = "approved" if auto_approved else "pending"
+    return {"message": "Comment submitted", "id": comment_id, "status": status_msg, "autoApproved": auto_approved}
 
 
 @router.get("/admin/comments")

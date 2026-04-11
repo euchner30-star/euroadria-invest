@@ -95,6 +95,7 @@ class CommentCreate(BaseModel):
     name: str
     email: str
     content: str
+    parentId: Optional[str] = None
 
 
 class CommentResponse(BaseModel):
@@ -106,6 +107,7 @@ class CommentResponse(BaseModel):
     content: str
     status: str
     createdAt: str
+    parentId: Optional[str] = None
 
 
 class CommentAdminResponse(CommentResponse):
