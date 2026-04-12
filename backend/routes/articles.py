@@ -143,9 +143,8 @@ async def get_article_og_html(slug: str, request: Request):
 <meta name="twitter:title" content="{title}"/>
 <meta name="twitter:description" content="{description}"/>
 <meta name="twitter:image" content="{image}"/>
-<meta http-equiv="refresh" content="0;url={redirect_url}"/>
 </head>
-<body><noscript><a href="{redirect_url}">Weiter zum Artikel</a></noscript></body>
+<body><script>window.location.replace("{redirect_url}")</script><noscript><a href="{redirect_url}">Weiter zum Artikel</a></noscript></body>
 </html>"""
     return Response(content=html, media_type="text/html")
 
