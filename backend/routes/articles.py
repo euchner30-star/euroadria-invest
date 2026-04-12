@@ -114,7 +114,7 @@ async def get_article_og_html(slug: str, request: Request):
     # Convert short ref param to full utm_source for tracking
     redirect_url = f"{SITE_URL}/blog/{slug}"
     query_params = dict(request.query_params)
-    ref_map = {'wa': 'whatsapp', 'ig': 'instagram', 'fb': 'facebook', 'li': 'linkedin', 'tw': 'twitter', 'tt': 'tiktok', 'yt': 'youtube', 'tg': 'telegram', 'nl': 'newsletter'}
+    ref_map = {'wa': 'whatsapp', 'ig': 'instagram', 'fb': 'facebook', 'li': 'linkedin', 'tw': 'twitter', 'tt': 'tiktok', 'yt': 'youtube', 'tg': 'telegram', 'nl': 'newsletter', 'em': 'email'}
     if 'ref' in query_params:
         source = ref_map.get(query_params.pop('ref'), query_params.get('ref', ''))
         query_params['utm_source'] = source

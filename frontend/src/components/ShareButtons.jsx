@@ -31,12 +31,15 @@ const ShareButtons = ({ title, url, excerpt, slug }) => {
     } catch { return baseUrl; }
   };
 
+  // Short OG URL for clean sharing (ref param gets expanded to utm_source on redirect)
+  const ogUrl = (ref) => slug ? `https://euroadria.me/api/og/blog/${slug}?ref=${ref}` : baseUrl;
+
   const shareLinks = {
-    linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(getShareUrl('linkedin'))}&title=${encodeURIComponent(title || '')}&summary=${encodeURIComponent(excerpt || '')}`,
-    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(getShareUrl('twitter'))}&text=${encodeURIComponent(title || '')}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareUrl('facebook'))}&quote=${encodeURIComponent(title || '')}`,
+    linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(ogUrl('li'))}&title=${encodeURIComponent(title || '')}`,
+    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(ogUrl('tw'))}&text=${encodeURIComponent(title || '')}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(ogUrl('fb'))}`,
     whatsapp: `https://wa.me/?text=${encodeURIComponent(slug ? `https://euroadria.me/api/og/blog/${slug}?ref=wa` : baseUrl)}`,
-    email: `mailto:?subject=${encodeURIComponent(title || '')}&body=${encodeURIComponent(excerpt || '')}%0A%0AMehr%20lesen:%20${encodeURIComponent(getShareUrl('email'))}`
+    email: `mailto:?subject=${encodeURIComponent(title || '')}&body=${encodeURIComponent((excerpt || '') + '\n\n')}${encodeURIComponent(ogUrl('em'))}`
   };
 
   const handleShare = (platform) => {
