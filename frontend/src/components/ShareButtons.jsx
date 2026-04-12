@@ -13,12 +13,15 @@ const FacebookIcon = ({ className }) => (
   </svg>
 );
 
-const ShareButtons = ({ title, url, excerpt }) => {
+const ShareButtons = ({ title, url, excerpt, slug }) => {
   const [copied, setCopied] = React.useState(false);
   const baseUrl = url || window.location.href;
   
-  // Add UTM parameters for tracking shared links
-  const addUtm = (source) => {
+  // Use OG endpoint for sharing — social bots read correct title/image, humans get redirected
+  const getShareUrl = (source) => {
+    if (slug) {
+      return `https://euroadria.me/api/og/blog/${slug}?utm_source=${source}&utm_medium=social&utm_campaign=share`;
+    }
     try {
       const u = new URL(baseUrl.startsWith('http') ? baseUrl : 'https://euroadria.me' + baseUrl);
       u.searchParams.set('utm_source', source);
@@ -29,18 +32,18 @@ const ShareButtons = ({ title, url, excerpt }) => {
   };
 
   const shareLinks = {
-    linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(addUtm('linkedin'))}&title=${encodeURIComponent(title || '')}&summary=${encodeURIComponent(excerpt || '')}`,
-    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(addUtm('twitter'))}&text=${encodeURIComponent(title || '')}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(addUtm('facebook'))}&quote=${encodeURIComponent(title || '')}`,
-    whatsapp: `https://wa.me/?text=${encodeURIComponent((title || '') + ' ' + addUtm('whatsapp'))}`,
-    email: `mailto:?subject=${encodeURIComponent(title || '')}&body=${encodeURIComponent(excerpt || '')}%0A%0AMehr%20lesen:%20${encodeURIComponent(addUtm('email'))}`
+    linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(getShareUrl('linkedin'))}&title=${encodeURIComponent(title || '')}&summary=${encodeURIComponent(excerpt || '')}`,
+    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(getShareUrl('twitter'))}&text=${encodeURIComponent(title || '')}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareUrl('facebook'))}&quote=${encodeURIComponent(title || '')}`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent((title || '') + ' ' + getShareUrl('whatsapp'))}`,
+    email: `mailto:?subject=${encodeURIComponent(title || '')}&body=${encodeURIComponent(excerpt || '')}%0A%0AMehr%20lesen:%20${encodeURIComponent(getShareUrl('email'))}`
   };
 
   const handleShare = (platform) => {
     if (platform === 'email') {
       window.location.href = shareLinks[platform];
     } else if (platform === 'copy') {
-      navigator.clipboard.writeText(addUtm('copy')).then(() => {
+      navigator.clipboard.writeText(getShareUrl('copy')).then(() => {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       });

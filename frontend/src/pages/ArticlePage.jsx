@@ -235,6 +235,7 @@ const ArticlePage = () => {
             title={article.title}
             url={window.location.href}
             excerpt={article.excerpt}
+            slug={article.slug}
           />
 
           {/* CTA Section */}

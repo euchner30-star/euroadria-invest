@@ -1,5 +1,5 @@
 """Article endpoints (public + admin), clusters, categories, OG tags, sitemap, bulk import."""
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request
 from fastapi.responses import Response
 from typing import Optional, List
 from datetime import datetime, timezone
@@ -101,7 +101,7 @@ async def get_article_by_slug(slug: str):
 
 
 @router.get("/og/blog/{slug}")
-async def get_article_og_html(slug: str):
+async def get_article_og_html(slug: str, request: Request):
     """Serve pre-rendered HTML with OG tags for social media crawlers"""
     article = await db.articles.find_one({"slug": slug}, {"_id": 0})
     if not article:
@@ -110,7 +110,13 @@ async def get_article_og_html(slug: str):
     title = f"{article.get('title', '')} | EuroAdria Corporate Solutions"
     description = article.get('excerpt', '')[:200]
     image = article.get('image', f"{SITE_URL}/euroadria-logo.png")
-    url = f"{SITE_URL}/blog/{slug}"
+    
+    # Preserve UTM parameters in the redirect URL
+    redirect_url = f"{SITE_URL}/blog/{slug}"
+    query_params = dict(request.query_params)
+    if query_params:
+        params = "&".join(f"{k}={v}" for k, v in query_params.items())
+        redirect_url = f"{redirect_url}?{params}"
 
     html = f"""<!DOCTYPE html>
 <html lang="de">
@@ -119,7 +125,7 @@ async def get_article_og_html(slug: str):
 <title>{title}</title>
 <meta name="description" content="{description}"/>
 <meta property="og:type" content="article"/>
-<meta property="og:url" content="{url}"/>
+<meta property="og:url" content="{redirect_url}"/>
 <meta property="og:title" content="{title}"/>
 <meta property="og:description" content="{description}"/>
 <meta property="og:image" content="{image}"/>
@@ -131,9 +137,9 @@ async def get_article_og_html(slug: str):
 <meta name="twitter:title" content="{title}"/>
 <meta name="twitter:description" content="{description}"/>
 <meta name="twitter:image" content="{image}"/>
-<meta http-equiv="refresh" content="0;url={url}"/>
+<meta http-equiv="refresh" content="0;url={redirect_url}"/>
 </head>
-<body><p>Weiterleitung zu <a href="{url}">{title}</a></p></body>
+<body><p>Weiterleitung zu <a href="{redirect_url}">{title}</a></p></body>
 </html>"""
     return Response(content=html, media_type="text/html")
 
