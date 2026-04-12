@@ -15,24 +15,32 @@ const FacebookIcon = ({ className }) => (
 
 const ShareButtons = ({ title, url, excerpt }) => {
   const [copied, setCopied] = React.useState(false);
-  const currentUrl = url || window.location.href;
-  const encodedUrl = encodeURIComponent(currentUrl);
-  const encodedTitle = encodeURIComponent(title || '');
-  const encodedExcerpt = encodeURIComponent(excerpt || '');
+  const baseUrl = url || window.location.href;
+  
+  // Add UTM parameters for tracking shared links
+  const addUtm = (source) => {
+    try {
+      const u = new URL(baseUrl.startsWith('http') ? baseUrl : 'https://euroadria.me' + baseUrl);
+      u.searchParams.set('utm_source', source);
+      u.searchParams.set('utm_medium', 'social');
+      u.searchParams.set('utm_campaign', 'share');
+      return u.toString();
+    } catch { return baseUrl; }
+  };
 
   const shareLinks = {
-    linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}&summary=${encodedExcerpt}`,
-    twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`,
-    whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
-    email: `mailto:?subject=${encodedTitle}&body=${encodedExcerpt}%0A%0AMehr%20lesen:%20${encodedUrl}`
+    linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(addUtm('linkedin'))}&title=${encodeURIComponent(title || '')}&summary=${encodeURIComponent(excerpt || '')}`,
+    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(addUtm('twitter'))}&text=${encodeURIComponent(title || '')}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(addUtm('facebook'))}&quote=${encodeURIComponent(title || '')}`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent((title || '') + ' ' + addUtm('whatsapp'))}`,
+    email: `mailto:?subject=${encodeURIComponent(title || '')}&body=${encodeURIComponent(excerpt || '')}%0A%0AMehr%20lesen:%20${encodeURIComponent(addUtm('email'))}`
   };
 
   const handleShare = (platform) => {
     if (platform === 'email') {
       window.location.href = shareLinks[platform];
     } else if (platform === 'copy') {
-      navigator.clipboard.writeText(url || window.location.href).then(() => {
+      navigator.clipboard.writeText(addUtm('copy')).then(() => {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       });
