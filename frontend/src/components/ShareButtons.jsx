@@ -35,7 +35,7 @@ const ShareButtons = ({ title, url, excerpt, slug }) => {
     linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(getShareUrl('linkedin'))}&title=${encodeURIComponent(title || '')}&summary=${encodeURIComponent(excerpt || '')}`,
     twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(getShareUrl('twitter'))}&text=${encodeURIComponent(title || '')}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareUrl('facebook'))}&quote=${encodeURIComponent(title || '')}`,
-    whatsapp: `https://wa.me/?text=${encodeURIComponent((title || '') + '\n' + (slug ? `https://euroadria.me/api/og/blog/${slug}?ref=wa` : baseUrl))}`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(slug ? `https://euroadria.me/api/og/blog/${slug}?ref=wa` : baseUrl)}`,
     email: `mailto:?subject=${encodeURIComponent(title || '')}&body=${encodeURIComponent(excerpt || '')}%0A%0AMehr%20lesen:%20${encodeURIComponent(getShareUrl('email'))}`
   };
 
