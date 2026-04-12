@@ -11,7 +11,7 @@ import { PipelineView, RevenueDashboard } from '../components/admin/CRMPipeline'
 import SEO from '../components/SEO';
 import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHtml } from '../components/admin/WYSIWYGEditor';
 import ImageUploader, { ImageGalleryUploader } from '../components/admin/ImageUploader';
-import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
+import AnalyticsDashboard, { UTMLinkGenerator } from '../components/admin/AnalyticsDashboard';
 import NewsletterAdmin from '../components/admin/NewsletterAdmin';
 import PDFGenerator from '../components/admin/PDFGenerator';
 
@@ -1109,7 +1109,10 @@ const AdminPage = () => {
 
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
-          <AnalyticsDashboard credentials={credentials} />
+          <div className="space-y-6">
+            <AnalyticsDashboard credentials={credentials} />
+            <UTMLinkGenerator />
+          </div>
         )}
 
         {/* Bulk Import Modal */}

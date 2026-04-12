@@ -521,4 +521,107 @@ const KPICard = ({ icon: Icon, label, value, subtitle, color, testId }) => (
   </div>
 );
 
+// UTM Link Generator
+const UTMLinkGenerator = () => {
+  const [articleUrl, setArticleUrl] = useState('');
+  const [source, setSource] = useState('instagram');
+  const [campaign, setCampaign] = useState('');
+  const [generatedLink, setGeneratedLink] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const sources = [
+    { value: 'instagram', label: 'Instagram' },
+    { value: 'tiktok', label: 'TikTok' },
+    { value: 'facebook', label: 'Facebook' },
+    { value: 'linkedin', label: 'LinkedIn' },
+    { value: 'twitter', label: 'Twitter/X' },
+    { value: 'youtube', label: 'YouTube' },
+    { value: 'whatsapp', label: 'WhatsApp' },
+    { value: 'telegram', label: 'Telegram' },
+    { value: 'newsletter', label: 'Newsletter' },
+  ];
+
+  const generateLink = () => {
+    let base = articleUrl.trim();
+    if (!base) return;
+    if (!base.startsWith('http')) base = 'https://euroadria.me' + (base.startsWith('/') ? '' : '/') + base;
+    const url = new URL(base);
+    url.searchParams.set('utm_source', source);
+    url.searchParams.set('utm_medium', 'social');
+    if (campaign.trim()) url.searchParams.set('utm_campaign', campaign.trim());
+    setGeneratedLink(url.toString());
+    setCopied(false);
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(generatedLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm" data-testid="utm-link-generator">
+      <div className="flex items-center space-x-3 mb-5">
+        <div className="w-10 h-10 bg-ea-gold/10 rounded-xl flex items-center justify-center">
+          <Share2 className="w-5 h-5 text-ea-gold" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-ea-dark">Link-Generator</h3>
+          <p className="text-xs text-ea-dark/50">Tracking-Links fuer Social Media erstellen</p>
+        </div>
+      </div>
+      <div className="space-y-3">
+        <input
+          type="text"
+          value={articleUrl}
+          onChange={(e) => setArticleUrl(e.target.value)}
+          placeholder="Seiten-URL z.B. /blog/artikel-name oder https://euroadria.me/blog/..."
+          className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-ea-dark focus:outline-none focus:border-ea-gold"
+          data-testid="utm-url-input"
+        />
+        <div className="grid grid-cols-2 gap-3">
+          <select
+            value={source}
+            onChange={(e) => setSource(e.target.value)}
+            className="bg-ea-light border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-ea-dark focus:outline-none focus:border-ea-gold"
+            data-testid="utm-source-select"
+          >
+            {sources.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+          </select>
+          <input
+            type="text"
+            value={campaign}
+            onChange={(e) => setCampaign(e.target.value)}
+            placeholder="Kampagne (optional)"
+            className="bg-ea-light border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-ea-dark focus:outline-none focus:border-ea-gold"
+            data-testid="utm-campaign-input"
+          />
+        </div>
+        <button
+          onClick={generateLink}
+          disabled={!articleUrl.trim()}
+          className="w-full py-2.5 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all disabled:opacity-40 text-sm"
+          data-testid="utm-generate-btn"
+        >
+          Link generieren
+        </button>
+        {generatedLink && (
+          <div className="bg-ea-light border border-ea-gold/30 rounded-lg p-3">
+            <p className="text-xs text-ea-dark/50 mb-1">Tracking-Link:</p>
+            <p className="text-sm text-ea-dark break-all font-mono mb-2">{generatedLink}</p>
+            <button
+              onClick={copyLink}
+              className={'w-full py-2 rounded-lg text-sm font-semibold transition-all ' + (copied ? 'bg-green-100 text-green-700' : 'bg-ea-gold text-ea-dark hover:bg-ea-gold/80')}
+              data-testid="utm-copy-btn"
+            >
+              {copied ? 'Kopiert!' : 'Link kopieren'}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default AnalyticsDashboard;
+export { UTMLinkGenerator };
