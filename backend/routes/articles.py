@@ -111,9 +111,15 @@ async def get_article_og_html(slug: str, request: Request):
     description = article.get('excerpt', '')[:200]
     image = article.get('image', f"{SITE_URL}/euroadria-logo.png")
     
-    # Preserve UTM parameters in the redirect URL
+    # Convert short ref param to full utm_source for tracking
     redirect_url = f"{SITE_URL}/blog/{slug}"
     query_params = dict(request.query_params)
+    ref_map = {'wa': 'whatsapp', 'ig': 'instagram', 'fb': 'facebook', 'li': 'linkedin', 'tw': 'twitter', 'tt': 'tiktok', 'yt': 'youtube', 'tg': 'telegram', 'nl': 'newsletter'}
+    if 'ref' in query_params:
+        source = ref_map.get(query_params.pop('ref'), query_params.get('ref', ''))
+        query_params['utm_source'] = source
+        query_params['utm_medium'] = 'social'
+        query_params['utm_campaign'] = 'share'
     if query_params:
         params = "&".join(f"{k}={v}" for k, v in query_params.items())
         redirect_url = f"{redirect_url}?{params}"
