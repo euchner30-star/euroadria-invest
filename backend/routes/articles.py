@@ -109,7 +109,9 @@ async def get_article_og_html(slug: str, request: Request):
 
     title = f"{article.get('title', '')} | EuroAdria Corporate Solutions"
     description = article.get('excerpt', '')[:200]
-    image = article.get('image', f"{SITE_URL}/euroadria-logo.png")
+    image = article.get('image', '') or "https://images.unsplash.com/photo-1756298041997-c37748e6f0ca?w=1200&h=630&fit=crop"
+    if not image.startswith('http'):
+        image = "https://images.unsplash.com/photo-1756298041997-c37748e6f0ca?w=1200&h=630&fit=crop"
     
     # Convert short ref param to full utm_source for tracking
     redirect_url = f"{SITE_URL}/blog/{slug}"
