@@ -33,6 +33,28 @@ async def track_calculator_usage():
     return {"ok": True}
 
 
+@router.post("/track/whatsapp-click")
+async def track_whatsapp_click(data: dict):
+    """Track WhatsApp button click and create a lead"""
+    doc = {
+        "page": data.get("page", "/"),
+        "articleTitle": data.get("articleTitle", ""),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "type": "whatsapp_click"
+    }
+    await db.page_views.insert_one({
+        "path": data.get("page", "/"),
+        "referrer": "",
+        "device": "",
+        "utm_source": "whatsapp_click",
+        "utm_medium": "chat",
+        "utm_campaign": "",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
+    await db.whatsapp_clicks.insert_one(doc)
+    return {"ok": True}
+
+
 @router.get("/admin/analytics/overview")
 async def get_analytics_overview(days: int = 30, admin: str = Depends(verify_admin)):
     """Get analytics overview data for dashboard"""

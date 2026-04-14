@@ -538,6 +538,8 @@ const UTMLinkGenerator = () => {
     { value: 'youtube', label: 'YouTube' },
     { value: 'whatsapp', label: 'WhatsApp' },
     { value: 'telegram', label: 'Telegram' },
+    { value: 'reddit', label: 'Reddit' },
+    { value: 'quora', label: 'Quora' },
     { value: 'newsletter', label: 'Newsletter' },
   ];
 

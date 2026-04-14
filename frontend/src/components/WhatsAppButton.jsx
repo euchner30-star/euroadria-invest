@@ -1,11 +1,25 @@
 import React from 'react';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
 const WhatsAppButton = () => {
+  const handleClick = () => {
+    // Track WhatsApp click as lead
+    const page = window.location.pathname;
+    const articleTitle = document.title || '';
+    fetch(`${API_URL}/api/track/whatsapp-click`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ page, articleTitle })
+    }).catch(() => {});
+  };
+
   return (
     <a
       href="https://wa.me/38268559776"
       target="_blank"
       rel="noopener noreferrer"
+      onClick={handleClick}
       className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 animate-pulse-soft"
       data-testid="whatsapp-float-btn"
       aria-label="WhatsApp Chat"

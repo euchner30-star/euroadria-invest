@@ -71,6 +71,7 @@ function detectTrafficSource(search, userAgent, referrer) {
     if (ref.includes('linkedin'))  return 'linkedin';
     if (ref.includes('twitter') || ref.includes('x.com') || ref.includes('t.co')) return 'twitter';
     if (ref.includes('reddit'))    return 'reddit';
+    if (ref.includes('quora'))     return 'quora';
     if (ref.includes('whatsapp') || ref.includes('wa.me')) return 'whatsapp';
     if (ref.includes('telegram') || ref.includes('t.me')) return 'telegram';
     if (ref.includes('euroadria')) return '';
