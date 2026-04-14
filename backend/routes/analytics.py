@@ -114,6 +114,10 @@ async def get_analytics_overview(days: int = 30, admin: str = Depends(verify_adm
                         {"case": {"$and": ["$has_utm", {"$regexMatch": {"input": {"$ifNull": ["$utm_source", ""]}, "regex": "google", "options": "i"}}]}, "then": "Google"},
                         {"case": {"$and": ["$has_utm", {"$regexMatch": {"input": {"$ifNull": ["$utm_source", ""]}, "regex": "^tt$|^tik$", "options": "i"}}]}, "then": "TikTok"},
                         {"case": {"$and": ["$has_utm", {"$regexMatch": {"input": {"$ifNull": ["$utm_source", ""]}, "regex": "^twitter$|^x$|x\\.com", "options": "i"}}]}, "then": "Twitter/X"},
+                        {"case": {"$and": ["$has_utm", {"$regexMatch": {"input": {"$ifNull": ["$utm_source", ""]}, "regex": "reddit", "options": "i"}}]}, "then": "Reddit"},
+                        {"case": {"$and": ["$has_utm", {"$regexMatch": {"input": {"$ifNull": ["$utm_source", ""]}, "regex": "quora", "options": "i"}}]}, "then": "Quora"},
+                        {"case": {"$and": ["$has_utm", {"$regexMatch": {"input": {"$ifNull": ["$utm_source", ""]}, "regex": "whatsapp|^wa$", "options": "i"}}]}, "then": "WhatsApp"},
+                        {"case": {"$and": ["$has_utm", {"$regexMatch": {"input": {"$ifNull": ["$utm_source", ""]}, "regex": "telegram|^tg$", "options": "i"}}]}, "then": "Telegram"},
                         {"case": "$has_utm", "then": "Andere (UTM)"},
                         {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "google"}}]}, "then": "Google"},
                         {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "linkedin"}}]}, "then": "LinkedIn"},
@@ -132,7 +136,8 @@ async def get_analytics_overview(days: int = 30, admin: str = Depends(verify_adm
                         {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "handelsblatt\\.com"}}]}, "then": "Handelsblatt"},
                         {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "finanzen\\.net|finanzen\\.de"}}]}, "then": "Finanzen.net"},
                         {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "t-online\\.de"}}]}, "then": "t-online"},
-                        {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "reddit\\.com"}}]}, "then": "Reddit"},
+                        {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "reddit\\.com|reddit", "options": "i"}}]}, "then": "Reddit"},
+                        {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "quora\\.com|quora", "options": "i"}}]}, "then": "Quora"},
                         {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "whatsapp\\.com|wa\\.me"}}]}, "then": "WhatsApp"},
                         {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "t\\.me|telegram"}}]}, "then": "Telegram"},
                         {"case": {"$and": ["$has_ref", {"$regexMatch": {"input": "$referrer", "regex": "bing\\.com"}}]}, "then": "Bing"},
@@ -189,6 +194,10 @@ async def get_analytics_overview(days: int = 30, admin: str = Depends(verify_adm
                         {"case": {"$regexMatch": {"input": "$utm_source", "regex": "linkedin", "options": "i"}}, "then": "LinkedIn"},
                         {"case": {"$regexMatch": {"input": "$utm_source", "regex": "google", "options": "i"}}, "then": "Google"},
                         {"case": {"$regexMatch": {"input": "$utm_source", "regex": "^twitter$|^x$|x\\.com", "options": "i"}}, "then": "Twitter/X"},
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "reddit", "options": "i"}}, "then": "Reddit"},
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "quora", "options": "i"}}, "then": "Quora"},
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "whatsapp|^wa$", "options": "i"}}, "then": "WhatsApp"},
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "telegram|^tg$", "options": "i"}}, "then": "Telegram"},
                     ],
                     "default": "$utm_source"
                 }
@@ -221,6 +230,10 @@ async def get_analytics_overview(days: int = 30, admin: str = Depends(verify_adm
                         {"case": {"$regexMatch": {"input": "$utm_source", "regex": "linkedin", "options": "i"}}, "then": "LinkedIn"},
                         {"case": {"$regexMatch": {"input": "$utm_source", "regex": "google", "options": "i"}}, "then": "Google"},
                         {"case": {"$regexMatch": {"input": "$utm_source", "regex": "^twitter$|^x$|x\\.com", "options": "i"}}, "then": "Twitter/X"},
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "reddit", "options": "i"}}, "then": "Reddit"},
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "quora", "options": "i"}}, "then": "Quora"},
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "whatsapp|^wa$", "options": "i"}}, "then": "WhatsApp"},
+                        {"case": {"$regexMatch": {"input": "$utm_source", "regex": "telegram|^tg$", "options": "i"}}, "then": "Telegram"},
                     ],
                     "default": "$utm_source"
                 }
