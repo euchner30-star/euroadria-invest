@@ -26,15 +26,37 @@ function isTikTokBrowser() {
  * Detect traffic source from JS bridge objects, User-Agent,
  * platform click-IDs, UTM params, and document.referrer.
  */
+/**
+ * Short ref-code to full source name mapping (matches OG redirect ref_map).
+ */
+const REF_MAP = {
+  wa: 'whatsapp', ig: 'instagram', fb: 'facebook', li: 'linkedin',
+  tw: 'twitter', tt: 'tiktok', yt: 'youtube', tg: 'telegram',
+  nl: 'newsletter', em: 'email', rd: 'reddit', qu: 'quora',
+  // Also accept full names
+  reddit: 'reddit', quora: 'quora', whatsapp: 'whatsapp',
+  telegram: 'telegram', instagram: 'instagram', facebook: 'facebook',
+  linkedin: 'linkedin', twitter: 'twitter', tiktok: 'tiktok',
+  youtube: 'youtube',
+};
+
 function detectTrafficSource(search, userAgent, referrer) {
   const params = new URLSearchParams(search);
   const ua = (userAgent || '').toLowerCase();
 
   // 1) Explicit utm_source always wins
   const utmSource = params.get('utm_source');
-  if (utmSource) return utmSource;
+  if (utmSource) return utmSource.toLowerCase();
 
-  // 2) Platform click-IDs injected by ad platforms
+  // 2) Short ?ref= param (e.g. ?ref=rd -> reddit)
+  const refParam = params.get('ref');
+  if (refParam) {
+    const mapped = REF_MAP[refParam.toLowerCase()];
+    if (mapped) return mapped;
+    return refParam.toLowerCase();
+  }
+
+  // 3) Platform click-IDs injected by ad platforms
   if (params.get('fbclid'))    return 'facebook';
   if (params.get('ttclid'))    return 'tiktok';
   if (params.get('gclid'))     return 'google-ads';
@@ -42,14 +64,16 @@ function detectTrafficSource(search, userAgent, referrer) {
   if (params.get('msclkid'))   return 'bing-ads';
   if (params.get('li_fat_id')) return 'linkedin';
 
-  // 3) TikTok JS bridge detection (iOS hides UA)
+  // 4) TikTok JS bridge detection (iOS hides UA)
   if (isTikTokBrowser()) return 'tiktok';
 
-  // 4) In-App browser detection via User-Agent
+  // 5) In-App browser detection via User-Agent
   if (ua.includes('instagram'))
     return 'instagram';
   if (ua.includes('fban') || ua.includes('fbav') || ua.includes('fb_iab'))
     return 'facebook';
+  if (ua.includes('reddit'))
+    return 'reddit';
   if (ua.includes('linkedin'))
     return 'linkedin';
   if (ua.includes('twitter'))
@@ -59,7 +83,7 @@ function detectTrafficSource(search, userAgent, referrer) {
   if (ua.includes('pinterest'))
     return 'pinterest';
 
-  // 5) Referrer-based detection
+  // 6) Referrer-based detection
   if (referrer) {
     const ref = referrer.toLowerCase();
     if (ref.includes('tiktok'))    return 'tiktok';
@@ -78,7 +102,7 @@ function detectTrafficSource(search, userAgent, referrer) {
     return ref;
   }
 
-  // 6) Nothing found = truly direct
+  // 7) Nothing found = truly direct
   return '';
 }
 

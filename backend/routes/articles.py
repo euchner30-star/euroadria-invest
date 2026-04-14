@@ -118,7 +118,8 @@ async def get_article_og_html(slug: str, request: Request):
     query_params = dict(request.query_params)
     ref_map = {'wa': 'whatsapp', 'ig': 'instagram', 'fb': 'facebook', 'li': 'linkedin', 'tw': 'twitter', 'tt': 'tiktok', 'yt': 'youtube', 'tg': 'telegram', 'nl': 'newsletter', 'em': 'email', 'rd': 'reddit', 'qu': 'quora'}
     if 'ref' in query_params:
-        source = ref_map.get(query_params.pop('ref'), query_params.get('ref', ''))
+        ref_value = query_params.pop('ref')
+        source = ref_map.get(ref_value, ref_value)
         query_params['utm_source'] = source
         query_params['utm_medium'] = 'social'
         query_params['utm_campaign'] = 'share'
