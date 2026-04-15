@@ -1,5 +1,6 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import { LanguageProvider } from "./context/LanguageContext";
 import usePageTracker from "./hooks/usePageTracker";
 import Header from "./components/Header";
@@ -7,34 +8,38 @@ import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
 import ScrollToTop from "./components/ScrollToTop";
 import CookieConsent from "./components/CookieConsent";
+
+// Critical: Home loaded eagerly (first page users see)
 import Home from "./pages/Home.jsx";
-import BlogPage from "./pages/BlogPage";
-import ArticlePage from "./pages/ArticlePage";
-import ContactPage from "./pages/ContactPage";
-import TeamPage from "./pages/TeamPage";
-import ImpressumPage from "./pages/ImpressumPage";
-import DatenschutzPage from "./pages/DatenschutzPage";
-import AGBPage from "./pages/AGBPage";
-import AdminPage from "./pages/AdminPage";
-import NewsletterUnsubscribe from "./pages/NewsletterUnsubscribe";
-import SerbiaExecutivePage from "./pages/SerbiaExecutivePage";
-import CryptoBankingPage from "./pages/CryptoBankingPage";
-import CryptoCompliancePage from "./pages/CryptoCompliancePage";
-import InfrastrukturRadarPage from "./pages/InfrastrukturRadarPage";
+
+// Lazy-loaded pages (only downloaded when visited)
+const BlogPage = lazy(() => import("./pages/BlogPage"));
+const ArticlePage = lazy(() => import("./pages/ArticlePage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const TeamPage = lazy(() => import("./pages/TeamPage"));
+const ImpressumPage = lazy(() => import("./pages/ImpressumPage"));
+const DatenschutzPage = lazy(() => import("./pages/DatenschutzPage"));
+const AGBPage = lazy(() => import("./pages/AGBPage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
+const NewsletterUnsubscribe = lazy(() => import("./pages/NewsletterUnsubscribe"));
+const SerbiaExecutivePage = lazy(() => import("./pages/SerbiaExecutivePage"));
+const CryptoBankingPage = lazy(() => import("./pages/CryptoBankingPage"));
+const CryptoCompliancePage = lazy(() => import("./pages/CryptoCompliancePage"));
+const InfrastrukturRadarPage = lazy(() => import("./pages/InfrastrukturRadarPage"));
+const LeistungenPage = lazy(() => import("./pages/LeistungenPage"));
+const EventsPage = lazy(() => import("./pages/EventsPage"));
 // Immobilien Region Pages
-import SkadarLakePage from "./pages/immobilien/SkadarLakePage";
-import ZabljakPage from "./pages/immobilien/ZabljakPage";
-import BudvaPage from "./pages/immobilien/BudvaPage";
-import NiksicPage from "./pages/immobilien/NiksicPage";
-import PodgoricaPage from "./pages/immobilien/PodgoricaPage";
+const SkadarLakePage = lazy(() => import("./pages/immobilien/SkadarLakePage"));
+const ZabljakPage = lazy(() => import("./pages/immobilien/ZabljakPage"));
+const BudvaPage = lazy(() => import("./pages/immobilien/BudvaPage"));
+const NiksicPage = lazy(() => import("./pages/immobilien/NiksicPage"));
+const PodgoricaPage = lazy(() => import("./pages/immobilien/PodgoricaPage"));
 // Investment Intelligence Pages
-import InvestmentDashboard from "./pages/investment/InvestmentDashboard";
-import ROICalculator from "./pages/investment/ROICalculator";
-import LocationComparison from "./pages/investment/LocationComparison";
-import LocationProfile from "./pages/investment/LocationProfile";
-import InvestmentSimulation from "./pages/investment/InvestmentSimulation";
-import LeistungenPage from "./pages/LeistungenPage";
-import EventsPage from "./pages/EventsPage";
+const InvestmentDashboard = lazy(() => import("./pages/investment/InvestmentDashboard"));
+const ROICalculator = lazy(() => import("./pages/investment/ROICalculator"));
+const LocationComparison = lazy(() => import("./pages/investment/LocationComparison"));
+const LocationProfile = lazy(() => import("./pages/investment/LocationProfile"));
+const InvestmentSimulation = lazy(() => import("./pages/investment/InvestmentSimulation"));
 
 function PageTracker() {
   usePageTracker();
@@ -49,7 +54,9 @@ function App() {
         <PageTracker />
         <ScrollToTop />
         <Header />
-        <main className="flex-1"><Routes>
+        <main className="flex-1">
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#C8A96A] border-t-transparent rounded-full animate-spin" /></div>}>
+        <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<ArticlePage />} />
@@ -81,6 +88,7 @@ function App() {
           <Route path="/investment/standort/:city" element={<LocationProfile />} />
           <Route path="/investment/simulation" element={<InvestmentSimulation />} />
         </Routes>
+        </Suspense>
         </main>
         <Footer />
         <WhatsAppButton />
