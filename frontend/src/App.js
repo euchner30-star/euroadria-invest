@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
 import ScrollToTop from "./components/ScrollToTop";
 import CookieConsent from "./components/CookieConsent";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 // Critical: Home loaded eagerly (first page users see)
 import Home from "./pages/Home.jsx";
@@ -40,6 +41,7 @@ const ROICalculator = lazy(() => import("./pages/investment/ROICalculator"));
 const LocationComparison = lazy(() => import("./pages/investment/LocationComparison"));
 const LocationProfile = lazy(() => import("./pages/investment/LocationProfile"));
 const InvestmentSimulation = lazy(() => import("./pages/investment/InvestmentSimulation"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 function PageTracker() {
   usePageTracker();
@@ -55,6 +57,7 @@ function App() {
         <ScrollToTop />
         <Header />
         <main className="flex-1">
+        <ErrorBoundary>
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#C8A96A] border-t-transparent rounded-full animate-spin" /></div>}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -87,8 +90,10 @@ function App() {
           <Route path="/investment/vergleich" element={<LocationComparison />} />
           <Route path="/investment/standort/:city" element={<LocationProfile />} />
           <Route path="/investment/simulation" element={<InvestmentSimulation />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
         </Suspense>
+        </ErrorBoundary>
         </main>
         <Footer />
         <WhatsAppButton />

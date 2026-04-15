@@ -52,9 +52,9 @@
         <!-- Canonical URL -->
         <link rel="canonical" href="https://euroadria.me/" />
         
-        <!-- Figtree Font - Exakt wie euroadria.me -->
-        <link rel="preload" href="https://onecdn.io/font-storage/figtree/figtree.css" as="style" />
-        <link rel="stylesheet" href="https://onecdn.io/font-storage/figtree/figtree.css" />
+        <!-- Figtree Font - font-display: swap for fast render -->
+        <link rel="preload" href="https://onecdn.io/font-storage/figtree/figtree.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+        <noscript><link rel="stylesheet" href="https://onecdn.io/font-storage/figtree/figtree.css" /></noscript>
         
         <!-- Structured Data - Organization -->
         <script type="application/ld+json">
