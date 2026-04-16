@@ -504,38 +504,39 @@ STATIC_PAGES = [
 
 @router.get("/sitemap.xml")
 async def generate_sitemap():
-    """Generate dynamic sitemap from database articles + static pages"""
+    """Generate dynamic sitemap from database articles + static pages with hreflang"""
     today = datetime.now().strftime("%Y-%m-%d")
+    
+    # Hreflang target regions
+    HREFLANG_REGIONS = ['de', 'de-DE', 'de-AT', 'de-CH', 'de-ME', 'de-RS', 'de-HR', 'de-BA']
 
     xml_parts = ['<?xml version="1.0" encoding="UTF-8"?>']
-    xml_parts.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+    xml_parts.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">')
+
+    def add_url(loc, lastmod, changefreq, priority, add_hreflang=True):
+        xml_parts.append('  <url>')
+        xml_parts.append(f'    <loc>{loc}</loc>')
+        xml_parts.append(f'    <lastmod>{lastmod}</lastmod>')
+        xml_parts.append(f'    <changefreq>{changefreq}</changefreq>')
+        xml_parts.append(f'    <priority>{priority}</priority>')
+        if add_hreflang:
+            xml_parts.append(f'    <xhtml:link rel="alternate" hreflang="x-default" href="{loc}" />')
+            for lang in HREFLANG_REGIONS:
+                xml_parts.append(f'    <xhtml:link rel="alternate" hreflang="{lang}" href="{loc}" />')
+            xml_parts.append(f'    <xhtml:link rel="alternate" hreflang="en" href="{loc}?lang=en" />')
+        xml_parts.append('  </url>')
 
     for page in STATIC_PAGES:
-        xml_parts.append('  <url>')
-        xml_parts.append(f'    <loc>{SITE_URL}{page["loc"]}</loc>')
-        xml_parts.append(f'    <lastmod>{today}</lastmod>')
-        xml_parts.append(f'    <changefreq>{page["changefreq"]}</changefreq>')
-        xml_parts.append(f'    <priority>{page["priority"]}</priority>')
-        xml_parts.append('  </url>')
+        add_url(f'{SITE_URL}{page["loc"]}', today, page["changefreq"], page["priority"])
 
     articles = await db.articles.find({}, {"_id": 0, "slug": 1, "date": 1}).to_list(1000)
     for article in articles:
-        xml_parts.append('  <url>')
-        xml_parts.append(f'    <loc>{SITE_URL}/blog/{article["slug"]}</loc>')
-        xml_parts.append(f'    <lastmod>{article.get("date", today)}</lastmod>')
-        xml_parts.append('    <changefreq>monthly</changefreq>')
-        xml_parts.append('    <priority>0.7</priority>')
-        xml_parts.append('  </url>')
+        add_url(f'{SITE_URL}/blog/{article["slug"]}', article.get("date", today), "monthly", "0.7")
 
     locations = await db.locations.find({}, {"_id": 0, "city": 1}).to_list(100)
     for loc in locations:
         city_slug = loc["city"].replace(" ", "%20")
-        xml_parts.append('  <url>')
-        xml_parts.append(f'    <loc>{SITE_URL}/investment/standort/{city_slug}</loc>')
-        xml_parts.append(f'    <lastmod>{today}</lastmod>')
-        xml_parts.append('    <changefreq>weekly</changefreq>')
-        xml_parts.append('    <priority>0.7</priority>')
-        xml_parts.append('  </url>')
+        add_url(f'{SITE_URL}/investment/standort/{city_slug}', today, "weekly", "0.7")
 
     xml_parts.append('</urlset>')
 
