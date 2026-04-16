@@ -135,6 +135,7 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - **14.04.2026**: Reddit/Quora Tracking Fix — UTM-Source-Normalisierung in allen 3 Backend-Aggregation-Pipelines ergänzt (pipeline_referrers, pipeline_utm, pipeline_utm_sources). Reddit + Quora werden jetzt korrekt als eigene Traffic-Quellen im Analytics-Dashboard angezeigt.
 - **15.04.2026**: Code Splitting — React.lazy() + Suspense für alle 28 Seiten implementiert. Initial Load von 1.5MB auf 368KB reduziert (~75% Verbesserung). 30 separate Chunks werden nur bei Bedarf geladen.
 - **15.04.2026**: Performance-Optimierung — 404-Seite, Error Boundary, Font-Optimierung (non-blocking load), OptimizedImage-Komponente (WebP + lazy loading), CSS von 117KB auf 104KB reduziert.
+- **16.04.2026**: ShareButtons Upgrade — LinkedIn, X und WhatsApp bekommen jetzt automatisch Teaser-Text (Excerpt) + Hashtags + UTM-Tracking-Link. Für jeden Artikel automatisch generiert aus den vorhandenen Daten.
 - **11.04.2026**: Gefällt-mir-Button (Like) für Kommentare + Antworten
 - **11.04.2026**: Lead-Erstellung aus Blog-Kommentaren (Quelle: blog_comment)
 - **11.04.2026**: Kommentar-Antworten (Threading) + Auto-Freigabe-System implementiert

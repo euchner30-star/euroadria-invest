@@ -13,7 +13,7 @@ const FacebookIcon = ({ className }) => (
   </svg>
 );
 
-const ShareButtons = ({ title, url, excerpt, slug }) => {
+const ShareButtons = ({ title, url, excerpt, slug, category }) => {
   const [copied, setCopied] = React.useState(false);
   const baseUrl = url || window.location.href;
   
@@ -34,12 +34,29 @@ const ShareButtons = ({ title, url, excerpt, slug }) => {
   // Short OG URL for clean sharing (ref param gets expanded to utm_source on redirect)
   const ogUrl = (ref) => slug ? `https://euroadria.me/api/og/blog/${slug}?ref=${ref}` : baseUrl;
 
+  // Auto-generate hashtags from category
+  const hashtags = React.useMemo(() => {
+    const tags = ['#EuroAdria'];
+    if (category) {
+      const tag = category.replace(/[^a-zA-ZäöüÄÖÜß0-9]/g, '');
+      if (tag) tags.unshift(`#${tag}`);
+    }
+    const topicTags = ['#Investment', '#Balkan'];
+    return [...topicTags, ...tags].slice(0, 4).join(' ');
+  }, [category]);
+
+  // Build teaser text for social media
+  const teaserText = React.useMemo(() => {
+    const short = excerpt ? (excerpt.length > 180 ? excerpt.slice(0, 180).trim() + '...' : excerpt) : '';
+    return short;
+  }, [excerpt]);
+
   const shareLinks = {
-    linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(ogUrl('li'))}&title=${encodeURIComponent(title || '')}`,
-    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(ogUrl('tw'))}&text=${encodeURIComponent(title || '')}`,
+    linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(ogUrl('li'))}&title=${encodeURIComponent(title || '')}&summary=${encodeURIComponent(teaserText)}`,
+    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(ogUrl('tw'))}&text=${encodeURIComponent(`${title || ''}\n\n${teaserText}\n\n${hashtags}`)}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(ogUrl('fb'))}`,
-    whatsapp: `https://wa.me/?text=${encodeURIComponent(slug ? `https://euroadria.me/api/og/blog/${slug}?ref=wa` : baseUrl)}`,
-    email: `mailto:?subject=${encodeURIComponent(title || '')}&body=${encodeURIComponent((excerpt || '') + '\n\n')}${encodeURIComponent(ogUrl('em'))}`
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(`*${title || ''}*\n\n${teaserText}\n\n${ogUrl('wa')}`)}`,
+    email: `mailto:?subject=${encodeURIComponent(title || '')}&body=${encodeURIComponent(`${title || ''}\n\n${teaserText}\n\n`)}${encodeURIComponent(ogUrl('em'))}`
   };
 
   const handleShare = (platform) => {
