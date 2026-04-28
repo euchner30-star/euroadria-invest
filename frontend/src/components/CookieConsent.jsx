@@ -34,6 +34,8 @@ const CookieConsent = () => {
     };
     localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consent));
     setShowBanner(false);
+    // Trigger GA4 load immediately
+    if (typeof window.loadGA4 === 'function') window.loadGA4();
   };
 
   const handleAcceptNecessary = () => {
@@ -56,6 +58,8 @@ const CookieConsent = () => {
     };
     localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consent));
     setShowBanner(false);
+    // Trigger GA4 load if analytics accepted
+    if (preferences.analytics && typeof window.loadGA4 === 'function') window.loadGA4();
   };
 
   if (!showBanner) return null;

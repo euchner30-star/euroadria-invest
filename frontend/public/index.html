@@ -14,13 +14,33 @@
         <meta name="robots" content="index, follow" />
         <meta name="google-site-verification" content="NNMsaa8FTSlxU9QnHrOEvaHvFFbVAlk2iD4pSDtpB6o" />
         
-        <!-- Google Analytics (GA4) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-KZK813E3BS"></script>
+        <!-- Google Analytics (GA4) - Only loads after cookie consent -->
         <script>
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-KZK813E3BS');
+            
+            // Check if user has consented to analytics
+            function loadGA4() {
+                var consent = localStorage.getItem('euroadria_cookie_consent');
+                if (consent) {
+                    try {
+                        var parsed = JSON.parse(consent);
+                        if (parsed.analytics === true) {
+                            var script = document.createElement('script');
+                            script.async = true;
+                            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-KZK813E3BS';
+                            document.head.appendChild(script);
+                            gtag('js', new Date());
+                            gtag('config', 'G-KZK813E3BS', { anonymize_ip: true });
+                        }
+                    } catch(e) {}
+                }
+            }
+            loadGA4();
+            // Re-check when consent changes
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'euroadria_cookie_consent') loadGA4();
+            });
         </script>
         <meta name="language" content="German" />
         <meta name="geo.region" content="DE" />
