@@ -1,33 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingUp, Building2, Sparkles } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const Hero = ({ backgroundImage, overlayOpacity = 50, title, subtitle, ctaText, backgroundImagePosition }) => {
   const heroImage = backgroundImage || '';
-  const [imageLoaded, setImageLoaded] = useState(false);
   const { t } = useLanguage();
 
-  useEffect(() => {
-    if (!heroImage) return;
-    const img = new Image();
-    img.onload = () => setImageLoaded(true);
-    img.src = heroImage;
-    if (img.complete) setImageLoaded(true);
-  }, [heroImage]);
+  // Optimize Unsplash URLs for faster LCP
+  const optimizedHeroImage = heroImage && heroImage.includes('unsplash.com') && !heroImage.includes('&fm=')
+    ? `${heroImage}${heroImage.includes('?') ? '&' : '?'}fm=webp&q=75&w=1920`
+    : heroImage;
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-ea-dark" data-testid="hero-section">
-      {/* Background Image - fades in when loaded */}
-      <div
-        className="absolute inset-0 bg-cover bg-no-repeat transition-opacity duration-700"
-        style={{
-          backgroundImage: heroImage ? `url(${heroImage})` : 'none',
-          backgroundPosition: `center ${backgroundImagePosition ?? 50}%`,
-          opacity: imageLoaded ? 1 : 0,
-        }}
-        data-testid="hero-background"
-      />
+      {/* Background Image - eager load for LCP */}
+      {optimizedHeroImage && (
+        <img
+          src={optimizedHeroImage}
+          alt=""
+          fetchpriority="high"
+          decoding="sync"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: `center ${backgroundImagePosition ?? 50}%` }}
+          data-testid="hero-background"
+        />
+      )}
       
       {/* Dark overlay */}
       <div 
@@ -42,6 +40,7 @@ const Hero = ({ backgroundImage, overlayOpacity = 50, title, subtitle, ctaText, 
             src="/euroadria-logo-white.png" 
             alt="EuroAdria Corporate Solutions - Shaping the Adriatic's Future" 
             className="h-64 md:h-96 w-auto cursor-pointer transition-transform duration-500 ease-in-out hover:scale-110"
+            fetchpriority="high"
           />
         </div>
 

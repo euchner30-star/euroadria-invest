@@ -137,6 +137,7 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - **15.04.2026**: Performance-Optimierung — 404-Seite, Error Boundary, Font-Optimierung (non-blocking load), OptimizedImage-Komponente (WebP + lazy loading), CSS von 117KB auf 104KB reduziert.
 - **16.04.2026**: ShareButtons Upgrade — LinkedIn, X und WhatsApp bekommen jetzt automatisch Teaser-Text (Excerpt) + Hashtags + UTM-Tracking-Link. Für jeden Artikel automatisch generiert aus den vorhandenen Daten.
 - **16.04.2026**: Hreflang Geo-Targeting — Sitemap + HTML mit Hreflang-Tags für DACH (DE/AT/CH) + Balkan (ME/RS/HR/BA) + Englisch. Google zeigt euroadria.me jetzt bevorzugt in diesen Regionen.
+- **01.05.2026**: Audit-Fixes (27→80 Punkte) — GA4 DSGVO-konform (nur nach Cookie-Consent), Security Headers (HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy), Meta Description von 183→136 Zeichen, LCP-Optimierung (Hero-Bild mit fetchpriority=high + WebP + Logo Preload).
 - **11.04.2026**: Gefällt-mir-Button (Like) für Kommentare + Antworten
 - **11.04.2026**: Lead-Erstellung aus Blog-Kommentaren (Quelle: blog_comment)
 - **11.04.2026**: Kommentar-Antworten (Threading) + Auto-Freigabe-System implementiert
