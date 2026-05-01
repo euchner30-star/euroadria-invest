@@ -194,10 +194,10 @@ async def capture_lead(lead: LeadForm):
 
             if is_praxisleitfaden or is_whitepaper:
                 doc_title = "Strategischer Plan 2026: Markteintritt &amp; Investitionssicherheit Westbalkan" if is_whitepaper else "Strategischer Plan 2026: Markteintritt &amp; Investitionssicherheit Westbalkan"
-                doc_desc = "Dieses vertrauliche Whitepaper enthaelt 16 Seiten geballtes Expertenwissen zu Steuerstruktur, Gesellschaftsrecht, Banking, forensischer Immobilienstrategie und operativer Markteintrittsplanung fuer den Westbalkan." if is_whitepaper else "Dieses vertrauliche Dokument enthaelt geballtes Expertenwissen zu Due Diligence, Steuerstruktur, Banking und rechtlichen Rahmenbedingungen fuer Ihren Markteintritt auf dem Westbalkan."
+                doc_desc = "Dieses vertrauliche Whitepaper enthält 16 Seiten geballtes Expertenwissen zu Steuerstruktur, Gesellschaftsrecht, Banking, forensischer Immobilienstrategie und operativer Markteintrittsplanung für den Westbalkan." if is_whitepaper else "Dieses vertrauliche Dokument enthält geballtes Expertenwissen zu Due Diligence, Steuerstruktur, Banking und rechtlichen Rahmenbedingungen für Ihren Markteintritt auf dem Westbalkan."
                 content = f"""
             <h2 style="color: #04151F; margin: 0 0 8px 0;">Vielen Dank, {lead_name}!</h2>
-            <p style="color: #555; font-size: 14px; margin: 0 0 24px 0;">Ihr {'Whitepaper' if is_whitepaper else 'Praxisleitfaden'} ist als PDF im Anhang dieser E-Mail beigefuegt.</p>
+            <p style="color: #555; font-size: 14px; margin: 0 0 24px 0;">Ihr {'Whitepaper' if is_whitepaper else 'Praxisleitfaden'} ist als PDF im Anhang dieser E-Mail beigefügt.</p>
             <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 3px solid #C8A96A; margin-bottom: 24px;">
                 <p style="color: #C8A96A; font-size: 12px; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 1px;">Ihr Dokument</p>
                 <p style="color: #04151F; font-size: 16px; margin: 0; font-weight: bold;">{doc_title}</p>
@@ -206,7 +206,7 @@ async def capture_lead(lead: LeadForm):
                 {doc_desc}
             </p>
             <p style="color: #333; font-size: 14px; line-height: 22px; margin: 0 0 24px 0;">
-                Moechten Sie die Strategie mit einem unserer Experten besprechen? Wir beraten Sie gerne persoenlich und unverbindlich.
+                Möchten Sie die Strategie mit einem unserer Experten besprechen? Wir beraten Sie gerne persönlich und unverbindlich.
             </p>
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
                 <tr><td align="center" style="padding: 8px 0 24px 0;">
@@ -214,22 +214,22 @@ async def capture_lead(lead: LeadForm):
                 </td></tr>
             </table>
             <p style="color: #999; font-size: 11px; margin: 0;">
-                <strong style="color: #C8A96A;">Hinweis:</strong> Dieses Dokument ist vertraulich und nur fuer den persoenlichen Gebrauch bestimmt.
+                <strong style="color: #C8A96A;">Hinweis:</strong> Dieses Dokument ist vertraulich und nur für den persönlichen Gebrauch bestimmt.
             </p>
             """
             else:
                 content = f"""
             <h2 style="color: #04151F; margin: 0 0 8px 0;">Vielen Dank, {lead_name}!</h2>
-            <p style="color: #555; font-size: 14px; margin: 0 0 24px 0;">Ihr persoenliches Investment Expose wurde erstellt.</p>
+            <p style="color: #555; font-size: 14px; margin: 0 0 24px 0;">Ihr persönliches Investment Exposé wurde erstellt.</p>
             <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 3px solid #C8A96A; margin-bottom: 24px;">
                 <p style="color: #C8A96A; font-size: 12px; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 1px;">Ihr Download</p>
                 <p style="color: #04151F; font-size: 16px; margin: 0; font-weight: bold;">{expose_name}</p>
             </div>
             <p style="color: #333; font-size: 14px; line-height: 22px; margin: 0 0 20px 0;">
-                Sie haben soeben Ihr personalisiertes Investment Expose heruntergeladen. Dieses Dokument enthaelt eine detaillierte 10-Jahres-Prognose basierend auf Ihren individuellen Eingaben.
+                Sie haben soeben Ihr personalisiertes Investment Exposé heruntergeladen. Dieses Dokument enthält eine detaillierte 10-Jahres-Prognose basierend auf Ihren individuellen Eingaben.
             </p>
             <p style="color: #333; font-size: 14px; line-height: 22px; margin: 0 0 24px 0;">
-                Moechten Sie die Analyse mit einem unserer Experten besprechen? Wir beraten Sie gerne persoenlich und unverbindlich.
+                Möchten Sie die Analyse mit einem unserer Experten besprechen? Wir beraten Sie gerne persönlich und unverbindlich.
             </p>
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
                 <tr><td align="center" style="padding: 8px 0 24px 0;">

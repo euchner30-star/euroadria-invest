@@ -5,11 +5,11 @@ import { FileText, Shield, Building2, TrendingUp, Scale, Landmark, MapPin, Users
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const chapters = [
-  { icon: Scale, title: 'Gesellschaftsrecht 2026', desc: 'Digitale D.O.O.-Gruendung, EU-konforme Strukturen und das Economic-Substance-Prinzip' },
-  { icon: TrendingUp, title: 'Steuervorteile', desc: '9% Koerperschaftsteuer Montenegro, IP-Box 2.0 Serbien und der Dual-Hub-Ansatz' },
+  { icon: Scale, title: 'Gesellschaftsrecht 2026', desc: 'Digitale D.O.O.-Gründung, EU-konforme Strukturen und das Economic-Substance-Prinzip' },
+  { icon: TrendingUp, title: 'Steuervorteile', desc: '9% Körperschaftsteuer Montenegro, IP-Box 2.0 Serbien und der Dual-Hub-Ansatz' },
   { icon: Landmark, title: 'Banking & SEPA', desc: 'Sofortzahlungen, Compliance-Anforderungen und Kontoeroeffnung nach neuen Standards' },
   { icon: Building2, title: 'Immobilienstrategie', desc: 'Forensische Due Diligence, digitaler Kataster und die Legalisierungsfrist August 2026' },
-  { icon: Users, title: 'Experten-Interview', desc: 'Strategischer Deep Dive mit fuehrenden Rechts- und Steuerberatern der Region' },
+  { icon: Users, title: 'Experten-Interview', desc: 'Strategischer Deep Dive mit führenden Rechts- und Steuerberatern der Region' },
   { icon: MapPin, title: 'Standortanalysen', desc: 'Ulcinj als neue Riviera, Kolasin und das Potenzial des Bergtourismus' },
 ];
 
@@ -71,8 +71,8 @@ export default function WhitepaperPage() {
               </h1>
 
               <p className="text-white/70 text-base lg:text-lg leading-relaxed mb-8">
-                16 Seiten exklusives Expertenwissen fuer institutionelle Investoren und DACH-Mittelstaendler. 
-                Von Steuerstruktur ueber forensische Immobilienstrategie bis zur operativen Markteintrittsplanung.
+                16 Seiten exklusives Expertenwissen für institutionelle Investoren und DACH-Mittelständler. 
+                Von Steuerstruktur über forensische Immobilienstrategie bis zur operativen Markteintrittsplanung.
               </p>
 
               <div className="flex flex-wrap gap-3 mb-8">
@@ -109,7 +109,7 @@ export default function WhitepaperPage() {
                   </div>
                   <h3 className="text-xl font-bold text-white mb-3">Whitepaper wird zugestellt</h3>
                   <p className="text-white/60 text-sm mb-6">
-                    Pruefen Sie Ihr E-Mail-Postfach. Das PDF ist als Anhang beigefuegt.
+                    Prüfen Sie Ihr E-Mail-Postfach. Das PDF ist als Anhang beigefügt.
                   </p>
                   <Link 
                     to="/blog" 
@@ -193,7 +193,7 @@ export default function WhitepaperPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Was Sie erwartet</h2>
-            <p className="text-white/50 text-sm max-w-2xl mx-auto">8 Fachkapitel mit konkreten Handlungsempfehlungen fuer Ihren Markteintritt auf dem Westbalkan</p>
+            <p className="text-white/50 text-sm max-w-2xl mx-auto">8 Fachkapitel mit konkreten Handlungsempfehlungen für Ihren Markteintritt auf dem Westbalkan</p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -215,7 +215,7 @@ export default function WhitepaperPage() {
         <div className="max-w-3xl mx-auto px-6 text-center">
           <p className="text-ea-gold text-xs font-semibold tracking-wider uppercase mb-4">EuroAdria Corporate Solutions</p>
           <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
-            Bereit fuer den naechsten Schritt?
+            Bereit für den nächsten Schritt?
           </h2>
           <p className="text-white/50 text-sm mb-8 max-w-xl mx-auto">
             Besprechen Sie die Inhalte des Whitepapers mit unseren Experten. 
@@ -226,7 +226,7 @@ export default function WhitepaperPage() {
             className="inline-flex items-center gap-2 px-8 py-3.5 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/90 transition-all text-sm"
             data-testid="whitepaper-cta-contact"
           >
-            Beratungsgespraech vereinbaren
+            Beratungsgespräch vereinbaren
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
