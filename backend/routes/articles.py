@@ -499,6 +499,7 @@ STATIC_PAGES = [
     {"loc": "/impressum", "priority": "0.3", "changefreq": "yearly"},
     {"loc": "/datenschutz", "priority": "0.3", "changefreq": "yearly"},
     {"loc": "/agb", "priority": "0.3", "changefreq": "yearly"},
+    {"loc": "/whitepaper", "priority": "0.9", "changefreq": "monthly"},
 ]
 
 

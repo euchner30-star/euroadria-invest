@@ -190,17 +190,20 @@ async def capture_lead(lead: LeadForm):
             lead_name = lead_dict.get('name', 'Investor')
             expose_name = lead_dict.get('expose_name', 'Investment Exposé')
             is_praxisleitfaden = lead_dict.get('source', '') == 'praxisleitfaden'
+            is_whitepaper = lead_dict.get('source', '') == 'whitepaper'
 
-            if is_praxisleitfaden:
+            if is_praxisleitfaden or is_whitepaper:
+                doc_title = "Strategischer Plan 2026: Markteintritt &amp; Investitionssicherheit Westbalkan" if is_whitepaper else "Strategischer Plan 2026: Markteintritt &amp; Investitionssicherheit Westbalkan"
+                doc_desc = "Dieses vertrauliche Whitepaper enthaelt 16 Seiten geballtes Expertenwissen zu Steuerstruktur, Gesellschaftsrecht, Banking, forensischer Immobilienstrategie und operativer Markteintrittsplanung fuer den Westbalkan." if is_whitepaper else "Dieses vertrauliche Dokument enthaelt geballtes Expertenwissen zu Due Diligence, Steuerstruktur, Banking und rechtlichen Rahmenbedingungen fuer Ihren Markteintritt auf dem Westbalkan."
                 content = f"""
             <h2 style="color: #04151F; margin: 0 0 8px 0;">Vielen Dank, {lead_name}!</h2>
-            <p style="color: #555; font-size: 14px; margin: 0 0 24px 0;">Ihr Praxisleitfaden ist als PDF im Anhang dieser E-Mail beigefuegt.</p>
+            <p style="color: #555; font-size: 14px; margin: 0 0 24px 0;">Ihr {'Whitepaper' if is_whitepaper else 'Praxisleitfaden'} ist als PDF im Anhang dieser E-Mail beigefuegt.</p>
             <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 3px solid #C8A96A; margin-bottom: 24px;">
                 <p style="color: #C8A96A; font-size: 12px; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 1px;">Ihr Dokument</p>
-                <p style="color: #04151F; font-size: 16px; margin: 0; font-weight: bold;">Strategischer Plan 2026: Markteintritt &amp; Investitionssicherheit Westbalkan</p>
+                <p style="color: #04151F; font-size: 16px; margin: 0; font-weight: bold;">{doc_title}</p>
             </div>
             <p style="color: #333; font-size: 14px; line-height: 22px; margin: 0 0 20px 0;">
-                Dieses vertrauliche Dokument enthaelt geballtes Expertenwissen zu Due Diligence, Steuerstruktur, Banking und rechtlichen Rahmenbedingungen fuer Ihren Markteintritt auf dem Westbalkan.
+                {doc_desc}
             </p>
             <p style="color: #333; font-size: 14px; line-height: 22px; margin: 0 0 24px 0;">
                 Moechten Sie die Strategie mit einem unserer Experten besprechen? Wir beraten Sie gerne persoenlich und unverbindlich.
@@ -242,24 +245,25 @@ async def capture_lead(lead: LeadForm):
             email_payload = {
                 "from": "EuroAdria Corporate Solutions <noreply@euroadria.me>",
                 "to": [lead_dict['email']],
-                "subject": f"Ihr Praxisleitfaden — EuroAdria" if is_praxisleitfaden else f"Ihr Investment Exposé — {expose_name}",
+                "subject": f"Ihr Whitepaper — EuroAdria" if is_whitepaper else (f"Ihr Praxisleitfaden — EuroAdria" if is_praxisleitfaden else f"Ihr Investment Exposé — {expose_name}"),
                 "html": wrap_email(content),
                 "reply_to": NOTIFICATION_EMAIL
             }
 
-            # Attach PDF for Praxisleitfaden downloads (from MongoDB)
-            if is_praxisleitfaden:
+            # Attach PDF for Praxisleitfaden or Whitepaper downloads (from MongoDB)
+            if is_praxisleitfaden or is_whitepaper:
                 try:
-                    pdf_doc = await db.site_settings.find_one({"key": "pdf_praxisleitfaden"}, {"_id": 0})
+                    pdf_key = "pdf_whitepaper" if is_whitepaper else "pdf_praxisleitfaden"
+                    pdf_doc = await db.site_settings.find_one({"key": pdf_key}, {"_id": 0})
                     if pdf_doc and pdf_doc.get("base64"):
                         email_payload["attachments"] = [{
-                            "filename": pdf_doc.get("filename", "EuroAdria-Praxisleitfaden.pdf"),
+                            "filename": pdf_doc.get("filename", "EuroAdria-Whitepaper.pdf" if is_whitepaper else "EuroAdria-Praxisleitfaden.pdf"),
                             "content": pdf_doc["base64"],
                             "content_type": "application/pdf"
                         }]
                         logger.info(f"PDF attachment added from MongoDB ({pdf_doc.get('size', 0)} bytes)")
                     else:
-                        logger.warning("No PDF found in MongoDB for praxisleitfaden")
+                        logger.warning(f"No PDF found in MongoDB for {pdf_key}")
                 except Exception as pdf_err:
                     logger.error(f"Failed to attach PDF: {pdf_err}")
 

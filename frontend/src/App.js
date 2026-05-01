@@ -42,6 +42,7 @@ const LocationComparison = lazy(() => import("./pages/investment/LocationCompari
 const LocationProfile = lazy(() => import("./pages/investment/LocationProfile"));
 const InvestmentSimulation = lazy(() => import("./pages/investment/InvestmentSimulation"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const WhitepaperPage = lazy(() => import("./pages/WhitepaperPage"));
 
 function PageTracker() {
   usePageTracker();
@@ -78,6 +79,7 @@ function App() {
           <Route path="/serbia-executive/crypto-banking" element={<CryptoBankingPage />} />
           <Route path="/serbia-executive/crypto-compliance" element={<CryptoCompliancePage />} />
           <Route path="/infrastruktur-radar" element={<InfrastrukturRadarPage />} />
+          <Route path="/whitepaper" element={<WhitepaperPage />} />
           {/* Immobilien Region Routes */}
           <Route path="/immobilien/skadar-lake" element={<SkadarLakePage />} />
           <Route path="/immobilien/zabljak" element={<ZabljakPage />} />
