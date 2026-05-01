@@ -65,6 +65,11 @@ const Footer = () => {
                   Events
                 </Link>
               </li>
+              <li>
+                <Link to="/whitepaper" className="text-ea-light/70 hover:text-ea-gold transition-colors text-sm">
+                  Whitepaper 2026
+                </Link>
+              </li>
             </ul>
           </div>
 

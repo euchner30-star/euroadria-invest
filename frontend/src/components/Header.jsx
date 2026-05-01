@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Shield, Map, Building2, ChevronDown, TrendingUp, Briefcase, Calendar } from 'lucide-react';
+import { Menu, X, Shield, Map, Building2, ChevronDown, TrendingUp, Briefcase, Calendar, FileText } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const Header = () => {
@@ -263,6 +263,18 @@ const Header = () => {
                       <div className="text-xs text-ea-dark/50">Termine & Workshops</div>
                     </div>
                   </Link>
+                  <Link
+                    to="/whitepaper"
+                    onClick={() => setIsLeistungenOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-ea-light transition-colors border-t border-gray-100"
+                    data-testid="nav-whitepaper-link"
+                  >
+                    <FileText className="w-4 h-4 text-ea-gold" />
+                    <div>
+                      <div className="text-sm font-semibold text-ea-dark">Whitepaper 2026</div>
+                      <div className="text-xs text-ea-dark/50">Kostenloser Download</div>
+                    </div>
+                  </Link>
                 </div>
               )}
             </div>
@@ -423,6 +435,10 @@ const Header = () => {
                     <Link to="/events" className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-ea-dark hover:bg-ea-gold/10 transition-colors">
                       <Calendar className="w-4 h-4 text-ea-gold" />
                       <span className="font-medium text-sm">Events & Webinare</span>
+                    </Link>
+                    <Link to="/whitepaper" className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-ea-dark hover:bg-ea-gold/10 transition-colors">
+                      <FileText className="w-4 h-4 text-ea-gold" />
+                      <span className="font-medium text-sm">Whitepaper 2026</span>
                     </Link>
                   </div>
                 )}
