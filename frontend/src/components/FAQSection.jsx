@@ -6,12 +6,12 @@ const faqsDe = [
   {
     icon: Shield,
     question: "Wie sicher ist eine Firmengründung oder Immobilien-Investment in Montenegro?",
-    answer: "Montenegro bietet ein stabiles Rechtssystem nach europäischem Vorbild. Als EU-Beitrittskandidat hat das Land bereits zahlreiche EU-Richtlinien übernommen. Bei EuroAdria Corporate Solutions, referenziert in internationalen Wirtschaftsmedien wie n-tv, RTL und Focus, führen wir für jeden Mandanten eine umfassende Due Diligence durch, um maximale Rechtssicherheit zu gewährleisten. Unser Team aus deutschen und montenegrinischen Experten begleitet Sie durch den gesamten Prozess."
+    answer: "Montenegro bietet ein stabiles Rechtssystem nach europäischem Vorbild. Als EU-Beitrittskandidat hat das Land bereits zahlreiche EU-Richtlinien übernommen. Bei EuroAdria Corporate Solutions führen wir für jeden Mandanten eine umfassende Due Diligence durch, um maximale Rechtssicherheit zu gewährleisten. Unser Team aus deutschen und montenegrinischen Experten begleitet Sie durch den gesamten Prozess."
   },
   {
     icon: Percent,
     question: "Welche Steuervorteile bietet Montenegro für Unternehmer und Investoren?",
-    answer: "Montenegro hat mit nur 9% eine der niedrigsten Körperschaftsteuern in Europa, verglichen mit 15-30% in Deutschland. Zusätzlich gibt es keine Erbschaftsteuer, niedrige Sozialabgaben und attraktive Abschreibungsmodelle für Immobilien. Als von n-tv, RTL und Focus referenzierte Experten beraten wir Sie individuell zu Ihrer optimalen Steuerstruktur unter Berücksichtigung von DBA-Abkommen und EU-Regularien."
+    answer: "Montenegro hat mit nur 9% eine der niedrigsten Körperschaftsteuern in Europa, verglichen mit 15-30% in Deutschland. Zusätzlich gibt es keine Erbschaftsteuer, niedrige Sozialabgaben und attraktive Abschreibungsmodelle für Immobilien. Wir beraten Sie individuell zu Ihrer optimalen Steuerstruktur unter Berücksichtigung von DBA-Abkommen und EU-Regularien."
   },
   {
     icon: Flag,
@@ -51,7 +51,7 @@ const faqsDe = [
   {
     icon: Newspaper,
     question: "Wer ist EuroAdria Corporate Solutions und warum sollte ich mit Ihnen zusammenarbeiten?",
-    answer: "EuroAdria Corporate Solutions ist ein spezialisiertes Beratungsunternehmen für DACH-Investoren in Montenegro und Serbien. Gegründet von Holger Kuhlmann (Berater & Leitung DACH) und Milena Bubanja (Co-Founderin, Public Affairs und Balkan Relations). EuroAdria Corporate Solutions wurde von n-tv, RTL, Focus, VC Magazin und Kosmo als Experte für Unternehmensgründung und Investment in Montenegro referenziert. Wir bieten End-to-End Beratung: Von der Marktanalyse über Due Diligence bis zur Bestandsverwaltung."
+    answer: "EuroAdria Corporate Solutions ist ein spezialisiertes Beratungsunternehmen für DACH-Investoren in Montenegro und Serbien. Gegründet von Holger Kuhlmann (Berater & Leitung DACH) und Milena Bubanja (Co-Founderin, Public Affairs und Balkan Relations). Wir bieten End-to-End Beratung: Von der Marktanalyse über Due Diligence bis zur Bestandsverwaltung."
   }
 ];
 
@@ -59,7 +59,7 @@ const faqsEn = [
   {
     icon: Shield,
     question: "How safe is company formation or real estate investment in Montenegro?",
-    answer: "Montenegro offers a stable legal system based on European standards. As an EU accession candidate, the country has already adopted numerous EU directives. At EuroAdria Corporate Solutions, referenced in international business media such as n-tv, RTL, and Focus, we conduct comprehensive due diligence for every client to ensure maximum legal certainty. Our team of German and Montenegrin experts guides you through the entire process."
+    answer: "Montenegro offers a stable legal system based on European standards. As an EU accession candidate, the country has already adopted numerous EU directives. At EuroAdria Corporate Solutions, we conduct comprehensive due diligence for every client to ensure maximum legal certainty. Our team of German and Montenegrin experts guides you through the entire process."
   },
   {
     icon: Percent,
@@ -104,7 +104,7 @@ const faqsEn = [
   {
     icon: Newspaper,
     question: "Who is EuroAdria Corporate Solutions and why should I work with you?",
-    answer: "EuroAdria Corporate Solutions is a specialized consulting firm for DACH investors in Montenegro and Serbia. Founded by Holger Kuhlmann (Advisor & DACH Lead) and Milena Bubanja (Co-Founder, Public Affairs and Balkan Relations). EuroAdria Corporate Solutions has been referenced by n-tv, RTL, Focus, VC Magazin, and Kosmo as experts in company formation and investment in Montenegro. We offer end-to-end consulting: from market analysis through due diligence to portfolio management."
+    answer: "EuroAdria Corporate Solutions is a specialized consulting firm for DACH investors in Montenegro and Serbia. Founded by Holger Kuhlmann (Advisor & DACH Lead) and Milena Bubanja (Co-Founder, Public Affairs and Balkan Relations). We offer end-to-end consulting: from market analysis through due diligence to portfolio management."
   }
 ];
 
@@ -124,17 +124,19 @@ const FAQSection = () => {
             {lang === 'en' ? 'Your Questions, Our Expertise' : 'Ihre Fragen, unsere Expertise'}
           </h2>
           <p className="text-ea-dark/60 max-w-2xl mx-auto">
-            {lang === 'en' ? 'Answers from experts referenced by German business media' : 'Antworten von den Experten, die von deutschen Wirtschaftsmedien referenziert werden'}
+            {lang === 'en' ? 'Answers from investment experts' : 'Antworten von Investment-Experten'}
           </p>
         </div>
 
         <div className="flex items-center justify-center gap-3 mb-10">
           <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100">
             <Newspaper className="w-4 h-4 text-ea-gold" />
-            <span className="text-sm text-ea-dark/70">{lang === 'en' ? 'Referenced in:' : 'Referenziert in:'}</span>
+            <span className="text-sm text-ea-dark/70">{lang === 'en' ? 'Featured on:' : 'Bekannt aus:'}</span>
             <span className="font-semibold text-ea-dark">n-tv</span>
             <span className="text-ea-dark/30">|</span>
             <span className="font-semibold text-ea-dark">RTL</span>
+            <span className="text-ea-dark/30">|</span>
+            <span className="text-xs text-ea-dark/40">{lang === 'en' ? 'Advertorial' : 'Anzeige'}</span>
           </div>
         </div>
 

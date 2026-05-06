@@ -6,11 +6,11 @@ const MediaBadge = ({ variant = 'default' }) => {
   const { lang } = useLanguage();
 
   const mediaLinks = [
-    { name: 'n-tv', url: 'https://unternehmen.n-tv.de/unternehmensgruendung-montenegro.html', topicDe: 'Unternehmensgruendung', topicEn: 'Company Formation' },
-    { name: 'RTL', url: 'https://unternehmen.rtl.de/auswandern-montenegro.html', topicDe: 'Auswandern', topicEn: 'Emigration' },
-    { name: 'Focus', url: 'https://unternehmen.focus.de/immobilien-montenegro.html', topicDe: 'Immobilien', topicEn: 'Real Estate' },
-    { name: 'VC Magazin', url: 'https://www.vc-magazin.de/blog/2026/02/13/kapitalflucht-warum-montenegro-zum-neuen-safe-haven-wird/', topicDe: 'Kapitalflucht', topicEn: 'Capital Flight' },
-    { name: 'Kosmo', url: 'https://www.kosmo.at/jetzt-expansion-in-die-adria-region-starten-mit-euroadria-sicher-in-balkan-markten-wachsen/', topicDe: 'Expansion Adria', topicEn: 'Adriatic Expansion' }
+    { name: 'n-tv', url: 'https://unternehmen.n-tv.de/unternehmensgruendung-montenegro.html', topicDe: 'Advertorial', topicEn: 'Advertorial' },
+    { name: 'RTL', url: 'https://unternehmen.rtl.de/auswandern-montenegro.html', topicDe: 'Advertorial', topicEn: 'Advertorial' },
+    { name: 'Focus', url: 'https://unternehmen.focus.de/immobilien-montenegro.html', topicDe: 'Advertorial', topicEn: 'Advertorial' },
+    { name: 'VC Magazin', url: 'https://www.vc-magazin.de/blog/2026/02/13/kapitalflucht-warum-montenegro-zum-neuen-safe-haven-wird/', topicDe: 'Advertorial', topicEn: 'Advertorial' },
+    { name: 'Kosmo', url: 'https://www.kosmo.at/jetzt-expansion-in-die-adria-region-starten-mit-euroadria-sicher-in-balkan-markten-wachsen/', topicDe: 'Advertorial', topicEn: 'Advertorial' }
   ];
 
   if (variant === 'compact') {
@@ -18,7 +18,7 @@ const MediaBadge = ({ variant = 'default' }) => {
       <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-ea-gold/10 border border-ea-gold/20 rounded-full">
         <Newspaper className="w-3.5 h-3.5 text-ea-gold" />
         <span className="text-xs font-medium text-ea-dark">
-          {lang === 'en' ? 'Referenced in n-tv, RTL, Focus, VC Magazin & Kosmo' : 'Referenziert in n-tv, RTL, Focus, VC Magazin & Kosmo'}
+          {lang === 'en' ? 'Featured on n-tv, RTL, Focus, VC Magazin & Kosmo (Advertorial)' : 'Bekannt aus n-tv, RTL, Focus, VC Magazin & Kosmo (Anzeige)'}
         </span>
       </div>
     );
@@ -27,7 +27,7 @@ const MediaBadge = ({ variant = 'default' }) => {
   if (variant === 'hero') {
     return (
       <div className="flex flex-col sm:flex-row items-center gap-3 mt-6">
-        <span className="text-sm text-white/60">{lang === 'en' ? 'Featured in:' : 'Bekannt aus:'}</span>
+        <span className="text-sm text-white/60">{lang === 'en' ? 'Featured on (Advertorial):' : 'Bekannt aus (Anzeige):'}</span>
         <div className="flex items-center gap-4">
           {mediaLinks.map((media) => (
             <a key={media.name} href={media.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-all group">
@@ -47,8 +47,8 @@ const MediaBadge = ({ variant = 'default' }) => {
           <Newspaper className="w-5 h-5 text-ea-gold" />
         </div>
         <div>
-          <p className="text-white font-semibold">{lang === 'en' ? 'Referenced Experts' : 'Referenzierte Experten'}</p>
-          <p className="text-white/60 text-sm">{lang === 'en' ? 'in international business media' : 'in internationalen Wirtschaftsmedien'}</p>
+          <p className="text-white font-semibold">{lang === 'en' ? 'Featured on' : 'Bekannt aus'}</p>
+          <p className="text-white/60 text-sm">{lang === 'en' ? 'Advertorials in business media' : 'Advertorials in Wirtschaftsmedien'}</p>
         </div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

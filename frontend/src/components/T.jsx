@@ -61,14 +61,14 @@ const translations = {
   'Standorte': 'Locations',
 
   // Trust/Media
-  'Referenziert in n-tv, RTL, Focus, VC Magazin & Kosmo': 'Referenced in n-tv, RTL, Focus, VC Magazin & Kosmo',
+  'Referenziert in n-tv, RTL, Focus, VC Magazin & Kosmo': 'Featured on n-tv, RTL, Focus, VC Magazin & Kosmo (Advertorial)',
   'Ihr direkter Draht ins Office': 'Your direct line to the office',
   'Referenziert in:': 'Referenced in:',
 
   // FAQ
   'Häufige Fragen': 'Frequently Asked Questions',
   'Ihre Fragen, unsere Expertise': 'Your Questions, Our Expertise',
-  'Antworten von den Experten, die von deutschen Wirtschaftsmedien referenziert werden': 'Answers from experts referenced by German business media',
+  'Antworten von den Experten, die von deutschen Wirtschaftsmedien referenziert werden': 'Answers from investment experts',
   'Weitere Fragen? Unsere Experten beraten Sie gerne.': 'More questions? Our experts will be happy to advise you.',
   'Kostenlose Erstberatung anfragen': 'Request Free Consultation',
 };

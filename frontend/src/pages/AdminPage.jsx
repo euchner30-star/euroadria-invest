@@ -455,7 +455,7 @@ const AdminPage = () => {
     cta_title: 'Bereit für Ihre Investition?',
     cta_subtitle: 'Vereinbaren Sie ein unverbindliches Erstgespräch mit unseren Experten und entdecken Sie die Möglichkeiten am Balkan.',
     trust_items: [
-      { title: 'Vertrauenswürdig', desc: 'Referenziert in n-tv, RTL, Focus & mehr' },
+      { title: 'Vertrauenswürdig', desc: 'Bekannt aus n-tv, RTL, Focus (Anzeige)' },
       { title: 'Rendite-Fokus', desc: 'Zweistellige Zielrenditen' },
       { title: 'Expertise', desc: '15+ Jahre Erfahrung' },
       { title: 'Sicherheit', desc: 'Asset Protection' }

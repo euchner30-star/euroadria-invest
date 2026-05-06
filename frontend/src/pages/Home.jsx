@@ -219,12 +219,12 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {(lang === 'en' ? [
-              { title: 'Trustworthy', desc: 'Referenced in n-tv, RTL, Focus & more' },
+              { title: 'Trustworthy', desc: 'Featured on n-tv, RTL, Focus (Advertorial)' },
               { title: 'Return Focus', desc: 'Double-digit target returns' },
               { title: 'Expertise', desc: '15+ years experience' },
               { title: 'Security', desc: 'Asset Protection' }
             ] : (homeContent.trust_items || [
-              { title: 'Vertrauenswürdig', desc: 'Referenziert in n-tv, RTL, Focus & mehr' },
+              { title: 'Vertrauenswürdig', desc: 'Bekannt aus n-tv, RTL, Focus (Anzeige)' },
               { title: 'Rendite-Fokus', desc: 'Zweistellige Zielrenditen' },
               { title: 'Expertise', desc: '15+ Jahre Erfahrung' },
               { title: 'Sicherheit', desc: 'Asset Protection' }
