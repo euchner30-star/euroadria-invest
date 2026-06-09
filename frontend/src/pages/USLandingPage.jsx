@@ -44,12 +44,12 @@ const pillars = [
 function FAQItem({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-white/10">
+    <div className="border-b border-gray-200">
       <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between py-5 text-left group" data-testid={`faq-${q.slice(0,20).replace(/\s/g,'-')}`}>
-        <span className="text-white font-medium text-sm pr-4">{q}</span>
-        {open ? <ChevronUp className="w-5 h-5 text-[#C8A96A] shrink-0" /> : <ChevronDown className="w-5 h-5 text-white/40 group-hover:text-[#C8A96A] shrink-0" />}
+        <span className="text-[#0a1628] font-medium text-sm pr-4">{q}</span>
+        {open ? <ChevronUp className="w-5 h-5 text-[#C8A96A] shrink-0" /> : <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-[#C8A96A] shrink-0" />}
       </button>
-      {open && <p className="text-white/60 text-sm pb-5 leading-relaxed">{a}</p>}
+      {open && <p className="text-[#0a1628]/60 text-sm pb-5 leading-relaxed">{a}</p>}
     </div>
   );
 }
@@ -88,19 +88,19 @@ export default function USLandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a1628] text-white" style={{ fontFamily: "'Inter', sans-serif" }} data-testid="us-landing-page">
+    <div className="min-h-screen bg-white text-[#0a1628]" style={{ fontFamily: "'Inter', sans-serif" }} data-testid="us-landing-page">
       {/* Sticky Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-[#0a1628]/90 backdrop-blur-md border-b border-white/5">
+      <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
-            <img src="/euroadria-logo-white.png" alt="EuroAdria" className="h-8 w-auto" />
-            <span className="text-white font-bold text-sm hidden sm:block">EuroAdria</span>
+            <img src="/euroadria-logo.png" alt="EuroAdria" className="h-8 w-auto" />
+            <span className="text-[#0a1628] font-bold text-sm hidden sm:block">EuroAdria</span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="#vsl" className="text-white/60 hover:text-white text-xs hidden sm:block transition-colors">Video</a>
-            <a href="#brief" className="text-white/60 hover:text-white text-xs hidden sm:block transition-colors">Strategy Brief</a>
-            <a href="#faq" className="text-white/60 hover:text-white text-xs hidden sm:block transition-colors">FAQ</a>
-            <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#C8A96A] text-[#0a1628] text-xs font-semibold rounded-lg hover:bg-[#C8A96A]/90 transition-all" data-testid="nav-book-call">
+            <a href="#vsl" className="text-[#0a1628]/50 hover:text-[#0a1628] text-xs hidden sm:block transition-colors">Video</a>
+            <a href="#brief" className="text-[#0a1628]/50 hover:text-[#0a1628] text-xs hidden sm:block transition-colors">Strategy Brief</a>
+            <a href="#faq" className="text-[#0a1628]/50 hover:text-[#0a1628] text-xs hidden sm:block transition-colors">FAQ</a>
+            <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0a1628] text-white text-xs font-semibold rounded-lg hover:bg-[#0a1628]/90 transition-all" data-testid="nav-book-call">
               <Calendar className="w-3.5 h-3.5" />
               Book a Call
             </a>
@@ -110,11 +110,11 @@ export default function USLandingPage() {
 
       {/* Hero / VSL Section */}
       <section id="vsl" className="pt-28 pb-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a1628] via-[#0d1f3c] to-[#0a1628]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-white" />
         <div className="absolute top-32 right-0 w-96 h-96 bg-[#C8A96A]/5 rounded-full blur-3xl" />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 bg-[#b71c1c]/15 border border-[#b71c1c]/30 rounded-full px-4 py-2 mb-8">
-            <span className="text-[#ff6659] text-xs font-semibold tracking-wider uppercase">The Montenegro 2028 Arbitrage Window</span>
+          <div className="inline-flex items-center gap-2 bg-[#b71c1c]/10 border border-[#b71c1c]/20 rounded-full px-4 py-2 mb-8">
+            <span className="text-[#b71c1c] text-xs font-semibold tracking-wider uppercase">The Montenegro 2028 Arbitrage Window</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-6" data-testid="us-hero-title">
@@ -122,40 +122,40 @@ export default function USLandingPage() {
             <span className="block text-[#C8A96A] mt-2">Before EU Accession.</span>
           </h1>
 
-          <p className="text-white/60 text-base lg:text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-[#0a1628]/60 text-base lg:text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
             Discover in this short video why entrepreneurs and investors from North America are acting now to secure capital, operational structure, and lifestyle in Montenegro.
           </p>
 
           {/* Video Placeholder */}
-          <div className="relative max-w-3xl mx-auto rounded-2xl overflow-hidden border border-white/10 bg-[#0d1f3c] aspect-video mb-10 group cursor-pointer" data-testid="vsl-video-placeholder">
-            <img src={IMAGES.coast} alt="Montenegro" className="w-full h-full object-cover opacity-40" />
+          <div className="relative max-w-3xl mx-auto rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 aspect-video mb-10 group cursor-pointer shadow-xl" data-testid="vsl-video-placeholder">
+            <img src={IMAGES.coast} alt="Montenegro" className="w-full h-full object-cover opacity-60" />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-20 h-20 bg-[#C8A96A] rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
-                <Play className="w-8 h-8 text-[#0a1628] ml-1" fill="#0a1628" />
+                <Play className="w-8 h-8 text-white ml-1" fill="white" />
               </div>
             </div>
             <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm rounded-lg px-3 py-1.5">
-              <span className="text-white/80 text-xs">Video coming soon</span>
+              <span className="text-white text-xs">Video coming soon</span>
             </div>
           </div>
 
-          <a href="#brief" className="inline-flex items-center gap-2 px-8 py-4 bg-[#C8A96A] text-[#0a1628] font-bold rounded-xl hover:bg-[#C8A96A]/90 transition-all text-sm shadow-lg shadow-[#C8A96A]/20" data-testid="hero-cta">
+          <a href="#brief" className="inline-flex items-center gap-2 px-8 py-4 bg-[#0a1628] text-white font-bold rounded-xl hover:bg-[#0a1628]/90 transition-all text-sm shadow-lg" data-testid="hero-cta">
             <Download className="w-4 h-4" />
             Download Montenegro Strategy Brief
           </a>
-          <p className="text-white/40 text-xs mt-3">100% Free. Instant PDF Download.</p>
+          <p className="text-[#0a1628]/40 text-xs mt-3">100% Free. Instant PDF Download.</p>
         </div>
       </section>
 
       {/* Locations */}
-      <section className="py-16 bg-[#0d1f3c]/50">
+      <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-[#C8A96A] text-xs font-semibold tracking-wider uppercase text-center mb-3">More Than a Plan B</p>
           <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4">A Premium Destination.</h2>
-          <p className="text-white/50 text-sm text-center mb-10">Authentic insights into your future European base.</p>
+          <p className="text-[#0a1628]/50 text-sm text-center mb-10">Authentic insights into your future European base.</p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {locations.map((loc) => (
-              <div key={loc.name} className="relative rounded-xl overflow-hidden aspect-[3/4] group">
+              <div key={loc.name} className="relative rounded-xl overflow-hidden aspect-[3/4] group shadow-lg">
                 <img src={loc.img} alt={loc.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4">
@@ -168,22 +168,22 @@ export default function USLandingPage() {
       </section>
 
       {/* Challenge Section */}
-      <section className="py-20">
+      <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <p className="text-[#ff6659] text-xs font-semibold tracking-wider uppercase mb-3">The Challenge</p>
+              <p className="text-[#b71c1c] text-xs font-semibold tracking-wider uppercase mb-3">The Challenge</p>
               <h2 className="text-2xl sm:text-3xl font-bold mb-6">Why Americans and Canadians Are Looking Beyond Their Home Market</h2>
-              <div className="space-y-4 text-white/70 text-sm leading-relaxed">
+              <div className="space-y-4 text-[#0a1628]/70 text-sm leading-relaxed">
                 <p>More high-net-worth individuals, entrepreneurs, and investors from North America are seeking international flexibility, geographic diversification, and a practical Plan B outside their domestic market.</p>
                 <p>Facing complex citizenship-based taxation (US) or aggressive tax policies (Canada), securing a European base with favorable conditions is becoming a critical priority.</p>
-                <p>Montenegro offers a unique combination: It uses the <strong className="text-white">Euro as its official currency</strong>, provides a highly favorable tax environment (9-15%), boasts a rapidly developing real estate market, and is the most advanced candidate for EU accession (anticipated around 2028).</p>
-                <div className="bg-[#b71c1c]/10 border border-[#b71c1c]/20 rounded-xl p-4 mt-4">
-                  <p className="text-[#ff6659] text-sm"><strong>But beware:</strong> Montenegro is not a plug-and-play solution. Without multi-jurisdictional structuring (especially regarding FATCA or Canadian tax residency), proper real estate due diligence, and clean local coordination, it can easily become an expensive legal liability.</p>
+                <p>Montenegro offers a unique combination: It uses the <strong className="text-[#0a1628]">Euro as its official currency</strong>, provides a highly favorable tax environment (9-15%), boasts a rapidly developing real estate market, and is the most advanced candidate for EU accession (anticipated around 2028).</p>
+                <div className="bg-[#b71c1c]/5 border border-[#b71c1c]/15 rounded-xl p-4 mt-4">
+                  <p className="text-[#b71c1c] text-sm"><strong>But beware:</strong> Montenegro is not a plug-and-play solution. Without multi-jurisdictional structuring (especially regarding FATCA or Canadian tax residency), proper real estate due diligence, and clean local coordination, it can easily become an expensive legal liability.</p>
                 </div>
               </div>
             </div>
-            <div className="rounded-2xl overflow-hidden">
+            <div className="rounded-2xl overflow-hidden shadow-xl">
               <img src={IMAGES.coast} alt="Montenegro Coast" loading="lazy" className="w-full h-full object-cover rounded-2xl" />
             </div>
           </div>
@@ -191,13 +191,13 @@ export default function USLandingPage() {
       </section>
 
       {/* Lead Magnet / Strategy Brief */}
-      <section id="brief" className="py-20 bg-gradient-to-b from-[#0d1f3c] to-[#0a1628]">
+      <section id="brief" className="py-20 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Book Mockup */}
             <div className="flex justify-center">
               <div className="relative">
-                <div className="w-64 h-80 bg-gradient-to-br from-[#0d1f3c] to-[#1a2d4d] rounded-lg shadow-2xl border border-[#C8A96A]/30 p-6 flex flex-col justify-between">
+                <div className="w-64 h-80 bg-gradient-to-br from-[#0a1628] to-[#1a2d4d] rounded-lg shadow-2xl border border-[#C8A96A]/30 p-6 flex flex-col justify-between">
                   <div>
                     <img src="/euroadria-logo-white.png" alt="EuroAdria" className="h-8 mb-4 opacity-80" />
                     <h3 className="text-white font-bold text-lg leading-tight">Montenegro<br />Strategy Brief<br />2026</h3>
@@ -217,30 +217,30 @@ export default function USLandingPage() {
             {/* Form */}
             <div>
               <h2 className="text-2xl sm:text-3xl font-bold mb-4">Get the Strategy Brief 2026</h2>
-              <p className="text-white/60 text-sm mb-6 leading-relaxed">Get the comprehensive guide now and learn how to leverage the 2028 arbitrage window for your real estate investment, company formation, or residency relocation.</p>
+              <p className="text-[#0a1628]/60 text-sm mb-6 leading-relaxed">Get the comprehensive guide now and learn how to leverage the 2028 arbitrage window for your real estate investment, company formation, or residency relocation.</p>
 
               <ul className="space-y-3 mb-8">
-                <li className="flex gap-3 text-sm"><span className="text-[#C8A96A] font-bold shrink-0">01</span><span className="text-white/70"><strong className="text-white">The 2028 Window:</strong> Why Montenegro is attracting massive capital before EU accession.</span></li>
-                <li className="flex gap-3 text-sm"><span className="text-[#C8A96A] font-bold shrink-0">02</span><span className="text-white/70"><strong className="text-white">Real Estate & Taxes:</strong> Opportunities on the coast (e.g., Lustica) and in the north (Durmitor).</span></li>
-                <li className="flex gap-3 text-sm"><span className="text-[#C8A96A] font-bold shrink-0">03</span><span className="text-white/70"><strong className="text-white">Compliance & Security:</strong> How to navigate FATCA, tax residency, and avoid critical mistakes.</span></li>
+                <li className="flex gap-3 text-sm"><span className="text-[#C8A96A] font-bold shrink-0">01</span><span className="text-[#0a1628]/70"><strong className="text-[#0a1628]">The 2028 Window:</strong> Why Montenegro is attracting massive capital before EU accession.</span></li>
+                <li className="flex gap-3 text-sm"><span className="text-[#C8A96A] font-bold shrink-0">02</span><span className="text-[#0a1628]/70"><strong className="text-[#0a1628]">Real Estate & Taxes:</strong> Opportunities on the coast (e.g., Lustica) and in the north (Durmitor).</span></li>
+                <li className="flex gap-3 text-sm"><span className="text-[#C8A96A] font-bold shrink-0">03</span><span className="text-[#0a1628]/70"><strong className="text-[#0a1628]">Compliance & Security:</strong> How to navigate FATCA, tax residency, and avoid critical mistakes.</span></li>
               </ul>
 
               {success ? (
-                <div className="bg-white/5 border border-[#C8A96A]/30 rounded-xl p-6 text-center" data-testid="brief-success">
+                <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center" data-testid="brief-success">
                   <FileText className="w-10 h-10 text-[#C8A96A] mx-auto mb-3" />
-                  <h3 className="text-white font-bold mb-2">Strategy Brief is on its way!</h3>
-                  <p className="text-white/60 text-sm">Check your email inbox. The PDF is attached.</p>
+                  <h3 className="text-[#0a1628] font-bold mb-2">Strategy Brief is on its way!</h3>
+                  <p className="text-[#0a1628]/60 text-sm">Check your email inbox. The PDF is attached.</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-3" data-testid="brief-form">
-                  <input type="text" placeholder="Your Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#C8A96A]/50 text-sm" data-testid="brief-name" />
-                  <input type="email" placeholder="Your Email Address" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#C8A96A]/50 text-sm" data-testid="brief-email" />
-                  {error && <p className="text-red-400 text-xs">{error}</p>}
-                  <button type="submit" disabled={loading} className="w-full px-6 py-3.5 bg-[#C8A96A] text-[#0a1628] font-bold rounded-lg hover:bg-[#C8A96A]/90 transition-all disabled:opacity-50 text-sm inline-flex items-center justify-center gap-2" data-testid="brief-submit">
+                  <input type="text" placeholder="Your Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-[#0a1628] placeholder:text-gray-400 focus:outline-none focus:border-[#C8A96A] text-sm shadow-sm" data-testid="brief-name" />
+                  <input type="email" placeholder="Your Email Address" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-[#0a1628] placeholder:text-gray-400 focus:outline-none focus:border-[#C8A96A] text-sm shadow-sm" data-testid="brief-email" />
+                  {error && <p className="text-red-500 text-xs">{error}</p>}
+                  <button type="submit" disabled={loading} className="w-full px-6 py-3.5 bg-[#0a1628] text-white font-bold rounded-lg hover:bg-[#0a1628]/90 transition-all disabled:opacity-50 text-sm inline-flex items-center justify-center gap-2 shadow-lg" data-testid="brief-submit">
                     {loading ? 'Sending...' : 'Request Strategy Brief'}
                     {!loading && <ArrowRight className="w-4 h-4" />}
                   </button>
-                  <p className="text-white/30 text-xs text-center"><Lock className="w-3 h-3 inline mr-1" />Your data is secure. No spam. Unsubscribe anytime.</p>
+                  <p className="text-[#0a1628]/30 text-xs text-center"><Lock className="w-3 h-3 inline mr-1" />Your data is secure. No spam. Unsubscribe anytime.</p>
                 </form>
               )}
             </div>
@@ -249,20 +249,20 @@ export default function USLandingPage() {
       </section>
 
       {/* Target Groups */}
-      <section className="py-20">
+      <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-[#C8A96A] text-xs font-semibold tracking-wider uppercase text-center mb-3">Who is this for?</p>
           <h2 className="text-2xl sm:text-3xl font-bold text-center mb-12">Tailored Strategic Coordination</h2>
           <div className="grid sm:grid-cols-2 gap-5">
             {targetGroups.map((g) => (
-              <div key={g.title} className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-[#C8A96A]/30 transition-all group">
+              <div key={g.title} className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:border-[#C8A96A]/50 hover:shadow-lg transition-all group">
                 <div className="w-10 h-10 bg-[#C8A96A]/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-[#C8A96A]/20 transition-colors">
                   <g.icon className="w-5 h-5 text-[#C8A96A]" />
                 </div>
-                <h3 className="text-white font-semibold text-base mb-2">{g.title}</h3>
-                <p className="text-white/50 text-sm leading-relaxed mb-4">{g.desc}</p>
+                <h3 className="text-[#0a1628] font-semibold text-base mb-2">{g.title}</h3>
+                <p className="text-[#0a1628]/50 text-sm leading-relaxed mb-4">{g.desc}</p>
                 <div className="flex flex-wrap gap-2">
-                  {g.tags.map((t) => <span key={t} className="bg-[#C8A96A]/10 text-[#C8A96A] text-xs px-3 py-1 rounded-full">{t}</span>)}
+                  {g.tags.map((t) => <span key={t} className="bg-[#C8A96A]/10 text-[#C8A96A] text-xs px-3 py-1 rounded-full font-medium">{t}</span>)}
                 </div>
               </div>
             ))}
@@ -271,62 +271,62 @@ export default function USLandingPage() {
       </section>
 
       {/* Trust / Why EuroAdria */}
-      <section className="py-20 bg-[#0d1f3c]/50">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4">Why EuroAdria Corporate Solutions?</h2>
-          <p className="text-white/60 text-sm text-center max-w-2xl mx-auto mb-6 leading-relaxed">
+          <p className="text-[#0a1628]/60 text-sm text-center max-w-2xl mx-auto mb-6 leading-relaxed">
             Montenegro is a relationship-driven market. Access, timing, documentation, and local understanding are crucial to your success.
           </p>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-10">
-            <ul className="space-y-3 text-white/70 text-sm">
-              <li>We are <strong className="text-white">not</strong> a standard real estate agency, tax firm, or generic relocation platform.</li>
+          <div className="bg-white border border-gray-200 rounded-xl p-6 mb-10 shadow-sm">
+            <ul className="space-y-3 text-[#0a1628]/70 text-sm">
+              <li>We are <strong className="text-[#0a1628]">not</strong> a standard real estate agency, tax firm, or generic relocation platform.</li>
               <li>Our role is <strong className="text-[#C8A96A]">strategic coordination</strong>. We structure your project and execute local steps securely alongside reliable lawyers, notaries, and partners.</li>
             </ul>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {pillars.map((p) => (
-              <div key={p.title} className="bg-white/5 border border-white/10 rounded-xl p-5 text-center hover:border-[#C8A96A]/30 transition-all">
+              <div key={p.title} className="bg-white border border-gray-200 rounded-xl p-5 text-center hover:border-[#C8A96A]/50 hover:shadow-md transition-all">
                 <p.icon className="w-6 h-6 text-[#C8A96A] mx-auto mb-3" />
-                <p className="text-white font-medium text-xs">{p.title}</p>
+                <p className="text-[#0a1628] font-medium text-xs">{p.title}</p>
               </div>
             ))}
           </div>
 
           {/* Book a Call CTA */}
           <div className="mt-12 text-center">
-            <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-4 bg-[#C8A96A] text-[#0a1628] font-bold rounded-xl hover:bg-[#C8A96A]/90 transition-all text-sm shadow-lg shadow-[#C8A96A]/20" data-testid="book-call-cta">
+            <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-4 bg-[#0a1628] text-white font-bold rounded-xl hover:bg-[#0a1628]/90 transition-all text-sm shadow-lg" data-testid="book-call-cta">
               <Calendar className="w-4 h-4" />
               Book a Free Zoom Call
             </a>
-            <p className="text-white/40 text-xs mt-3">Schedule a call with our team to discuss your project.</p>
+            <p className="text-[#0a1628]/40 text-xs mt-3">Schedule a call with our team to discuss your project.</p>
           </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="py-20">
+      <section id="faq" className="py-20 bg-white">
         <div className="max-w-3xl mx-auto px-6">
           <h2 className="text-2xl sm:text-3xl font-bold text-center mb-10">Frequently Asked Questions</h2>
-          <div className="divide-y divide-white/10">
+          <div className="divide-y divide-gray-200">
             {faqs.map((f) => <FAQItem key={f.q} q={f.q} a={f.a} />)}
           </div>
         </div>
       </section>
 
       {/* Privacy */}
-      <section className="py-10 bg-[#0d1f3c]/30">
+      <section className="py-10 bg-gray-50">
         <div className="max-w-3xl mx-auto px-6">
-          <button onClick={() => setShowPrivacy(!showPrivacy)} className="flex items-center gap-2 text-white/40 hover:text-white/60 text-sm transition-colors">
+          <button onClick={() => setShowPrivacy(!showPrivacy)} className="flex items-center gap-2 text-[#0a1628]/40 hover:text-[#0a1628]/60 text-sm transition-colors">
             <Shield className="w-4 h-4" />
             Privacy Policy & Data Collection
             {showPrivacy ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
           {showPrivacy && (
-            <div className="mt-4 text-white/40 text-xs space-y-3 leading-relaxed">
-              <p><strong className="text-white/60">1. Data Collection for Strategy Brief:</strong> When you request our "Montenegro Strategy Brief", we collect your name and email address. We use this data exclusively to send you the requested PDF and to provide relevant follow-up information regarding investment and relocation in Montenegro.</p>
-              <p><strong className="text-white/60">2. Storage and Protection:</strong> Your data is securely processed in our CRM system. We do not share your personal information with unrelated third parties unless you explicitly instruct us to connect you with local partners (notaries, banks).</p>
-              <p><strong className="text-white/60">3. Revocation and Opt-Out:</strong> You can withdraw your consent to receive emails at any time by clicking the "Unsubscribe" link at the bottom of any email. Your data will then be restricted or deleted for marketing purposes.</p>
-              <p><strong className="text-white/60">4. Tracking and Cookies:</strong> This landing page uses basic functional cookies and (if consented) analytics tools to measure VSL performance and downloads to improve our offering.</p>
+            <div className="mt-4 text-[#0a1628]/40 text-xs space-y-3 leading-relaxed">
+              <p><strong className="text-[#0a1628]/60">1. Data Collection for Strategy Brief:</strong> When you request our "Montenegro Strategy Brief", we collect your name and email address. We use this data exclusively to send you the requested PDF and to provide relevant follow-up information regarding investment and relocation in Montenegro.</p>
+              <p><strong className="text-[#0a1628]/60">2. Storage and Protection:</strong> Your data is securely processed in our CRM system. We do not share your personal information with unrelated third parties unless you explicitly instruct us to connect you with local partners (notaries, banks).</p>
+              <p><strong className="text-[#0a1628]/60">3. Revocation and Opt-Out:</strong> You can withdraw your consent to receive emails at any time by clicking the "Unsubscribe" link at the bottom of any email. Your data will then be restricted or deleted for marketing purposes.</p>
+              <p><strong className="text-[#0a1628]/60">4. Tracking and Cookies:</strong> This landing page uses basic functional cookies and (if consented) analytics tools to measure VSL performance and downloads to improve our offering.</p>
               <p>Responsible Entity: EuroAdria Corporate Solutions (Montaris & Co. d.o.o.). Contact for privacy inquiries: office@euroadria.me</p>
             </div>
           )}
@@ -334,13 +334,13 @@ export default function USLandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-10 border-t border-white/5">
+      <footer className="py-10 border-t border-gray-200 bg-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <img src="/euroadria-logo-white.png" alt="EuroAdria" className="h-10 mx-auto mb-4 opacity-60" />
-          <p className="text-white/30 text-xs mb-6 max-w-2xl mx-auto leading-relaxed">
+          <img src="/euroadria-logo.png" alt="EuroAdria" className="h-10 mx-auto mb-4 opacity-40" />
+          <p className="text-[#0a1628]/30 text-xs mb-6 max-w-2xl mx-auto leading-relaxed">
             The information provided on this website and in related documents is for general informational purposes only. It does not constitute legal, tax, financial, investment, immigration, or real estate advice. EuroAdria Corporate Solutions does not provide regulated services in the sense of investment or tax advice and guarantees no specific outcomes. References to Montenegro's economic development or potential EU accession (such as the "2028 Arbitrage Window") are based on market assessments and current political statements and are non-binding. Past developments do not guarantee future results. Always consult licensed advisors for legal and tax obligations in your home country.
           </p>
-          <p className="text-white/20 text-xs">&copy; 2026 EuroAdria Corporate Solutions. All rights reserved.</p>
+          <p className="text-[#0a1628]/20 text-xs">&copy; 2026 EuroAdria Corporate Solutions. All rights reserved.</p>
         </div>
       </footer>
     </div>
