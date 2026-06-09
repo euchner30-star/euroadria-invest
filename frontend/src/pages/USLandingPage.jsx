@@ -336,11 +336,11 @@ export default function USLandingPage() {
       {/* Footer */}
       <footer className="py-10 border-t border-gray-200 bg-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <img src="/euroadria-logo.png" alt="EuroAdria" className="h-10 mx-auto mb-4 opacity-40" />
-          <p className="text-[#0a1628]/30 text-xs mb-6 max-w-2xl mx-auto leading-relaxed">
+          <img src="/euroadria-logo.png" alt="EuroAdria" className="h-12 mx-auto mb-5" />
+          <p className="text-[#0a1628]/50 text-xs mb-6 max-w-2xl mx-auto leading-relaxed">
             The information provided on this website and in related documents is for general informational purposes only. It does not constitute legal, tax, financial, investment, immigration, or real estate advice. EuroAdria Corporate Solutions does not provide regulated services in the sense of investment or tax advice and guarantees no specific outcomes. References to Montenegro's economic development or potential EU accession (such as the "2028 Arbitrage Window") are based on market assessments and current political statements and are non-binding. Past developments do not guarantee future results. Always consult licensed advisors for legal and tax obligations in your home country.
           </p>
-          <p className="text-[#0a1628]/20 text-xs">&copy; 2026 EuroAdria Corporate Solutions. All rights reserved.</p>
+          <p className="text-[#0a1628]/40 text-xs">&copy; 2026 EuroAdria Corporate Solutions. All rights reserved.</p>
         </div>
       </footer>
     </div>
