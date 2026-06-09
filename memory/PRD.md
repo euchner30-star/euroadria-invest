@@ -139,6 +139,8 @@ Professional "Beratung & Angebotsplattform" for the Balkan region with full CMS.
 - **16.04.2026**: Hreflang Geo-Targeting — Sitemap + HTML mit Hreflang-Tags für DACH (DE/AT/CH) + Balkan (ME/RS/HR/BA) + Englisch. Google zeigt euroadria.me jetzt bevorzugt in diesen Regionen.
 - **01.05.2026**: Audit-Fixes (27→80 Punkte) — GA4 DSGVO-konform (nur nach Cookie-Consent), Security Headers (HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy), Meta Description von 183→136 Zeichen, LCP-Optimierung (Hero-Bild mit fetchpriority=high + WebP + Logo Preload).
 - **01.05.2026**: Whitepaper Landing Page — euroadria.me/whitepaper mit Lead-Gate (Name + Email → PDF per Email). 16-Seiten Whitepaper "Strategischer Plan 2026: Markteintritt Westbalkan" als MongoDB Base64. Automatischer CRM-Lead + gebrandete Bestaetigungs-Email mit PDF-Anhang.
+- **01.05.2026**: BurdaForward Compliance — Alle "referenziert/berichten" Formulierungen zu "Bekannt aus (Anzeige)" geändert. 5 NewsArticle Schema.org Einträge entfernt. Blog-Artikel umgeschrieben.
+- **09.06.2026**: US-Landingpage (euroadria.me/us) — Standalone englische Seite für US-Markt Ads. Video-Platzhalter (VSL), Strategy Brief Lead-Gate, Calendly-Integration, FAQ, Disclaimer. Nicht in Navigation sichtbar.
 - **11.04.2026**: Gefällt-mir-Button (Like) für Kommentare + Antworten
 - **11.04.2026**: Lead-Erstellung aus Blog-Kommentaren (Quelle: blog_comment)
 - **11.04.2026**: Kommentar-Antworten (Threading) + Auto-Freigabe-System implementiert

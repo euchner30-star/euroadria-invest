@@ -43,24 +43,21 @@ const LocationProfile = lazy(() => import("./pages/investment/LocationProfile"))
 const InvestmentSimulation = lazy(() => import("./pages/investment/InvestmentSimulation"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const WhitepaperPage = lazy(() => import("./pages/WhitepaperPage"));
+const USLandingPage = lazy(() => import("./pages/USLandingPage"));
 
 function PageTracker() {
   usePageTracker();
   return null;
 }
 
-function App() {
+function AppLayout() {
   return (
-    <LanguageProvider>
-    <div className="App min-h-screen flex flex-col">
-      <BrowserRouter>
-        <PageTracker />
-        <ScrollToTop />
-        <Header />
-        <main className="flex-1">
-        <ErrorBoundary>
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#C8A96A] border-t-transparent rounded-full animate-spin" /></div>}>
-        <Routes>
+    <>
+      <Header />
+      <main className="flex-1">
+      <ErrorBoundary>
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#C8A96A] border-t-transparent rounded-full animate-spin" /></div>}>
+      <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<ArticlePage />} />
@@ -99,6 +96,26 @@ function App() {
         </main>
         <Footer />
         <WhatsAppButton />
+        <CookieConsent />
+    </>
+  );
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+    <div className="App min-h-screen flex flex-col">
+      <BrowserRouter>
+        <PageTracker />
+        <ScrollToTop />
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#C8A96A] border-t-transparent rounded-full animate-spin" /></div>}>
+        <Routes>
+          {/* Standalone pages (no Header/Footer) */}
+          <Route path="/us" element={<USLandingPage />} />
+          {/* Main layout pages */}
+          <Route path="/*" element={<AppLayout />} />
+        </Routes>
+        </Suspense>
         <CookieConsent />
       </BrowserRouter>
     </div>
