@@ -1705,6 +1705,46 @@ const AdminPage = () => {
                 <p className="text-ea-dark/40 text-xs mt-1">Der PDF-Upload hat Vorrang vor dem externen Link</p>
               </div>
 
+              {/* US Strategy Brief */}
+              <div className="mb-6 p-4 bg-ea-light rounded-xl">
+                <label className="block text-ea-dark font-semibold mb-1">US Strategy Brief PDF</label>
+                <p className="text-ea-dark/50 text-xs mb-2">Wird als Anhang per E-Mail versendet wenn ein US-Lead das Formular auf /us ausfuellt</p>
+                <div className="flex items-center gap-3">
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all text-sm">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                    PDF hochladen
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      className="hidden"
+                      data-testid="downloads-us-brief-upload"
+                      onChange={async (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        try {
+                          const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/settings/upload-pdf-file?pdf_key=us_strategy_brief`, {
+                            method: 'POST',
+                            headers: { 'Authorization': 'Basic ' + btoa(credentials.username + ':' + credentials.password) },
+                            body: formData
+                          });
+                          const data = await res.json();
+                          if (data.success) {
+                            alert('US Strategy Brief PDF erfolgreich hochgeladen! (' + Math.round(data.size / 1024) + ' KB)');
+                          } else {
+                            alert('Fehler: ' + (data.detail || 'Upload fehlgeschlagen'));
+                          }
+                        } catch (err) {
+                          alert('Upload fehlgeschlagen: ' + err.message);
+                        }
+                        e.target.value = '';
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+
               <h3 className="text-lg font-semibold text-ea-dark mb-4 border-b border-gray-200 pb-2">Immobilien-Exposés</h3>
 
               {/* Feste Immobilien Exposés */}
