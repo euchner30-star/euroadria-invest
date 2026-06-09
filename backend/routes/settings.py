@@ -59,25 +59,64 @@ async def update_download_settings(settings: dict, admin: str = Depends(verify_a
 
 @router.post("/admin/settings/upload-pdf-file")
 async def upload_pdf_file_to_db(file: UploadFile = File(...), pdf_key: str = "praxisleitfaden", admin: str = Depends(verify_admin)):
-    """Upload a PDF file and store as base64 in MongoDB for email attachments."""
+    """Upload a PDF file and store in MongoDB. Uses chunks for large files (>10MB)."""
     import base64
     if not file.filename.lower().endswith('.pdf'):
         raise HTTPException(status_code=400, detail="Nur PDF-Dateien erlaubt")
     content = await file.read()
-    if len(content) > 15 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="Datei zu gross (max 15MB)")
+    if len(content) > 20 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Datei zu gross (max 20MB)")
+    
     pdf_b64 = base64.b64encode(content).decode("utf-8")
-    await db.site_settings.update_one(
-        {"key": f"pdf_{pdf_key}"},
-        {"$set": {
-            "key": f"pdf_{pdf_key}",
-            "filename": file.filename,
-            "base64": pdf_b64,
-            "size": len(content),
-            "updated_at": datetime.now(timezone.utc).isoformat()
-        }},
-        upsert=True
-    )
+    
+    # MongoDB 16MB doc limit: if base64 > 14MB, split into chunks
+    if len(pdf_b64) > 14 * 1024 * 1024:
+        chunk_size = 10 * 1024 * 1024  # 10MB chunks
+        chunks = [pdf_b64[i:i+chunk_size] for i in range(0, len(pdf_b64), chunk_size)]
+        
+        # Delete old chunks
+        await db.pdf_chunks.delete_many({"pdf_key": f"pdf_{pdf_key}"})
+        
+        # Store chunks
+        for idx, chunk in enumerate(chunks):
+            await db.pdf_chunks.insert_one({
+                "pdf_key": f"pdf_{pdf_key}",
+                "chunk_index": idx,
+                "data": chunk
+            })
+        
+        # Store metadata (without base64)
+        await db.site_settings.update_one(
+            {"key": f"pdf_{pdf_key}"},
+            {"$set": {
+                "key": f"pdf_{pdf_key}",
+                "filename": file.filename,
+                "chunked": True,
+                "chunk_count": len(chunks),
+                "size": len(content),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }},
+            upsert=True
+        )
+        # Remove old base64 field if exists
+        await db.site_settings.update_one(
+            {"key": f"pdf_{pdf_key}"},
+            {"$unset": {"base64": ""}}
+        )
+    else:
+        # Small file: store inline as before
+        await db.site_settings.update_one(
+            {"key": f"pdf_{pdf_key}"},
+            {"$set": {
+                "key": f"pdf_{pdf_key}",
+                "filename": file.filename,
+                "base64": pdf_b64,
+                "chunked": False,
+                "size": len(content),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }},
+            upsert=True
+        )
     return {"success": True, "filename": file.filename, "size": len(content), "pdf_key": pdf_key}
 
 

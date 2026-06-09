@@ -256,13 +256,23 @@ async def capture_lead(lead: LeadForm):
                 try:
                     pdf_key = "pdf_us_strategy_brief" if is_us_brief else ("pdf_whitepaper" if is_whitepaper else "pdf_praxisleitfaden")
                     pdf_doc = await db.site_settings.find_one({"key": pdf_key}, {"_id": 0})
-                    if pdf_doc and pdf_doc.get("base64"):
-                        email_payload["attachments"] = [{
-                            "filename": pdf_doc.get("filename", "EuroAdria-Strategy-Brief.pdf" if is_us_brief else ("EuroAdria-Whitepaper.pdf" if is_whitepaper else "EuroAdria-Praxisleitfaden.pdf")),
-                            "content": pdf_doc["base64"],
-                            "content_type": "application/pdf"
-                        }]
-                        logger.info(f"PDF attachment added from MongoDB ({pdf_doc.get('size', 0)} bytes)")
+                    if pdf_doc:
+                        # Reassemble chunked PDFs
+                        if pdf_doc.get("chunked"):
+                            chunks = await db.pdf_chunks.find({"pdf_key": pdf_key}, {"_id": 0}).sort("chunk_index", 1).to_list(100)
+                            full_b64 = "".join([c["data"] for c in chunks])
+                        else:
+                            full_b64 = pdf_doc.get("base64", "")
+                        
+                        if full_b64:
+                            email_payload["attachments"] = [{
+                                "filename": pdf_doc.get("filename", "EuroAdria-Strategy-Brief.pdf" if is_us_brief else ("EuroAdria-Whitepaper.pdf" if is_whitepaper else "EuroAdria-Praxisleitfaden.pdf")),
+                                "content": full_b64,
+                                "content_type": "application/pdf"
+                            }]
+                            logger.info(f"PDF attachment added from MongoDB ({pdf_doc.get('size', 0)} bytes)")
+                        else:
+                            logger.warning(f"No PDF data found in MongoDB for {pdf_key}")
                     else:
                         logger.warning(f"No PDF found in MongoDB for {pdf_key}")
                 except Exception as pdf_err:
