@@ -196,7 +196,32 @@ async def capture_lead(lead: LeadForm):
             if is_praxisleitfaden or is_whitepaper or is_us_brief:
                 doc_title = "Strategischer Plan 2026: Markteintritt &amp; Investitionssicherheit Westbalkan" if is_whitepaper else ("Montenegro Strategy Brief 2026" if is_us_brief else "Strategischer Plan 2026: Markteintritt &amp; Investitionssicherheit Westbalkan")
                 doc_desc = "Dieses vertrauliche Whitepaper enthält 16 Seiten geballtes Expertenwissen zu Steuerstruktur, Gesellschaftsrecht, Banking, forensischer Immobilienstrategie und operativer Markteintrittsplanung für den Westbalkan." if is_whitepaper else ("A practical guide for Americans and Canadians exploring relocation and investment in Montenegro. Covering the 2028 EU accession window, tax optimization, real estate due diligence, and compliance." if is_us_brief else "Dieses vertrauliche Dokument enthält geballtes Expertenwissen zu Due Diligence, Steuerstruktur, Banking und rechtlichen Rahmenbedingungen für Ihren Markteintritt auf dem Westbalkan.")
-                content = f"""
+                
+                if is_us_brief:
+                    content = f"""
+            <h2 style="color: #04151F; margin: 0 0 8px 0;">Thank you, {lead_name}!</h2>
+            <p style="color: #555; font-size: 14px; margin: 0 0 24px 0;">Your Montenegro Strategy Brief is attached to this email as a PDF.</p>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 3px solid #C8A96A; margin-bottom: 24px;">
+                <p style="color: #C8A96A; font-size: 12px; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 1px;">Your Document</p>
+                <p style="color: #04151F; font-size: 16px; margin: 0; font-weight: bold;">{doc_title}</p>
+            </div>
+            <p style="color: #333; font-size: 14px; line-height: 22px; margin: 0 0 20px 0;">
+                {doc_desc}
+            </p>
+            <p style="color: #333; font-size: 14px; line-height: 22px; margin: 0 0 24px 0;">
+                Would you like to discuss the strategy with one of our experts? We are happy to advise you personally and without obligation.
+            </p>
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr><td align="center" style="padding: 8px 0 24px 0;">
+                    <a href="https://calendly.com/euroadria/neues-meeting" style="display: inline-block; background-color: #C8A96A; color: #04151F; font-size: 14px; font-weight: bold; text-decoration: none; padding: 14px 32px; border-radius: 6px;">Book a Free Consultation</a>
+                </td></tr>
+            </table>
+            <p style="color: #999; font-size: 11px; margin: 0;">
+                <strong style="color: #C8A96A;">Note:</strong> This document is confidential and for personal use only.
+            </p>
+            """
+                else:
+                    content = f"""
             <h2 style="color: #04151F; margin: 0 0 8px 0;">Vielen Dank, {lead_name}!</h2>
             <p style="color: #555; font-size: 14px; margin: 0 0 24px 0;">Ihr {'Whitepaper' if is_whitepaper else 'Praxisleitfaden'} ist als PDF im Anhang dieser E-Mail beigefügt.</p>
             <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 3px solid #C8A96A; margin-bottom: 24px;">
