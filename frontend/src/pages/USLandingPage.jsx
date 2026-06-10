@@ -126,17 +126,15 @@ export default function USLandingPage() {
             Discover in this short video why entrepreneurs and investors from North America are acting now to secure capital, operational structure, and lifestyle in Montenegro.
           </p>
 
-          {/* Video Placeholder */}
-          <div className="relative max-w-3xl mx-auto rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 aspect-video mb-10 group cursor-pointer shadow-xl" data-testid="vsl-video-placeholder">
-            <img src={IMAGES.coast} alt="Montenegro" className="w-full h-full object-cover opacity-60" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-20 h-20 bg-[#C8A96A] rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
-                <Play className="w-8 h-8 text-white ml-1" fill="white" />
-              </div>
-            </div>
-            <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm rounded-lg px-3 py-1.5">
-              <span className="text-white text-xs">Video coming soon</span>
-            </div>
+          {/* Video */}
+          <div className="relative max-w-3xl mx-auto rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 aspect-video mb-10 shadow-xl" data-testid="vsl-video">
+            <iframe
+              src="https://www.youtube.com/embed/7k-e0ILF_o8?rel=0"
+              title="EuroAdria - Secure Your European Base"
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+              className="w-full h-full"
+            />
           </div>
 
           <a href="#brief" className="inline-flex items-center gap-2 px-8 py-4 bg-[#0a1628] text-white font-bold rounded-xl hover:bg-[#0a1628]/90 transition-all text-sm shadow-lg" data-testid="hero-cta">
