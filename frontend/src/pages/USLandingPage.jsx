@@ -226,10 +226,21 @@ export default function USLandingPage() {
               </ul>
 
               {success ? (
-                <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center" data-testid="brief-success">
-                  <FileText className="w-10 h-10 text-[#C8A96A] mx-auto mb-3" />
-                  <h3 className="text-[#0a1628] font-bold mb-2">Strategy Brief is on its way!</h3>
-                  <p className="text-[#0a1628]/60 text-sm">Check your email inbox. The PDF is attached.</p>
+                <div className="bg-green-50 border border-green-200 rounded-xl p-6" data-testid="brief-success">
+                  <div className="text-center mb-4">
+                    <FileText className="w-10 h-10 text-[#C8A96A] mx-auto mb-3" />
+                    <h3 className="text-[#0a1628] font-bold mb-2">Strategy Brief is on its way!</h3>
+                    <p className="text-[#0a1628]/60 text-sm">Check your email inbox. The PDF is attached.</p>
+                  </div>
+                  <div className="mt-4 rounded-xl overflow-hidden shadow-lg aspect-video">
+                    <iframe
+                      src="https://www.youtube.com/embed/LuIIfPV-mI8?autoplay=1&rel=0"
+                      title="Thank you from EuroAdria"
+                      allow="autoplay; encrypted-media"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-3" data-testid="brief-form">
