@@ -49,16 +49,37 @@ async def upload_image(file: UploadFile = File(...), admin: str = Depends(verify
         raise HTTPException(status_code=400, detail=f"Datei zu groß. Maximum: {MAX_FILE_SIZE // (1024*1024)}MB")
 
     try:
+        import base64
         optimized = optimize_image(content)
         unique_id = str(uuid.uuid4())[:8]
         original_name = Path(file.filename).stem
         clean_name = "".join(c for c in original_name if c.isalnum() or c in "-_")[:30]
         filename = f"{clean_name}_{unique_id}.webp"
-        file_path = UPLOAD_DIR / filename
-        with open(file_path, "wb") as f:
-            f.write(optimized)
+        
+        # Store in MongoDB instead of local disk (Render ephemeral storage)
+        img_b64 = base64.b64encode(optimized).decode("utf-8")
+        await db.images.update_one(
+            {"filename": filename},
+            {"$set": {
+                "filename": filename,
+                "data": img_b64,
+                "content_type": "image/webp",
+                "size": len(optimized),
+                "original_name": file.filename,
+                "uploaded_at": datetime.now(timezone.utc).isoformat()
+            }},
+            upsert=True
+        )
 
-        url = f"/uploads/{filename}"
+        # Also save locally as fallback
+        try:
+            file_path = UPLOAD_DIR / filename
+            with open(file_path, "wb") as f:
+                f.write(optimized)
+        except Exception:
+            pass
+
+        url = f"/api/img/{filename}"
         original_size = len(content)
         optimized_size = len(optimized)
         reduction = ((original_size - optimized_size) / original_size) * 100 if original_size > 0 else 0
@@ -68,6 +89,24 @@ async def upload_image(file: UploadFile = File(...), admin: str = Depends(verify
         from core import logger
         logger.error(f"Image upload failed: {e}")
         raise HTTPException(status_code=500, detail=f"Bildverarbeitung fehlgeschlagen: {str(e)}")
+
+
+@router.get("/img/{filename}")
+async def serve_image(filename: str):
+    """Serve images from MongoDB (persistent) or local fallback."""
+    import base64
+    # Try MongoDB first
+    img_doc = await db.images.find_one({"filename": filename}, {"_id": 0, "data": 1, "content_type": 1})
+    if img_doc and img_doc.get("data"):
+        img_bytes = base64.b64decode(img_doc["data"])
+        return Response(content=img_bytes, media_type=img_doc.get("content_type", "image/webp"), headers={"Cache-Control": "public, max-age=31536000, immutable"})
+    
+    # Fallback to local file
+    file_path = UPLOAD_DIR / filename
+    if file_path.exists():
+        return Response(content=file_path.read_bytes(), media_type="image/webp", headers={"Cache-Control": "public, max-age=31536000, immutable"})
+    
+    raise HTTPException(status_code=404, detail="Bild nicht gefunden")
 
 
 @router.get("/admin/uploads")
