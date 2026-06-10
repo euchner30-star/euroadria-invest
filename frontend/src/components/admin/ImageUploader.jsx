@@ -8,7 +8,7 @@ const ImageUploader = ({
   credentials, 
   currentImage = null,
   label = "Bild hochladen",
-  acceptedFormats = ".jpg,.jpeg,.png,.webp,.gif",
+  acceptedFormats = "image/*",
   hidePreview = false
 }) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -24,9 +24,9 @@ const ImageUploader = ({
     if (!file) return;
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (!allowedTypes.includes(file.type)) {
-      setError('Ungültiger Dateityp. Erlaubt: JPG, PNG, WebP, GIF');
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif'];
+    if (!file.type || (!allowedTypes.includes(file.type) && !file.name.match(/\.(jpg|jpeg|png|webp|gif|heic|heif)$/i))) {
+      setError('Ungültiger Dateityp. Erlaubt: JPG, PNG, WebP, GIF, HEIC');
       return;
     }
 

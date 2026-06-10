@@ -13,6 +13,11 @@ router = APIRouter()
 
 def optimize_image(image_data: bytes, max_dimension: int = MAX_IMAGE_DIMENSION, quality: int = 85) -> bytes:
     from PIL import Image
+    try:
+        import pillow_heif
+        pillow_heif.register_heif_opener()
+    except ImportError:
+        pass
     img = Image.open(io.BytesIO(image_data))
     if img.mode in ('RGBA', 'P'):
         background = Image.new('RGB', img.size, (255, 255, 255))

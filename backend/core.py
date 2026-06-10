@@ -96,7 +96,7 @@ def get_object(path: str):
 # ── Upload Config ───────────────────────────────────────────────────────
 UPLOAD_DIR = ROOT_DIR.parent / "frontend" / "public" / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".heic", ".heif"}
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 MAX_IMAGE_DIMENSION = 1920
 
