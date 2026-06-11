@@ -14,12 +14,12 @@ const faqs = [
 function FAQItem({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-white/10">
+    <div className="border-b border-white/15">
       <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between py-5 text-left group">
-        <span className="text-white/90 font-medium text-sm pr-4">{q}</span>
-        {open ? <ChevronUp className="w-5 h-5 text-[#C8A96A] shrink-0" /> : <ChevronDown className="w-5 h-5 text-white/30 group-hover:text-[#C8A96A] shrink-0" />}
+        <span className="text-white font-medium text-sm sm:text-base pr-4">{q}</span>
+        {open ? <ChevronUp className="w-5 h-5 text-[#C8A96A] shrink-0" /> : <ChevronDown className="w-5 h-5 text-white/40 group-hover:text-[#C8A96A] shrink-0 transition-colors" />}
       </button>
-      {open && <p className="text-white/50 text-sm pb-5 leading-relaxed">{a}</p>}
+      {open && <p className="text-white/70 text-sm pb-6 leading-relaxed">{a}</p>}
     </div>
   );
 }
@@ -304,48 +304,51 @@ export default function USCALandingPage() {
       </section>
 
       {/* Book a Call */}
-      <section className="py-12 border-t border-white/5">
+      <section className="py-16 border-t border-white/10">
         <div className="max-w-xl mx-auto px-6 text-center">
-          <p className="text-white/50 text-sm mb-4">Ready to discuss your project?</p>
-          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-3.5 border border-[#C8A96A] text-[#C8A96A] text-sm font-semibold tracking-wider uppercase hover:bg-[#C8A96A] hover:text-[#0B1120] transition-all" data-testid="usca-book-call">
+          <p className="text-white/70 text-base mb-6">Ready to discuss your project?</p>
+          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-10 py-4 border-2 border-[#C8A96A] text-[#C8A96A] text-sm font-semibold tracking-wider uppercase hover:bg-[#C8A96A] hover:text-[#0B1120] transition-all" data-testid="usca-book-call">
             Book a Free Zoom Call
           </a>
         </div>
       </section>
 
-      {/* FAQ — Compact */}
-      <section className="py-16 border-t border-white/5">
+      {/* FAQ */}
+      <section className="py-20 border-t border-white/10 bg-[#0D1528]">
         <div className="max-w-2xl mx-auto px-6">
-          <p className="text-white/30 text-xs tracking-[0.15em] uppercase text-center mb-8">FAQ</p>
-          {faqs.map((f) => <FAQItem key={f.q} q={f.q} a={f.a} />)}
+          <p className="text-[#C8A96A] text-xs tracking-[0.2em] uppercase text-center mb-3 font-semibold">Frequently Asked Questions</p>
+          <h2 className="text-white text-xl sm:text-2xl font-bold text-center mb-10" style={{ fontFamily: "'Playfair Display', serif" }}>Common Questions About Montenegro</h2>
+          <div className="space-y-0">
+            {faqs.map((f) => <FAQItem key={f.q} q={f.q} a={f.a} />)}
+          </div>
         </div>
       </section>
 
       {/* Privacy */}
-      <section className="py-8 border-t border-white/5">
+      <section className="py-10 border-t border-white/10">
         <div className="max-w-2xl mx-auto px-6">
-          <button onClick={() => setShowPrivacy(!showPrivacy)} className="flex items-center gap-2 text-white/20 hover:text-white/40 text-xs transition-colors mx-auto">
-            <Shield className="w-3 h-3" /> Privacy Policy {showPrivacy ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          <button onClick={() => setShowPrivacy(!showPrivacy)} className="flex items-center gap-2 text-white/40 hover:text-white/60 text-xs transition-colors mx-auto">
+            <Shield className="w-3.5 h-3.5" /> Privacy Policy {showPrivacy ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           </button>
           {showPrivacy && (
-            <div className="mt-4 text-white/25 text-[11px] space-y-2 leading-relaxed">
-              <p><strong className="text-white/40">Data Collection:</strong> We collect your name and email to send the Strategy Brief and relevant follow-up information.</p>
-              <p><strong className="text-white/40">Protection:</strong> Your data is securely processed. We do not share it with unrelated third parties.</p>
-              <p><strong className="text-white/40">Opt-Out:</strong> Unsubscribe anytime via the link in any email.</p>
+            <div className="mt-6 text-white/50 text-xs space-y-3 leading-relaxed max-w-lg mx-auto">
+              <p><strong className="text-white/70">Data Collection:</strong> We collect your name and email to send the Strategy Brief and relevant follow-up information.</p>
+              <p><strong className="text-white/70">Protection:</strong> Your data is securely processed. We do not share it with unrelated third parties.</p>
+              <p><strong className="text-white/70">Opt-Out:</strong> Unsubscribe anytime via the link in any email.</p>
               <p>Responsible Entity: EuroAdria Corporate Solutions (Montaris & Co. d.o.o.) — office@euroadria.me</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* Footer — Minimal */}
-      <footer className="py-8 border-t border-white/5">
+      {/* Footer */}
+      <footer className="py-10 border-t border-white/10 bg-[#080E1A]">
         <div className="max-w-3xl mx-auto px-6 text-center">
-          <img src="/euroadria-logo-white.png" alt="EuroAdria" className="h-10 mx-auto mb-4 opacity-40" />
-          <p className="text-white/15 text-[10px] max-w-xl mx-auto leading-relaxed mb-3">
+          <img src="/euroadria-logo-white.png" alt="EuroAdria" className="h-10 mx-auto mb-5 opacity-60" />
+          <p className="text-white/40 text-xs max-w-xl mx-auto leading-relaxed mb-4">
             This page is for general informational purposes only. It does not constitute legal, tax, financial, or investment advice. EuroAdria Corporate Solutions does not guarantee specific outcomes. References to the "2028 Arbitrage Window" are based on market assessments and are non-binding. Always consult licensed advisors.
           </p>
-          <p className="text-white/10 text-[10px]">&copy; 2026 EuroAdria Corporate Solutions. All rights reserved.</p>
+          <p className="text-white/30 text-xs">&copy; 2026 EuroAdria Corporate Solutions. All rights reserved.</p>
         </div>
       </footer>
     </div>
