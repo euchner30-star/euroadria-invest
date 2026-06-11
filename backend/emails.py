@@ -33,8 +33,9 @@ FOOTER_HTML = """
 """
 
 
-def wrap_email(content: str) -> str:
+def wrap_email(content: str, lang: str = "de") -> str:
     """Wrap email content in the unified light EuroAdria template."""
+    tagline = "Advisory &amp; Investment Platform" if lang == "en" else "Beratung &amp; Angebotsplattform"
     return f"""
     <html>
     <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
@@ -42,7 +43,7 @@ def wrap_email(content: str) -> str:
             <div style="background: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #C8A96A;">
                 <img src="https://euroadria.me/euroadria-logo.png" alt="EuroAdria" style="height: 50px; margin-bottom: 8px;"><br>
                 <span style="font-size: 14px; font-weight: bold; color: #04151F; letter-spacing: 1.5px;">EUROADRIA CORPORATE SOLUTIONS</span><br>
-                <span style="font-size: 11px; color: #C8A96A; letter-spacing: 0.5px;">Beratung &amp; Angebotsplattform</span>
+                <span style="font-size: 11px; color: #C8A96A; letter-spacing: 0.5px;">{tagline}</span>
             </div>
             <div style="padding: 32px; color: #333; font-size: 15px; line-height: 1.7;">
                 {content}

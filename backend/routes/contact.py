@@ -272,7 +272,7 @@ async def capture_lead(lead: LeadForm):
                 "from": "EuroAdria Corporate Solutions <noreply@euroadria.me>",
                 "to": [lead_dict['email']],
                 "subject": f"Your Strategy Brief — EuroAdria" if is_us_brief else (f"Ihr Whitepaper — EuroAdria" if is_whitepaper else (f"Ihr Praxisleitfaden — EuroAdria" if is_praxisleitfaden else f"Ihr Investment Exposé — {expose_name}")),
-                "html": wrap_email(content),
+                "html": wrap_email(content, lang="en") if is_us_brief else wrap_email(content),
                 "reply_to": NOTIFICATION_EMAIL
             }
 
