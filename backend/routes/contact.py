@@ -191,7 +191,7 @@ async def capture_lead(lead: LeadForm):
             expose_name = lead_dict.get('expose_name', 'Investment Exposé')
             is_praxisleitfaden = lead_dict.get('source', '') == 'praxisleitfaden'
             is_whitepaper = lead_dict.get('source', '') == 'whitepaper'
-            is_us_brief = lead_dict.get('source', '') == 'us_strategy_brief'
+            is_us_brief = lead_dict.get('source', '') in ('us_strategy_brief', 'usca_strategy_brief')
 
             if is_praxisleitfaden or is_whitepaper or is_us_brief:
                 doc_title = "Strategischer Plan 2026: Markteintritt &amp; Investitionssicherheit Westbalkan" if is_whitepaper else ("Montenegro Strategy Brief 2026" if is_us_brief else "Strategischer Plan 2026: Markteintritt &amp; Investitionssicherheit Westbalkan")

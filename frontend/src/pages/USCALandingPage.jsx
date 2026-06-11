@@ -1,0 +1,281 @@
+import React, { useState } from 'react';
+import { Play, ArrowRight, FileText, Lock, ChevronDown, ChevronUp, Shield, Check } from 'lucide-react';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+const CALENDLY_URL = 'https://calendly.com/euroadria/neues-meeting';
+
+const faqs = [
+  { q: 'Is Montenegro part of the European Union?', a: 'Montenegro is not currently a member of the European Union. However, it is an official EU candidate country and is widely regarded as the most advanced accession candidate in the Western Balkans. Accession is often targeted for 2028 in political circles, though it remains subject to institutional processes.' },
+  { q: 'Can EuroAdria guarantee residency or banking approvals?', a: 'No. We do not guarantee governmental or bank approvals, as these depend on third parties and your individual situation. However, we professionally structure your applications to maximize chances of success and avoid rejections due to procedural errors.' },
+  { q: 'Do you provide legal or tax advice?', a: 'No. EuroAdria Corporate Solutions performs strategic coordination and does not constitute regulated legal or tax advice. Where necessary, we integrate local licensed tax advisors, lawyers, and notaries into the implementation process.' },
+  { q: 'Can foreigners buy real estate in Montenegro?', a: 'Yes, foreigners can generally acquire real estate (houses, apartments) in Montenegro. Exceptions apply to certain agricultural or border lands. However, verifying property ownership (cadastral review) is essential and should never be done without legal guidance.' },
+];
+
+function FAQItem({ q, a }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-b border-white/10">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between py-5 text-left group">
+        <span className="text-white/90 font-medium text-sm pr-4">{q}</span>
+        {open ? <ChevronUp className="w-5 h-5 text-[#C8A96A] shrink-0" /> : <ChevronDown className="w-5 h-5 text-white/30 group-hover:text-[#C8A96A] shrink-0" />}
+      </button>
+      {open && <p className="text-white/50 text-sm pb-5 leading-relaxed">{a}</p>}
+    </div>
+  );
+}
+
+export default function USCALandingPage() {
+  const [form, setForm] = useState({ name: '', email: '' });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+  const [showPrivacy, setShowPrivacy] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.name || !form.email) return;
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch(`${API_URL}/api/leads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: '',
+          source: 'usca_strategy_brief',
+          expose_name: 'Montenegro Strategy Brief 2026 (USCA)'
+        })
+      });
+      if (res.ok) setSuccess(true);
+      else setError('Something went wrong. Please try again.');
+    } catch {
+      setError('Connection error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0B1120]" data-testid="usca-landing-page">
+      {/* Google Fonts for Serif */}
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&display=swap');`}</style>
+
+      {/* Sticky Nav — Minimal */}
+      <nav className="fixed top-0 w-full z-50 bg-[#0B1120]/95 backdrop-blur-md border-b border-[#C8A96A]/10">
+        <div className="max-w-5xl mx-auto px-6 flex items-center justify-between h-14">
+          <div className="flex items-center gap-3">
+            <img src="/euroadria-logo-white.png" alt="EuroAdria" className="h-8 w-auto" />
+            <div className="hidden sm:block">
+              <span className="text-white font-bold text-sm block leading-none">EuroAdria</span>
+              <span className="text-[#C8A96A] text-[10px] tracking-[0.2em] uppercase">Corporate Solutions</span>
+            </div>
+          </div>
+          <a href="#brief" className="px-5 py-2 border border-[#C8A96A] text-[#C8A96A] text-xs font-semibold tracking-wider uppercase hover:bg-[#C8A96A] hover:text-[#0B1120] transition-all" data-testid="nav-get-brief">
+            Get the Strategy Brief
+          </a>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="relative pt-28 pb-16 overflow-hidden">
+        {/* Subtle pyramid/triangle bg */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0B1120] via-[#111B2E] to-[#0B1120]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px]" style={{
+            background: 'linear-gradient(180deg, transparent 0%, rgba(200,169,106,0.03) 50%, transparent 100%)',
+            clipPath: 'polygon(50% 10%, 15% 90%, 85% 90%)'
+          }} />
+        </div>
+
+        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+          {/* Red badge */}
+          <div className="inline-block bg-[#B71C1C] px-5 py-2 mb-10">
+            <span className="text-white text-xs font-bold tracking-[0.15em] uppercase">Attention U.S. Investors & Entrepreneurs</span>
+          </div>
+
+          {/* Main headline — Playfair Display */}
+          <h1 className="mb-8" style={{ fontFamily: "'Playfair Display', serif" }} data-testid="usca-hero-title">
+            <span className="block text-white text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.1]">
+              Escape The U.S. Tax Net &
+            </span>
+            <span className="block text-white text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.1] mt-2">
+              Secure Your European Plan B
+            </span>
+            <span className="block text-white text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.1] mt-2">
+              Before The <span className="text-[#C8A96A]" style={{ fontStyle: 'italic' }}>2028 Arbitrage</span>
+            </span>
+            <span className="block text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.1] mt-2">
+              <span className="text-[#C8A96A]" style={{ fontStyle: 'italic' }}>Window</span>
+              <span className="text-white"> Closes.</span>
+            </span>
+          </h1>
+
+          {/* Subheadline */}
+          <p className="text-white/50 text-base sm:text-lg max-w-2xl mx-auto mb-12 leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
+            Watch the short briefing below to discover why high-net-worth Americans are
+            quietly moving capital into Montenegro to secure a 9% tax rate, Mediterranean
+            lifestyle, and future EU access.
+          </p>
+
+          {/* Video — gold border */}
+          <div className="relative max-w-3xl mx-auto mb-12">
+            <div className="border border-[#C8A96A]/40 rounded-sm p-1">
+              <div className="aspect-video bg-[#0a0f1a]">
+                <iframe
+                  src="https://www.youtube.com/embed/7k-e0ILF_o8?rel=0"
+                  title="EuroAdria - The 2028 Arbitrage Window"
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <a href="#brief" className="inline-flex items-center gap-3 px-10 py-4 bg-[#C8A96A] text-[#0B1120] font-bold text-sm tracking-wider uppercase hover:bg-[#d4b87a] transition-all" data-testid="hero-cta-usca">
+            Download the Strategy Brief
+            <ArrowRight className="w-4 h-4" />
+          </a>
+        </div>
+      </section>
+
+      {/* What you'll learn — Simple bullets */}
+      <section className="py-16 border-t border-white/5">
+        <div className="max-w-3xl mx-auto px-6">
+          <p className="text-[#C8A96A] text-xs tracking-[0.2em] uppercase text-center mb-8">What You'll Discover</p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {[
+              'Why Montenegro uses the Euro without being in the EU',
+              'How to legally reduce your tax burden to 9-15%',
+              'The real estate "window" before EU accession in 2028',
+              'How to navigate FATCA compliance from abroad',
+              'Company formation & banking in under 30 days',
+              'Critical mistakes Americans make in the Balkans',
+            ].map((item, i) => (
+              <div key={i} className="flex items-start gap-3 py-2">
+                <Check className="w-4 h-4 text-[#C8A96A] mt-0.5 shrink-0" />
+                <span className="text-white/70 text-sm">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Strategy Brief — Lead Form */}
+      <section id="brief" className="py-20 border-t border-white/5">
+        <div className="max-w-2xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <p className="text-[#C8A96A] text-xs tracking-[0.2em] uppercase mb-4">Free Download</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Montenegro Strategy Brief 2026
+            </h2>
+            <p className="text-white/50 text-sm max-w-xl mx-auto">
+              The comprehensive guide for Americans and Canadians exploring relocation, investment, and company formation in Montenegro.
+            </p>
+          </div>
+
+          {success ? (
+            <div className="text-center mb-6" data-testid="usca-brief-success">
+              <div className="w-16 h-16 bg-[#C8A96A]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-8 h-8 text-[#C8A96A]" />
+              </div>
+              <h3 className="text-white font-bold text-lg mb-2">Strategy Brief is on its way!</h3>
+              <p className="text-white/50 text-sm mb-6">Check your email inbox. The PDF is attached.</p>
+              {/* Thank you video */}
+              <div className="border border-[#C8A96A]/30 rounded-sm p-1 mt-4">
+                <div className="aspect-video">
+                  <iframe
+                    src="https://www.youtube.com/embed/LuIIfPV-mI8?autoplay=1&rel=0"
+                    title="Thank you from EuroAdria"
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto" data-testid="usca-brief-form">
+              <input type="text" placeholder="Your Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white placeholder:text-white/25 focus:outline-none focus:border-[#C8A96A]/50 text-sm" data-testid="usca-brief-name" />
+              <input type="email" placeholder="Your Email Address" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white placeholder:text-white/25 focus:outline-none focus:border-[#C8A96A]/50 text-sm" data-testid="usca-brief-email" />
+              {error && <p className="text-red-400 text-xs">{error}</p>}
+              <button type="submit" disabled={loading} className="w-full px-6 py-4 bg-[#C8A96A] text-[#0B1120] font-bold tracking-wider uppercase text-sm hover:bg-[#d4b87a] transition-all disabled:opacity-50 flex items-center justify-center gap-2" data-testid="usca-brief-submit">
+                {loading ? 'Sending...' : 'Get the Strategy Brief'}
+                {!loading && <ArrowRight className="w-4 h-4" />}
+              </button>
+              <p className="text-white/20 text-xs text-center flex items-center justify-center gap-1">
+                <Lock className="w-3 h-3" /> Your data is secure. No spam.
+              </p>
+            </form>
+          )}
+        </div>
+      </section>
+
+      {/* Trust strip */}
+      <section className="py-12 border-t border-white/5">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <p className="text-white/30 text-xs tracking-[0.15em] uppercase mb-6">Why EuroAdria?</p>
+          <p className="text-white/60 text-sm max-w-xl mx-auto leading-relaxed mb-8">
+            We are <strong className="text-white">not</strong> a standard real estate agency or generic relocation platform. Our role is <strong className="text-[#C8A96A]">strategic coordination</strong> — we structure your project and execute local steps securely alongside reliable lawyers, notaries, and banking partners.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {['Strategic Assessment', 'Company Formation', 'Banking Setup', 'Real Estate DD'].map((item) => (
+              <div key={item} className="border border-white/10 py-3 px-2">
+                <span className="text-white/60 text-xs">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Book a Call */}
+      <section className="py-12 border-t border-white/5">
+        <div className="max-w-xl mx-auto px-6 text-center">
+          <p className="text-white/50 text-sm mb-4">Ready to discuss your project?</p>
+          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-3.5 border border-[#C8A96A] text-[#C8A96A] text-sm font-semibold tracking-wider uppercase hover:bg-[#C8A96A] hover:text-[#0B1120] transition-all" data-testid="usca-book-call">
+            Book a Free Zoom Call
+          </a>
+        </div>
+      </section>
+
+      {/* FAQ — Compact */}
+      <section className="py-16 border-t border-white/5">
+        <div className="max-w-2xl mx-auto px-6">
+          <p className="text-white/30 text-xs tracking-[0.15em] uppercase text-center mb-8">FAQ</p>
+          {faqs.map((f) => <FAQItem key={f.q} q={f.q} a={f.a} />)}
+        </div>
+      </section>
+
+      {/* Privacy */}
+      <section className="py-8 border-t border-white/5">
+        <div className="max-w-2xl mx-auto px-6">
+          <button onClick={() => setShowPrivacy(!showPrivacy)} className="flex items-center gap-2 text-white/20 hover:text-white/40 text-xs transition-colors mx-auto">
+            <Shield className="w-3 h-3" /> Privacy Policy {showPrivacy ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          </button>
+          {showPrivacy && (
+            <div className="mt-4 text-white/25 text-[11px] space-y-2 leading-relaxed">
+              <p><strong className="text-white/40">Data Collection:</strong> We collect your name and email to send the Strategy Brief and relevant follow-up information.</p>
+              <p><strong className="text-white/40">Protection:</strong> Your data is securely processed. We do not share it with unrelated third parties.</p>
+              <p><strong className="text-white/40">Opt-Out:</strong> Unsubscribe anytime via the link in any email.</p>
+              <p>Responsible Entity: EuroAdria Corporate Solutions (Montaris & Co. d.o.o.) — office@euroadria.me</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Footer — Minimal */}
+      <footer className="py-8 border-t border-white/5">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <img src="/euroadria-logo-white.png" alt="EuroAdria" className="h-10 mx-auto mb-4 opacity-40" />
+          <p className="text-white/15 text-[10px] max-w-xl mx-auto leading-relaxed mb-3">
+            This page is for general informational purposes only. It does not constitute legal, tax, financial, or investment advice. EuroAdria Corporate Solutions does not guarantee specific outcomes. References to the "2028 Arbitrage Window" are based on market assessments and are non-binding. Always consult licensed advisors.
+          </p>
+          <p className="text-white/10 text-[10px]">&copy; 2026 EuroAdria Corporate Solutions. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}

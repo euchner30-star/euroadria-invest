@@ -44,6 +44,7 @@ const InvestmentSimulation = lazy(() => import("./pages/investment/InvestmentSim
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const WhitepaperPage = lazy(() => import("./pages/WhitepaperPage"));
 const USLandingPage = lazy(() => import("./pages/USLandingPage"));
+const USCALandingPage = lazy(() => import("./pages/USCALandingPage"));
 
 function PageTracker() {
   usePageTracker();
@@ -112,6 +113,7 @@ function App() {
         <Routes>
           {/* Standalone pages (no Header/Footer) */}
           <Route path="/us" element={<USLandingPage />} />
+          <Route path="/usca" element={<USCALandingPage />} />
           {/* Main layout pages */}
           <Route path="/*" element={<AppLayout />} />
         </Routes>
