@@ -142,6 +142,78 @@ export default function USCALandingPage() {
         </div>
       </section>
 
+      {/* THE SOLUTION — Arbitrage Window */}
+      <section className="py-20 border-t border-white/5 bg-[#0B1120]">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left — Image */}
+            <div className="relative">
+              <img 
+                src="https://images.unsplash.com/photo-1780852611291-4d52b72dd05a?fm=webp&q=75&w=800" 
+                alt="Montenegro Property" 
+                loading="lazy"
+                className="w-full rounded-sm object-cover aspect-[4/5]"
+              />
+              <div className="absolute bottom-6 left-6 right-6 bg-white py-4 px-6">
+                <p className="text-[#0B1120] text-sm sm:text-base font-medium italic" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  "The most advanced candidate for EU Accession."
+                </p>
+              </div>
+            </div>
+
+            {/* Right — Content */}
+            <div>
+              <p className="text-[#B71C1C] text-xs tracking-[0.2em] uppercase font-bold mb-4">The Solution</p>
+              <h2 className="text-3xl sm:text-4xl font-black text-white mb-10 leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+                The 2028 Arbitrage Window Is Your Unfair Advantage.
+              </h2>
+
+              <div className="space-y-8">
+                {/* Point 1 */}
+                <div className="flex gap-4">
+                  <div className="w-8 h-8 bg-[#C8A96A]/20 rounded-full flex items-center justify-center shrink-0 mt-1">
+                    <Check className="w-4 h-4 text-[#C8A96A]" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-bold text-base mb-1">Euro Currency, Without ECB Control</h3>
+                    <p className="text-white/50 text-sm leading-relaxed">Montenegro uses the Euro unilaterally. Your assets are protected in a hard currency without the direct monetary policy overreach of Brussels.</p>
+                  </div>
+                </div>
+
+                {/* Point 2 */}
+                <div className="flex gap-4">
+                  <div className="w-8 h-8 bg-[#C8A96A]/20 rounded-full flex items-center justify-center shrink-0 mt-1">
+                    <Check className="w-4 h-4 text-[#C8A96A]" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-bold text-base mb-1">9% to 15% Maximum Tax Rate</h3>
+                    <p className="text-white/50 text-sm leading-relaxed">One of the most competitive tax environments on the European continent for both corporate profits and personal income.</p>
+                  </div>
+                </div>
+
+                {/* Point 3 */}
+                <div className="flex gap-4">
+                  <div className="w-8 h-8 bg-[#C8A96A]/20 rounded-full flex items-center justify-center shrink-0 mt-1">
+                    <Check className="w-4 h-4 text-[#C8A96A]" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-bold text-base mb-1">Pre-EU Real Estate Valuation</h3>
+                    <p className="text-white/50 text-sm leading-relaxed">When Croatia joined the EU, coastal property values surged by 60% in 5 years. Montenegro is currently negotiating its final EU chapters for an anticipated 2028 entry.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Warning Box */}
+              <div className="mt-8 bg-[#111B2E] border border-white/10 rounded-sm p-5">
+                <p className="text-white/80 text-sm leading-relaxed">
+                  <strong className="text-[#C8A96A]">Crucial Warning:</strong> Montenegro is incredibly lucrative, but it is NOT a DIY project for US citizens. Without strict FATCA structuring and cadastral due diligence, your capital is at risk.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* What you'll learn — Simple bullets */}
       <section className="py-16 border-t border-white/5">
         <div className="max-w-3xl mx-auto px-6">
