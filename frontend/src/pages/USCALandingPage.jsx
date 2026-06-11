@@ -149,7 +149,7 @@ export default function USCALandingPage() {
             {/* Left — Image */}
             <div className="relative">
               <img 
-                src="https://images.unsplash.com/photo-1780852611291-4d52b72dd05a?fm=webp&q=75&w=800" 
+                src="https://customer-assets.emergentagent.com/job_c0fd7376-15dd-4777-8bb5-a3271554eb57/artifacts/lcmc5zr4_490c294f-3095-48fd-b9c3-dd87966866ab.jpeg" 
                 alt="Montenegro Property" 
                 loading="lazy"
                 className="w-full rounded-sm object-cover aspect-[4/5]"
