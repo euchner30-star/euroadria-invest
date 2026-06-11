@@ -1,9 +1,10 @@
 """Site settings (downloads, homepage, legal pages, PDF generator)."""
 from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File
-from fastapi.responses import Response
+from fastapi.responses import Response, StreamingResponse
 from datetime import datetime, timezone
 import io
 import os
+import base64
 
 from core import db, verify_admin
 from reportlab.pdfbase import pdfmetrics
@@ -118,6 +119,30 @@ async def upload_pdf_file_to_db(file: UploadFile = File(...), pdf_key: str = "pr
             upsert=True
         )
     return {"success": True, "filename": file.filename, "size": len(content), "pdf_key": pdf_key}
+
+
+@router.get("/pdf/{pdf_key}")
+async def serve_pdf(pdf_key: str):
+    """Stream a stored PDF. Used by Resend path attachments to avoid loading into app memory."""
+    full_key = f"pdf_{pdf_key}"
+    pdf_doc = await db.site_settings.find_one({"key": full_key}, {"_id": 0})
+    if not pdf_doc:
+        raise HTTPException(status_code=404, detail="PDF not found")
+
+    if pdf_doc.get("chunked"):
+        chunks = await db.pdf_chunks.find({"pdf_key": full_key}, {"_id": 0}).sort("chunk_index", 1).to_list(100)
+        full_b64 = "".join([c["data"] for c in chunks])
+    else:
+        full_b64 = pdf_doc.get("base64", "")
+
+    if not full_b64:
+        raise HTTPException(status_code=404, detail="PDF data empty")
+
+    pdf_bytes = base64.b64decode(full_b64)
+    del full_b64
+    filename = pdf_doc.get("filename", "document.pdf")
+    return Response(content=pdf_bytes, media_type="application/pdf",
+                    headers={"Content-Disposition": f'inline; filename="{filename}"'})
 
 
 

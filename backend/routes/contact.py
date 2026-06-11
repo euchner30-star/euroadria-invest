@@ -279,29 +279,17 @@ async def capture_lead(lead: LeadForm):
             # Attach PDF for Praxisleitfaden or Whitepaper downloads (from MongoDB)
             if is_praxisleitfaden or is_whitepaper or is_us_brief:
                 try:
-                    pdf_key = "pdf_us_strategy_brief" if is_us_brief else ("pdf_whitepaper" if is_whitepaper else "pdf_praxisleitfaden")
-                    pdf_doc = await db.site_settings.find_one({"key": pdf_key}, {"_id": 0})
+                    pdf_key = "us_strategy_brief" if is_us_brief else ("whitepaper" if is_whitepaper else "praxisleitfaden")
+                    pdf_doc = await db.site_settings.find_one({"key": f"pdf_{pdf_key}"}, {"_id": 0, "base64": 0})
                     if pdf_doc:
-                        # Reassemble chunked PDFs
-                        if pdf_doc.get("chunked"):
-                            chunks = await db.pdf_chunks.find({"pdf_key": pdf_key}, {"_id": 0}).sort("chunk_index", 1).to_list(100)
-                            full_b64 = "".join([c["data"] for c in chunks])
-                        else:
-                            full_b64 = pdf_doc.get("base64", "")
-                        
-                        if full_b64:
-                            pdf_bytes = base64.b64decode(full_b64)
-                            del full_b64
-                            email_payload["attachments"] = [{
-                                "filename": pdf_doc.get("filename", "EuroAdria-Strategy-Brief.pdf" if is_us_brief else ("EuroAdria-Whitepaper.pdf" if is_whitepaper else "EuroAdria-Praxisleitfaden.pdf")),
-                                "content": pdf_bytes,
-                            }]
-                            logger.info(f"PDF attachment added from MongoDB ({len(pdf_bytes)} bytes)")
-                            del pdf_bytes
-                        else:
-                            logger.warning(f"No PDF data found in MongoDB for {pdf_key}")
+                        pdf_url = f"https://invest-euroadria.onrender.com/api/pdf/{pdf_key}"
+                        email_payload["attachments"] = [{
+                            "filename": pdf_doc.get("filename", "EuroAdria-Strategy-Brief.pdf" if is_us_brief else ("EuroAdria-Whitepaper.pdf" if is_whitepaper else "EuroAdria-Praxisleitfaden.pdf")),
+                            "path": pdf_url,
+                        }]
+                        logger.info(f"PDF attachment via URL: {pdf_url} ({pdf_doc.get('size', 0)} bytes)")
                     else:
-                        logger.warning(f"No PDF found in MongoDB for {pdf_key}")
+                        logger.warning(f"No PDF found in MongoDB for pdf_{pdf_key}")
                 except Exception as pdf_err:
                     logger.error(f"Failed to attach PDF: {pdf_err}")
 
