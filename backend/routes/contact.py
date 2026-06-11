@@ -291,11 +291,13 @@ async def capture_lead(lead: LeadForm):
                         
                         if full_b64:
                             pdf_bytes = base64.b64decode(full_b64)
+                            del full_b64
                             email_payload["attachments"] = [{
                                 "filename": pdf_doc.get("filename", "EuroAdria-Strategy-Brief.pdf" if is_us_brief else ("EuroAdria-Whitepaper.pdf" if is_whitepaper else "EuroAdria-Praxisleitfaden.pdf")),
-                                "content": list(pdf_bytes),
+                                "content": pdf_bytes,
                             }]
-                            logger.info(f"PDF attachment added from MongoDB ({pdf_doc.get('size', 0)} bytes)")
+                            logger.info(f"PDF attachment added from MongoDB ({len(pdf_bytes)} bytes)")
+                            del pdf_bytes
                         else:
                             logger.warning(f"No PDF data found in MongoDB for {pdf_key}")
                     else:

@@ -120,6 +120,24 @@ async def upload_pdf_file_to_db(file: UploadFile = File(...), pdf_key: str = "pr
     return {"success": True, "filename": file.filename, "size": len(content), "pdf_key": pdf_key}
 
 
+
+@router.delete("/admin/settings/cleanup-pdf-duplicates")
+async def cleanup_pdf_duplicates(admin: str = Depends(verify_admin)):
+    """Remove duplicate/orphaned PDF data to free memory. Deletes usca-specific key (both pages use us_strategy_brief now)."""
+    results = {}
+    # Remove usca-specific PDF (both pages now share pdf_us_strategy_brief)
+    r1 = await db.site_settings.delete_many({"key": "pdf_usca_strategy_brief"})
+    r2 = await db.pdf_chunks.delete_many({"pdf_key": "pdf_usca_strategy_brief"})
+    results["usca_deleted"] = {"metadata": r1.deleted_count, "chunks": r2.deleted_count}
+    
+    # List remaining PDFs
+    remaining = []
+    async for doc in db.site_settings.find({"key": {"$regex": "^pdf_"}}, {"_id": 0, "base64": 0}):
+        remaining.append({"key": doc["key"], "filename": doc.get("filename"), "size_kb": doc.get("size", 0) // 1024})
+    results["remaining_pdfs"] = remaining
+    return results
+
+
 # ── Homepage Settings ───────────────────────────────────────────────────
 
 HOMEPAGE_DEFAULTS = {
