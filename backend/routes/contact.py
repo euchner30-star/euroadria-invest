@@ -279,8 +279,7 @@ async def capture_lead(lead: LeadForm):
             # Attach PDF for Praxisleitfaden or Whitepaper downloads (from MongoDB)
             if is_praxisleitfaden or is_whitepaper or is_us_brief:
                 try:
-                    is_usca = lead_dict.get('source', '') == 'usca_strategy_brief'
-                    pdf_key = ("pdf_usca_strategy_brief" if is_usca else "pdf_us_strategy_brief") if is_us_brief else ("pdf_whitepaper" if is_whitepaper else "pdf_praxisleitfaden")
+                    pdf_key = "pdf_us_strategy_brief" if is_us_brief else ("pdf_whitepaper" if is_whitepaper else "pdf_praxisleitfaden")
                     pdf_doc = await db.site_settings.find_one({"key": pdf_key}, {"_id": 0})
                     if pdf_doc:
                         # Reassemble chunked PDFs
