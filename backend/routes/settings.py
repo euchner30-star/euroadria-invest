@@ -145,6 +145,20 @@ async def serve_pdf(pdf_key: str):
                     headers={"Content-Disposition": f'inline; filename="{filename}"'})
 
 
+@router.get("/admin/settings/pdf-status")
+async def get_pdf_status(admin: str = Depends(verify_admin)):
+    """Return upload status for all stored PDFs."""
+    statuses = {}
+    async for doc in db.site_settings.find({"key": {"$regex": "^pdf_"}}, {"_id": 0, "base64": 0}):
+        key = doc["key"].replace("pdf_", "")
+        statuses[key] = {
+            "filename": doc.get("filename", ""),
+            "size": doc.get("size", 0),
+            "updated_at": doc.get("updated_at", ""),
+        }
+    return statuses
+
+
 
 @router.delete("/admin/settings/cleanup-pdf-duplicates")
 async def cleanup_pdf_duplicates(admin: str = Depends(verify_admin)):

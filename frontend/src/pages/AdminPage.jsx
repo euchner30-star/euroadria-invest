@@ -183,6 +183,7 @@ const AdminPage = () => {
   });
   const [downloadsSaving, setDownloadsSaving] = useState(false);
   const [pdfUploadStatus, setPdfUploadStatus] = useState(null);
+  const [pdfStatuses, setPdfStatuses] = useState({});
 
   // Investment Data State
   const [investSubTab, setInvestSubTab] = useState('locations');
@@ -426,6 +427,13 @@ const AdminPage = () => {
     } catch (err) {
       console.error('Failed to fetch download settings:', err);
     }
+    // Fetch PDF upload statuses
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/settings/pdf-status`, {
+        headers: { 'Authorization': 'Basic ' + btoa(credentials.username + ':' + credentials.password) }
+      });
+      if (res.ok) setPdfStatuses(await res.json());
+    } catch {}
   };
 
   const handleSaveDownloads = async () => {
@@ -1654,6 +1662,14 @@ const AdminPage = () => {
               <div className="mb-6 p-4 bg-ea-light rounded-xl">
                 <label className="block text-ea-dark font-semibold mb-1">Praxisleitfaden PDF</label>
                 <p className="text-ea-dark/50 text-xs mb-2">Wird als Anhang per E-Mail versendet, wenn ein Lead das Formular ausfuellt</p>
+                {pdfStatuses.praxisleitfaden && (
+                  <div className="flex items-center gap-2 mb-2 px-3 py-2 bg-green-50 border border-green-200 rounded-lg">
+                    <svg className="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                    <span className="text-green-700 text-sm font-medium">{pdfStatuses.praxisleitfaden.filename}</span>
+                    <span className="text-green-600 text-xs">({Math.round(pdfStatuses.praxisleitfaden.size / 1024)} KB)</span>
+                    {pdfStatuses.praxisleitfaden.updated_at && <span className="text-green-500 text-xs ml-auto">{new Date(pdfStatuses.praxisleitfaden.updated_at).toLocaleDateString('de-DE')}</span>}
+                  </div>
+                )}
                 <div className="flex items-center gap-3">
                   <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all text-sm">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
@@ -1677,6 +1693,7 @@ const AdminPage = () => {
                           const data = await res.json();
                           if (data.success) {
                             setPdfUploadStatus({ name: data.filename, size: data.size });
+                            setPdfStatuses(prev => ({ ...prev, praxisleitfaden: { filename: data.filename, size: data.size, updated_at: new Date().toISOString() } }));
                             alert('PDF erfolgreich hochgeladen! (' + Math.round(data.size / 1024) + ' KB)');
                           } else {
                             alert('Fehler: ' + (data.detail || 'Upload fehlgeschlagen'));
@@ -1708,7 +1725,15 @@ const AdminPage = () => {
               {/* US Strategy Brief */}
               <div className="mb-6 p-4 bg-ea-light rounded-xl">
                 <label className="block text-ea-dark font-semibold mb-1">US Strategy Brief PDF</label>
-                <p className="text-ea-dark/50 text-xs mb-2">Wird als Anhang per E-Mail versendet wenn ein US-Lead das Formular auf /us ausfuellt</p>
+                <p className="text-ea-dark/50 text-xs mb-2">Wird als Anhang per E-Mail versendet wenn ein US-Lead das Formular auf /us oder /usca ausfuellt</p>
+                {pdfStatuses.us_strategy_brief && (
+                  <div className="flex items-center gap-2 mb-2 px-3 py-2 bg-green-50 border border-green-200 rounded-lg">
+                    <svg className="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                    <span className="text-green-700 text-sm font-medium">{pdfStatuses.us_strategy_brief.filename}</span>
+                    <span className="text-green-600 text-xs">({Math.round(pdfStatuses.us_strategy_brief.size / 1024)} KB)</span>
+                    {pdfStatuses.us_strategy_brief.updated_at && <span className="text-green-500 text-xs ml-auto">{new Date(pdfStatuses.us_strategy_brief.updated_at).toLocaleDateString('de-DE')}</span>}
+                  </div>
+                )}
                 <div className="flex items-center gap-3">
                   <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all text-sm">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
@@ -1731,6 +1756,7 @@ const AdminPage = () => {
                           });
                           const data = await res.json();
                           if (data.success) {
+                            setPdfStatuses(prev => ({ ...prev, us_strategy_brief: { filename: data.filename, size: data.size, updated_at: new Date().toISOString() } }));
                             alert('US Strategy Brief PDF erfolgreich hochgeladen! (' + Math.round(data.size / 1024) + ' KB)');
                           } else {
                             alert('Fehler: ' + (data.detail || 'Upload fehlgeschlagen'));
