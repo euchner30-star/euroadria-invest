@@ -1,6 +1,6 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { LanguageProvider } from "./context/LanguageContext";
 import usePageTracker from "./hooks/usePageTracker";
 import Header from "./components/Header";
@@ -103,6 +103,19 @@ function AppLayout() {
 }
 
 function App() {
+  // Fetch GTM ID from backend and cache it for index.html to use
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/api/settings/tracking`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.gtm_id) {
+          localStorage.setItem('euroadria_gtm_id', d.gtm_id);
+          if (typeof window.loadGTM === 'function') window.loadGTM(d.gtm_id);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <LanguageProvider>
     <div className="App min-h-screen flex flex-col">

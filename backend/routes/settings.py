@@ -177,6 +177,27 @@ async def cleanup_pdf_duplicates(admin: str = Depends(verify_admin)):
     return results
 
 
+# ── Tracking / GTM Settings ─────────────────────────────────────────────
+
+@router.get("/settings/tracking")
+async def get_tracking_settings():
+    """Get tracking pixel IDs (public, needed for frontend to load GTM)."""
+    doc = await db.site_settings.find_one({"key": "tracking"}, {"_id": 0})
+    return {"gtm_id": (doc or {}).get("gtm_id", "")}
+
+
+@router.put("/admin/settings/tracking")
+async def update_tracking_settings(data: dict, admin: str = Depends(verify_admin)):
+    """Update tracking settings (GTM ID, etc.)."""
+    gtm_id = data.get("gtm_id", "").strip()
+    await db.site_settings.update_one(
+        {"key": "tracking"},
+        {"$set": {"key": "tracking", "gtm_id": gtm_id}},
+        upsert=True
+    )
+    return {"gtm_id": gtm_id}
+
+
 # ── Homepage Settings ───────────────────────────────────────────────────
 
 HOMEPAGE_DEFAULTS = {

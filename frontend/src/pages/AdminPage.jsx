@@ -432,7 +432,16 @@ const AdminPage = () => {
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/settings/pdf-status`, {
         headers: { 'Authorization': 'Basic ' + btoa(credentials.username + ':' + credentials.password) }
       });
-      if (res.ok) setPdfStatuses(await res.json());
+      if (res.ok) {
+        const statuses = await res.json();
+        // Also fetch GTM ID
+        const trackRes = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/settings/tracking`);
+        if (trackRes.ok) {
+          const trackData = await trackRes.json();
+          statuses._gtm_id = trackData.gtm_id || '';
+        }
+        setPdfStatuses(statuses);
+      }
     } catch {}
   };
 
@@ -1878,6 +1887,56 @@ const AdminPage = () => {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Google Tag Manager */}
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+              <div className="flex items-center space-x-2 mb-4">
+                <svg className="w-5 h-5 text-ea-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
+                <h2 className="text-lg font-bold text-ea-dark">Google Tag Manager</h2>
+              </div>
+              <p className="text-ea-dark/60 text-sm mb-4">
+                Über den Google Tag Manager können Sie Facebook Pixel, TikTok Pixel, LinkedIn Insight Tag und alle anderen Tracking-Pixels zentral verwalten — ohne Code-Änderungen. Wird DSGVO-konform nur nach Cookie-Zustimmung geladen.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="text"
+                  value={pdfStatuses._gtm_id || ''}
+                  onChange={(e) => setPdfStatuses(prev => ({ ...prev, _gtm_id: e.target.value }))}
+                  placeholder="GTM-XXXXXXX"
+                  className="flex-1 bg-white border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold text-sm font-mono"
+                  data-testid="gtm-id-input"
+                />
+                <button
+                  onClick={async () => {
+                    const gtmId = (pdfStatuses._gtm_id || '').trim();
+                    try {
+                      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/settings/tracking`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Basic ' + btoa(credentials.username + ':' + credentials.password) },
+                        body: JSON.stringify({ gtm_id: gtmId })
+                      });
+                      if (res.ok) {
+                        localStorage.setItem('euroadria_gtm_id', gtmId);
+                        alert(gtmId ? 'GTM-ID gespeichert! Wird nach Cookie-Zustimmung geladen.' : 'GTM deaktiviert.');
+                      }
+                    } catch (err) { alert('Fehler: ' + err.message); }
+                  }}
+                  className="px-6 py-3 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-dark/90 transition-all text-sm whitespace-nowrap"
+                  data-testid="gtm-save-btn"
+                >
+                  GTM speichern
+                </button>
+              </div>
+              {pdfStatuses._gtm_id && pdfStatuses._gtm_id.startsWith('GTM-') && (
+                <p className="text-green-600 text-xs mt-2 flex items-center gap-1">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  GTM aktiv: {pdfStatuses._gtm_id}
+                </p>
+              )}
+              <p className="text-ea-dark/40 text-xs mt-2">
+                Erstellen Sie Ihren GTM-Container kostenlos unter <a href="https://tagmanager.google.com" target="_blank" rel="noopener noreferrer" className="text-ea-gold hover:underline">tagmanager.google.com</a>
+              </p>
             </div>
           </div>
         )}
