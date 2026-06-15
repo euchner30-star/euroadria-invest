@@ -163,18 +163,18 @@ const AnalyticsDashboard = ({ credentials }) => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h2 className="text-xl font-bold text-ea-dark">Analytics Dashboard</h2>
         <div className="flex items-center gap-2">
-          {[7, 30, 90].map(d => (
+          {[7, 30, 90, 365, 0].map(d => (
             <button
               key={d}
-              onClick={() => setPeriod(d)}
+              onClick={() => setPeriod(d || 9999)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                period === d 
+                period === (d || 9999) 
                   ? 'bg-ea-dark text-white' 
                   : 'bg-gray-100 text-ea-dark/70 hover:bg-gray-200'
               }`}
-              data-testid={`period-${d}`}
+              data-testid={`period-${d || 'all'}`}
             >
-              {d} Tage
+              {d === 0 ? 'Gesamt' : `${d} Tage`}
             </button>
           ))}
           <button
