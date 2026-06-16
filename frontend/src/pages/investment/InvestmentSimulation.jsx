@@ -215,6 +215,7 @@ export default function InvestmentSimulation() {
         })
       });
       sessionStorage.setItem('pdf_lead_captured', 'true');
+      if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
     } catch (err) {
       console.error('Lead capture failed:', err);
     }

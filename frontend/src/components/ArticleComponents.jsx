@@ -35,6 +35,7 @@ export const LeadMagnetBox = () => {
         })
       });
       setSubmitted(true);
+      if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
     } catch (err) {
       console.error(err);
     } finally {

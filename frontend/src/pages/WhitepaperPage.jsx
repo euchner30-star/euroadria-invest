@@ -38,6 +38,7 @@ export default function WhitepaperPage() {
       });
       if (res.ok) {
         setSuccess(true);
+        if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
       } else {
         setError('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
       }

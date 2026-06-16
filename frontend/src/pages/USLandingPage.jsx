@@ -79,6 +79,7 @@ export default function USLandingPage() {
         })
       });
       if (res.ok) setSuccess(true);
+      if (res.ok && typeof window.fbq === 'function') window.fbq('track', 'Lead');
       else setError('Something went wrong. Please try again.');
     } catch {
       setError('Connection error. Please try again.');

@@ -56,6 +56,7 @@ const ContactPage = () => {
           message: data.message || (lang === 'en' ? 'Thank you for your message! We will get back to you shortly.' : 'Vielen Dank für Ihre Nachricht! Wir melden uns zeitnah bei Ihnen.')
         });
         setFormData({ name: '', email: '', phone: '', subject: '', message: '', privacyConsent: false });
+        if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
       } else {
         setStatus({ 
           type: 'error', 

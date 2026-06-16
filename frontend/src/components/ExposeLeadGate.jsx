@@ -27,6 +27,7 @@ const ExposeLeadGate = ({ exposeUrl, exposeName, sourceId, buttonText, buttonCla
     }
     setSubmitting(false);
     setUnlocked(true);
+    if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
   };
 
   const handleDownload = () => {
