@@ -19,7 +19,7 @@ const NiksicPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try { await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/contact`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ name:formData.name, email:formData.email, phone:formData.phone, subject:'Real Estate Inquiry: Nikšić', message:formData.message||'Interest in Nikšić properties' }) }); } catch(err){console.error(err);}
+    try { await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/leads`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ name:formData.name, email:formData.email, phone:formData.phone, source:'niksic_expose', expose_name:'Nikšić Exposé — Industrial Growth Analysis' }) }); if (typeof window.fbq === 'function') window.fbq('track', 'Lead'); } catch(err){console.error(err);}
     setSubmitted(true);
     setTimeout(()=>{setShowContactForm(false);setSubmitted(false);setFormData({name:'',email:'',phone:'',message:''});},3000);
   };

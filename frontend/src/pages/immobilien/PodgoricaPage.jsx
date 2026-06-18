@@ -17,7 +17,7 @@ const PodgoricaPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try { await fetch(`${process.env.REACT_APP_BACKEND_URL||''}/api/contact`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ name:formData.name, email:formData.email, phone:formData.phone, subject:'Real Estate Inquiry: Podgorica', message:formData.message||'Interest in Podgorica properties' }) }); } catch(err){console.error(err);}
+    try { await fetch(`${process.env.REACT_APP_BACKEND_URL||''}/api/leads`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ name:formData.name, email:formData.email, phone:formData.phone, source:'podgorica_expose', expose_name:'Podgorica Exposé — Hauptstadt-Investment-Analyse' }) }); if (typeof window.fbq === 'function') window.fbq('track', 'Lead'); } catch(err){console.error(err);}
     setSubmitted(true); setTimeout(()=>{setShowContactForm(false);setSubmitted(false);setFormData({name:'',email:'',phone:'',message:''});},3000);
   };
 
