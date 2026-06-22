@@ -1,13 +1,14 @@
 # EuroAdria Investment Intelligence Platform — PRD
 
 ## Original Problem Statement
-Professional "Investment Intelligence Platform" for the Balkan region with full CMS. Decoupled architecture (React + FastAPI + MongoDB Atlas), hosted on Render. Features: ROI/Simulation calculator, dynamic location profiles, CRM Kanban pipeline, AEO-optimized blog, branded PDF Exposé generation, custom Analytics, CMS admin panel, and targeted A/B tested landing pages for US/CA investors.
+Professional "Investment Intelligence Platform" for the Balkan region with full CMS. Decoupled architecture (React + FastAPI + MongoDB Atlas), hosted on Render.
 
 ## Tech Stack
-- **Frontend:** React 19 (Suspense/lazy routing), TailwindCSS
+- **Frontend:** React 19 (Suspense/lazy), TailwindCSS, i18n (EN default, DE switchable)
 - **Backend:** FastAPI, Motor (async MongoDB), pillow-heif (iOS)
 - **Database:** MongoDB Atlas (GridFS for chunked file/image storage)
 - **Email:** Resend API
+- **Tracking:** GTM (GTM-5D5FBKQ3), GA4 (G-KZK813E3BS + G-DQWDTYG7NX), Meta Pixel (2212587192833639)
 - **Hosting:** Render (ephemeral storage — all files in GridFS)
 
 ## Completed Features
@@ -21,21 +22,27 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - iOS HEIC Upload support
 - Legal Advertorial Compliance (BurdaForward)
 - US Landing Pages A/B Test (`/us` light + `/usca` dark)
-- US Strategy Brief PDF upload (17.5MB, chunked in MongoDB) — 2026-06-11
-- PDF Email via Resend `path` URL (memory-safe, no RAM loading) — 2026-06-11
-- PDF Status Indicator in Admin Panel (green bar with filename/size/date) — 2026-06-11
-- English email wrapper for US leads ("Advisory & Investment Platform") — 2026-06-11
-- Analytics Dashboard: 365 Tage + Gesamt view added — 2026-06-11
-- `/usca` bottom section readability improved (FAQ, Footer contrast) — 2026-06-11
+- US Strategy Brief PDF upload (17.5MB, chunked in MongoDB)
+- PDF Email via Resend `path` URL (memory-safe)
+- PDF Status Indicator in Admin Panel
+- English email wrapper for US leads
+- Analytics Dashboard: 365 Tage + Gesamt view
+- `/usca` bottom section readability improved
+- **Google Tag Manager integration (DSGVO-compliant, admin-configurable)**
+- **Meta Pixel with Lead conversion tracking on ALL forms**
+- **Dual GA4 properties**
+- **Datenschutzerklärung DSGVO-updated (GTM, GA4, Meta, Resend, Cookie-Consent)**
+- **Default language: English (with DE/EN switcher in Header)**
+- **Exposé requests routed to /api/leads with proper expose_name**
 
 ## Pending / In Progress
 - [BLOCKED] VSL Video for `/us` and `/usca` (waiting on user)
-- [BLOCKED] Tracking Pixels: Meta, TikTok, LinkedIn, Google Ads (waiting on IDs from Holger)
-- [USER VERIFY] X-Frame-Options SAMEORIGIN in Render (Leaflet Map)
+- [BLOCKED] TikTok + LinkedIn Pixel IDs (waiting on Holger)
+- [USER VERIFY] X-Frame-Options SAMEORIGIN in Render
 
 ## Upcoming (P1)
-- Tracking Pixels einbauen (Meta/TikTok/LinkedIn/Google Ads) — sobald IDs da
-- Apartment-Listing Funktionalität (real DB data integration)
+- TikTok + LinkedIn Pixels (sobald IDs da)
+- Apartment-Listing Funktionalität (real DB data)
 - Video Background for Hero section
 - Podcast-Integration
 
@@ -46,16 +53,10 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 ## Key Architecture Notes
 - All media stored in MongoDB GridFS (no local disk on Render)
 - PDFs >14MB base64 are chunked into `pdf_chunks` collection
-- PDF email attachments use Resend `path` URL (not in-memory) to avoid 512MB Render OOM
+- PDF email attachments use Resend `path` URL to avoid 512MB Render OOM
 - Both `/us` and `/usca` share same PDF key `pdf_us_strategy_brief`
-- Admin credentials: HTTP Basic Auth
-- Legal: Never use "berichten"/"referenziert" with news outlets — must say "Advertorial"/"Anzeige"
-- Do NOT add `emergentintegrations` to requirements.txt (breaks Render build)
-
-## Key API Endpoints
-- `GET /api/pdf/{pdf_key}` — Serves stored PDFs (used by Resend path attachments)
-- `GET /api/admin/settings/pdf-status` — Returns upload status for all PDFs
-- `DELETE /api/admin/settings/cleanup-pdf-duplicates` — Removes orphaned PDF data
-- `POST /api/settings/upload-pdf-file` — Uploads PDFs in chunks via base64
-- `GET /api/img/{filename}` — Streams optimized webp images from GridFS
-- `POST /api/leads` — Lead capture with PDF email attachment
+- Language default: English, saved in localStorage, switchable DE/EN
+- All tracking loads ONLY after cookie consent (DSGVO)
+- Admin panel stays in German
+- Legal: Never use "berichten"/"referenziert" with news outlets
+- Do NOT add `emergentintegrations` to requirements.txt

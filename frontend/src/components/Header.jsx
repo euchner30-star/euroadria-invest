@@ -15,7 +15,7 @@ const Header = () => {
   const isScrollingRef = useRef(false);
   const scrollTimerRef = useRef(null);
   const location = useLocation();
-  const { t } = useLanguage();
+  const { t, lang, setLang } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -299,8 +299,16 @@ const Header = () => {
             ))}
           </div>
 
-          {/* Desktop CTA */}
-          <div className="hidden lg:flex items-center gap-2 ml-4">
+          {/* Desktop CTA + Language Switcher */}
+          <div className="hidden lg:flex items-center gap-3 ml-4">
+            <button
+              onClick={() => setLang(lang === 'en' ? 'de' : 'en')}
+              className="px-2.5 py-1.5 text-xs font-bold tracking-wider border border-ea-dark/20 rounded-md hover:border-ea-gold hover:text-ea-gold transition-all"
+              data-testid="lang-switch-desktop"
+              title={lang === 'en' ? 'Auf Deutsch wechseln' : 'Switch to English'}
+            >
+              {lang === 'en' ? 'DE' : 'EN'}
+            </button>
             <Link
               to="/contact"
               className="px-3 py-2 bg-ea-dark text-white text-sm font-semibold tracking-wider rounded-lg hover:bg-ea-navy transition-all duration-300"
@@ -468,6 +476,13 @@ const Header = () => {
               >
                 {t('nav.ctaButtonMobile')}
               </Link>
+              <button
+                onClick={() => setLang(lang === 'en' ? 'de' : 'en')}
+                className="mt-2 px-4 py-3 text-base font-semibold rounded-lg text-center border border-ea-dark/20 hover:border-ea-gold hover:text-ea-gold transition-all"
+                data-testid="lang-switch-mobile"
+              >
+                {lang === 'en' ? '🇩🇪 Deutsch' : '🇬🇧 English'}
+              </button>
             </div>
           </div>
         )}

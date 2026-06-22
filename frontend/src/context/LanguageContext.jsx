@@ -7,9 +7,16 @@ const translations = { de, en };
 const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
-  const [lang] = useState('de');
+  const [lang, setLangState] = useState(() => {
+    const saved = localStorage.getItem('euroadria_lang');
+    return saved === 'de' ? 'de' : 'en';
+  });
 
-  const setLang = useCallback(() => {}, []);
+  const setLang = useCallback((newLang) => {
+    const l = newLang === 'de' ? 'de' : 'en';
+    setLangState(l);
+    localStorage.setItem('euroadria_lang', l);
+  }, []);
 
   const t = useCallback((key) => {
     const keys = key.split('.');
@@ -18,8 +25,8 @@ export const LanguageProvider = ({ children }) => {
       val = val?.[k];
     }
     if (val !== undefined) return val;
-    // Fallback to German
-    let fallback = translations.de;
+    // Fallback to English
+    let fallback = translations.en;
     for (const k of keys) {
       fallback = fallback?.[k];
     }
