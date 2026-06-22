@@ -31,7 +31,7 @@ const InfrastrukturRadarPage = () => {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
-          subject: `Standort-Exposé Anfrage: ${formData.region}`,
+          subject: `Location Exposé Request: ${formData.region}`,
           message: `Region: ${formData.region}\n\n${formData.message || 'Keine weitere Nachricht.'}`
         })
       });
@@ -52,22 +52,22 @@ const InfrastrukturRadarPage = () => {
     <div className="min-h-screen bg-ea-dark" data-testid="infrastruktur-radar-page">
       <SEO 
         title="Infrastruktur-Radar | Investment-Potenziale Montenegro"
-        description="Exklusiver Infrastruktur-Radar für DACH-Investoren: Interaktive Karte mit Investment-Scores, Infrastrukturprojekten und Opportunitätszonen in Montenegro. Bar (92/100), Andrijevica (94/100), Podgorica (90/100)."
+        description="Exclusive infrastructure radar for investors: Interactive map with investment scores, infrastructure projects and opportunity zones in Montenegro. Bar (92/100), Andrijevica (94/100), Podgorica (90/100)."
         url="/infrastruktur-radar"
         service={{
           name: "Montenegro Infrastruktur-Radar",
-          description: "Interaktive Premium-Karte mit Investment-Scores, Zeithorizonten und EuroAdria Corporate Solutions Opportunitätszonen für strategische Investments in Montenegro",
+          description: "Interactive premium map with investment scores, time horizons and EuroAdria Corporate Solutions opportunity zones for strategic investments in Montenegro",
           type: "Investment Analysis Tool",
           areaServed: ["Montenegro"]
         }}
         faq={[
           {
             question: "Was zeigt der EuroAdria Corporate Solutions Infrastruktur-Radar?",
-            answer: "Der Infrastruktur-Radar ist eine interaktive Premium-Karte mit Investment-Scores (0-100) für alle montenegrinischen Standorte, Infrastrukturprojekten (Straßen, Bahnen, Häfen, Flughäfen), Zeithorizonten (kurz-, mittel-, langfristig) und EuroAdria Corporate Solutions Opportunitätszonen."
+            answer: "The infrastructure radar is an interactive premium map with investment scores (0-100) for all Montenegrin locations, infrastructure projects (roads, railways, ports, airports), time horizons (short-, medium-, long-term) and EuroAdria Corporate Solutions opportunity zones."
           },
           {
-            question: "Welche Standorte haben den höchsten Investment-Score?",
-            answer: "Laut EuroAdria Corporate Solutions V5-Analyse: Andrijevica (94/100) mit aggressivem Aufwertungshebel, Bar (92/100) als Küsten-Logistik-Hub, und Podgorica (90/100) als Hauptstadt mit diversifiziertem Potenzial."
+            question: "Which locations have the highest investment score?",
+            answer: "According to EuroAdria Corporate Solutions V5 analysis: Andrijevica (94/100) with aggressive appreciation leverage, Bar (92/100) as coastal logistics hub, and Podgorica (90/100) as capital with diversified potential."
           },
           {
             question: "Wie werden die Investment-Scores berechnet?",
@@ -99,22 +99,22 @@ const InfrastrukturRadarPage = () => {
             <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3">
               <TrendingUp className="w-5 h-5 text-ea-gold" />
               <div>
-                <div className="text-white font-semibold">23 Standorte</div>
-                <div className="text-ea-light/50 text-xs">mit Investment-Score</div>
+                <div className="text-white font-semibold">{en ? '23 Locations' : '23 Standorte'}</div>
+                <div className="text-ea-light/50 text-xs">{en ? 'with Investment Score' : 'mit Investment-Score'}</div>
               </div>
             </div>
             <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3">
               <Building2 className="w-5 h-5 text-ea-gold" />
               <div>
-                <div className="text-white font-semibold">12 Infrastruktur-Projekte</div>
-                <div className="text-ea-light/50 text-xs">Straßen, Bahnen, Häfen</div>
+                <div className="text-white font-semibold">{en ? '12 Infrastructure Projects' : '12 Infrastruktur-Projekte'}</div>
+                <div className="text-ea-light/50 text-xs">{en ? 'Roads, Railways, Ports' : 'Straßen, Bahnen, Häfen'}</div>
               </div>
             </div>
             <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3">
               <Shield className="w-5 h-5 text-ea-gold" />
               <div>
-                <div className="text-white font-semibold">5 Opportunitätszonen</div>
-                <div className="text-ea-light/50 text-xs">EuroAdria Corporate Solutions exklusiv</div>
+                <div className="text-white font-semibold">{en ? '5 Opportunity Zones' : '5 Opportunitätszonen'}</div>
+                <div className="text-ea-light/50 text-xs">{en ? 'EuroAdria Corporate Solutions exclusive' : 'EuroAdria Corporate Solutions exklusiv'}</div>
               </div>
             </div>
           </div>
@@ -140,7 +140,7 @@ const InfrastrukturRadarPage = () => {
             data-testid="expose-request-button"
           >
             <FileText className="w-5 h-5" />
-            <span>Detailliertes Standort-Exposé anfordern</span>
+            <span>{en ? 'Request Detailed Location Exposé' : 'Detailliertes Standort-Exposé anfordern'}</span>
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>
@@ -151,19 +151,19 @@ const InfrastrukturRadarPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <h3 className="text-ea-gold font-semibold text-lg mb-3">Investment-Scores erklärt</h3>
+              <h3 className="text-ea-gold font-semibold text-lg mb-3">{en ? 'Investment Scores Explained' : 'Investment-Scores erklärt'}</h3>
               <ul className="space-y-2 text-ea-light/70 text-sm">
                 <li className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-orange-400"></span>
-                  85-100: Aggressiver Aufwertungshebel
+                  {en ? '85-100: Aggressive appreciation leverage' : '85-100: Aggressiver Aufwertungshebel'}
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-yellow-400"></span>
-                  70-84: Starker bis solider Hebel
+                  {en ? '70-84: Strong to solid leverage' : '70-84: Starker bis solider Hebel'}
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-green-400"></span>
-                  Unter 70: Etablierter Case
+                  {en ? 'Below 70: Established case' : 'Unter 70: Etablierter Case'}
                 </li>
               </ul>
             </div>
@@ -171,27 +171,27 @@ const InfrastrukturRadarPage = () => {
             <div className="bg-white/5 border border-white/10 rounded-xl p-6">
               <h3 className="text-ea-gold font-semibold text-lg mb-3">Use-Case Filter</h3>
               <ul className="space-y-2 text-ea-light/70 text-sm">
-                <li>• <strong>Logistik:</strong> Häfen, Autobahnen, Lager</li>
-                <li>• <strong>Residential:</strong> Wohnimmobilien</li>
-                <li>• <strong>Tourismus:</strong> Hotels, Resorts</li>
-                <li>• <strong>Relocation:</strong> Lebensqualität</li>
+                <li>• <strong>{en ? 'Logistics:' : 'Logistik:'}</strong> {en ? 'Ports, highways, warehouses' : 'Häfen, Autobahnen, Lager'}</li>
+                <li>• <strong>Residential:</strong> {en ? 'Residential properties' : 'Wohnimmobilien'}</li>
+                <li>• <strong>{en ? 'Tourism:' : 'Tourismus:'}</strong> Hotels, Resorts</li>
+                <li>• <strong>Relocation:</strong> {en ? 'Quality of life' : 'Lebensqualität'}</li>
               </ul>
             </div>
             
             <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <h3 className="text-ea-gold font-semibold text-lg mb-3">Zeithorizonte</h3>
+              <h3 className="text-ea-gold font-semibold text-lg mb-3">{en ? 'Time Horizons' : 'Zeithorizonte'}</h3>
               <ul className="space-y-2 text-ea-light/70 text-sm">
                 <li className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-green-400"></span>
-                  Kurzfristig: 0-3 Jahre
+                  {en ? 'Short-term: 0-3 years' : 'Kurzfristig: 0-3 Jahre'}
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-yellow-400"></span>
-                  Mittelfristig: 3-7 Jahre
+                  {en ? 'Medium-term: 3-7 years' : 'Mittelfristig: 3-7 Jahre'}
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-red-400"></span>
-                  Langfristig: 7+ Jahre
+                  {en ? 'Long-term: 7+ years' : 'Langfristig: 7+ Jahre'}
                 </li>
               </ul>
             </div>
@@ -200,7 +200,7 @@ const InfrastrukturRadarPage = () => {
           {/* CTA Section */}
           <div className="mt-12 text-center">
             <p className="text-ea-light/70 mb-6">
-              Interessiert an einem spezifischen Standort? Unsere Experten erstellen Ihnen ein detailliertes Exposé.
+              {en ? 'Interested in a specific location? Our experts will create a detailed exposé for you.' : 'Interessiert an einem spezifischen Standort? Unsere Experten erstellen Ihnen ein detailliertes Exposé.'}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <button
@@ -208,13 +208,13 @@ const InfrastrukturRadarPage = () => {
                 className="px-8 py-4 bg-ea-gold text-ea-dark font-bold rounded-xl hover:bg-ea-gold/90 transition-all flex items-center gap-2"
               >
                 <FileText className="w-5 h-5" />
-                Standort-Exposé anfordern
+                {en ? 'Request Location Exposé' : 'Standort-Exposé anfordern'}
               </button>
               <Link
                 to="/contact"
                 className="px-8 py-4 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-all flex items-center gap-2 border border-white/20"
               >
-                Beratungsgespräch vereinbaren
+                {en ? 'Schedule Consultation' : 'Beratungsgespräch vereinbaren'}
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
@@ -287,8 +287,8 @@ const InfrastrukturRadarPage = () => {
                 <FileText className="w-6 h-6 text-ea-gold" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-white">Standort-Exposé anfordern</h3>
-                <p className="text-ea-light/60 text-sm">Detaillierte Analyse für Ihren Wunschstandort</p>
+                <h3 className="text-xl font-bold text-white">Request Location Exposé</h3>
+                <p className="text-ea-light/60 text-sm">{en ? 'Detailed analysis for your preferred location' : 'Detaillierte Analyse für Ihren Wunschstandort'}</p>
               </div>
             </div>
 
@@ -297,8 +297,8 @@ const InfrastrukturRadarPage = () => {
                 <div className="w-16 h-16 bg-ea-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Shield className="w-8 h-8 text-ea-gold" />
                 </div>
-                <h4 className="text-xl font-bold text-white mb-2">Anfrage erhalten!</h4>
-                <p className="text-ea-light/70">Wir melden uns innerhalb von 24 Stunden bei Ihnen.</p>
+                <h4 className="text-xl font-bold text-white mb-2">{en ? 'Request received!' : 'Anfrage erhalten!'}</h4>
+                <p className="text-ea-light/70">{en ? 'We will get back to you within 24 hours.' : 'Wir melden uns innerhalb von 24 Stunden bei Ihnen.'}</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -310,32 +310,32 @@ const InfrastrukturRadarPage = () => {
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:border-ea-gold focus:outline-none"
-                    placeholder="Ihr Name"
+                    placeholder={en ? "Your name" : "Ihr Name"}
                   />
                 </div>
                 <div>
-                  <label className="block text-ea-light/70 text-sm mb-2">E-Mail *</label>
+                  <label className="block text-ea-light/70 text-sm mb-2">{en ? 'Email' : 'E-Mail'} *</label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:border-ea-gold focus:outline-none"
-                    placeholder="ihre@email.de"
+                    placeholder="your@email.com"
                   />
                 </div>
                 <div>
-                  <label className="block text-ea-light/70 text-sm mb-2">Telefon</label>
+                  <label className="block text-ea-light/70 text-sm mb-2">{en ? 'Phone' : 'Telefon'}</label>
                   <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:border-ea-gold focus:outline-none"
-                    placeholder="+49 123 456789"
+                    placeholder="+1 234 567890"
                   />
                 </div>
                 <div>
-                  <label className="block text-ea-light/70 text-sm mb-2">Interessierte Region *</label>
+                  <label className="block text-ea-light/70 text-sm mb-2">{en ? 'Region of Interest' : 'Interessierte Region'} *</label>
                   <select
                     required
                     value={formData.region}
@@ -343,7 +343,7 @@ const InfrastrukturRadarPage = () => {
                     className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-ea-gold focus:outline-none"
                     style={{ colorScheme: 'dark' }}
                   >
-                    <option value="" className="bg-[#0a1628] text-white">Region auswählen...</option>
+                    <option value="" className="bg-[#0a1628] text-white">{en ? 'Select region...' : 'Region auswählen...'}</option>
                     <option value="bar" className="bg-[#0a1628] text-white">Bar (Score: 92)</option>
                     <option value="andrijevica" className="bg-[#0a1628] text-white">Andrijevica (Score: 94)</option>
                     <option value="podgorica" className="bg-[#0a1628] text-white">Podgorica (Score: 90)</option>
@@ -352,17 +352,17 @@ const InfrastrukturRadarPage = () => {
                     <option value="herceg-novi" className="bg-[#0a1628] text-white">Herceg Novi</option>
                     <option value="tivat" className="bg-[#0a1628] text-white">Tivat</option>
                     <option value="niksic" className="bg-[#0a1628] text-white">Nikšić</option>
-                    <option value="andere" className="bg-[#0a1628] text-white">Andere Region</option>
+                    <option value="andere" className="bg-[#0a1628] text-white">{en ? 'Other Region' : 'Andere Region'}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-ea-light/70 text-sm mb-2">Ihre Nachricht</label>
+                  <label className="block text-ea-light/70 text-sm mb-2">{en ? 'Your Message' : 'Ihre Nachricht'}</label>
                   <textarea
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
                     rows={3}
                     className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:border-ea-gold focus:outline-none resize-none"
-                    placeholder="Was interessiert Sie besonders? (Investment-Typ, Budget, Zeithorizont...)"
+                    placeholder={en ? "What are you particularly interested in? (Investment type, budget, time horizon...)" : "Was interessiert Sie besonders? (Investment-Typ, Budget, Zeithorizont...)"}
                   />
                 </div>
                 <div className="flex gap-3 pt-4">
@@ -371,14 +371,14 @@ const InfrastrukturRadarPage = () => {
                     onClick={() => setShowRequestForm(false)}
                     className="flex-1 px-6 py-3 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition-all"
                   >
-                    Abbrechen
+                    {en ? 'Cancel' : 'Abbrechen'}
                   </button>
                   <button
                     type="submit"
                     disabled={sending}
                     className="flex-1 px-6 py-3 bg-ea-gold text-ea-dark font-bold rounded-lg hover:bg-ea-gold/90 transition-all disabled:opacity-50"
                   >
-                    {sending ? 'Wird gesendet...' : 'Exposé anfordern'}
+                    {sending ? (en ? 'Sending...' : 'Wird gesendet...') : (en ? 'Request Exposé' : 'Exposé anfordern')}
                   </button>
                 </div>
               </form>

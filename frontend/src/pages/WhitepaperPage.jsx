@@ -5,11 +5,11 @@ import { FileText, Shield, Building2, TrendingUp, Scale, Landmark, MapPin, Users
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const chapters = [
-  { icon: Scale, title: 'Gesellschaftsrecht 2026', desc: 'Digitale D.O.O.-Gründung, EU-konforme Strukturen und das Economic-Substance-Prinzip' },
-  { icon: TrendingUp, title: 'Steuervorteile', desc: '9% Körperschaftsteuer Montenegro, IP-Box 2.0 Serbien und der Dual-Hub-Ansatz' },
+  { icon: Scale, title: 'Corporate Law 2026', desc: 'Digital D.O.O. formation, EU-compliant structures and the economic substance principle' },
+  { icon: TrendingUp, title: 'Tax Advantages', desc: '9% corporate tax Montenegro, IP-Box 2.0 Serbia and the dual-hub approach' },
   { icon: Landmark, title: 'Banking & SEPA', desc: 'Sofortzahlungen, Compliance-Anforderungen und Kontoeroeffnung nach neuen Standards' },
   { icon: Building2, title: 'Immobilienstrategie', desc: 'Forensische Due Diligence, digitaler Kataster und die Legalisierungsfrist August 2026' },
-  { icon: Users, title: 'Experten-Interview', desc: 'Strategischer Deep Dive mit führenden Rechts- und Steuerberatern der Region' },
+  { icon: Users, title: 'Expert Interview', desc: 'Strategic deep dive with leading legal and tax advisors in the region' },
   { icon: MapPin, title: 'Standortanalysen', desc: 'Ulcinj als neue Riviera, Kolasin und das Potenzial des Bergtourismus' },
 ];
 
@@ -72,8 +72,8 @@ export default function WhitepaperPage() {
               </h1>
 
               <p className="text-white/70 text-base lg:text-lg leading-relaxed mb-8">
-                16 Seiten exklusives Expertenwissen für institutionelle Investoren und DACH-Mittelständler. 
-                Von Steuerstruktur über forensische Immobilienstrategie bis zur operativen Markteintrittsplanung.
+                16 pages of exclusive expert knowledge for institutional investors and international entrepreneurs. 
+                From tax structuring to forensic real estate strategy to operational market entry planning.
               </p>
 
               <div className="flex flex-wrap gap-3 mb-8">
@@ -110,7 +110,7 @@ export default function WhitepaperPage() {
                   </div>
                   <h3 className="text-xl font-bold text-white mb-3">Whitepaper wird zugestellt</h3>
                   <p className="text-white/60 text-sm mb-6">
-                    Prüfen Sie Ihr E-Mail-Postfach. Das PDF ist als Anhang beigefügt.
+                    Check your email inbox. The PDF is attached.
                   </p>
                   <Link 
                     to="/blog" 
@@ -216,7 +216,7 @@ export default function WhitepaperPage() {
         <div className="max-w-3xl mx-auto px-6 text-center">
           <p className="text-ea-gold text-xs font-semibold tracking-wider uppercase mb-4">EuroAdria Corporate Solutions</p>
           <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
-            Bereit für den nächsten Schritt?
+            Ready for the next step?
           </h2>
           <p className="text-white/50 text-sm mb-8 max-w-xl mx-auto">
             Besprechen Sie die Inhalte des Whitepapers mit unseren Experten. 
@@ -227,7 +227,7 @@ export default function WhitepaperPage() {
             className="inline-flex items-center gap-2 px-8 py-3.5 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/90 transition-all text-sm"
             data-testid="whitepaper-cta-contact"
           >
-            Beratungsgespräch vereinbaren
+            Schedule Consultation
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

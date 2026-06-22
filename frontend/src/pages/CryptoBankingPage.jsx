@@ -14,7 +14,7 @@ const CryptoBankingPage = () => {
     <div className="min-h-screen bg-white" data-testid="crypto-banking-page">
       <SEO 
         title="Crypto-Banking & Treasury in Serbien"
-        description="Internationale Liquidität und Datensouveränität, sicher strukturiert außerhalb der EU-Regularien. Krypto-Banking, Treasury und Non-Resident-Konten in Serbien."
+        description="International liquidity and data sovereignty, securely structured outside EU regulations. Crypto banking, treasury and non-resident accounts in Serbia."
         url="/serbia-executive/crypto-banking"
         faq={[
           {

@@ -48,7 +48,7 @@ const LocationProfile = () => {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-white mb-4">{error}</h1>
           <Link to="/investment" className="text-ea-gold hover:underline">
-            Zurück zum Dashboard
+            Back to Dashboard
           </Link>
         </div>
       </div>
@@ -74,7 +74,7 @@ const LocationProfile = () => {
     <>
       <SEO 
         title={`${location.city} Investment Profil | EuroAdria Corporate Solutions`}
-        description={location.description || `Investment-Analyse für ${location.city}, ${location.country}`}
+        description={location.description || `Investment analysis for ${location.city}, ${location.country}`}
       />
       
       <div className="min-h-screen bg-gradient-to-b from-ea-dark via-ea-navy to-ea-dark">
@@ -86,7 +86,7 @@ const LocationProfile = () => {
               className="inline-flex items-center space-x-2 text-ea-light/60 hover:text-ea-gold mb-6 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Zurück zum Dashboard</span>
+              <span>Back to Dashboard</span>
             </Link>
 
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">

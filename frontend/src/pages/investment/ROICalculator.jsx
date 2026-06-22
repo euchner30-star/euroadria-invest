@@ -64,7 +64,7 @@ const ROICalculator = () => {
   return (
     <>
       <SEO 
-        title="ROI-Rechner für Immobilien | EuroAdria Corporate Solutions"
+        title="ROI Calculator for Real Estate | EuroAdria Corporate Solutions"
         description="Berechnen Sie die Rendite Ihrer Immobilieninvestition in Montenegro und Serbien."
       />
       
@@ -76,10 +76,10 @@ const ROICalculator = () => {
               Investment Tools
             </p>
             <h1 className="text-4xl font-bold text-white mb-4">
-              <T>ROI-Rechner für Immobilien</T>
+              <T>ROI Calculator for Real Estate</T>
             </h1>
             <p className="text-ea-light/70 max-w-xl mx-auto">
-              <T>Berechnen Sie jährlichen Cashflow, ROI und Break-Even-Zeitpunkt für Ihre Immobilieninvestition</T>
+              <T>Calculate annual cashflow, ROI and break-even point for your real estate investment</T>
             </p>
           </div>
 
@@ -281,10 +281,10 @@ const ROICalculator = () => {
           <div className="mt-8 bg-ea-gold/10 border border-ea-gold/20 rounded-2xl p-6">
             <h3 className="text-ea-gold font-bold mb-3">Hinweise zur Berechnung</h3>
             <ul className="text-ea-light/70 text-sm space-y-2">
-              <li>• <strong>ROI</strong> = Jährlicher Cashflow / Gesamtinvestition x 100</li>
+              <li>• <strong>ROI</strong> = Annual Cashflow / Total Investment x 100</li>
               <li>• <strong>Netto-Rendite</strong> = Netto-Mieteinnahmen / Gesamtinvestition x 100</li>
-              <li>• <strong>Break-Even</strong> = Gesamtinvestition / Jährlicher Cashflow</li>
-              <li>• Die Berechnung berücksichtigt keine Steuern, Finanzierungskosten oder Wertsteigerung</li>
+              <li>• <strong>Break-Even</strong> = Total Investment / Annual Cashflow</li>
+              <li>• The calculation does not include taxes, financing costs or appreciation</li>
             </ul>
           </div>
 
@@ -292,9 +292,9 @@ const ROICalculator = () => {
           <div className="mt-4 bg-amber-500/[0.06] border border-amber-500/20 rounded-2xl p-5">
             <p className="text-amber-400/80 text-xs font-bold uppercase tracking-wider mb-2">Wichtiger Hinweis — Keine Anlageberatung</p>
             <p className="text-ea-light/40 text-xs leading-relaxed">
-              Diese Berechnung dient ausschließlich zu Informations- und Veranschaulichungszwecken und stellt keine Anlageberatung,
+              This calculation is for informational and illustrative purposes only and does not constitute investment advice.
               Kaufempfehlung oder Renditegarantie dar. Alle Ergebnisse basieren auf vereinfachten Annahmen.
-              Tatsächliche Ergebnisse können erheblich abweichen. Konsultieren Sie vor jeder Investitionsentscheidung
+              Actual results may vary significantly. Consult a qualified financial advisor before making any investment decision.
               einen qualifizierten und unabhängigen Finanzberater.
             </p>
           </div>

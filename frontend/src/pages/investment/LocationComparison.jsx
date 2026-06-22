@@ -101,7 +101,7 @@ const LocationComparison = () => {
               Standortvergleich
             </h1>
             <p className="text-ea-light/70 max-w-xl mx-auto">
-              Vergleichen Sie bis zu 5 Städte nach Investment-Kennzahlen
+              Compare up to 5 cities by investment metrics
             </p>
           </div>
 
@@ -116,7 +116,7 @@ const LocationComparison = () => {
                   data-testid="add-city-btn"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>Stadt hinzufügen</span>
+                  <span>Add City</span>
                 </button>
               )}
             </div>
@@ -337,7 +337,7 @@ const LocationComparison = () => {
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-12 text-center">
               <BarChart3 className="w-16 h-16 text-ea-light/20 mx-auto mb-4" />
               <p className="text-ea-light/50 text-lg">
-                Wählen Sie mindestens 2 Städte zum Vergleichen aus
+                Select at least 2 cities to compare
               </p>
             </div>
           )}

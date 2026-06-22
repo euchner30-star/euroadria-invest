@@ -31,7 +31,7 @@ const SkadarLakePage = () => {
   const infrastructureAdvantages = en ? [
     'New bypass road Bar-Boljare (2025)', 'Podgorica Airport reachable in 30 min.', 'UNESCO World Heritage candidacy', 'National park protection status', 'EU-funded eco-tourism projects', 'New marina developments planned',
   ] : [
-    'Neue Umgehungsstraße Bar-Boljare (2025)', 'Flughafen Podgorica in 30 Min. erreichbar', 'UNESCO-Welterbe-Kandidatur', 'Nationalpark-Schutzstatus', 'EU-finanzierte Öko-Tourismus-Projekte', 'Neue Marina-Entwicklungen geplant',
+    'New Bar-Boljare bypass road (2025)', 'Podgorica airport reachable in 30 min', 'UNESCO World Heritage candidate', 'National park protection status', 'EU-funded eco-tourism projects', 'New marina developments planned',
   ];
 
   const whyItems = [

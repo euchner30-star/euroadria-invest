@@ -42,7 +42,7 @@ const NewsletterUnsubscribe = () => {
               Sie erhalten ab sofort keine Newsletter-E-Mails mehr von uns.
             </p>
             <p className="text-ea-dark/40 text-sm mb-8">
-              Sollten Sie Ihre Meinung ändern, können Sie sich jederzeit erneut auf unserer Website anmelden.
+              If you change your mind, you can always re-subscribe on our website.
             </p>
             <a
               href="/"
@@ -58,7 +58,7 @@ const NewsletterUnsubscribe = () => {
             </div>
             <h1 className="text-3xl font-bold text-ea-dark mb-4">Newsletter abbestellen</h1>
             <p className="text-ea-dark/60 mb-2">
-              Möchten Sie den EuroAdria Corporate Solutions Newsletter wirklich abbestellen?
+              Do you really want to unsubscribe from the EuroAdria Corporate Solutions newsletter?
             </p>
             {email && (
               <p className="text-ea-dark/40 text-sm mb-8">
@@ -86,7 +86,7 @@ const NewsletterUnsubscribe = () => {
               </a>
             </div>
             <p className="text-ea-dark/30 text-xs mt-6">
-              Sie können sich jederzeit erneut anmelden.
+              You can re-subscribe at any time.
             </p>
           </div>
         )}

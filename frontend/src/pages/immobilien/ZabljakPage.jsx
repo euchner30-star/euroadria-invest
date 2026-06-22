@@ -34,7 +34,7 @@ const ZabljakPage = () => {
   const infrastructureAdvantages = en ? [
     'Durmitor National Park (UNESCO World Heritage)', 'New ski infrastructure planned by 2027', 'Highway Bar-Boljare (2025) shortens travel', 'Year-round tourism: Skiing + Hiking', 'Lowest property prices in the Alps-Carpathian region', 'EU funding for mountain regions',
   ] : [
-    'Durmitor Nationalpark (UNESCO Welterbe)', 'Neue Ski-Infrastruktur bis 2027 geplant', 'Autobahn Bar-Boljare (2025) verkürzt Anfahrt', 'Ganzjahres-Tourismus: Ski + Wandern', 'Niedrigste Immobilienpreise in den Alpen-Karpaten', 'EU-Fördermittel für Bergregionen',
+    'Durmitor National Park (UNESCO World Heritage)', 'New ski infrastructure planned by 2027', 'Bar-Boljare highway (2025) shortens travel time', 'Year-round tourism: Skiing + Hiking', 'Lowest real estate prices in the Alps-Carpathians', 'EU funding for mountain regions',
   ];
 
   const whyItems = [

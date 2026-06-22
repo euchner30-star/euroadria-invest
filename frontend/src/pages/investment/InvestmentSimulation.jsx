@@ -402,7 +402,7 @@ export default function InvestmentSimulation() {
                     <KPICard label="Investition" value={fmt(result.total_investment)} />
                     <KPICard label="Endwert" value={fmt(result.final_property_value)} positive={result.value_appreciation > 0} />
                     {result.exit_costs > 0 && (
-                      <KPICard label="Exit-Kosten" value={fmt(result.exit_costs)} sub={`${params.exit_costs_percent}% Maklergebühr`} positive={false} />
+                      <KPICard label="Exit Costs" value={fmt(result.exit_costs)} sub={`${params.exit_costs_percent}% Broker fee`} positive={false} />
                     )}
                     <KPICard label="Netto-Wertzuwachs" value={fmt(result.value_appreciation)} positive={result.value_appreciation > 0} />
                   </div>
@@ -564,8 +564,8 @@ export default function InvestmentSimulation() {
                         </p>
                         <p className="text-white/40 text-[11px] mt-2 leading-relaxed">
                           Insbesondere können Faktoren wie Steuern, Finanzierungskonditionen, Währungsrisiken, politische Veränderungen,
-                          Marktvolatilität, Instandhaltungskosten und unvorhergesehene Ereignisse die tatsächliche Rendite wesentlich beeinflussen.
-                          Konsultieren Sie vor jeder Investitionsentscheidung einen qualifizierten und unabhängigen Finanzberater.
+                          Market volatility, maintenance costs and unforeseen events can significantly affect actual returns.
+                          Consult a qualified and independent financial advisor before making any investment decision.
                         </p>
                       </div>
                     </div>

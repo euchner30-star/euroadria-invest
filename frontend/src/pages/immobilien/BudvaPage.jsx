@@ -59,8 +59,8 @@ const BudvaPage = () => {
     'Flughafen Tivat in 20 Min. erreichbar',
     'UNESCO-geschützte Altstadt',
     'Etablierte Vermietungsinfrastruktur',
-    'Luxus-Marina "Porto Montenegro" in Nähe',
-    'Neue Schnellstraße nach Podgorica (2025)',
+    'Luxury marina "Porto Montenegro" nearby',
+    'New highway to Podgorica (2025)',
   ];
 
   return (

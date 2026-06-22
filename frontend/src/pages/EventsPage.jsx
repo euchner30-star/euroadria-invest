@@ -133,7 +133,7 @@ const EventsPage = () => {
     <div className="min-h-screen pt-28 bg-white">
       <SEO
         title="Events, Webinare & Workshops"
-        description="Aktuelle Events, Workshops und Webinare rund um Firmengründung, Auswanderung und Investments in Montenegro und Serbien."
+        description="Current events, workshops and webinars on company formation, relocation and investments in Montenegro and Serbia."
         url="/events"
       />
 
@@ -147,7 +147,7 @@ const EventsPage = () => {
             EuroAdria Corporate Solutions <span className="text-ea-gold">Events</span>
           </h1>
           <p className="text-ea-dark/70 text-lg max-w-3xl mx-auto leading-relaxed">
-            Aktuelle Events, Workshops und Webinare rund um Firmengründung, 
+            Current events, workshops and webinars on company formation, 
             Auswanderung und Investments in der Adria-Region.
           </p>
         </div>
@@ -171,10 +171,10 @@ const EventsPage = () => {
               </h2>
               <p className="text-ea-dark/60 text-lg max-w-xl mx-auto mb-8">
                 Schon bald teilen wir hier exklusive Termine zu Investments, 
-                Firmengründung und Auswanderung in Montenegro und Serbien.
+                company formation and relocation in Montenegro and Serbia.
               </p>
               <p className="text-ea-dark/40 text-sm mb-8">
-                Melden Sie sich für unseren Newsletter an, um als Erster informiert zu werden.
+                Subscribe to our newsletter to be the first to know.
               </p>
               <Link
                 to="/contact?betreff=Event-Interesse"
@@ -234,8 +234,8 @@ const EventsPage = () => {
             Eigenes Event <span className="text-ea-gold">planen</span>?
           </h2>
           <p className="text-white/60 text-lg mb-8 max-w-2xl mx-auto">
-            Sie möchten ein exklusives Investoren-Event oder Workshop in Montenegro organisieren? 
-            Wir unterstützen Sie bei Planung und Durchführung.
+            Would you like to organize an exclusive investor event or workshop in Montenegro? 
+            We support you with planning and execution.
           </p>
           <Link
             to="/contact?betreff=Event-Planung"

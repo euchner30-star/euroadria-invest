@@ -26,7 +26,7 @@ const NiksicPage = () => {
 
   const investmentHighlights = [
     { icon: TrendingUp, label: 'Investment-Score', value: '85/100', description: en ? 'Strong Appreciation Leverage' : 'Starker Aufwertungshebel' },
-    { icon: Euro, label: en ? 'Average Price' : 'Durchschnittspreis', value: '€600-1.200/m²', description: en ? 'Lowest Level' : 'Günstigstes Niveau' },
+    { icon: Euro, label: en ? 'Average Price' : 'Average Price', value: '€600-1.200/m²', description: en ? 'Lowest Level' : 'Lowest Level' },
     { icon: Clock, label: en ? 'Time Horizon' : 'Zeithorizont', value: en ? '5-10 Years' : '5-10 Jahre', description: en ? 'Long-term' : 'Langfristig' },
     { icon: Building2, label: en ? 'Potential' : 'Potenzial', value: '+80-120%', description: en ? 'Expected Appreciation' : 'Erwartete Wertsteigerung' },
   ];
@@ -34,7 +34,7 @@ const NiksicPage = () => {
   const infrastructureAdvantages = en ? [
     "Montenegro's second largest city (70,000 pop.)", 'Direct rail connection to Podgorica (2026)', 'Highway Bar-Boljare reachable in 10 min.', 'Industrial zone with special economic status', 'University city with young labor market', 'Lowest cost of living in Montenegro',
   ] : [
-    'Zweitgrößte Stadt Montenegros (70.000 Ew.)', 'Direkte Bahnverbindung nach Podgorica (2026)', 'Autobahn Bar-Boljare in 10 Min. erreichbar', 'Industriezone mit Sonderwirtschaftsstatus', 'Universitätsstadt mit jungem Arbeitsmarkt', 'Niedrigste Lebenshaltungskosten in Montenegro',
+    'Second largest city in Montenegro (70,000 pop.)', 'Direct rail connection to Podgorica (2026)', 'Bar-Boljare highway reachable in 10 min', 'Industrial zone with special economic status', 'University town with young labor market', 'Lowest cost of living in Montenegro',
   ];
 
   const whyItems = [

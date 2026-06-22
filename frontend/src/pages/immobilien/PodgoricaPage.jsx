@@ -31,7 +31,7 @@ const PodgoricaPage = () => {
   const infrastructureAdvantages = en ? [
     'International airport (TGD) directly in the city', 'KCCG - Clinical Center Montenegro (medical tourism)', 'Government seat & administrative center', 'University with 20,000+ students', 'Highway Bar-Boljare junction', 'IT hub with growing tech scene',
   ] : [
-    'Internationaler Flughafen (TGD) direkt in der Stadt', 'KCCG - Klinisches Zentrum Montenegro (Medizintourismus)', 'Regierungssitz & Verwaltungszentrum', 'Universität mit 20.000+ Studenten', 'Autobahn Bar-Boljare Knotenpunkt', 'IT-Hub mit wachsender Tech-Szene',
+    'International airport (TGD) in the city center', 'KCCG - Clinical Center Montenegro (medical tourism)', 'Government seat & administrative center', 'University with 20,000+ students', 'Bar-Boljare highway junction', 'IT hub with growing tech scene',
   ];
 
   const whyItems = [

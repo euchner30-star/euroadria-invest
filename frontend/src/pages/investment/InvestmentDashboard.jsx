@@ -55,7 +55,7 @@ const InvestmentDashboard = () => {
     <>
       <SEO 
         title="Investment Dashboard | EuroAdria Corporate Solutions"
-        description="Übersicht der Top-Investmentstandorte in Montenegro und Serbien mit aktuellen Kennzahlen."
+        description={en ? "Overview of top investment locations in Montenegro and Serbia with current metrics." : "Übersicht der Top-Investmentstandorte in Montenegro und Serbien mit aktuellen Kennzahlen."}
       />
       
       <div className="min-h-screen bg-gradient-to-b from-ea-dark via-ea-navy to-ea-dark">
@@ -63,7 +63,7 @@ const InvestmentDashboard = () => {
         <div className="relative pt-24 pb-16 px-4">
           <div className="max-w-7xl mx-auto text-center">
             <p className="text-ea-gold text-sm font-bold tracking-widest uppercase mb-4">
-              Marktanalysen & Beratung
+              {en ? 'Market Analysis & Advisory' : 'Marktanalysen & Beratung'}
             </p>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Balkan Investment Dashboard
@@ -101,10 +101,10 @@ const InvestmentDashboard = () => {
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5">
               <div className="flex items-center space-x-3 mb-2">
                 <Layers className="w-5 h-5 text-ea-gold" />
-                <span className="text-ea-light/60 text-sm">Länder</span>
+                <span className="text-ea-light/60 text-sm">{en ? 'Countries' : 'Länder'}</span>
               </div>
               <p className="text-3xl font-bold text-white">2</p>
-              <p className="text-xs text-ea-light/40 mt-1">Montenegro & Serbien</p>
+              <p className="text-xs text-ea-light/40 mt-1">Montenegro & {en ? 'Serbia' : 'Serbien'}</p>
             </div>
           </div>
 
@@ -157,7 +157,7 @@ const InvestmentDashboard = () => {
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <Percent className="w-5 h-5 text-green-400" />
-                <h2 className="text-xl font-bold text-white">Höchste Mietrendite</h2>
+                <h2 className="text-xl font-bold text-white">{en ? 'Highest Rental Yield' : 'Höchste Mietrendite'}</h2>
               </div>
               <div className="space-y-3">
                 {stats?.highest_yield?.slice(0, 5).map((loc, i) => (
@@ -188,7 +188,7 @@ const InvestmentDashboard = () => {
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <BarChart3 className="w-5 h-5 text-blue-400" />
-                <h2 className="text-xl font-bold text-white">Stärkstes Preiswachstum</h2>
+                <h2 className="text-xl font-bold text-white">{en ? 'Strongest Price Growth' : 'Stärkstes Preiswachstum'}</h2>
               </div>
               <div className="space-y-3">
                 {stats?.strongest_growth?.slice(0, 5).map((loc, i) => (
@@ -221,10 +221,10 @@ const InvestmentDashboard = () => {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-2">
                 <Building2 className="w-5 h-5 text-ea-gold" />
-                <h2 className="text-xl font-bold text-white">Aktuelle Infrastrukturprojekte</h2>
+                <h2 className="text-xl font-bold text-white">{en ? 'Current Infrastructure Projects' : 'Aktuelle Infrastrukturprojekte'}</h2>
               </div>
               <Link to="/infrastruktur-radar" className="text-ea-gold text-sm hover:underline flex items-center space-x-1">
-                <span>Zur Karte</span>
+                <span>{en ? 'View Map' : 'Zur Karte'}</span>
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>
@@ -237,21 +237,21 @@ const InvestmentDashboard = () => {
                       proj.status === 'planned' ? 'bg-blue-500/20 text-blue-400' :
                       'bg-green-500/20 text-green-400'
                     }`}>
-                      {proj.status === 'construction' ? 'Im Bau' : 
-                       proj.status === 'planned' ? 'Geplant' : proj.status}
+                      {proj.status === 'construction' ? (en ? 'Under Construction' : 'Im Bau') : 
+                       proj.status === 'planned' ? (en ? 'Planned' : 'Geplant') : proj.status}
                     </span>
                     <span className="text-ea-light/40 text-xs">{proj.type}</span>
                   </div>
                   <h3 className="text-white font-medium mb-1">{proj.project_name}</h3>
                   {proj.completion_year && (
-                    <p className="text-ea-light/50 text-sm">Fertigstellung: {proj.completion_year}</p>
+                    <p className="text-ea-light/50 text-sm">{en ? 'Completion:' : 'Fertigstellung:'} {proj.completion_year}</p>
                   )}
                   {proj.investment_eur && (
                     <p className="text-ea-gold text-sm font-medium mt-2">
                       <Euro className="w-3 h-3 inline mr-1" />
                       {proj.investment_eur >= 1000000000
-                        ? `${(proj.investment_eur / 1000000000).toLocaleString('de-DE', { minimumFractionDigits: proj.investment_eur % 1000000000 === 0 ? 0 : 1, maximumFractionDigits: 1 })} Mrd.`
-                        : `${(proj.investment_eur / 1000000).toFixed(0)} Mio.`}
+                        ? `${(proj.investment_eur / 1000000000).toLocaleString('de-DE', { minimumFractionDigits: proj.investment_eur % 1000000000 === 0 ? 0 : 1, maximumFractionDigits: 1 })} ${en ? 'B' : 'Mrd.'}`
+                        : `${(proj.investment_eur / 1000000).toFixed(0)} ${en ? 'M' : 'Mio.'}`}
                     </p>
                   )}
                 </div>
@@ -274,15 +274,15 @@ const InvestmentDashboard = () => {
               className="bg-gradient-to-r from-green-500/20 to-green-500/5 border border-green-500/30 rounded-2xl p-6 hover:border-green-500/50 transition-all group"
             >
               <Euro className="w-8 h-8 text-green-400 mb-3" />
-              <h3 className="text-white font-bold text-lg mb-1">ROI-Rechner</h3>
-              <p className="text-ea-light/60 text-sm">Berechnen Sie die Rendite Ihrer Immobilieninvestition</p>
+              <h3 className="text-white font-bold text-lg mb-1">{en ? 'ROI Calculator' : 'ROI-Rechner'}</h3>
+              <p className="text-ea-light/60 text-sm">{en ? 'Calculate the return on your property investment' : 'Berechnen Sie die Rendite Ihrer Immobilieninvestition'}</p>
             </Link>
             <Link 
               to="/infrastruktur-radar"
               className="bg-gradient-to-r from-blue-500/20 to-blue-500/5 border border-blue-500/30 rounded-2xl p-6 hover:border-blue-500/50 transition-all group"
             >
               <MapPin className="w-8 h-8 text-blue-400 mb-3" />
-              <h3 className="text-white font-bold text-lg mb-1">Infrastruktur-Karte</h3>
+              <h3 className="text-white font-bold text-lg mb-1">{en ? 'Infrastructure Map' : 'Infrastruktur-Karte'}</h3>
               <p className="text-ea-light/60 text-sm">{en ? 'Interactive map of all locations and projects' : 'Interaktive Karte aller Standorte und Projekte'}</p>
             </Link>
           </div>

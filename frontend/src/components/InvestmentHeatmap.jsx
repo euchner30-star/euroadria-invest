@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Euro, Percent, TrendingUp, MapPin, ExternalLink } from 'lucide-react';
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
+import { useLanguage } from '../context/LanguageContext';
 import 'leaflet/dist/leaflet.css';
 
 const VIEWS = [
@@ -91,15 +92,15 @@ const CountryMap = ({ locs, title, allMin, allMax, activeView, getRadius }) => {
                     <p className="text-gray-500 text-xs mb-2">{loc.country}</p>
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Preis/m²</span>
+                        <span className="text-gray-500">Price/m²</span>
                         <span className="font-semibold">{loc.price_per_m2.toLocaleString('de-DE')} €</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Mietrendite</span>
+                        <span className="text-gray-500">Rental Yield</span>
                         <span className="font-semibold text-green-600">{loc.rental_yield}%</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Wachstum/Jahr</span>
+                        <span className="text-gray-500">Growth/Year</span>
                         <span className="font-semibold text-amber-600">+{loc.price_growth}%</span>
                       </div>
                       <div className="flex justify-between">
@@ -111,7 +112,7 @@ const CountryMap = ({ locs, title, allMin, allMax, activeView, getRadius }) => {
                       to={`/investment/standort/${encodeURIComponent(loc.city)}`}
                       className="mt-3 flex items-center justify-center gap-1 bg-[#04151F] text-white text-xs font-medium py-2 px-3 rounded-lg hover:bg-[#0a2540] transition-colors no-underline"
                     >
-                      Details ansehen <ExternalLink className="w-3 h-3" />
+                      Details <ExternalLink className="w-3 h-3" />
                     </Link>
                   </div>
                 </Popup>
@@ -126,6 +127,8 @@ const CountryMap = ({ locs, title, allMin, allMax, activeView, getRadius }) => {
 
 const InvestmentHeatmap = ({ locations }) => {
   const [activeView, setActiveView] = useState('price');
+  const { lang } = useLanguage();
+  const en = lang === 'en';
 
   const montenegroLocs = useMemo(() =>
     locations.filter(l => l.country === 'Montenegro'), [locations]);
@@ -145,6 +148,10 @@ const InvestmentHeatmap = ({ locations }) => {
     return 8 + ratio * 14;
   };
 
+  const viewLabels = en 
+    ? { price: 'Price/m²', yield: 'Rental Yield', growth: 'Growth' }
+    : { price: 'Preis/m²', yield: 'Mietrendite', growth: 'Wachstum' };
+
   return (
     <div className="heatmap-container relative" data-testid="investment-heatmap">
       {/* View Selector */}
@@ -161,7 +168,7 @@ const InvestmentHeatmap = ({ locations }) => {
             data-testid={`heatmap-view-${view.key}`}
           >
             <view.icon className="w-4 h-4" />
-            {view.label}
+            {viewLabels[view.key]}
           </button>
         ))}
       </div>
@@ -178,7 +185,7 @@ const InvestmentHeatmap = ({ locations }) => {
         />
         <CountryMap
           locs={serbiaLocs}
-          title="Serbien"
+          title={en ? 'Serbia' : 'Serbien'}
           allMin={minVal}
           allMax={maxVal}
           activeView={activeView}
@@ -190,11 +197,11 @@ const InvestmentHeatmap = ({ locations }) => {
       <div className="mt-3 flex items-center justify-between text-xs text-ea-light/50">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getColor(minVal, minVal, maxVal, activeView) }} />
-          <span>{activeView === 'price' ? 'Günstiger' : 'Niedriger'}</span>
+          <span>{activeView === 'price' ? (en ? 'Cheaper' : 'Günstiger') : (en ? 'Lower' : 'Niedriger')}</span>
         </div>
-        <span className="text-ea-light/30">Kreise zeigen {viewConfig?.label} · Klick für Details</span>
+        <span className="text-ea-light/30">{en ? `Circles show ${viewLabels[activeView]} · Click for details` : `Kreise zeigen ${viewLabels[activeView]} · Klick für Details`}</span>
         <div className="flex items-center gap-2">
-          <span>{activeView === 'price' ? 'Teurer' : 'Höher'}</span>
+          <span>{activeView === 'price' ? (en ? 'More expensive' : 'Teurer') : (en ? 'Higher' : 'Höher')}</span>
           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getColor(maxVal, minVal, maxVal, activeView) }} />
         </div>
       </div>

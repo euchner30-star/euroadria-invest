@@ -165,7 +165,7 @@ const BlogPage = () => {
     <div className="min-h-screen pt-28 pb-20 px-6 bg-white" data-testid="blog-page">
       <SEO 
         title="Blog & Insights"
-        description="Tiefgehende Analysen, Marktberichte und praktische Guides für erfolgreiche Investments an der Adria."
+        description="In-depth analyses, market reports and practical guides for successful investments on the Adriatic."
         url="/blog"
         blogList={articles}
       />
@@ -176,7 +176,7 @@ const BlogPage = () => {
             Insights
           </h1>
           <p className="text-ea-dark/70 text-lg max-w-3xl mx-auto">
-            {lang === 'en' ? 'In-depth analyses, market reports and practical guides for successful investments on the Adriatic' : 'Tiefgehende Analysen, Marktberichte und praktische Guides für erfolgreiche Investments an der Adria'}
+            {lang === 'en' ? 'In-depth analyses, market reports and practical guides for successful investments on the Adriatic.' : 'Tiefgehende Analysen, Marktberichte und praktische Guides für erfolgreiche Investments an der Adria.'}
           </p>
         </div>
 
