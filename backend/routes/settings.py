@@ -316,6 +316,42 @@ async def _run_migration():
     }})
     results["team_hero"] = "updated"
     
+    # 7. Location descriptions, opportunities, risks
+    loc_translations = {
+        "Podgorica": {"description": "Capital of Montenegro with strong economic growth and new highway connection. Business hub with diversified potential.", "opportunities": ["Highway junction", "Capital city growth", "IT hub", "University town"], "risks": ["Less touristic"]},
+        "Budva": {"description": "Tourism hotspot on the Adriatic coast with highest rental yields and strong seasonal demand.", "opportunities": ["Tourism hub", "High rental yields", "Nightlife & culture"], "risks": ["Seasonal dependency", "High entry prices"]},
+        "Bar": {"description": "Montenegro's most important port with excellent logistics infrastructure and new highway connection.", "opportunities": ["Port & logistics", "Highway connection", "Affordable prices", "Year-round potential"], "risks": ["Less touristic image"]},
+        "Tivat": {"description": "Luxury destination with Porto Montenegro and international airport. Ultra-premium segment.", "opportunities": ["Porto Montenegro", "International airport", "Luxury segment"], "risks": ["High entry prices"]},
+        "Kotor": {"description": "UNESCO World Heritage Site with unique historical charm. Strong cruise tourism.", "opportunities": ["UNESCO status", "Cruise tourism", "Historic Old Town"], "risks": ["Limited new construction", "Seasonal peaks"]},
+        "Ulcinj": {"description": "Emerging coastal town with great appreciation potential. Longest beaches in Montenegro.", "opportunities": ["Longest beaches", "Affordable entry", "Growth potential"], "risks": ["Less developed infrastructure"]},
+        "Nikšić": {"description": "Second largest city with industrial base and low prices. Convergence potential through highway.", "opportunities": ["Low entry prices", "Industrial zone", "Highway connection", "University"], "risks": ["Less touristic"]},
+        "Bijelo Polje": {"description": "Northern town with potential through new highway connection. Logistics corridor.", "opportunities": ["Highway connection", "Logistics potential", "Low prices"], "risks": ["Remote location"]},
+        "Belgrad": {"description": "Capital and economic center of Serbia with international significance. Belgrade Waterfront as flagship project.", "opportunities": ["Belgrade Waterfront", "IT sector", "Government incentives", "International hub"], "risks": ["Higher competition"]},
+        "Novi Sad": {"description": "European Capital of Culture 2022 with strong growth in IT sector and quality of life.", "opportunities": ["IT hub", "Cultural capital", "University town", "Quality of life"], "risks": ["Smaller market"]},
+        "Niš": {"description": "Third largest city with strategic location on the East-West axis. Growing industrial sector.", "opportunities": ["Strategic location", "Industrial growth", "Low costs", "Airport"], "risks": ["Smaller market"]},
+        "Subotica": {"description": "Border town to Hungary with Art Nouveau architecture and EU proximity.", "opportunities": ["EU border proximity", "Architecture tourism", "Trade corridor"], "risks": ["Smaller market"]},
+        "Kragujevac": {"description": "Industrial city with FIAT plant and growing technology sector. State subsidies available.", "opportunities": ["Industrial base", "State subsidies", "Technology growth"], "risks": ["Less touristic"]},
+        "Čačak": {"description": "Mid-sized city with good highway connection to Belgrade. Growing logistics sector.", "opportunities": ["Highway access", "Logistics potential", "Affordable"], "risks": ["Smaller market"]},
+        "Zlatibor": {"description": "Premium mountain resort with year-round tourism and ski infrastructure. High demand.", "opportunities": ["Year-round tourism", "Ski resort", "Nature tourism", "Wellness"], "risks": ["Seasonal peaks"]},
+        "Sveti Stefan": {"description": "Iconic peninsula for ultra-high-net-worth clientele. Absolute premium location in Montenegro.", "opportunities": ["Ultra-premium", "Iconic location", "Aman Resort"], "risks": ["Extremely high prices", "Limited supply"]},
+        "Pržno": {"description": "Exclusive neighboring town of Sveti Stefan with excellent development potential.", "opportunities": ["Proximity to Sveti Stefan", "Quieter location", "Beach access"], "risks": ["Limited supply"]},
+        "Buljarica": {"description": "Largest undeveloped coastal area in Montenegro. Enormous potential for large-scale projects.", "opportunities": ["Undeveloped land", "Large-scale potential", "+22% growth", "Beach front"], "risks": ["Development timeline uncertain"]},
+        "Čanj": {"description": "Emerging coastal town with affordable luxury. Benefits from Bar highway.", "opportunities": ["Affordable luxury", "Highway access", "Beach tourism"], "risks": ["Less established"]},
+        "Danilovgrad": {"description": "The 'silent winner' of infrastructure development. Central business and logistics corridor between Podgorica and Nikšić.", "opportunities": ["Highway expansion", "Logistics hub", "Affordable prices", "Strategic location"], "risks": ["Less touristic"]},
+        "Skutarisee": {"description": "Strictly protected, ecologically valuable region. Perfect for eco-tourism and nature investments.", "opportunities": ["UNESCO candidate", "Eco-tourism", "Nature protection", "Low prices"], "risks": ["Building restrictions"]},
+        "Krupac-See": {"description": "Popular inland lake with high regional recreational attraction. Growing interest.", "opportunities": ["Recreational tourism", "Nature access", "Low competition"], "risks": ["Niche market"]},
+    }
+    loc_count = 0
+    for city, data in loc_translations.items():
+        update_fields = {"description": data["description"]}
+        if "opportunities" in data:
+            update_fields["opportunities"] = data["opportunities"]
+        if "risks" in data:
+            update_fields["risks"] = data["risks"]
+        r = await db.locations.update_one({"city": city}, {"$set": update_fields})
+        loc_count += r.modified_count
+    results["location_descriptions"] = f"{loc_count} translated"
+    
     return {"success": True, "results": results}
 
 

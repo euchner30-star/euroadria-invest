@@ -151,7 +151,7 @@ const LocationProfile = () => {
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5">
               <div className="flex items-center space-x-2 mb-2">
                 <Building2 className="w-5 h-5 text-purple-400" />
-                <span className="text-ea-light/60 text-sm">Preiswachstum</span>
+                <span className="text-ea-light/60 text-sm">Price Growth</span>
               </div>
               <p className="text-2xl font-bold text-purple-400">+{location.price_growth}%</p>
             </div>
@@ -162,13 +162,13 @@ const LocationProfile = () => {
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
               <div className="flex items-center space-x-2 mb-4">
                 <Building2 className="w-5 h-5 text-ea-gold" />
-                <h2 className="text-xl font-bold text-white">Infrastruktur</h2>
+                <h2 className="text-xl font-bold text-white">Infrastructure</h2>
               </div>
               
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-ea-light/60">Basis-Score</span>
+                    <span className="text-ea-light/60">Base Score</span>
                     <span className="text-white">{location.infrastructure_score}</span>
                   </div>
                   <div className="h-2 bg-white/10 rounded-full overflow-hidden">
@@ -182,7 +182,7 @@ const LocationProfile = () => {
                 {location.infrastructure_boost > 0 && (
                   <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
                     <p className="text-green-400 font-medium">
-                      +{location.infrastructure_boost} Punkte durch nahe Infrastrukturprojekte
+                      +{location.infrastructure_boost} points from nearby infrastructure projects
                     </p>
                   </div>
                 )}
@@ -199,12 +199,12 @@ const LocationProfile = () => {
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
               <div className="flex items-center space-x-2 mb-4">
                 <Target className="w-5 h-5 text-ea-gold" />
-                <h2 className="text-xl font-bold text-white">Score-Berechnung</h2>
+                <h2 className="text-xl font-bold text-white">Score Calculation</h2>
               </div>
               
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
-                  <span className="text-ea-light/70">Infrastruktur (30%)</span>
+                  <span className="text-ea-light/70">Infrastructure (30%)</span>
                   <span className="text-white font-medium">{Math.round((location.infrastructure_score + (location.infrastructure_boost || 0)) * 0.3)}</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
@@ -216,11 +216,11 @@ const LocationProfile = () => {
                   <span className="text-white font-medium">{Math.round(Math.min(location.rental_yield * 10, 100) * 0.25)}</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
-                  <span className="text-ea-light/70">Preiswachstum (20%)</span>
+                  <span className="text-ea-light/70">Price Growth (20%)</span>
                   <span className="text-white font-medium">{Math.round(Math.min(location.price_growth * 5, 100) * 0.20)}</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-ea-gold/10 rounded-xl border border-ea-gold/20">
-                  <span className="text-ea-gold font-bold">Gesamt-Score</span>
+                  <span className="text-ea-gold font-bold">Total Score</span>
                   <span className="text-ea-gold font-bold text-xl">{location.investment_score}</span>
                 </div>
               </div>
@@ -234,7 +234,7 @@ const LocationProfile = () => {
               <div className="bg-green-500/5 backdrop-blur border border-green-500/20 rounded-2xl p-6">
                 <div className="flex items-center space-x-2 mb-4">
                   <CheckCircle className="w-5 h-5 text-green-400" />
-                  <h2 className="text-xl font-bold text-white">Chancen</h2>
+                  <h2 className="text-xl font-bold text-white">Opportunities</h2>
                 </div>
                 <ul className="space-y-3">
                   {location.opportunities.map((opp, i) => (
@@ -252,7 +252,7 @@ const LocationProfile = () => {
               <div className="bg-orange-500/5 backdrop-blur border border-orange-500/20 rounded-2xl p-6">
                 <div className="flex items-center space-x-2 mb-4">
                   <AlertTriangle className="w-5 h-5 text-orange-400" />
-                  <h2 className="text-xl font-bold text-white">Risiken</h2>
+                  <h2 className="text-xl font-bold text-white">Risks</h2>
                 </div>
                 <ul className="space-y-3">
                   {location.risks.map((risk, i) => (
@@ -269,16 +269,16 @@ const LocationProfile = () => {
           {/* Use Cases */}
           {location.use_cases?.length > 0 && (
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 mb-8">
-              <h2 className="text-xl font-bold text-white mb-4">Geeignet für</h2>
+              <h2 className="text-xl font-bold text-white mb-4">Suitable for</h2>
               <div className="flex flex-wrap gap-3">
                 {location.use_cases.map((uc) => (
                   <span 
                     key={uc}
                     className="px-4 py-2 bg-ea-gold/10 text-ea-gold border border-ea-gold/20 rounded-xl capitalize"
                   >
-                    {uc === 'residential' ? 'Wohnen' :
-                     uc === 'tourism' ? 'Tourismus' :
-                     uc === 'logistics' ? 'Logistik' :
+                    {uc === 'residential' ? 'Residential' :
+                     uc === 'tourism' ? 'Tourism' :
+                     uc === 'logistics' ? 'Logistics' :
                      uc === 'relocation' ? 'Relocation' : uc}
                   </span>
                 ))}
@@ -289,7 +289,7 @@ const LocationProfile = () => {
           {/* Related Articles */}
           {location.related_articles?.length > 0 && (
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
-              <h2 className="text-xl font-bold text-white mb-4">Verwandte Artikel</h2>
+              <h2 className="text-xl font-bold text-white mb-4">Related Articles</h2>
               <div className="grid md:grid-cols-2 gap-4">
                 {location.related_articles.map((article) => (
                   <Link
@@ -326,7 +326,7 @@ const LocationProfile = () => {
               className="flex-1 flex items-center justify-center space-x-2 px-6 py-4 bg-ea-gold text-ea-dark font-bold rounded-xl hover:bg-ea-gold/80 transition-all"
             >
               <Euro className="w-5 h-5" />
-              <span>ROI berechnen</span>
+              <span>Calculate ROI</span>
             </Link>
             <Link
               to={`/investment/vergleich`}
