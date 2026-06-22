@@ -81,7 +81,7 @@ const ShareButtons = ({ title, url, excerpt, slug, category }) => {
           <div className="w-10 h-10 rounded-lg bg-ea-gold/10 flex items-center justify-center">
             <Share2 className="w-5 h-5 text-ea-gold" />
           </div>
-          <span className="text-sm font-medium">Artikel teilen</span>
+          <span className="text-sm font-medium">Share</span>
         </div>
         
         <div className="flex items-center gap-2">

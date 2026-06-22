@@ -48,7 +48,7 @@ const TeamSection = () => {
       id: 'milena',
       name: 'Milena Bubanja',
       title: lang === 'en' ? 'Co-Founder & Managing Director' : 'Co-Founderin und Geschäftsführerin',
-      subtitle: 'Public Affairs und Balkan Relations',
+      subtitle: lang === 'en' ? 'Public Affairs & Balkan Relations' : 'Public Affairs und Balkan Relations',
       description: lang === 'en' ? '"Sustainable results emerge where local reality and European standards are cleanly brought together."' : '„Nachhaltige Ergebnisse entstehen dort, wo lokale Realität und europäische Standards sauber zusammengeführt werden."',
       bio: lang === 'en'
         ? 'Milena Bubanja is Co-Founder of EuroAdria Corporate Solutions and holds a Master\'s degree in Law from the University of Novi Sad Faculty of Law (2007–2012). She represents a pragmatic yet precise approach to cross-border ventures, particularly in Montenegro and Serbia. Through her extensive network in the Balkan states, including political and institutional interfaces, she guides clients in structuring investments and relocation projects efficiently within clearly defined frameworks.'
@@ -83,7 +83,7 @@ const TeamSection = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-semibold text-ea-dark mb-6">
-            {heroSection?.data?.title || 'Unsere'} <span className="text-ea-gold">Task Force</span>
+            {heroSection?.data?.title || 'Our Team'} <span className="text-ea-gold">Task Force</span>
           </h2>
           <p className="text-ea-dark/70 text-lg max-w-3xl mx-auto">
             {heroSection?.data?.subtitle || (lang === 'en' ? 'No brokers. No salespeople. Just two experts who represent your interests and treat every deal like their own assets.' : 'Keine Makler. Keine Verkäufer. Nur zwei Experten, die Ihre Interessen vertreten und jeden Deal wie ihr eigenes Vermögen behandeln.')}
@@ -171,7 +171,7 @@ const TeamSection = () => {
                     className="flex items-center space-x-2 text-ea-dark/60 hover:text-ea-gold transition-colors text-sm"
                   >
                     <Mail className="w-4 h-4" />
-                    <span>Kontakt aufnehmen</span>
+                    <span>{lang === 'en' ? 'Get in Touch' : 'Kontakt aufnehmen'}</span>
                   </a>
                   <a 
                     href="https://www.linkedin.com/company/euroadria/" 
@@ -191,20 +191,20 @@ const TeamSection = () => {
         {/* Why Task Force Approach */}
         <div className="bg-ea-dark rounded-2xl p-8 md:p-12">
           <h3 className="text-3xl font-semibold text-white mb-8">
-            Warum <span className="text-ea-gold">Task Force</span> statt Makler?
+            Why <span className="text-ea-gold">Task Force</span> Instead of Brokers?
           </h3>
           <div className="grid md:grid-cols-3 gap-8">
             <div>
               <div className="text-ea-gold text-4xl font-bold mb-3">01</div>
-              <h4 className="text-xl font-semibold text-white mb-3">Keine Interessenskonflikte</h4>
+              <h4 className="text-xl font-semibold text-white mb-3">No Conflicts of Interest</h4>
               <p className="text-ea-light/70">
                 We are not salespeople. Our success is your success — only when the deal is secure 
-                und rentabel ist, verdienen wir unsere Provision.
+                and profitable do we earn our commission.
               </p>
             </div>
             <div>
               <div className="text-ea-gold text-4xl font-bold mb-3">02</div>
-              <h4 className="text-xl font-semibold text-white mb-3">Forensische Tiefe</h4>
+              <h4 className="text-xl font-semibold text-white mb-3">Forensic Depth</h4>
               <p className="text-ea-light/70">
                 Standard brokers review superficially. We go back to 1945, check every 
                 Occupancy Permit and exclude every restitution risk.
@@ -214,8 +214,8 @@ const TeamSection = () => {
               <div className="text-ea-gold text-4xl font-bold mb-3">03</div>
               <h4 className="text-xl font-semibold text-white mb-3">Bankability Guarantee</h4>
               <p className="text-ea-light/70">
-                Unsere Deals sind bankentauglich. KYC/AML-compliant. Source of Wealth dokumentiert. 
-                Keine westliche Bank wird ablehnen.
+                Our deals are bank-ready. KYC/AML-compliant. Source of Wealth documented. 
+                No Western bank will decline.
               </p>
             </div>
           </div>

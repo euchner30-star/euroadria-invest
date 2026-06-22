@@ -62,9 +62,9 @@ const LocationProfile = () => {
   };
 
   const TimeHorizonLabel = {
-    short: { label: 'Kurzfristig (0-3 Jahre)', color: 'text-green-400 bg-green-500/20' },
-    medium: { label: 'Mittelfristig (3-7 Jahre)', color: 'text-yellow-400 bg-yellow-500/20' },
-    long: { label: 'Langfristig (7+ Jahre)', color: 'text-orange-400 bg-orange-500/20' }
+    short: { label: 'Short-term (0-3 Years)', color: 'text-green-400 bg-green-500/20' },
+    medium: { label: 'Medium-term (3-7 Years)', color: 'text-yellow-400 bg-yellow-500/20' },
+    long: { label: 'Long-term (7+ Years)', color: 'text-orange-400 bg-orange-500/20' }
   };
 
   const horizon = TimeHorizonLabel[location.time_horizon] || TimeHorizonLabel.medium;
@@ -106,7 +106,7 @@ const LocationProfile = () => {
                   </div>
                 </div>
                 <div className={`px-6 py-3 rounded-xl ${ScoreColor(location.investment_score)}`}>
-                  <p className="text-xs opacity-70">Investment-Score</p>
+                  <p className="text-xs opacity-70">Investment Score</p>
                   <p className="text-3xl font-bold">{location.investment_score}</p>
                 </div>
               </div>
@@ -127,7 +127,7 @@ const LocationProfile = () => {
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5">
               <div className="flex items-center space-x-2 mb-2">
                 <Euro className="w-5 h-5 text-ea-gold" />
-                <span className="text-ea-light/60 text-sm">Preis/m²</span>
+                <span className="text-ea-light/60 text-sm">Price/m²</span>
               </div>
               <p className="text-2xl font-bold text-white">€{location.price_per_m2.toLocaleString()}</p>
             </div>
@@ -135,7 +135,7 @@ const LocationProfile = () => {
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5">
               <div className="flex items-center space-x-2 mb-2">
                 <Percent className="w-5 h-5 text-green-400" />
-                <span className="text-ea-light/60 text-sm">Mietrendite</span>
+                <span className="text-ea-light/60 text-sm">Rental Yield</span>
               </div>
               <p className="text-2xl font-bold text-green-400">{location.rental_yield}%</p>
             </div>
@@ -143,7 +143,7 @@ const LocationProfile = () => {
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5">
               <div className="flex items-center space-x-2 mb-2">
                 <TrendingUp className="w-5 h-5 text-blue-400" />
-                <span className="text-ea-light/60 text-sm">Tourismuswachstum</span>
+                <span className="text-ea-light/60 text-sm">Tourism Growth</span>
               </div>
               <p className="text-2xl font-bold text-blue-400">+{location.tourism_growth}%</p>
             </div>
@@ -188,7 +188,7 @@ const LocationProfile = () => {
                 )}
 
                 <div>
-                  <p className="text-ea-light/60 text-sm mb-2">Bevölkerungswachstum</p>
+                  <p className="text-ea-light/60 text-sm mb-2">Population Growth</p>
                   <p className={`font-bold ${location.population_growth >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                     {location.population_growth >= 0 ? '+' : ''}{location.population_growth}% p.a.
                   </p>
@@ -208,11 +208,11 @@ const LocationProfile = () => {
                   <span className="text-white font-medium">{Math.round((location.infrastructure_score + (location.infrastructure_boost || 0)) * 0.3)}</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
-                  <span className="text-ea-light/70">Tourismuswachstum (25%)</span>
+                  <span className="text-ea-light/70">Tourism Growth (25%)</span>
                   <span className="text-white font-medium">{Math.round(Math.min(location.tourism_growth * 5, 100) * 0.25)}</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
-                  <span className="text-ea-light/70">Mietrendite (25%)</span>
+                  <span className="text-ea-light/70">Rental Yield (25%)</span>
                   <span className="text-white font-medium">{Math.round(Math.min(location.rental_yield * 10, 100) * 0.25)}</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">

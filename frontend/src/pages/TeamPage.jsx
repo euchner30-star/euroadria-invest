@@ -7,7 +7,7 @@ const TeamPage = () => {
   return (
     <div className="min-h-screen pt-32 pb-20">
       <SEO 
-        title="Unser Team"
+        title="Our Team"
         description="Meet the EuroAdria Corporate Solutions team: Milena Bubanja and Holger Kuhlmann - Your experts for investments in the Adriatic region."
         url="/team"
       />

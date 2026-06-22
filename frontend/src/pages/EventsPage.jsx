@@ -132,7 +132,7 @@ const EventsPage = () => {
   return (
     <div className="min-h-screen pt-28 bg-white">
       <SEO
-        title="Events, Webinare & Workshops"
+        title="Events, Webinars & Workshops"
         description="Current events, workshops and webinars on company formation, relocation and investments in Montenegro and Serbia."
         url="/events"
       />
@@ -141,14 +141,14 @@ const EventsPage = () => {
       <section className="py-16 bg-ea-light border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <div className="inline-block bg-ea-gold/10 border border-ea-gold/30 text-sm text-ea-dark px-4 py-2 rounded-full mb-6 font-medium">
-            Wissen. Netzwerk. Chancen.
+            Knowledge. Network. Opportunities.
           </div>
           <h1 className="text-4xl sm:text-5xl font-semibold text-ea-dark mb-6 leading-tight">
             EuroAdria Corporate Solutions <span className="text-ea-gold">Events</span>
           </h1>
           <p className="text-ea-dark/70 text-lg max-w-3xl mx-auto leading-relaxed">
             Current events, workshops and webinars on company formation, 
-            Auswanderung und Investments in der Adria-Region.
+            relocation and investments in the Adriatic region.
           </p>
         </div>
       </section>
@@ -167,21 +167,21 @@ const EventsPage = () => {
                 <Calendar className="w-10 h-10 text-ea-gold" />
               </div>
               <h2 className="text-2xl font-semibold text-ea-dark mb-4">
-                Events & Webinare — <span className="text-ea-gold">coming soon</span>
+                Events & Webinars — <span className="text-ea-gold">coming soon</span>
               </h2>
               <p className="text-ea-dark/60 text-lg max-w-xl mx-auto mb-8">
-                Schon bald teilen wir hier exklusive Termine zu Investments, 
+                Soon we will share exclusive dates for investments, 
                 company formation and relocation in Montenegro and Serbia.
               </p>
               <p className="text-ea-dark/40 text-sm mb-8">
                 Subscribe to our newsletter to be the first to know.
               </p>
               <Link
-                to="/contact?betreff=Event-Interesse"
+                to="/contact?betreff=Event%20Interest"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all"
                 data-testid="events-notify-btn"
               >
-                Interesse bekunden
+                Express Interest
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -238,7 +238,7 @@ const EventsPage = () => {
             We support you with planning and execution.
           </p>
           <Link
-            to="/contact?betreff=Event-Planung"
+            to="/contact?betreff=Event%20Planning"
             className="inline-flex items-center gap-2 px-8 py-4 bg-ea-gold text-ea-dark font-bold rounded-lg hover:bg-ea-gold/90 transition-all text-lg"
             data-testid="events-cta"
           >

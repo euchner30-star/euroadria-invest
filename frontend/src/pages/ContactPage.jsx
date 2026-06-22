@@ -77,7 +77,7 @@ const ContactPage = () => {
   return (
     <div className="min-h-screen pt-32 pb-20 px-6 bg-white">
       <SEO 
-        title="Kontakt"
+        title="Contact"
         description="Contact EuroAdria Corporate Solutions for your investment advisory. We advise on real estate, company formation and relocation in the Adriatic region."
         url="/contact"
       />
@@ -132,7 +132,7 @@ const ContactPage = () => {
                   <h3 className="text-ea-dark font-semibold mb-1">{lang === 'en' ? 'Address' : 'Adresse'}</h3>
                   <p className="text-ea-dark/70 text-sm">
                     Marka Miljanova 12<br />
-                    Novi Sad, Serbien
+                    Novi Sad, Serbia
                   </p>
                 </div>
               </div>
@@ -231,12 +231,12 @@ const ContactPage = () => {
                       className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold focus:ring-2 focus:ring-ea-gold/20 transition-all"
                     >
                       <option value="">Please select...</option>
-                      <option value="Immobilien & Aufenthalt">Immobilien & Aufenthalt</option>
+                      <option value="Real Estate & Residency">Real Estate & Residency</option>
                       <option value="Company Formation">Company Formation</option>
-                      <option value="Legal- & Finanzdienstleistungen">Legal- & Finanzdienstleistungen</option>
-                      <option value="Investor Relations & Projektvermittlung">Investor Relations & Projektvermittlung</option>
-                      <option value="Finanzierungsanfrage">Finanzierungsanfrage</option>
-                      <option value="Sonstiges">Sonstiges</option>
+                      <option value="Legal & Financial Services">Legal & Financial Services</option>
+                      <option value="Investor Relations & Project Brokerage">Investor Relations & Project Brokerage</option>
+                      <option value="Financing Request">Financing Request</option>
+                      <option value="Other">Other</option>
                     </select>
                   </div>
                 </div>

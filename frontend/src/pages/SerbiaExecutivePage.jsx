@@ -51,7 +51,7 @@ const SerbiaExecutivePage = () => {
   return (
     <div className="min-h-screen bg-white" data-testid="serbia-executive-page">
       <SEO 
-        title="Serbia Executive Access - Exklusive Investoren-Kontakte"
+        title="Serbia Executive Access - Exclusive Investor Contacts"
         description="Privileged access to Serbia's economic elite. Government contacts, PPP infrastructure projects, up to 50% state funding. For investors from €500,000."
         url="/serbia-executive"
         service={{

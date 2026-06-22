@@ -31,7 +31,7 @@ export const LeadMagnetBox = () => {
           name: name.trim(),
           email: email.trim(),
           source: 'praxisleitfaden',
-          expose_name: 'Praxisleitfaden — Strategischer Plan 2026'
+          expose_name: 'Practice Guide — Strategic Plan 2026'
         })
       });
       setSubmitted(true);
@@ -50,18 +50,18 @@ export const LeadMagnetBox = () => {
           Kostenloser <span className="text-ea-gold">Praxisleitfaden</span>
         </h3>
         <p className="text-ea-light/80 text-sm md:text-lg mb-4 md:mb-6 max-w-2xl mx-auto">
-          Strategischer Plan 2026: Markteintritt & Investitionssicherheit Westbalkan.
-          Geballtes Expertenwissen zu Due Diligence, Steuerstruktur, Banking und rechtlichen Rahmenbedingungen.
+          Strategic Plan 2026: Market Entry & Investment Security Western Balkans.
+          Expert knowledge on due diligence, tax structuring, banking and legal frameworks.
         </p>
         <button 
           onClick={() => setShowModal(true)}
           className="inline-block px-6 py-3 md:px-8 md:py-4 bg-ea-gold text-ea-dark font-semibold rounded-lg hover:bg-ea-gold/80 transition-all text-sm md:text-lg"
           data-testid="praxisleitfaden-download-btn"
         >
-          Jetzt kostenlos herunterladen
+          Download for Free
         </button>
         <p className="text-ea-light/50 text-xs md:text-sm mt-3 md:mt-4">
-          PDF — Vertraulich, nur fuer den persoenlichen Gebrauch
+          PDF — Confidential, for personal use only
         </p>
       </div>
 

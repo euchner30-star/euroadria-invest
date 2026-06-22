@@ -102,7 +102,7 @@ const LeistungenPage = () => {
                       to={`/contact?betreff=${encodeURIComponent(service.title)}`}
                       className="inline-flex items-center gap-2 text-ea-gold font-medium text-sm hover:text-ea-dark transition-colors"
                     >
-                      Unverbindlich anfragen <ArrowRight className="w-4 h-4" />
+                      Request Consultation <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
                 </div>
@@ -118,10 +118,10 @@ const LeistungenPage = () => {
           <div className="text-center mb-14">
             <div className="inline-block bg-red-500/10 border border-red-500/30 text-sm text-red-400 px-4 py-2 rounded-full mb-6 font-medium">
               <AlertTriangle className="w-4 h-4 inline mr-1.5 -mt-0.5" />
-              Risiko-Analyse
+              Risk Analysis
             </div>
             <h2 className="text-3xl sm:text-4xl font-semibold text-white mb-4">
-              Juristische <span className="text-ea-gold">Stabilisierung</span>
+              Legal <span className="text-ea-gold">Stabilization</span>
             </h2>
             <p className="text-white/60 text-lg max-w-3xl mx-auto">{legal_risks?.description}</p>
           </div>
@@ -136,7 +136,7 @@ const LeistungenPage = () => {
                   </div>
                   <h3 className="text-white font-semibold text-lg mb-3">{item.problem}</h3>
                   <div className="mb-5">
-                    <div className="text-xs font-bold text-red-400 tracking-wider mb-1.5">RISIKO</div>
+                    <div className="text-xs font-bold text-red-400 tracking-wider mb-1.5">RISK</div>
                     <p className="text-white/50 text-sm leading-relaxed">{item.risk}</p>
                   </div>
                   <div>
@@ -162,7 +162,7 @@ const LeistungenPage = () => {
               Compliance & Exit
             </div>
             <h2 className="text-3xl sm:text-4xl font-semibold text-ea-dark mb-4">
-              Exit-Sicherheit & <span className="text-ea-gold">Compliance</span>
+              Exit Security & <span className="text-ea-gold">Compliance</span>
             </h2>
             <p className="text-ea-dark/60 text-lg max-w-3xl mx-auto">{compliance_risks?.description}</p>
           </div>
@@ -177,7 +177,7 @@ const LeistungenPage = () => {
                   </div>
                   <h3 className="text-ea-dark font-semibold text-lg mb-3">{item.problem}</h3>
                   <div className="mb-5">
-                    <div className="text-xs font-bold text-red-500 tracking-wider mb-1.5">RISIKO</div>
+                    <div className="text-xs font-bold text-red-500 tracking-wider mb-1.5">RISK</div>
                     <p className="text-ea-dark/50 text-sm leading-relaxed">{item.risk}</p>
                   </div>
                   <div>
@@ -199,7 +199,7 @@ const LeistungenPage = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-semibold text-ea-dark mb-4">
-              Die doppelte <span className="text-ea-gold">Garantie</span>
+              The Double <span className="text-ea-gold">Guarantee</span>
             </h2>
             <p className="text-ea-dark/60 text-lg max-w-2xl mx-auto">{guarantee?.subtitle}</p>
           </div>
@@ -226,11 +226,11 @@ const LeistungenPage = () => {
       <section className="py-20 bg-ea-dark -mb-px">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl sm:text-4xl font-semibold text-white mb-4">
-            {cta?.title?.split('Erstberatung')[0]}<span className="text-ea-gold">Erstberatung</span>
+            {cta?.title?.split('consultation')[0]}<span className="text-ea-gold">Consultation</span>
           </h2>
           <p className="text-white/60 text-lg mb-8 max-w-2xl mx-auto">{cta?.description}</p>
           <Link
-            to="/contact?betreff=Erstberatung"
+            to="/contact?betreff=Initial%20Consultation"
             className="inline-flex items-center gap-2 px-8 py-4 bg-ea-gold text-ea-dark font-bold rounded-lg hover:bg-ea-gold/90 transition-all text-lg"
             data-testid="leistungen-cta"
           >

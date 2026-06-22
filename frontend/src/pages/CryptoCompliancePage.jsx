@@ -200,7 +200,7 @@ const CryptoCompliancePage = () => {
                 <label className="block text-sm font-medium text-ea-dark/80 mb-2">Message</label>
                 <textarea rows={4} value={form.message} onChange={(e) => setForm(p => ({...p, message: e.target.value}))} 
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ea-gold/20 focus:border-ea-gold transition-colors resize-none" 
-                  placeholder="Beschreiben Sie kurz Ihr Anliegen und Geschäftsmodell..." data-testid="assess-message" />
+                  placeholder="Briefly describe your request and business model..." data-testid="assess-message" />
               </div>
               <button type="submit" disabled={submitting} className="w-full py-4 bg-ea-gold text-white font-semibold rounded-lg hover:bg-ea-gold/80 transition-all flex items-center justify-center gap-2 disabled:opacity-70" data-testid="assess-submit">
                 {submitting ? 'Wird gesendet...' : <><Send className="w-5 h-5" />Eignung prüfen & Gespräch anfordern</>}

@@ -308,6 +308,14 @@ async def _run_migration():
     r = await db.leistungen_content.update_one({"key": "main"}, {"$set": leistungen_update})
     results["leistungen"] = "updated" if r.modified_count else "already english or not found"
     
+    # 6. Team section content (heroSection from pages collection)
+    await db.pages.update_one({"slug": "team", "section": "hero"}, {"$set": {
+        "data.title": "Our Team",
+        "data.tagline": "Experience meets local expertise",
+        "data.subtitle": "No brokers. No salespeople. Just two experts who represent your interests and treat every deal like their own assets."
+    }})
+    results["team_hero"] = "updated"
+    
     return {"success": True, "results": results}
 
 
