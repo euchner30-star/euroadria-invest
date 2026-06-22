@@ -61,32 +61,32 @@ const Header = () => {
   // Kategorisierte Regionen für Mega-Menu
   const immobilienCategories = [
     {
-      title: 'Premium-Küste',
+      title: lang === 'en' ? 'Premium Coast' : 'Premium-Küste',
       color: 'text-amber-500',
       regions: [
         { name: 'Tivat', path: '/investment/standort/Tivat', desc: 'Porto Montenegro' },
         { name: 'Sveti Stefan', path: '/investment/standort/Sveti%20Stefan', desc: 'Ultra-Premium' },
-        { name: 'Kotor', path: '/investment/standort/Kotor', desc: 'UNESCO Welterbe' },
-        { name: 'Budva', path: '/immobilien/budva', desc: 'Tourismus-Hotspot' },
+        { name: 'Kotor', path: '/investment/standort/Kotor', desc: 'UNESCO' },
+        { name: 'Budva', path: '/immobilien/budva', desc: lang === 'en' ? 'Tourism Hotspot' : 'Tourismus-Hotspot' },
       ]
     },
     {
-      title: 'Aufstrebend',
+      title: lang === 'en' ? 'Emerging' : 'Aufstrebend',
       color: 'text-green-500',
       regions: [
-        { name: 'Buljarica', path: '/investment/standort/Buljarica', desc: '+22% Wachstum' },
-        { name: 'Čanj', path: '/investment/standort/%C4%8Canj', desc: 'Erschwinglicher Luxus' },
-        { name: 'Ulcinj', path: '/investment/standort/Ulcinj', desc: 'Längste Strände' },
-        { name: 'Bar', path: '/investment/standort/Bar', desc: 'Hafen & Logistik' },
+        { name: 'Buljarica', path: '/investment/standort/Buljarica', desc: '+22%' },
+        { name: 'Čanj', path: '/investment/standort/%C4%8Canj', desc: lang === 'en' ? 'Affordable Luxury' : 'Erschwinglicher Luxus' },
+        { name: 'Ulcinj', path: '/investment/standort/Ulcinj', desc: lang === 'en' ? 'Longest Beaches' : 'Längste Strände' },
+        { name: 'Bar', path: '/investment/standort/Bar', desc: lang === 'en' ? 'Port & Logistics' : 'Hafen & Logistik' },
       ]
     },
     {
-      title: 'Inland & Seen',
+      title: lang === 'en' ? 'Inland & Lakes' : 'Inland & Seen',
       color: 'text-blue-500',
       regions: [
-        { name: 'Podgorica', path: '/immobilien/podgorica', desc: 'Hauptstadt' },
-        { name: 'Danilovgrad', path: '/investment/standort/Danilovgrad', desc: 'Logistik-Korridor' },
-        { name: 'Skutarisee', path: '/investment/standort/Skutarisee', desc: 'Öko-Tourismus' },
+        { name: 'Podgorica', path: '/immobilien/podgorica', desc: lang === 'en' ? 'Capital' : 'Hauptstadt' },
+        { name: 'Danilovgrad', path: '/investment/standort/Danilovgrad', desc: lang === 'en' ? 'Logistics Corridor' : 'Logistik-Korridor' },
+        { name: 'Skutarisee', path: '/investment/standort/Skutarisee', desc: lang === 'en' ? 'Eco-Tourism' : 'Öko-Tourismus' },
         { name: 'Žabljak', path: '/immobilien/zabljak', desc: 'Durmitor' },
       ]
     },
@@ -182,7 +182,7 @@ const Header = () => {
                       onClick={() => setIsImmobilienOpen(false)}
                     >
                       <TrendingUp className="w-3 h-3" />
-                      Alle 22 Standorte im Dashboard →
+                      {lang === 'en' ? 'All 22 Locations in Dashboard →' : 'Alle 22 Standorte im Dashboard →'}
                     </Link>
                   </div>
                 </div>
@@ -233,7 +233,7 @@ const Header = () => {
                 }`}
                 data-testid="nav-leistungen-dropdown"
               >
-                Leistungen
+                {lang === 'en' ? 'Services' : 'Leistungen'}
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isLeistungenOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -247,8 +247,8 @@ const Header = () => {
                   >
                     <Briefcase className="w-4 h-4 text-ea-gold" />
                     <div>
-                      <div className="text-sm font-semibold text-ea-dark">Unsere Leistungen</div>
-                      <div className="text-xs text-ea-dark/50">Services & Beratung</div>
+                      <div className="text-sm font-semibold text-ea-dark">{lang === 'en' ? 'Our Services' : 'Unsere Leistungen'}</div>
+                      <div className="text-xs text-ea-dark/50">{lang === 'en' ? 'Advisory & Consulting' : 'Services & Beratung'}</div>
                     </div>
                   </Link>
                   <Link
@@ -259,8 +259,8 @@ const Header = () => {
                   >
                     <Calendar className="w-4 h-4 text-ea-gold" />
                     <div>
-                      <div className="text-sm font-semibold text-ea-dark">Events & Webinare</div>
-                      <div className="text-xs text-ea-dark/50">Termine & Workshops</div>
+                      <div className="text-sm font-semibold text-ea-dark">{lang === 'en' ? 'Events & Webinars' : 'Events & Webinare'}</div>
+                      <div className="text-xs text-ea-dark/50">{lang === 'en' ? 'Dates & Workshops' : 'Termine & Workshops'}</div>
                     </div>
                   </Link>
                   <Link
@@ -272,7 +272,7 @@ const Header = () => {
                     <FileText className="w-4 h-4 text-ea-gold" />
                     <div>
                       <div className="text-sm font-semibold text-ea-dark">Whitepaper 2026</div>
-                      <div className="text-xs text-ea-dark/50">Kostenloser Download</div>
+                      <div className="text-xs text-ea-dark/50">{lang === 'en' ? 'Free Download' : 'Kostenloser Download'}</div>
                     </div>
                   </Link>
                 </div>
@@ -430,7 +430,7 @@ const Header = () => {
                 >
                   <div className="flex items-center gap-3">
                     <Briefcase className="w-5 h-5 text-ea-gold" />
-                    <span className="font-semibold tracking-wide">Leistungen</span>
+                    <span className="font-semibold tracking-wide">{lang === 'en' ? 'Services' : 'Leistungen'}</span>
                   </div>
                   <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${isMobileLeistungenOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -438,11 +438,11 @@ const Header = () => {
                   <div className="ml-4 mt-2 space-y-1">
                     <Link to="/leistungen" className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-ea-dark hover:bg-ea-gold/10 transition-colors">
                       <Briefcase className="w-4 h-4 text-ea-gold" />
-                      <span className="font-medium text-sm">Unsere Leistungen</span>
+                      <span className="font-medium text-sm">{lang === 'en' ? 'Our Services' : 'Unsere Leistungen'}</span>
                     </Link>
                     <Link to="/events" className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-ea-dark hover:bg-ea-gold/10 transition-colors">
                       <Calendar className="w-4 h-4 text-ea-gold" />
-                      <span className="font-medium text-sm">Events & Webinare</span>
+                      <span className="font-medium text-sm">{lang === 'en' ? 'Events & Webinars' : 'Events & Webinare'}</span>
                     </Link>
                     <Link to="/whitepaper" className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-ea-dark hover:bg-ea-gold/10 transition-colors">
                       <FileText className="w-4 h-4 text-ea-gold" />

@@ -21,8 +21,8 @@ const Footer = () => {
               />
             </div>
             <p className="text-ea-light/70 text-sm leading-relaxed mb-6">
-              <span className="font-semibold text-white">EuroAdria Corporate Solutions</span> ist eine Marke der Montaris & Co. d.o.o. Novi Sad<br />
-              NOVI SAD, MARKA MILJANOVA 12, NOVI SAD, Serbien
+              <span className="font-semibold text-white">EuroAdria Corporate Solutions</span> {t('footer.brandDesc') || 'is a brand of Montaris & Co. d.o.o. Novi Sad'}<br />
+              NOVI SAD, MARKA MILJANOVA 12, NOVI SAD, Serbia
             </p>
           </div>
 
@@ -57,7 +57,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/leistungen" className="text-ea-light/70 hover:text-ea-gold transition-colors text-sm">
-                  Leistungen
+                  {t('footer.services') || 'Services'}
                 </Link>
               </li>
               <li>
