@@ -54,7 +54,7 @@ const LeistungenPage = () => {
             {hero?.tagline}
           </div>
           <h1 className="text-4xl sm:text-5xl font-semibold text-ea-dark mb-6 leading-tight">
-            Unsere <span className="text-ea-gold">Leistungen</span> für Ihre Zukunft
+            Our <span className="text-ea-gold">Services</span> for Your Future
           </h1>
           <p className="text-ea-dark/70 text-lg max-w-3xl mx-auto leading-relaxed">
             {hero?.description}

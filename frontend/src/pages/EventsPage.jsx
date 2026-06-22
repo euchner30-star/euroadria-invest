@@ -47,12 +47,12 @@ const EventCard = ({ event }) => {
         <div className="flex items-center gap-4 text-xs text-ea-dark/50 mb-3">
           <span className="flex items-center gap-1.5">
             <Calendar className="w-3.5 h-3.5" />
-            {eventDate.toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}
+            {eventDate.toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' })}
           </span>
           {event.time && (
             <span className="flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5" />
-              {event.time} Uhr
+              {event.time}
             </span>
           )}
         </div>
@@ -75,18 +75,18 @@ const EventCard = ({ event }) => {
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-ea-dark text-white font-semibold rounded-lg hover:bg-ea-navy transition-all text-sm"
             data-testid={`event-register-${event.id}`}
           >
-            Jetzt anmelden
+            Register Now
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         )}
 
         {isPast && !isCancelled && (
-          <span className="text-ea-dark/40 text-sm font-medium">Vergangenes Event</span>
+          <span className="text-ea-dark/40 text-sm font-medium">Past Event</span>
         )}
 
         {/* Social Links */}
         <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
-          <span className="text-xs text-ea-dark/40">Teilen:</span>
+          <span className="text-xs text-ea-dark/40">Share:</span>
           <a href="https://www.facebook.com/share/1Ckiys8xJw/" target="_blank" rel="noopener noreferrer" className="text-ea-dark/30 hover:text-[#1877F2] transition-colors" aria-label="Facebook">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
           </a>
@@ -191,7 +191,7 @@ const EventsPage = () => {
               {upcomingEvents.length > 0 && (
                 <div className="mb-16">
                   <h2 className="text-2xl font-semibold text-ea-dark mb-8">
-                    Kommende <span className="text-ea-gold">Events</span>
+                    Upcoming <span className="text-ea-gold">Events</span>
                   </h2>
                   <div className={`grid gap-8 ${
                     upcomingEvents.length === 1 ? 'grid-cols-1 max-w-lg mx-auto' :
@@ -209,7 +209,7 @@ const EventsPage = () => {
               {pastEvents.length > 0 && (
                 <div>
                   <h2 className="text-2xl font-semibold text-ea-dark/60 mb-8">
-                    Vergangene Events
+                    Past Events
                   </h2>
                   <div className={`grid gap-8 ${
                     pastEvents.length === 1 ? 'grid-cols-1 max-w-lg mx-auto' :
@@ -231,7 +231,7 @@ const EventsPage = () => {
       <section className="py-20 bg-ea-dark -mb-px">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl sm:text-4xl font-semibold text-white mb-4">
-            Eigenes Event <span className="text-ea-gold">planen</span>?
+            Plan Your Own <span className="text-ea-gold">Event</span>?
           </h2>
           <p className="text-white/60 text-lg mb-8 max-w-2xl mx-auto">
             Would you like to organize an exclusive investor event or workshop in Montenegro? 
@@ -242,7 +242,7 @@ const EventsPage = () => {
             className="inline-flex items-center gap-2 px-8 py-4 bg-ea-gold text-ea-dark font-bold rounded-lg hover:bg-ea-gold/90 transition-all text-lg"
             data-testid="events-cta"
           >
-            Kontakt aufnehmen
+            Get in Touch
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
