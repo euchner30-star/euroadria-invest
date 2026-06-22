@@ -177,6 +177,129 @@ async def cleanup_pdf_duplicates(admin: str = Depends(verify_admin)):
     return results
 
 
+@router.post("/admin/settings/migrate-to-english")
+async def migrate_to_english(admin: str = Depends(verify_admin)):
+    """One-time migration: Translate all German DB content to English."""
+    results = {}
+    
+    # 1. Homepage settings
+    await db.site_settings.update_one({"key": "homepage"}, {"$set": {
+        "hero_title": "Company Formation, Residency & Investments in Montenegro and Serbia",
+        "hero_subtitle": "EuroAdria is your bridge to successful investments, legally secure relocation, and international business structuring — in the Adriatic region and Asia. We are your Trusted Advisor for all entrepreneurial and private ventures abroad.",
+        "hero_cta_text": "Request Consultation",
+        "testimonial_quote": "Thanks to EuroAdria, I was able to set up my company in Montenegro quickly, securely, and completely stress-free. I felt extremely well taken care of and can warmly recommend EuroAdria to any entrepreneur and investor.",
+        "testimonial_author": "Maximilian R., Entrepreneur from Germany",
+        "cta_title": "Ready for Your Investment?",
+        "cta_subtitle": "Schedule a free initial consultation with our experts and discover the opportunities in the Balkans.",
+        "trust_items": [
+            {"title": "Trusted", "desc": "Featured in n-tv & RTL (Advertorial)"},
+            {"title": "Return-Focused", "desc": "Double-digit target returns"},
+            {"title": "Expertise", "desc": "15+ years of experience"},
+            {"title": "Security", "desc": "Asset Protection"}
+        ]
+    }})
+    results["homepage"] = "updated"
+    
+    # 2. Infrastructure projects
+    translations_infra = {
+        "Autobahn Bar-Boljare (Smokovac-Mateševo)": "Highway Bar-Boljare (Smokovac-Mateševo)",
+        "Flughafen Podgorica Erweiterung": "Podgorica Airport Expansion",
+        "Flughafen Tivat Terminal": "Tivat Airport Terminal",
+        "Hafen Bar Modernisierung": "Port of Bar Modernization",
+        "Klinisches Zentrum Podgorica": "Clinical Center Podgorica",
+        "Bahnstrecke Podgorica-Nikšić Modernisierung": "Railway Podgorica-Nikšić Modernization",
+        "Flughafen Belgrad Nikola Tesla": "Belgrade Nikola Tesla Airport",
+        "Schnellstraße Belgrad-Sarajevo": "Expressway Belgrade-Sarajevo",
+        "Hochgeschwindigkeitszug Belgrad-Budapest": "High-Speed Rail Belgrade-Budapest",
+        "Budva-Umgehungsstraße": "Budva Bypass Road",
+        "Schnellstraße Podgorica-Nikšić": "Expressway Podgorica-Nikšić",
+    }
+    infra_count = 0
+    for de, en in translations_infra.items():
+        r = await db.infrastructure_projects.update_many({"project_name": de}, {"$set": {"project_name": en}})
+        infra_count += r.modified_count
+    results["infrastructure"] = f"{infra_count} translated"
+    
+    # 3. Locations: Serbien -> Serbia
+    r = await db.locations.update_many({"country": "Serbien"}, {"$set": {"country": "Serbia"}})
+    results["locations_country"] = f"{r.modified_count} updated"
+    
+    # 4. Events
+    await db.events.update_one({"title": "Investoren-Dinner Budva"}, {"$set": {
+        "title": "Investor Dinner Budva",
+        "description": "Exclusive networking dinner for investors with insights into current off-market real estate on the Montenegrin coast. Limited to 20 participants."
+    }})
+    await db.events.update_one({"title": "Webinar: Firmengründung Montenegro 2026"}, {"$set": {
+        "title": "Webinar: Company Formation Montenegro 2026",
+        "description": "Live webinar on company formation, tax optimization and residency in Montenegro. Free registration."
+    }})
+    results["events"] = "translated"
+    
+    # 5. Leistungen content
+    leistungen_update = {
+        "hero.tagline": "Precise. Efficient. Strategic.",
+        "hero.title": "Our Services for Your Future",
+        "hero.description": "We develop concepts for company formation, asset structuring, real estate, residency and financial solutions — tailored to your situation.",
+        "cta.title": "Contact us for an initial consultation",
+        "cta.description": "Planning a purchase or already in a risk zone? Get in touch with our law-firm-backed task force now.",
+        "cta.button_text": "Request a free initial consultation",
+        "guarantee.title": "The Double Guarantee",
+        "guarantee.subtitle": "Security for new buyers, remediation for existing owners",
+        "guarantee.buyer.label": "BEFORE PURCHASE",
+        "guarantee.buyer.title": "For First-Time Buyers",
+        "guarantee.buyer.description": "We create a complete compliance dossier for the property covering all risk areas: legalization, cadastre, location screening and exit viability.",
+        "guarantee.buyer.highlight": "We guarantee clarity and compliance before you sign the purchase agreement. No hidden risks, no unpredictable surprises.",
+        "guarantee.owner.label": "AFTER PURCHASE",
+        "guarantee.owner.title": "For Existing Owners",
+        "guarantee.owner.description": "If your investment is already affected by legal deficiencies, we take over damage control and legal remediation of your property.",
+        "guarantee.owner.highlight": "We resolve open claims, complete missing registrations and transform a risk asset into a bankable, exit-ready asset.",
+        "compliance_risks.title": "Exit Security & Compliance",
+        "compliance_risks.description": "Yield properties require more than just a nice building. They require clear compliance and a tax-defensible payment structure.",
+        "compliance_risks.conclusion": "No political blind flying — guaranteed resaleability of your property.",
+        "compliance_risks.items.0.problem": "Illegal Short-Term Rental (Airbnb)",
+        "compliance_risks.items.0.risk": "Many properties are not approved for tourist use — this jeopardizes your entire return.",
+        "compliance_risks.items.0.solution": "Review & application of tourist use permit. Registration with the tax authority.",
+        "compliance_risks.items.1.problem": "Grey Zone Payments",
+        "compliance_risks.items.1.risk": "Low purchase price in the deed, rest in cash — destroys the exit strategy and creates a money laundering issue.",
+        "compliance_risks.items.1.solution": "Transparent purchase price structure. Complete documentation for Western banks and tax authorities.",
+        "compliance_risks.items.2.problem": "Political & Regulatory Risks",
+        "compliance_risks.items.2.risk": "Sudden construction freeze, expropriation or change of use by the municipality.",
+        "compliance_risks.items.2.solution": "On-site political screening. Early warning system through our government network in Montenegro.",
+        "services.0.title": "Real Estate & Residency",
+        "services.0.tagline": "Find. Secure. Live.",
+        "services.0.description": "Find and secure your dream property and arrange your residency status easily.",
+        "services.0.points": ["Property search & due diligence", "Residency permit application", "Purchase contract review", "Cadastral & ownership verification", "Property management setup"],
+        "services.1.title": "Company Formation & Structuring",
+        "services.1.tagline": "Found. Structure. Grow.",
+        "services.1.description": "We design your international corporate architecture for maximum efficiency and legal certainty.",
+        "services.1.points": ["D.O.O. formation in Montenegro/Serbia", "Tax-optimized holding structures", "Bank account opening", "Accounting & bookkeeping setup", "VAT registration & compliance"],
+        "services.2.title": "Legal & Financial Services",
+        "services.2.tagline": "Review. Secure. Enforce.",
+        "services.2.description": "Navigate your venture safely through the legal and financial requirements of the Balkan markets.",
+        "services.2.points": ["Contract law & negotiations", "Tax advisory & optimization", "Asset protection structures", "Litigation support", "Regulatory compliance"],
+        "services.3.title": "Investor Relations & Project Brokerage",
+        "services.3.tagline": "Connect. Broker. Realize.",
+        "services.3.description": "We connect you with exclusive off-market investment opportunities and local partners.",
+        "services.3.points": ["Off-market deal sourcing", "Investor matching", "Project development partnerships", "Joint venture structuring", "Exit strategy planning"],
+        "legal_risks.title": "Legal Stabilization",
+        "legal_risks.description": "Before any investment, identify and resolve the key legal risks of properties in Montenegro and Serbia.",
+        "legal_risks.conclusion": "A secure legal foundation is the prerequisite for any profitable exit.",
+        "legal_risks.items.0.problem": "Missing Building Permit & Legalization",
+        "legal_risks.items.0.risk": "Many properties lack proper building permits — this blocks resale and mortgage financing.",
+        "legal_risks.items.0.solution": "Complete legalization procedure with building authorities. Retroactive permits where possible.",
+        "legal_risks.items.1.problem": "Unclear Cadastral Entries",
+        "legal_risks.items.1.risk": "Discrepancies between cadastre and actual property boundaries create ownership disputes.",
+        "legal_risks.items.1.solution": "Geodetic survey, cadastral correction and ownership clarification.",
+        "legal_risks.items.2.problem": "Inheritance Chaos & Family Conflicts",
+        "legal_risks.items.2.risk": "Unresolved inheritance claims can surface years after purchase.",
+        "legal_risks.items.2.solution": "Comprehensive heir search and legal clearance before closing.",
+    }
+    r = await db.leistungen_content.update_one({"key": "main"}, {"$set": leistungen_update})
+    results["leistungen"] = "updated" if r.modified_count else "already english or not found"
+    
+    return {"success": True, "results": results}
+
+
 # ── Tracking / GTM Settings ─────────────────────────────────────────────
 
 @router.get("/settings/tracking")
