@@ -134,7 +134,7 @@ const InvestmentHeatmap = ({ locations }) => {
     locations.filter(l => l.country === 'Montenegro'), [locations]);
 
   const serbiaLocs = useMemo(() =>
-    locations.filter(l => l.country === 'Serbien'), [locations]);
+    locations.filter(l => l.country === 'Serbia'), [locations]);
 
   const allValues = useMemo(() =>
     locations.map(l => getValue(l, activeView)), [locations, activeView]);
