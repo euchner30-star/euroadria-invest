@@ -333,7 +333,7 @@ const LocationProfile = () => {
               className="flex-1 flex items-center justify-center space-x-2 px-6 py-4 bg-white/10 text-white font-bold rounded-xl hover:bg-white/20 transition-all"
             >
               <Target className="w-5 h-5" />
-              <span>Standorte vergleichen</span>
+              <span>Compare Locations</span>
             </Link>
           </div>
         </div>

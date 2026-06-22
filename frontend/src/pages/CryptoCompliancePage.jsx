@@ -30,7 +30,7 @@ const CryptoCompliancePage = () => {
           email: form.email,
           phone: form.phone,
           subject: `Crypto Executive Assessment${form.company ? ', ' + form.company : ''}`,
-          message: `Unternehmen: ${form.company || '-'}\nVolumen: ${form.volume || '-'}\n\n${form.message || 'Keine weitere Nachricht.'}`
+          message: `Unternehmen: ${form.company || '-'}\nVolumen: ${form.volume || '-'}\n\n${form.message || 'No further message.'}`
         })
       });
       setSubmitted(true);
@@ -197,7 +197,7 @@ const CryptoCompliancePage = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-ea-dark/80 mb-2">Nachricht</label>
+                <label className="block text-sm font-medium text-ea-dark/80 mb-2">Message</label>
                 <textarea rows={4} value={form.message} onChange={(e) => setForm(p => ({...p, message: e.target.value}))} 
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ea-gold/20 focus:border-ea-gold transition-colors resize-none" 
                   placeholder="Beschreiben Sie kurz Ihr Anliegen und Geschäftsmodell..." data-testid="assess-message" />

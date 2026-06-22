@@ -32,7 +32,7 @@ const InfrastrukturRadarPage = () => {
           email: formData.email,
           phone: formData.phone,
           subject: `Location Exposé Request: ${formData.region}`,
-          message: `Region: ${formData.region}\n\n${formData.message || 'Keine weitere Nachricht.'}`
+          message: `Region: ${formData.region}\n\n${formData.message || 'No further message.'}`
         })
       });
       setSubmitted(true);
@@ -222,16 +222,16 @@ const InfrastrukturRadarPage = () => {
 
           {/* Entfernungstabelle */}
           <div className="mt-16">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">Entfernungen & Fahrzeiten</h2>
-            <p className="text-ea-light/60 text-sm mb-6">Alle Verbindungen zwischen den wichtigsten Standorten in Montenegro</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">Distances & Travel Times</h2>
+            <p className="text-ea-light/60 text-sm mb-6">All connections between the most important locations in Montenegro</p>
             <div className="overflow-x-auto rounded-2xl border border-white/10">
               <table className="w-full text-sm" data-testid="distance-table">
                 <thead>
                   <tr className="bg-white/5 border-b border-white/10">
-                    <th className="text-left text-ea-gold font-semibold px-4 py-3">Von</th>
-                    <th className="text-left text-ea-gold font-semibold px-4 py-3">Nach</th>
-                    <th className="text-right text-ea-gold font-semibold px-4 py-3">Entfernung</th>
-                    <th className="text-right text-ea-gold font-semibold px-4 py-3">Fahrzeit</th>
+                    <th className="text-left text-ea-gold font-semibold px-4 py-3">From</th>
+                    <th className="text-left text-ea-gold font-semibold px-4 py-3">To</th>
+                    <th className="text-right text-ea-gold font-semibold px-4 py-3">Distance</th>
+                    <th className="text-right text-ea-gold font-semibold px-4 py-3">Travel Time</th>
                   </tr>
                 </thead>
                 <tbody className="text-ea-light/80">

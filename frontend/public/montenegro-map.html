@@ -64,7 +64,7 @@
   <aside id="sidebar">
     <div class="brand">EuroAdria Corporate Solutions</div>
     <h1>Montenegro Infrastrukturkarte, Premium V5</h1>
-    <p class="lead">Erweitert um Investmentscore je Standort, Zeithorizonte pro Segment, EuroAdria-Opportunitätszonen, ergänzte Bewertungen für Šavnik, Žabljak und Herceg Novi sowie eine zweite Webinar-Logik mit deutscher Legende.</p>
+    <p class="lead">Enhanced with investment scores per location, time horizons per segment, EuroAdria opportunity zones, added ratings for Šavnik, Žabljak and Herceg Novi.</p>
 
     <div class="card">
       <h2>Standortscore</h2>
@@ -85,19 +85,19 @@
     </div>
 
     <div class="card controls">
-      <h2>Layer</h2>
-      <label><input type="checkbox" data-layer="roads" checked> Straßen, Autobahnen, Tunnel</label>
-      <label><input type="checkbox" data-layer="rails" checked> Bahntrassen</label>
-      <label><input type="checkbox" data-layer="air" checked> Flughäfen</label>
-      <label><input type="checkbox" data-layer="ports" checked> Häfen</label>
-      <label><input type="checkbox" data-layer="health" checked> Kliniken</label>
-      <label><input type="checkbox" data-layer="zones" checked> EuroAdria-Opportunitätszonen</label>
-      <label><input type="checkbox" data-layer="distances" checked> Entfernungen (km / Fahrzeit)</label>
-      <label><input type="checkbox" data-layer="places" checked> Standorte</label>
+      <h2>Layers</h2>
+      <label><input type="checkbox" data-layer="roads" checked> Roads, Highways, Tunnels</label>
+      <label><input type="checkbox" data-layer="rails" checked> Railways</label>
+      <label><input type="checkbox" data-layer="air" checked> Airports</label>
+      <label><input type="checkbox" data-layer="ports" checked> Ports</label>
+      <label><input type="checkbox" data-layer="health" checked> Clinics</label>
+      <label><input type="checkbox" data-layer="zones" checked> EuroAdria Opportunity Zones</label>
+      <label><input type="checkbox" data-layer="distances" checked> Distances (km / Travel Time)</label>
+      <label><input type="checkbox" data-layer="places" checked> Locations</label>
     </div>
 
     <div class="card controls">
-      <h2>Use-Case-Filter</h2>
+      <h2>Use-Case Filter</h2>
       <label><input type="checkbox" data-use="logistics" checked> Logistik</label>
       <label><input type="checkbox" data-use="residential" checked> Residential</label>
       <label><input type="checkbox" data-use="tourism" checked> Tourismus</label>
@@ -112,7 +112,7 @@
     </div>
 
     <div class="card">
-      <h2>Top-Standorte laut V5</h2>
+      <h2>Top Locations (V5)</h2>
       <div class="score"><span>Andrijevica</span><b>94/100</b></div>
       <div class="score"><span>Bar</span><b>92/100</b></div>
       <div class="score"><span>Podgorica</span><b>90/100</b></div>
@@ -135,23 +135,23 @@
     <div class="card" id="infoBox">
       <div class="info-title">Karte geladen</div>
       <div class="meta">Webinar- und Exposé-Logik</div>
-      <div class="info-text">Klick auf einen Ort, ein Segment oder eine Zone. Angezeigt werden Status, Zeithorizont, Use-Case und der kurze Investmentcase.</div>
+      <div class="info-text">Click on a location, segment or zone. Status, time horizon, use case and investment summary are displayed.</div>
     </div>
 
     <div class="card small">
       <strong>Deutsche EuroAdria-Legende</strong><br>
-      Rot bis Orange steht für aggressive Aufwertungschancen. Gelb markiert starke, aber selektivere Chancen. Grün zeigt etablierte oder stabilisierte Standorte. Linienfarben trennen Bestand, Modernisierung, Bau und Planung. Für Webinar-Folien solltest du primär Score, Zone und Zeithorizont sprechen, nicht alle Segmente im Detail.
+      Red to orange indicates aggressive appreciation opportunities. Yellow marks strong but more selective opportunities. Green shows established or stabilized locations. Line colors separate existing, modernization, construction and planning.
     </div>
   </aside>
   <div id="map">
     <div class="cat-bar" id="catBar">
-      <button class="cat-btn" data-cat="airports" onclick="toggleCat('airports',this)">Flughaefen</button>
-      <button class="cat-btn" data-cat="municipalities" onclick="toggleCat('municipalities',this)">Gemeinden</button>
+      <button class="cat-btn" data-cat="airports" onclick="toggleCat('airports',this)">Airports</button>
+      <button class="cat-btn" data-cat="municipalities" onclick="toggleCat('municipalities',this)">Municipalities</button>
       <button class="cat-btn" data-cat="rivieras" onclick="toggleCat('rivieras',this)">Rivieras</button>
-      <button class="cat-btn" data-cat="parks" onclick="toggleCat('parks',this)">Nationalparks</button>
-      <button class="cat-btn" data-cat="mountains" onclick="toggleCat('mountains',this)">Berge</button>
-      <button class="cat-btn" data-cat="lakes" onclick="toggleCat('lakes',this)">Seen</button>
-      <button class="cat-btn" data-cat="ski" onclick="toggleCat('ski',this)">Skizentren</button>
+      <button class="cat-btn" data-cat="parks" onclick="toggleCat('parks',this)">National Parks</button>
+      <button class="cat-btn" data-cat="mountains" onclick="toggleCat('mountains',this)">Mountains</button>
+      <button class="cat-btn" data-cat="lakes" onclick="toggleCat('lakes',this)">Lakes</button>
+      <button class="cat-btn" data-cat="ski" onclick="toggleCat('ski',this)">Ski Resorts</button>
     </div>
   </div>
 </div>
@@ -184,8 +184,8 @@ const places = {
   zeta:{name:'Zeta',lat:42.402,lng:19.198,score:83,priority:4,uses:['logistics','residential'],meta:'Flughafen- und Logistikraum',case:'Profitiert von Bahn, Flughafen und der Nähe zu Podgorica. Gute Flächenlogik.'},
   danilovgrad:{name:'Danilovgrad',lat:42.553,lng:19.146,score:84,priority:4,uses:['residential','relocation','logistics'],meta:'Pendler- und Binnenraum',case:'Stiller Gewinner der Podgorica-Expansion und der Schnellstraßenlogik Richtung Nikšić.'},
   niksic:{name:'Nikšić',lat:42.773,lng:18.944,score:80,priority:4,uses:['logistics','residential','relocation'],meta:'Binnenzentrum',case:'Relevanter Flächen- und Industrieort. Stärker für unternehmerische Nutzung als für Premium-Tourismus.'},
-  savnik:{name:'Šavnik',lat:42.956,lng:19.096,score:73,priority:3,uses:['tourism','residential'],meta:'Semolj-Tunnel-Hebel',case:'Noch spekulativer als Žabljak, aber mit hohem relativen Hebel, falls die Semolj-Verbindung und Straßenverbesserungen realisiert werden.'},
-  zabljak:{name:'Žabljak',lat:43.154,lng:19.123,score:81,priority:4,uses:['tourism','residential','relocation'],meta:'Durmitor, Alpinflughafen-Perspektive',case:'Starker alpiner Tourismuscase. Zusätzlichen Schub bringen Straßenverbesserungen, Semolj-Debatte und die Raumplan-Logik für einen kleineren Flugplatz.'},
+  savnik:{name:'Šavnik',lat:42.956,lng:19.096,score:73,priority:3,uses:['tourism','residential'],meta:'Semolj-Tunnel-Hebel',case:'More speculative than Žabljak, but with high relative leverage if the Semolj connection and road improvements are realized.'},
+  zabljak:{name:'Žabljak',lat:43.154,lng:19.123,score:81,priority:4,uses:['tourism','residential','relocation'],meta:'Durmitor, Alpinflughafen-Perspektive',case:'Strong alpine tourism case. Additional momentum from road improvements, Semolj debate and spatial planning for a smaller airfield.'},
   virpazar:{name:'Virpazar',lat:42.246,lng:19.092,score:74,priority:3,uses:['tourism','logistics'],meta:'Skadar-See-Scharnier',case:'Profitiert von Bahnmodernisierung und dem Binnen-Küsten-Korridor.'},
   sutomore:{name:'Sutomore',lat:42.141,lng:19.046,score:72,priority:3,uses:['tourism','residential'],meta:'Küsten-Bahnanbindung',case:'Gewinnt moderat über Bar und die Schienenmodernisierung.'},
   bar:{name:'Bar',lat:42.095,lng:19.100,score:92,priority:5,uses:['logistics','residential','tourism'],meta:'Green Port, Fähre, Bahn',case:'Logistik-Herz des Landes. Modernisierungen im Hafen, an der Bahn und im Südkorridor wirken direkt wertsteigernd.'},
@@ -217,7 +217,7 @@ const roadSegments = [
   {name:'A1 Andrijevica–Berane–Boljare', pts:['andrijevica','berane','boljare'], status:'planned', horizon:'long', priority:4, uses:['logistics'], text:'Langfristige Nordverlängerung bis zur serbischen Grenze.'},
   {name:'Schnellstraße Podgorica–Danilovgrad–Nikšić', pts:['podgorica','danilovgrad','niksic'], status:'planned', horizon:'medium', priority:4, uses:['residential','relocation','logistics'], text:'Hebel für Pendlergürtel, Binnenentwicklung und unternehmerische Flächen.'},
   {name:'Semolj-Verbindung Mojkovac/Kolašin–Šavnik–Žabljak', pts:[[42.935,19.518],'savnik','zabljak'], status:'planned', horizon:'medium', priority:4, uses:['tourism','residential'], text:'Politisch stark diskutierter Nordwest-Hebel. Für Šavnik und Žabljak ein echter Gamechanger, falls realisiert.'},
-  {name:'Marina Dolina–Radovan Luka, Žabljak', pts:['zabljak',[43.137,19.096],[43.122,19.071]], status:'construction', horizon:'short', priority:3, uses:['tourism'], text:'Laufende Straßenverbesserung für die touristische Erschließung von Žabljak.'},
+  {name:'Marina Dolina–Radovan Luka, Žabljak', pts:['zabljak',[43.137,19.096],[43.122,19.071]], status:'construction', horizon:'short', priority:3, uses:['tourism'], text:'Ongoing road improvement for the touristic development of Žabljak.'},
   {name:'Fast Road Herceg Novi–Budva inkl. Buchtquerung', pts:['hercegNovi',[42.401,18.615],'tivat','budva'], status:'planned', horizon:'medium', priority:5, uses:['tourism','residential','relocation','logistics'], text:'Eines der wichtigsten Küstenprojekte. Starker Effekt auf Herceg Novi und die Boka.'},
   {name:'Luštica / Monte Rose Straßeninfrastruktur', pts:['hercegNovi',[42.393,18.577],[42.360,18.626]], status:'construction', horizon:'short', priority:3, uses:['tourism','residential'], text:'Lokaler Ausbau mit Relevanz für hochwertige Küstenlagen.'},
   {name:'Adria-Ionen-Korridor Zaljevo–Bar–Ulcinj–Sukobin', pts:['zaljevo','bar','ulcinj','sukobin'], status:'planned', horizon:'medium', priority:5, uses:['tourism','logistics','residential'], text:'Stärkster Südkorridor für Bar und Ulcinj.'},

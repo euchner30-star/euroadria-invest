@@ -27,7 +27,7 @@ const properties = {
     name: 'Žabljak',
     slug: 'zabljak',
     subtitle: 'Alpin-Tourismus & High-Score',
-    description: 'Žabljak ist das höchstgelegene Städtchen am Balkan und das Zentrum des Durmitor-Nationalparks - ein aufstrebender Hotspot für Alpin-Tourismus.',
+    description: 'Žabljak is the highest-altitude town in the Balkans and the center of Durmitor National Park - an emerging hotspot for alpine tourism.',
     icon: Mountain,
     score: 88,
     heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200',

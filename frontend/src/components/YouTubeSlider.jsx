@@ -5,7 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const fallbackVideos = [
-  { id: '228QIsmJOYY', title: 'Eisbaden im Durmitor Nationalpark Teil 2', views: '10K' },
+  { id: '228QIsmJOYY', title: 'Ice Bathing in Durmitor National Park Part 2', views: '10K' },
   { id: 'H0QATEfW_do', title: 'Montenegro verschärft Regeln für Investoren und Auswanderer', views: '13K' },
   { id: 'DnKhmkOFL9U', title: 'Serbien Praxischeck: Digitale Signatur für Gründung & Bankkonto', views: '5.9K' },
   { id: 'uban5YIvfUo', title: 'Auswandern nach Montenegro - die größten Fehler', views: '95' },

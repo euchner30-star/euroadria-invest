@@ -199,9 +199,9 @@ const SerbiaExecutivePage = () => {
                       { title: 'Real Estate', items: ['Belgrade Waterfront', 'Innovation Districts', 'Logistics Parks', 'Crypto settlement via partner banks'] },
                       { title: 'Technology', items: ['IT Parks', 'E-Government', '5G Infrastructure'] }
                     ] : [
-                      { title: 'Verkehr & Logistik', items: ['Autobahn-Netzwerk', 'Hochgeschwindigkeitsbahn', 'Flughafen-Expansionen'] },
+                      { title: 'Transport & Logistics', items: ['Highway Network', 'High-Speed Rail', 'Airport Expansions'] },
                       { title: 'Energie & Utilities', items: ['Erneuerbare Energien', 'Smart Grid', 'Wasserwirtschaft'] },
-                      { title: 'Immobilien', items: ['Belgrade Waterfront', 'Innovation Districts', 'Logistikparks', 'Crypto-Abwicklung via Partnerbanken'] },
+                      { title: 'Real Estate', items: ['Belgrade Waterfront', 'Innovation Districts', 'Logistics Parks', 'Crypto Settlement via Partner Banks'] },
                       { title: 'Technologie', items: ['IT-Parks', 'E-Government', '5G Infrastruktur'] }
                     ]).map((cat, idx) => (
                       <div key={idx} className="bg-ea-light rounded-xl p-4">
