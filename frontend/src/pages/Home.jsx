@@ -270,9 +270,6 @@ const Home = () => {
           </blockquote>
           <p className="text-ea-light/70">
             {homeContent.testimonial_author || 'Maximilian R., Entrepreneur from Germany'}
-              ? 'Maximilian R., Entrepreneur from Germany'
-              : (homeContent.testimonial_author || 'Maximilian R., Unternehmer aus Deutschland')
-            }
           </p>
         </div>
       </section>
