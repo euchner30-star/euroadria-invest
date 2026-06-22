@@ -51,17 +51,17 @@ const Home = () => {
   return (
     <main className="min-h-screen bg-white" itemScope itemType="https://schema.org/WebPage">
       <SEO 
-        title="Investment & Business Beratung für Adria & Balkan"
-        description="Premium Investment & Lifestyle Partner für die Adria-Region. Forensische Due Diligence, Firmengründung Montenegro, Serbien Investments. Für DACH-Investoren mit 8-15% Zielrendite."
+        title={lang === 'en' ? "Investment & Business Advisory for Adriatic & Balkans" : "Investment & Business Beratung für Adria & Balkan"}
+        description={lang === 'en' ? "Premium Investment & Lifestyle Partner for the Adriatic region. Forensic due diligence, company formation Montenegro, Serbia investments. For investors targeting 8-15% returns." : "Premium Investment & Lifestyle Partner für die Adria-Region. Forensische Due Diligence, Firmengründung Montenegro, Serbien Investments. Für DACH-Investoren mit 8-15% Zielrendite."}
         url="/"
         faq={[
           {
-            question: "Was macht EuroAdria Corporate Solutions?",
-            answer: "EuroAdria Corporate Solutions ist ein Premium Investment Advisor für DACH-Investoren in der Adria-Region. Wir bieten forensische Due Diligence, Firmengründung in Montenegro (9% Körperschaftssteuer), und exklusiven Zugang zu Off-Market Investments in Montenegro und Serbien."
+            question: lang === 'en' ? "What does EuroAdria Corporate Solutions do?" : "Was macht EuroAdria Corporate Solutions?",
+            answer: lang === 'en' ? "EuroAdria Corporate Solutions is a premium investment advisor for investors in the Adriatic region. We offer forensic due diligence, company formation in Montenegro (9% corporate tax), and exclusive access to off-market investments in Montenegro and Serbia." : "EuroAdria Corporate Solutions ist ein Premium Investment Advisor für DACH-Investoren in der Adria-Region. Wir bieten forensische Due Diligence, Firmengründung in Montenegro (9% Körperschaftssteuer), und exklusiven Zugang zu Off-Market Investments in Montenegro und Serbien."
           },
           {
-            question: "Warum Balkan statt EU für Investments?",
-            answer: "Der Balkan bietet strukturierte Wachstumsinvestments mit 8-15% Zielrendite, während EU-Märkte nur 4-6% bieten. Montenegro erwartet 60-80% Wertsteigerung vor dem EU-Beitritt 2028. Serbien bietet bis zu 50% staatliche Investitionsförderung."
+            question: lang === 'en' ? "Why invest in the Balkans instead of the EU?" : "Warum Balkan statt EU für Investments?",
+            answer: lang === 'en' ? "The Balkans offer structured growth investments with 8-15% target returns, while EU markets only offer 4-6%. Montenegro expects 60-80% appreciation before EU accession in 2028. Serbia offers up to 50% state investment subsidies." : "Der Balkan bietet strukturierte Wachstumsinvestments mit 8-15% Zielrendite, während EU-Märkte nur 4-6% bieten. Montenegro erwartet 60-80% Wertsteigerung vor dem EU-Beitritt 2028. Serbien bietet bis zu 50% staatliche Investitionsförderung."
           }
         ]}
       />
@@ -69,9 +69,9 @@ const Home = () => {
         backgroundImage={heroData.backgroundImage} 
         overlayOpacity={heroData.overlayOpacity}
         backgroundImagePosition={heroData.backgroundImagePosition}
-        title={lang === 'en' ? t('hero.title') : homeContent.hero_title}
-        subtitle={lang === 'en' ? t('hero.subtitle') : homeContent.hero_subtitle}
-        ctaText={lang === 'en' ? t('hero.cta') : homeContent.hero_cta_text}
+        title={homeContent.hero_title}
+        subtitle={homeContent.hero_subtitle}
+        ctaText={homeContent.hero_cta_text}
       />
 
       <TrustBar />
@@ -124,7 +124,7 @@ const Home = () => {
               <figure className="relative">
                 <img
                   src={homeContent.stats_image || "https://images.unsplash.com/photo-1517048676732-d65bc937f952"}
-                  alt="Investment-Beratung für Balkan-Märkte - EuroAdria Corporate Solutions Team Meeting"
+                  alt={lang === 'en' ? "Investment advisory for Balkan markets - EuroAdria Corporate Solutions" : "Investment-Beratung für Balkan-Märkte - EuroAdria Corporate Solutions Team Meeting"}
                   className="rounded-xl shadow-lg"
                   style={{ objectPosition: `center ${homeContent.stats_image_position ?? 50}%` }}
                   itemProp="image"
@@ -218,17 +218,12 @@ const Home = () => {
       <section className="py-16 bg-ea-light border-y border-gray-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {(lang === 'en' ? [
-              { title: 'Trustworthy', desc: 'Featured on n-tv, RTL, Focus (Advertorial)' },
+            {(homeContent.trust_items || [
+              { title: 'Trusted', desc: 'Featured on n-tv, RTL, Focus (Advertorial)' },
               { title: 'Return Focus', desc: 'Double-digit target returns' },
               { title: 'Expertise', desc: '15+ years experience' },
               { title: 'Security', desc: 'Asset Protection' }
-            ] : (homeContent.trust_items || [
-              { title: 'Vertrauenswürdig', desc: 'Bekannt aus n-tv, RTL, Focus (Anzeige)' },
-              { title: 'Rendite-Fokus', desc: 'Zweistellige Zielrenditen' },
-              { title: 'Expertise', desc: '15+ Jahre Erfahrung' },
-              { title: 'Sicherheit', desc: 'Asset Protection' }
-            ])).map((item, idx) => {
+            ]).map((item, idx) => {
               const icons = [Shield, TrendingUp, Award, Shield];
               const Icon = icons[idx % icons.length];
               return (
@@ -271,13 +266,10 @@ const Home = () => {
             ))}
           </div>
           <blockquote className="text-xl md:text-2xl text-ea-light font-semibold leading-relaxed mb-6">
-            „{lang === 'en' 
-              ? 'Thanks to EuroAdria Corporate Solutions, I was able to set up my company in Montenegro quickly, safely, and completely stress-free. I felt extremely well looked after and can warmly recommend EuroAdria Corporate Solutions to every entrepreneur and investor.'
-              : (homeContent.testimonial_quote || 'Dank EuroAdria Corporate Solutions konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen. Ich habe mich bestens betreut gefühlt und kann EuroAdria Corporate Solutions jedem Unternehmer und Investor wärmstens empfehlen.')
-            }"
+            „{homeContent.testimonial_quote || 'Thanks to EuroAdria Corporate Solutions, I was able to set up my company in Montenegro quickly, safely, and completely stress-free. I felt extremely well looked after and can warmly recommend EuroAdria Corporate Solutions to every entrepreneur and investor.'}"
           </blockquote>
           <p className="text-ea-light/70">
-            {lang === 'en' 
+            {homeContent.testimonial_author || 'Maximilian R., Entrepreneur from Germany'}
               ? 'Maximilian R., Entrepreneur from Germany'
               : (homeContent.testimonial_author || 'Maximilian R., Unternehmer aus Deutschland')
             }
@@ -289,13 +281,10 @@ const Home = () => {
       <section className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-semibold text-ea-dark mb-6">
-            {lang === 'en' 
-              ? <>Ready for Your <span className="text-ea-gold">Investment</span>?</>
-              : (homeContent.cta_title || <>Bereit für Ihre <span className="text-ea-gold">Investition</span>?</>)
-            }
+            {homeContent.cta_title || <>Ready for Your <span className="text-ea-gold">Investment</span>?</>}
           </h2>
           <p className="text-ea-dark/70 text-lg mb-8 max-w-2xl mx-auto">
-            {lang === 'en' ? t('home.ctaSubtitle') : (homeContent.cta_subtitle || t('home.ctaSubtitle'))}
+            {homeContent.cta_subtitle || t('home.ctaSubtitle')}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link

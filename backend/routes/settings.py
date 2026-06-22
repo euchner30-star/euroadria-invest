@@ -201,22 +201,22 @@ async def update_tracking_settings(data: dict, admin: str = Depends(verify_admin
 # ── Homepage Settings ───────────────────────────────────────────────────
 
 HOMEPAGE_DEFAULTS = {
-    "hero_title": "Firmengründung, Aufenthalt & Investments in Montenegro und Serbien",
-    "hero_subtitle": "EuroAdria ist Ihre Brücke zu erfolgreichen Investitionen, rechtssicherer Auswanderung und internationaler Unternehmensstrukturierung, sowohl in der Adria-Region als auch in Asien. Wir sind Ihr Trusted Advisor für alle unternehmerischen und privaten Vorhaben im Ausland.",
-    "hero_cta_text": "Jetzt Beratung anfragen",
+    "hero_title": "Company Formation, Residency & Investments in Montenegro and Serbia",
+    "hero_subtitle": "EuroAdria is your bridge to successful investments, legally secure relocation, and international business structuring — in the Adriatic region and Asia. We are your Trusted Advisor for all entrepreneurial and private ventures abroad.",
+    "hero_cta_text": "Request Consultation",
     "testimonial_image": "",
     "testimonial_image_position": 50,
-    "testimonial_quote": "Dank EuroAdria konnte ich meine Firmengründung in Montenegro schnell, sicher und komplett stressfrei umsetzen. Ich habe mich bestens betreut gefühlt und kann EuroAdria jedem Unternehmer und Investor wärmstens empfehlen.",
-    "testimonial_author": "Maximilian R., Unternehmer aus Deutschland",
+    "testimonial_quote": "Thanks to EuroAdria, I was able to set up my company in Montenegro quickly, securely, and completely stress-free. I felt extremely well taken care of and can warmly recommend EuroAdria to any entrepreneur and investor.",
+    "testimonial_author": "Maximilian R., Entrepreneur from Germany",
     "stats_image": "https://images.unsplash.com/photo-1517048676732-d65bc937f952",
     "stats_image_position": 50,
-    "cta_title": "Bereit für Ihre Investition?",
-    "cta_subtitle": "Vereinbaren Sie ein unverbindliches Erstgespräch mit unseren Experten und entdecken Sie die Möglichkeiten am Balkan.",
+    "cta_title": "Ready for Your Investment?",
+    "cta_subtitle": "Schedule a free initial consultation with our experts and discover the opportunities in the Balkans.",
     "trust_items": [
-        {"title": "Vertrauenswürdig", "desc": "Bekannt aus n-tv & RTL (Anzeige)"},
-        {"title": "Rendite-Fokus", "desc": "Zweistellige Zielrenditen"},
-        {"title": "Expertise", "desc": "15+ Jahre Erfahrung"},
-        {"title": "Sicherheit", "desc": "Asset Protection"}
+        {"title": "Trusted", "desc": "Featured in n-tv & RTL (Advertorial)"},
+        {"title": "Return-Focused", "desc": "Double-digit target returns"},
+        {"title": "Expertise", "desc": "15+ years of experience"},
+        {"title": "Security", "desc": "Asset Protection"}
     ]
 }
 
