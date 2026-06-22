@@ -78,7 +78,7 @@ const ContactPage = () => {
     <div className="min-h-screen pt-32 pb-20 px-6 bg-white">
       <SEO 
         title="Kontakt"
-        description="Kontaktieren Sie EuroAdria Corporate Solutions für Ihre Investment-Beratung. Wir beraten Sie zu Immobilien, Unternehmensgründung und Relocation in der Adria-Region."
+        description="Contact EuroAdria Corporate Solutions for your investment advisory. We advise on real estate, company formation and relocation in the Adriatic region."
         url="/contact"
       />
       <div className="max-w-6xl mx-auto">
@@ -230,9 +230,9 @@ const ContactPage = () => {
                       data-testid="contact-service-select"
                       className="w-full bg-ea-light border border-gray-200 rounded-lg px-4 py-3 text-ea-dark focus:outline-none focus:border-ea-gold focus:ring-2 focus:ring-ea-gold/20 transition-all"
                     >
-                      <option value="">Bitte wählen...</option>
+                      <option value="">Please select...</option>
                       <option value="Immobilien & Aufenthalt">Immobilien & Aufenthalt</option>
-                      <option value="Unternehmensgründung">Unternehmensgründung</option>
+                      <option value="Company Formation">Company Formation</option>
                       <option value="Legal- & Finanzdienstleistungen">Legal- & Finanzdienstleistungen</option>
                       <option value="Investor Relations & Projektvermittlung">Investor Relations & Projektvermittlung</option>
                       <option value="Finanzierungsanfrage">Finanzierungsanfrage</option>

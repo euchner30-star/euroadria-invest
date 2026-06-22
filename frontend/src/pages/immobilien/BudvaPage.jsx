@@ -31,7 +31,7 @@ const BudvaPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name, email: formData.email, phone: formData.phone,
-          source: 'budva_expose', expose_name: 'Budva Exposé — Adriaküste-Investment-Analyse'
+          source: 'budva_expose', expose_name: 'Budva Exposé — Adriatic Coast Investment Analysis'
         })
       });
       if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
@@ -57,7 +57,7 @@ const BudvaPage = () => {
   ] : [
     'Tourismus-Hotspot mit 2 Mio. Besuchern/Jahr',
     'Flughafen Tivat in 20 Min. erreichbar',
-    'UNESCO-geschützte Altstadt',
+    'UNESCO-protected Old Town',
     'Etablierte Vermietungsinfrastruktur',
     'Luxury marina "Porto Montenegro" nearby',
     'New highway to Podgorica (2025)',

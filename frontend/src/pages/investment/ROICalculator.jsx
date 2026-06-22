@@ -295,7 +295,7 @@ const ROICalculator = () => {
               This calculation is for informational and illustrative purposes only and does not constitute investment advice.
               Kaufempfehlung oder Renditegarantie dar. Alle Ergebnisse basieren auf vereinfachten Annahmen.
               Actual results may vary significantly. Consult a qualified financial advisor before making any investment decision.
-              einen qualifizierten und unabhängigen Finanzberater.
+              a qualified and independent financial advisor.
             </p>
           </div>
 

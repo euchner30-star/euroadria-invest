@@ -433,7 +433,7 @@ export default function InvestmentSimulation() {
                             <h3 className="text-white font-bold text-sm mb-1">Finanzierung für dieses Objekt anfragen</h3>
                             <p className="text-white/50 text-xs leading-relaxed">
                               Benötigtes Fremdkapital: <strong className="text-white/70">{fmt(result.debt_amount)}</strong> bei {params.mortgage_rate}% Zins.
-                              Unsere Partner-Banken in Montenegro bieten exklusive Konditionen für ausländische Investoren.
+                              Our partner banks in Montenegro offer exclusive conditions for foreign investors.
                             </p>
                           </div>
                         </div>
@@ -563,7 +563,7 @@ export default function InvestmentSimulation() {
                           <strong className="text-white/70"> Tatsächliche Ergebnisse können erheblich abweichen.</strong>
                         </p>
                         <p className="text-white/40 text-[11px] mt-2 leading-relaxed">
-                          Insbesondere können Faktoren wie Steuern, Finanzierungskonditionen, Währungsrisiken, politische Veränderungen,
+                          In particular, factors such as taxes, financing conditions, currency risks, political changes,
                           Market volatility, maintenance costs and unforeseen events can significantly affect actual returns.
                           Consult a qualified and independent financial advisor before making any investment decision.
                         </p>

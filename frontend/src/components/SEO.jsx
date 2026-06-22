@@ -15,7 +15,7 @@ const SEO = ({
   const siteUrl = 'https://euroadria.me';
   const fullUrl = `${siteUrl}${url}`;
   const fullTitle = title ? `${title} | EuroAdria Corporate Solutions` : 'EuroAdria Corporate Solutions | Beratung & Angebote für Adria & Balkan';
-  const defaultDescription = 'Premium Beratung & Angebotsplattform für die Adria-Region. Exklusive Beratung für DACH-Investoren: Immobilien, Firmengründung, Relocation nach Montenegro & Serbien.';
+  const defaultDescription = 'Premium advisory platform for the Adriatic region. Exclusive consulting for investors: Real estate, company formation, relocation to Montenegro & Serbia.';
   const metaDescription = description || defaultDescription;
   const metaImage = image || `${siteUrl}/euroadria-logo.png`;
 
@@ -141,7 +141,7 @@ const SEO = ({
       <title>{fullTitle}</title>
       <meta name="title" content={fullTitle} />
       <meta name="description" content={metaDescription} />
-      <meta name="keywords" content="Investment Balkan, Montenegro Immobilien, Serbien Investment, Firmengründung Montenegro, Due Diligence Balkan, DACH Investoren, Adria Investment, EuroAdria Corporate Solutions, Serbia Executive Access" />
+      <meta name="keywords" content="Investment Balkans, Montenegro Real Estate, Serbia Investment, Company Formation Montenegro, Due Diligence Balkan, DACH Investoren, Adria Investment, EuroAdria Corporate Solutions, Serbia Executive Access" />
       <meta name="author" content="EuroAdria Corporate Solutions" />
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
       <link rel="canonical" href={fullUrl} />

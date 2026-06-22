@@ -33,15 +33,15 @@ const AGBPage = () => {
   return (
     <div className="min-h-screen pt-28 pb-20 bg-white" data-testid="agb-page">
       <SEO 
-        title="Allgemeine Geschäftsbedingungen (AGB)"
-        description="Allgemeine Geschäftsbedingungen der EuroAdria Corporate Solutions. Montaris & Co. d.o.o., Novi Sad, Serbien."
+        title="Terms and Conditions (AGB)"
+        description="Terms and Conditions der EuroAdria Corporate Solutions. Montaris & Co. d.o.o., Novi Sad, Serbien."
         url="/agb"
       />
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-16 animate-fadeIn">
           <p className="text-ea-gold text-sm font-semibold tracking-wider uppercase mb-4">{lang === 'en' ? 'Legal' : 'Rechtliches'}</p>
           <h1 className="text-4xl md:text-5xl font-semibold text-ea-dark mb-6">
-            {lang === 'en' ? 'Terms & Conditions' : 'Allgemeine Geschäftsbedingungen'}
+            {lang === 'en' ? 'Terms & Conditions' : 'Terms and Conditions'}
           </h1>
           <div className="section-divider"></div>
         </div>

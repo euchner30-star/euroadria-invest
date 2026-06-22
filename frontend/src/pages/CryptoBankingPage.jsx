@@ -13,17 +13,17 @@ const CryptoBankingPage = () => {
   return (
     <div className="min-h-screen bg-white" data-testid="crypto-banking-page">
       <SEO 
-        title="Crypto-Banking & Treasury in Serbien"
+        title="Crypto-Banking & Treasury in Serbia"
         description="International liquidity and data sovereignty, securely structured outside EU regulations. Crypto banking, treasury and non-resident accounts in Serbia."
         url="/serbia-executive/crypto-banking"
         faq={[
           {
-            question: "Warum ist Serbien attraktiv für Crypto-Banking?",
-            answer: "Serbien ist nicht Teil des CRS (Common Reporting Standard) und unabhängig von EU-Restriktionen wie MiCA. Das ermöglicht strategische Diskretion und Datensouveränität bei vollständiger Legalität."
+            question: "Why is Serbia attractive for crypto banking?",
+            answer: "Serbia is not part of the CRS (Common Reporting Standard) and independent of EU restrictions like MiCA. This enables strategic discretion and data sovereignty with full legality."
           },
           {
-            question: "Kann man in Serbien Kryptowährungen legal in Fiat umwandeln?",
-            answer: "Ja, über lizenzierte, von der serbischen Nationalbank registrierte Krypto-Dienstleister können Kryptowerte legal in Fiat (Dinar/EUR) umgewandelt und auf Non-Resident-Bankkonten eingezahlt werden."
+            question: "Can you legally convert cryptocurrencies to fiat in Serbia?",
+            answer: "Yes, through licensed crypto service providers registered with the Serbian National Bank, crypto assets can be legally converted to fiat (Dinar/EUR) and deposited into non-resident bank accounts."
           }
         ]}
       />
@@ -80,12 +80,12 @@ const CryptoBankingPage = () => {
               <div className="w-14 h-14 bg-ea-gold/10 rounded-xl flex items-center justify-center mb-5">
                 <Shield className="w-7 h-7 text-ea-gold" />
               </div>
-              <h3 className="text-xl font-bold text-ea-dark mb-3">Kein CRS</h3>
+              <h3 className="text-xl font-bold text-ea-dark mb-3">No CRS</h3>
               <p className="text-ea-dark/60 text-sm font-medium text-ea-gold mb-3">Common Reporting Standard</p>
               <p className="text-ea-dark/70 leading-relaxed">
-                Serbien ist nicht Teil des CRS. Es findet kein automatischer Austausch 
-                von steuerrelevanten Finanzinformationen statt. Höchstmaß an strategischer 
-                Diskretion und Datensouveränität.
+                Serbia is not part of the CRS. There is no automatic exchange 
+                of tax-relevant financial information. Maximum strategic 
+                discretion and data sovereignty.
               </p>
             </div>
 
@@ -93,12 +93,12 @@ const CryptoBankingPage = () => {
               <div className="w-14 h-14 bg-ea-gold/10 rounded-xl flex items-center justify-center mb-5">
                 <Globe className="w-7 h-7 text-ea-gold" />
               </div>
-              <h3 className="text-xl font-bold text-ea-dark mb-3">Unabhängig von EU-Restriktionen</h3>
-              <p className="text-ea-dark/60 text-sm font-medium text-ea-gold mb-3">Keine MiCA-Regulierung</p>
+              <h3 className="text-xl font-bold text-ea-dark mb-3">Independent from EU Restrictions</h3>
+              <p className="text-ea-dark/60 text-sm font-medium text-ea-gold mb-3">No MiCA Regulation</p>
               <p className="text-ea-dark/70 leading-relaxed">
-                Weder MiCA-Regulierungen noch Einschränkungen beim Handel mit Stablecoins 
-                (wie das EU-Listing-Verbot für USDT). Serbien als effiziente Brücke 
-                zwischen Ost und West.
+                Neither MiCA regulations nor restrictions on stablecoin trading 
+                (such as the EU listing ban for USDT). Serbia as an efficient bridge 
+                between East and West.
               </p>
             </div>
 
@@ -106,12 +106,12 @@ const CryptoBankingPage = () => {
               <div className="w-14 h-14 bg-ea-gold/10 rounded-xl flex items-center justify-center mb-5">
                 <Landmark className="w-7 h-7 text-ea-gold" />
               </div>
-              <h3 className="text-xl font-bold text-ea-dark mb-3">Meldepflichten-Vorteil</h3>
+              <h3 className="text-xl font-bold text-ea-dark mb-3">Reporting Advantage</h3>
               <p className="text-ea-dark/60 text-sm font-medium text-ea-gold mb-3">Corporate Treasury</p>
               <p className="text-ea-dark/70 leading-relaxed">
-                Im Gegensatz zu grenzüberschreitenden Fiat-Darlehen müssen Krypto-basierte 
-                Kredite an serbische Tochtergesellschaften nicht bei der Nationalbank 
-                von Serbien gemeldet werden.
+                Unlike cross-border fiat loans, crypto-based 
+                credits to Serbian subsidiaries do not need to be reported 
+                to the National Bank of Serbia.
               </p>
             </div>
           </div>
@@ -123,11 +123,11 @@ const CryptoBankingPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-ea-dark mb-4">
-              Die operativen <span className="text-ea-gold">Lösungswege</span>
+              Operative <span className="text-ea-gold">Solutions</span>
             </h2>
             <p className="text-ea-dark/70 text-lg max-w-3xl mx-auto">
-              Wir nutzen diese geografischen Vorteile für den langfristigen, 
-              bankfähigen Aufbau Ihrer Liquidität.
+              We leverage these geographic advantages for the long-term, 
+              bankable buildup of your liquidity.
             </p>
           </div>
 
@@ -143,13 +143,13 @@ const CryptoBankingPage = () => {
                 <div>
                   <div className="flex items-center gap-3 mb-3">
                     <span className="bg-ea-gold/10 text-ea-gold text-xs font-bold px-3 py-1 rounded-full">01</span>
-                    <h3 className="text-xl font-bold text-ea-dark">Fiat-Krypto-Brücke & Non-Resident Banking</h3>
+                    <h3 className="text-xl font-bold text-ea-dark">Fiat-Crypto Bridge & Non-Resident Banking</h3>
                   </div>
                   <p className="text-ea-dark/70 leading-relaxed">
-                    Wir begleiten den legalen Umtausch Ihrer Kryptowerte in Fiat (Dinar/EUR) und 
-                    orchestrieren die Einzahlung auf ein Non-Resident-Bankkonto bei unserer Partnerbank 
-                    in Belgrad. Im Anschluss erhalten Sie Zugriff auf eine globale Debitkarte für 
-                    uneingeschränkte, effiziente Zahlungen außerhalb der üblichen Banken-Engpässe.
+                    We guide the legal conversion of your crypto assets into fiat (Dinar/EUR) and 
+                    orchestrate the deposit into a non-resident bank account at our partner bank 
+                    in Belgrade. You then receive access to a global debit card for 
+                    unrestricted, efficient payments outside typical banking bottlenecks.
                   </p>
                 </div>
               </div>
@@ -166,13 +166,13 @@ const CryptoBankingPage = () => {
                 <div>
                   <div className="flex items-center gap-3 mb-3">
                     <span className="bg-ea-gold/10 text-ea-gold text-xs font-bold px-3 py-1 rounded-full">02</span>
-                    <h3 className="text-xl font-bold text-ea-dark">Capital Extraction durch reale Werte</h3>
+                    <h3 className="text-xl font-bold text-ea-dark">Capital Extraction Through Real Assets</h3>
                   </div>
                   <p className="text-ea-dark/70 leading-relaxed mb-3">
-                    Sie wandeln Krypto-Kapital in handfeste Assets um. Durch den Kauf von Immobilien 
-                    (die Mieteinnahmen generieren) oder den Erwerb liquider Wertpapiere (wie US T-Bills 
-                    über serbische Broker) erschaffen Sie eine völlig neue, saubere Fiat-Mittelherkunft 
-                    („Source of Funds"), aus Immobiliengeschäften statt aus Krypto-Trading.
+                    You convert crypto capital into tangible assets. By purchasing real estate 
+                    (generating rental income) or acquiring liquid securities (such as US T-Bills 
+                    via Serbian brokers), you create an entirely new, clean fiat source of funds 
+                    from real estate transactions instead of crypto trading.
                   </p>
                   <div className="flex flex-wrap gap-3">
                     <span className="text-xs bg-ea-gold/10 text-ea-gold font-medium px-3 py-1 rounded-full">Real Estate</span>
@@ -194,13 +194,13 @@ const CryptoBankingPage = () => {
                 <div>
                   <div className="flex items-center gap-3 mb-3">
                     <span className="bg-ea-gold/10 text-ea-gold text-xs font-bold px-3 py-1 rounded-full">03</span>
-                    <h3 className="text-xl font-bold text-ea-dark">Corporate Treasury für unlimitierten Zahlungsverkehr</h3>
+                    <h3 className="text-xl font-bold text-ea-dark">Corporate Treasury for Unlimited Payment Processing</h3>
                   </div>
                   <p className="text-ea-dark/70 leading-relaxed">
-                    Unternehmen, die bei großen globalen Börsen aufgrund ihrer Jurisdiktion 
-                    (oder wegen „Over-Compliance") blockiert werden, erhalten bei uns ein 
-                    nahtloses Onboarding. Sie können Fiat in Stablecoins tauschen, um schnelle, 
-                    globale Zahlungen außerhalb des klassischen Bankensystems abzuwickeln.
+                    Companies blocked by major global exchanges due to their jurisdiction 
+                    (or "over-compliance") receive seamless onboarding with us. 
+                    You can swap fiat into stablecoins for fast, 
+                    global payments outside the traditional banking system.
                   </p>
                 </div>
               </div>

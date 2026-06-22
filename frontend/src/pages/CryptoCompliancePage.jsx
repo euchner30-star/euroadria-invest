@@ -45,16 +45,16 @@ const CryptoCompliancePage = () => {
     <div className="min-h-screen bg-white" data-testid="crypto-compliance-page">
       <SEO 
         title="Compliance & Executive Assessment - Crypto-Banking Serbien"
-        description="Compliance by Design: 100% lizenzierte Krypto-Transaktionen über registrierte Dienstleister in Serbien. Executive Assessment für Ihre maßgeschneiderte Umsetzungs-Roadmap."
+        description="Compliance by Design: 100% licensed crypto transactions via registered service providers in Serbia. Executive Assessment for your customized implementation roadmap."
         url="/serbia-executive/crypto-compliance"
         faq={[
           {
             question: "Wie wird Compliance bei Crypto-Banking in Serbien sichergestellt?",
-            answer: "Alle Transaktionen werden ausnahmslos über offizielle, von der serbischen Nationalbank registrierte Krypto-Dienstleister abgewickelt. Proof of Funds ist Pflicht, und es werden keine Gelder aus kriminellem Ursprung akzeptiert."
+            answer: "All transactions are exclusively processed through official crypto service providers registered with the Serbian National Bank. Proof of Funds is mandatory, and no funds of criminal origin are accepted."
           },
           {
             question: "Was ist ein Executive Assessment?",
-            answer: "Im Rahmen einer bezahlten strategischen Vorprüfung analysieren wir Ihr Geschäftsmodell, klären Risiko- und Machbarkeitsfaktoren und erstellen Ihre konkrete Umsetzungs-Roadmap für Krypto-Banking in Serbien."
+            answer: "As part of a paid strategic pre-assessment, we analyze your business model, clarify risk and feasibility factors, and create your concrete implementation roadmap for crypto banking in Serbia."
           }
         ]}
       />
@@ -64,7 +64,7 @@ const CryptoCompliancePage = () => {
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <Link to="/serbia-executive/crypto-banking" className="inline-flex items-center gap-2 text-ea-gold hover:text-ea-gold/80 transition-colors mb-8">
             <ArrowLeft className="w-4 h-4" />
-            Zurück zur Übersicht
+            Back to Overview
           </Link>
           <div className="max-w-3xl">
             <div className="inline-flex items-center space-x-2 bg-ea-gold/20 border border-ea-gold/40 rounded-full px-4 py-2 mb-6">
@@ -77,7 +77,7 @@ const CryptoCompliancePage = () => {
             <p className="text-lg text-ea-light/80 leading-relaxed">
               Wie wir arbeiten (und wie nicht): Wir bieten keine Grauzonen-Konstrukte. 
               Serbien ist kein rechtsfreier Raum. Das System funktioniert nur, weil wir es 
-              rechtssicher und transparent gegenüber den lokalen Behörden aufsetzen.
+              legally secure and transparent towards local authorities.
             </p>
           </div>
         </div>
@@ -93,7 +93,7 @@ const CryptoCompliancePage = () => {
               </div>
               <h3 className="text-xl font-bold text-ea-dark mb-3">100 % Lizenziert</h3>
               <p className="text-ea-dark/70 leading-relaxed">
-                Alle Transaktionen (Kauf, Verkauf, Verwahrung) werden ausnahmslos über offizielle, 
+                All transactions (purchase, sale, custody) are exclusively processed through official, 
                 von der serbischen Nationalbank registrierte Krypto-Dienstleister abgewickelt.
               </p>
             </div>
@@ -104,8 +104,8 @@ const CryptoCompliancePage = () => {
               </div>
               <h3 className="text-xl font-bold text-ea-dark mb-3">Proof of Funds ist Pflicht</h3>
               <p className="text-ea-dark/70 leading-relaxed">
-                Wir arbeiten ausschließlich mit Mandanten, die eine saubere Mittelherkunft 
-                dokumentieren können. Transparenz ist die Grundlage jeder Zusammenarbeit.
+                We work exclusively with clients who can 
+                document a clean source of funds. Transparency is the foundation of every collaboration.
               </p>
             </div>
 
@@ -115,8 +115,8 @@ const CryptoCompliancePage = () => {
               </div>
               <h3 className="text-xl font-bold text-ea-dark mb-3">Klare Grenzen</h3>
               <p className="text-ea-dark/70 leading-relaxed">
-                Wir unterstützen keine Gelder aus kriminellem Ursprung und bieten keine 
-                Konstrukte zur bloßen Verschleierung. Wir erbringen zudem keine Steuer- oder 
+                We do not support funds of criminal origin and do not offer 
+                structures for mere concealment. We also do not provide tax or 
                 Rechtsberatung im eigenen Namen.
               </p>
             </div>
@@ -128,7 +128,7 @@ const CryptoCompliancePage = () => {
             <h3 className="text-2xl font-bold text-white mb-4">Unser Versprechen</h3>
             <p className="text-ea-light/80 text-lg max-w-2xl mx-auto leading-relaxed">
               Sie erhalten kein wackeliges Konstrukt, sondern ein <strong className="text-ea-gold">belastbares System</strong>, 
-              das Banken und Prüfinstanzen vor Ort sofort verstehen.
+              that local banks and audit authorities immediately understand.
             </p>
           </div>
         </div>
@@ -146,8 +146,8 @@ const CryptoCompliancePage = () => {
               Executive <span className="text-ea-gold">Assessment</span>
             </h2>
             <p className="text-ea-dark/70 max-w-2xl mx-auto">
-              Der Aufbau dieser Strukturen erfordert maßgeschneiderte Planung. Im Rahmen unserer 
-              strategischen Vorprüfung analysieren wir Ihr Geschäftsmodell und erstellen Ihre 
+              Building these structures requires customized planning. As part of our 
+              strategic pre-assessment, we analyze your business model and create your 
               konkrete Umsetzungs-Roadmap.
             </p>
           </div>
@@ -189,7 +189,7 @@ const CryptoCompliancePage = () => {
                 <label className="block text-sm font-medium text-ea-dark/80 mb-2">Geschätztes Volumen</label>
                 <select value={form.volume} onChange={(e) => setForm(p => ({...p, volume: e.target.value}))} 
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ea-gold/20 focus:border-ea-gold transition-colors bg-white" data-testid="assess-volume">
-                  <option value="">Bitte wählen...</option>
+                  <option value="">Please select...</option>
                   <option value="100k-500k">100.000 bis 500.000 Euro</option>
                   <option value="500k-1m">500.000 bis 1.000.000 Euro</option>
                   <option value="1m-5m">1.000.000 bis 5.000.000 Euro</option>

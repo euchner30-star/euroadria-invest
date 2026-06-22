@@ -91,7 +91,7 @@ const Home = () => {
                 <p className="text-ea-dark/70 text-lg leading-relaxed mb-6" itemProp="description">
                   {lang === 'en' 
                     ? <>According to the World Bank, Montenegro ranks 50th in the Ease of Doing Business Index. With only <strong>9% corporate tax</strong> (lowest in Europe) and the expected <strong>EU accession in 2028</strong>, the region offers unique convergence arbitrage.</>
-                    : <>Laut Weltbank rangiert Montenegro auf Platz 50 im Ease of Doing Business Index. Mit nur <strong>9% Körperschaftssteuer</strong> (niedrigste in Europa) und dem erwarteten <strong>EU-Beitritt 2028</strong> bietet die Region einzigartige Konvergenz-Arbitrage.</>
+                    : <>According to the World Bank, Montenegro ranks 50th in the Ease of Doing Business Index. With only <strong>9% corporate tax</strong> (lowest in Europe) and the expected <strong>EU accession 2028</strong>, the region offers unique convergence arbitrage.</>
                   }
                 </p>
                 <ul className="space-y-4 mb-8">
@@ -101,8 +101,8 @@ const Home = () => {
                     '60-80% appreciation potential before EU accession',
                     'Forensic due diligence per FATF standards'
                   ] : [
-                    'Montenegro: 9% Körperschaftssteuer, Euro als Währung',
-                    'Serbien: Bis zu 50% staatliche Investitionsförderung',
+                    'Montenegro: 9% corporate tax, Euro as currency',
+                    'Serbia: Up to 50% state investment subsidies',
                     '60-80% Wertsteigerungspotenzial vor EU-Beitritt',
                     'Forensische Due Diligence nach FATF-Standards'
                   ]).map((point, idx) => (

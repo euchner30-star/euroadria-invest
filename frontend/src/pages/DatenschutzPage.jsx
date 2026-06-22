@@ -31,8 +31,8 @@ const DatenschutzPage = () => {
   return (
     <div className="min-h-screen pt-28 pb-20 bg-white" data-testid="datenschutz-page">
       <SEO 
-        title="Datenschutzerklärung"
-        description="Datenschutzerklärung der EuroAdria Corporate Solutions. Informationen zum Umgang mit Ihren personenbezogenen Daten gemäß DSGVO."
+        title="Privacy Policy"
+        description="Privacy policy of EuroAdria Corporate Solutions. Information on handling your personal data in accordance with GDPR."
         url="/datenschutz"
       />
       <div className="max-w-4xl mx-auto px-6">

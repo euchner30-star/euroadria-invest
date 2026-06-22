@@ -52,11 +52,11 @@ const SerbiaExecutivePage = () => {
     <div className="min-h-screen bg-white" data-testid="serbia-executive-page">
       <SEO 
         title="Serbia Executive Access - Exklusive Investoren-Kontakte"
-        description="Privilegierter Zugang zu Serbiens wirtschaftlicher Elite. Regierungskontakte, PPP-Infrastrukturprojekte, bis zu 50% staatliche Förderung. Für DACH-Investoren ab €500.000."
+        description="Privileged access to Serbia's economic elite. Government contacts, PPP infrastructure projects, up to 50% state funding. For investors from €500,000."
         url="/serbia-executive"
         service={{
           name: "Serbia Executive Access",
-          description: "Exklusiver Zugang zu serbischen Regierungskontakten, Infrastrukturprojekten und Investment-Incentives für internationale Investoren",
+          description: "Exclusive access to Serbian government contacts, infrastructure projects and investment incentives for international investors",
           type: "Investment Consulting",
           areaServed: ["Serbia", "Balkan Region"]
         }}

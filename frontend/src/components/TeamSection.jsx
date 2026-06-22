@@ -99,7 +99,7 @@ const TeamSection = () => {
           />
           <div className="text-center">
             <p className="text-ea-dark/70 text-lg italic">
-              „Ihre operative Task-Force vor Ort: Wir sichern Ihr Vermögen am Balkan."
+              "Your operational task force on the ground: We secure your assets in the Balkans."
             </p>
           </div>
         </div>
@@ -198,7 +198,7 @@ const TeamSection = () => {
               <div className="text-ea-gold text-4xl font-bold mb-3">01</div>
               <h4 className="text-xl font-semibold text-white mb-3">Keine Interessenskonflikte</h4>
               <p className="text-ea-light/70">
-                Wir sind keine Verkäufer. Unser Erfolg ist Ihr Erfolg, nur wenn der Deal sicher 
+                We are not salespeople. Our success is your success — only when the deal is secure 
                 und rentabel ist, verdienen wir unsere Provision.
               </p>
             </div>
@@ -206,8 +206,8 @@ const TeamSection = () => {
               <div className="text-ea-gold text-4xl font-bold mb-3">02</div>
               <h4 className="text-xl font-semibold text-white mb-3">Forensische Tiefe</h4>
               <p className="text-ea-light/70">
-                Standard-Makler prüfen oberflächlich. Wir gehen bis 1945 zurück, prüfen jeden 
-                Occupancy Permit und schließen jedes Restitutionsrisiko aus.
+                Standard brokers review superficially. We go back to 1945, check every 
+                Occupancy Permit and exclude every restitution risk.
               </p>
             </div>
             <div>

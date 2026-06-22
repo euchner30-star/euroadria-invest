@@ -14,7 +14,7 @@ const properties = {
     icon: Trees,
     score: 82,
     heroImage: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=1200',
-    highlights: ['Größter See des Balkans', 'UNESCO-Biosphärenreservat', 'Logistik-Hub Bar in 30 Min', 'Ökotourismus-Potenzial'],
+    highlights: ['Largest Lake in the Balkans', 'UNESCO Biosphere Reserve', 'Logistics Hub Bar in 30 min', 'Eco-Tourism Potential'],
     roi: '8-12%',
     priceRange: '€1.200 - €2.500/m²',
     apartments: [
@@ -44,11 +44,11 @@ const properties = {
     name: 'Budva',
     slug: 'budva',
     subtitle: 'Etablierter Küstenmarkt',
-    description: 'Budva ist das touristische Herz Montenegros mit der höchsten Besucherdichte und einem etablierten Immobilienmarkt an der Adriaküste.',
+    description: 'Budva ist das touristische Herz Montenegros mit der höchsten Besucherdichte und einem etablierten Immobilienmarkt an der Adriatic Coast.',
     icon: Waves,
     score: 78,
     heroImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200',
-    highlights: ['Adriaküste', 'Altstadt UNESCO-Kandidat', 'Höchste Touristendichte', 'Premium-Segment'],
+    highlights: ['Adriatic Coast', 'Old Town UNESCO Candidate', 'Highest Tourist Density', 'Premium Segment'],
     roi: '6-9%',
     priceRange: '€2.500 - €5.000/m²',
     apartments: [
@@ -65,7 +65,7 @@ const properties = {
     icon: Factory,
     score: 85,
     heroImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200',
-    highlights: ['Zweitgrößte Stadt', 'Universität & Industrie', 'Niedrige Einstiegspreise', 'Konvergenz-Potenzial'],
+    highlights: ['Second Largest City', 'University & Industry', 'Low Entry Prices', 'Convergence Potential'],
     roi: '9-14%',
     priceRange: '€800 - €1.800/m²',
     apartments: [
@@ -193,8 +193,8 @@ const ImmobilienangebotPage = () => {
             Suchen Sie ein <span className="text-ea-gold">spezifisches Objekt</span>?
           </h2>
           <p className="text-ea-light/70 mb-6 max-w-2xl mx-auto">
-            Unsere Experten haben Zugang zu Off-Market Immobilien, die nicht öffentlich gelistet sind. 
-            Kontaktieren Sie uns für eine individuelle Beratung.
+            Our experts have access to off-market properties that are not publicly listed. 
+            Contact us for personalized advisory.
           </p>
           <Link
             to="/contact"
