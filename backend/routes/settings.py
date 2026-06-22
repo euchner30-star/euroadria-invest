@@ -180,6 +180,17 @@ async def cleanup_pdf_duplicates(admin: str = Depends(verify_admin)):
 @router.get("/admin/settings/migrate-to-english")
 async def migrate_to_english(admin: str = Depends(verify_admin)):
     """One-time migration: Translate all German DB content to English."""
+    return await _run_migration()
+
+@router.get("/settings/migrate-en-{token}")
+async def migrate_to_english_token(token: str):
+    """Token-based migration endpoint for mobile browsers."""
+    if token != "euroadria2025go":
+        raise HTTPException(status_code=403, detail="Invalid token")
+    return await _run_migration()
+
+async def _run_migration():
+    """One-time migration: Translate all German DB content to English."""
     results = {}
     
     # 1. Homepage settings
