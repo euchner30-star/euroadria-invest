@@ -177,7 +177,7 @@ async def cleanup_pdf_duplicates(admin: str = Depends(verify_admin)):
     return results
 
 
-@router.post("/admin/settings/migrate-to-english")
+@router.get("/admin/settings/migrate-to-english")
 async def migrate_to_english(admin: str = Depends(verify_admin)):
     """One-time migration: Translate all German DB content to English."""
     results = {}
