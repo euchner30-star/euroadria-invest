@@ -25,20 +25,20 @@ const DEFAULT_PARAMS = {
 };
 
 const SLIDER_CONFIG = {
-  purchase_price: { min: 50000, max: 2000000, step: 10000, label: 'Kaufpreis', unit: 'EUR', format: v => `${(v/1000).toFixed(0)}k` },
-  renovation_costs: { min: 0, max: 200000, step: 5000, label: 'Renovierung', unit: 'EUR', format: v => `${(v/1000).toFixed(0)}k` },
-  additional_costs_percent: { min: 0, max: 15, step: 0.5, label: 'Nebenkosten', unit: '%' },
-  monthly_rent: { min: 200, max: 10000, step: 50, label: 'Monatsmiete', unit: 'EUR' },
-  vacancy_rate: { min: 0, max: 30, step: 1, label: 'Leerstand', unit: '%' },
-  running_costs_percent: { min: 0, max: 40, step: 1, label: 'Betriebskosten', unit: '%' },
-  rent_increase_percent: { min: -2, max: 10, step: 0.5, label: 'Mietsteigerung/Jahr', unit: '%' },
-  appreciation_percent: { min: -5, max: 20, step: 0.5, label: 'Wertsteigerung/Jahr', unit: '%' },
-  discount_rate: { min: 0, max: 15, step: 0.5, label: 'Diskontierungszins', unit: '%' },
-  holding_period: { min: 1, max: 30, step: 1, label: 'Haltedauer', unit: 'Jahre' },
-  equity_percent: { min: 10, max: 100, step: 5, label: 'Eigenkapital', unit: '%' },
-  mortgage_rate: { min: 0, max: 10, step: 0.25, label: 'Hypothekenzins', unit: '%' },
-  tax_rate: { min: 0, max: 30, step: 1, label: 'Steuersatz', unit: '%' },
-  exit_costs_percent: { min: 0, max: 10, step: 0.5, label: 'Verkaufskosten', unit: '%' }
+  purchase_price: { min: 50000, max: 2000000, step: 10000, label: 'Purchase Price', unit: 'EUR', format: v => `${(v/1000).toFixed(0)}k` },
+  renovation_costs: { min: 0, max: 200000, step: 5000, label: 'Renovation', unit: 'EUR', format: v => `${(v/1000).toFixed(0)}k` },
+  additional_costs_percent: { min: 0, max: 15, step: 0.5, label: 'Additional Costs', unit: '%' },
+  monthly_rent: { min: 200, max: 10000, step: 50, label: 'Monthly Rent', unit: 'EUR' },
+  vacancy_rate: { min: 0, max: 30, step: 1, label: 'Vacancy Rate', unit: '%' },
+  running_costs_percent: { min: 0, max: 40, step: 1, label: 'Operating Costs', unit: '%' },
+  rent_increase_percent: { min: -2, max: 10, step: 0.5, label: 'Rent Increase/Year', unit: '%' },
+  appreciation_percent: { min: -5, max: 20, step: 0.5, label: 'Appreciation/Year', unit: '%' },
+  discount_rate: { min: 0, max: 15, step: 0.5, label: 'Discount Rate', unit: '%' },
+  holding_period: { min: 1, max: 30, step: 1, label: 'Holding Period', unit: 'Years' },
+  equity_percent: { min: 10, max: 100, step: 5, label: 'Equity', unit: '%' },
+  mortgage_rate: { min: 0, max: 10, step: 0.25, label: 'Mortgage Rate', unit: '%' },
+  tax_rate: { min: 0, max: 30, step: 1, label: 'Tax Rate', unit: '%' },
+  exit_costs_percent: { min: 0, max: 10, step: 0.5, label: 'Exit Costs', unit: '%' }
 };
 
 const fmt = (val, type = 'eur') => {
@@ -238,8 +238,8 @@ export default function InvestmentSimulation() {
   return (
     <>
       <SEO
-        title="Investment-Simulation | IRR & Cashflow-Prognose"
-        description="Berechnen Sie IRR, NPV und kumulierten Cashflow Ihrer Immobilieninvestition mit unserer professionellen 10-Jahres-Simulation."
+        title="Investment Simulation | IRR & Cashflow Projection"
+        description="Calculate IRR, NPV and cumulative cashflow of your real estate investment with our professional 10-year simulation."
       />
       <div className="min-h-screen bg-gradient-to-b from-ea-dark via-ea-navy to-ea-dark pt-28 sm:pt-24 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
@@ -251,7 +251,7 @@ export default function InvestmentSimulation() {
               Investment-<span className="text-ea-gold">Simulation</span>
             </h1>
             <p className="text-white/50 max-w-2xl mx-auto text-sm sm:text-base">
-              10-Jahres-Prognose mit IRR, NPV und kumuliertem Cashflow. Passen Sie die Parameter an und sehen Sie sofort die Auswirkungen.
+              10-year projection with IRR, NPV and cumulative cashflow. Adjust parameters and see the impact instantly.
             </p>
           </div>
 
@@ -315,7 +315,7 @@ export default function InvestmentSimulation() {
                   data-testid="toggle-advanced"
                 >
                   {showAdvanced ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                  Erweiterte Parameter
+                  Advanced Parameters
                 </button>
 
                 {showAdvanced && (
@@ -337,7 +337,7 @@ export default function InvestmentSimulation() {
                       >
                         <span className="flex items-center gap-2 text-xs font-medium">
                           <Shield className="w-3.5 h-3.5" />
-                          Netto nach Steuern (MNE {params.tax_rate}%)
+                          Net after tax (MNE {params.tax_rate}%)
                         </span>
                         <div className={`w-9 h-5 rounded-full flex items-center px-0.5 transition-colors ${
                           params.apply_tax ? 'bg-ea-gold' : 'bg-white/20'
@@ -366,7 +366,7 @@ export default function InvestmentSimulation() {
                   data-testid="run-simulation-btn"
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <TrendingUp className="w-4 h-4" />}
-                  {loading ? 'Berechne...' : 'Simulation starten'}
+                  {loading ? 'Calculating...' : 'Run Simulation'}
                 </button>
 
                 {error && (
@@ -384,7 +384,7 @@ export default function InvestmentSimulation() {
                 <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-12 text-center">
                   <Calculator className="w-12 h-12 text-white/10 mx-auto mb-4" />
                   <p className="text-white/30 text-sm">
-                    Passen Sie die Parameter an und klicken Sie auf "Simulation starten"
+                    Passen Sie die Parameter an und klicken Sie auf "Run Simulation"
                   </p>
                 </div>
               ) : (
@@ -392,19 +392,19 @@ export default function InvestmentSimulation() {
                   {/* KPI Grid */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <KPICard label="IRR" value={fmt(result.irr_percent, 'pct')} sub="Internal Rate of Return" positive={result.irr_percent > params.discount_rate} />
-                    <KPICard label="EK-ROI" value={fmt(result.equity_roi_percent, 'pct')} sub={`${params.holding_period} Jahre Eigenkapital-ROI`} positive={result.equity_roi_percent > 0} />
-                    <KPICard label="NPV" value={fmt(result.npv)} sub={`Diskontiert @ ${params.discount_rate}%`} positive={result.npv > 0} />
-                    <KPICard label="Gesamtgewinn" value={fmt(result.total_profit)} sub={`Break-Even: Jahr ${result.break_even_year || '–'}`} positive={result.total_profit > 0} />
+                    <KPICard label="Equity ROI" value={fmt(result.equity_roi_percent, 'pct')} sub={`${params.holding_period} Year Equity ROI`} positive={result.equity_roi_percent > 0} />
+                    <KPICard label="NPV" value={fmt(result.npv)} sub={`Discounted @ ${params.discount_rate}%`} positive={result.npv > 0} />
+                    <KPICard label="Total Profit" value={fmt(result.total_profit)} sub={`Break-Even: Year ${result.break_even_year || '–'}`} positive={result.total_profit > 0} />
                   </div>
 
                   {/* Investment Summary */}
                   <div className={`grid gap-3 ${result.tax_applied || result.exit_costs > 0 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3'}`}>
-                    <KPICard label="Investition" value={fmt(result.total_investment)} />
-                    <KPICard label="Endwert" value={fmt(result.final_property_value)} positive={result.value_appreciation > 0} />
+                    <KPICard label="Investment" value={fmt(result.total_investment)} />
+                    <KPICard label="Final Value" value={fmt(result.final_property_value)} positive={result.value_appreciation > 0} />
                     {result.exit_costs > 0 && (
                       <KPICard label="Exit Costs" value={fmt(result.exit_costs)} sub={`${params.exit_costs_percent}% Broker fee`} positive={false} />
                     )}
-                    <KPICard label="Netto-Wertzuwachs" value={fmt(result.value_appreciation)} positive={result.value_appreciation > 0} />
+                    <KPICard label="Net Appreciation" value={fmt(result.value_appreciation)} positive={result.value_appreciation > 0} />
                   </div>
 
                   {/* Tax & Financing Summary */}
@@ -415,9 +415,9 @@ export default function InvestmentSimulation() {
                       )}
                       {result.debt_amount > 0 && (
                         <>
-                          <KPICard label="Eigenkapital" value={fmt(result.equity_invested)} sub={`${params.equity_percent}% der Investition`} />
+                          <KPICard label="Equity" value={fmt(result.equity_invested)} sub={`${params.equity_percent}% of Investment`} />
                           <KPICard label="Fremdkapital" value={fmt(result.debt_amount)} sub={`${params.mortgage_rate}% Hypothekenzins`} />
-                          <KPICard label="Ges. Cashflow" value={fmt(result.total_cashflow)} sub="Nach Hypothek & Steuer" positive={result.total_cashflow > 0} />
+                          <KPICard label="Total Cashflow" value={fmt(result.total_cashflow)} sub="After Mortgage & Tax" positive={result.total_cashflow > 0} />
                         </>
                       )}
                     </div>
@@ -430,7 +430,7 @@ export default function InvestmentSimulation() {
                         <div className="flex items-start gap-3">
                           <Banknote className="w-6 h-6 text-ea-gold shrink-0 mt-0.5" />
                           <div>
-                            <h3 className="text-white font-bold text-sm mb-1">Finanzierung für dieses Objekt anfragen</h3>
+                            <h3 className="text-white font-bold text-sm mb-1">Request Financing for this Property</h3>
                             <p className="text-white/50 text-xs leading-relaxed">
                               Benötigtes Fremdkapital: <strong className="text-white/70">{fmt(result.debt_amount)}</strong> bei {params.mortgage_rate}% Zins.
                               Our partner banks in Montenegro offer exclusive conditions for foreign investors.
@@ -438,7 +438,7 @@ export default function InvestmentSimulation() {
                           </div>
                         </div>
                         <a
-                          href={`/kontakt?betreff=Finanzierungsanfrage&betrag=${encodeURIComponent(fmt(result.debt_amount))}`}
+                          href={`/contact?betreff=Financing%20Request&betrag=${encodeURIComponent(fmt(result.debt_amount))}`}
                           className="shrink-0 flex items-center gap-2 px-5 py-3 bg-ea-gold text-ea-dark font-bold rounded-xl
                                      hover:bg-ea-gold/90 transition-all text-sm whitespace-nowrap"
                           data-testid="financing-request-btn"
@@ -452,7 +452,7 @@ export default function InvestmentSimulation() {
 
                   {/* Cumulative Cashflow Chart */}
                   <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-4 sm:p-6">
-                    <h3 className="text-white font-bold text-sm mb-4">Kumulierter Cashflow & Immobilienwert</h3>
+                    <h3 className="text-white font-bold text-sm mb-4">Cumulative Cashflow & Property Value</h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <AreaChart data={chartData}>
                         <defs>
@@ -471,15 +471,15 @@ export default function InvestmentSimulation() {
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }} />
                         <ReferenceLine y={0} stroke="rgba(255,255,255,0.1)" />
-                        <Area type="monotone" dataKey="kumuliert" name="Kum. Cashflow" stroke="#C8A96A" fill="url(#gradCf)" strokeWidth={2} />
-                        <Area type="monotone" dataKey="eigenkapital" name="Eigenkapital" stroke="#34D399" fill="url(#gradVal)" strokeWidth={2} />
+                        <Area type="monotone" dataKey="kumuliert" name="Cum. Cashflow" stroke="#C8A96A" fill="url(#gradCf)" strokeWidth={2} />
+                        <Area type="monotone" dataKey="eigenkapital" name="Equity" stroke="#34D399" fill="url(#gradVal)" strokeWidth={2} />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
 
                   {/* Annual Cashflow Bar Chart */}
                   <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-4 sm:p-6">
-                    <h3 className="text-white font-bold text-sm mb-4">Jährlicher Cashflow</h3>
+                    <h3 className="text-white font-bold text-sm mb-4">Annual Cashflow</h3>
                     <ResponsiveContainer width="100%" height={220}>
                       <BarChart data={chartData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -511,8 +511,8 @@ export default function InvestmentSimulation() {
                         <thead>
                           <tr className="border-t border-white/[0.06]">
                             <th className="px-3 py-2.5 text-left text-white/40 font-medium">Jahr</th>
-                            <th className="px-3 py-2.5 text-right text-white/40 font-medium">Bruttomiete</th>
-                            <th className="px-3 py-2.5 text-right text-white/40 font-medium">Netto-Miete</th>
+                            <th className="px-3 py-2.5 text-right text-white/40 font-medium">Gross Rent</th>
+                            <th className="px-3 py-2.5 text-right text-white/40 font-medium">Net Rent</th>
                             {result.tax_applied && (
                               <th className="px-3 py-2.5 text-right text-white/40 font-medium">Steuer ({result.tax_rate_used}%)</th>
                             )}
@@ -521,7 +521,7 @@ export default function InvestmentSimulation() {
                             )}
                             <th className="px-3 py-2.5 text-right text-white/40 font-medium">Cashflow</th>
                             <th className="px-3 py-2.5 text-right text-white/40 font-medium">Kum. CF</th>
-                            <th className="px-3 py-2.5 text-right text-white/40 font-medium">Immobilienwert</th>
+                            <th className="px-3 py-2.5 text-right text-white/40 font-medium">Property Value</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -558,7 +558,7 @@ export default function InvestmentSimulation() {
                         <h3 className="text-amber-400 font-bold text-xs uppercase tracking-wider mb-2">Wichtiger Hinweis — Keine Anlageberatung</h3>
                         <p className="text-white/50 text-xs leading-relaxed">
                           Diese Simulation dient ausschließlich zu <strong className="text-white/70">Informations- und Veranschaulichungszwecken</strong> und stellt
-                          keine Anlageberatung, Kaufempfehlung oder Renditegarantie dar. Alle dargestellten Zahlen, Prognosen und Ergebnisse basieren
+                          not investment advice, purchase recommendation or return guarantee. All figures, projections and results are based
                           auf den vom Benutzer eingegebenen Annahmen und vereinfachten Modellen.
                           <strong className="text-white/70"> Tatsächliche Ergebnisse können erheblich abweichen.</strong>
                         </p>
@@ -579,12 +579,12 @@ export default function InvestmentSimulation() {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-white/30 leading-relaxed">
                       <div>
-                        <p><strong className="text-white/50">IRR:</strong> Interner Zinsfuß, bei dem der Barwert aller Cashflows = 0</p>
+                        <p><strong className="text-white/50">IRR:</strong> Internal rate of return where present value of all cashflows = 0</p>
                         <p><strong className="text-white/50">NPV:</strong> Barwert = &Sigma; CF(t) / (1+r)<sup>t</sup></p>
                       </div>
                       <div>
-                        <p><strong className="text-white/50">EK-ROI:</strong> (Gesamtgewinn / Eigenkapital) &times; 100</p>
-                        <p><strong className="text-white/50">Wertsteigerung:</strong> V(t) = V(0) &times; (1+g)<sup>t</sup></p>
+                        <p><strong className="text-white/50">Equity ROI:</strong> (Total Profit / Eigenkapital) &times; 100</p>
+                        <p><strong className="text-white/50">Appreciation:</strong> V(t) = V(0) &times; (1+g)<sup>t</sup></p>
                       </div>
                     </div>
                   </div>
