@@ -127,7 +127,7 @@ export default function WhitepaperPage() {
                     </div>
                     <div>
                       <h3 className="text-white font-semibold">Download for Free</h3>
-                      <p className="text-white/50 text-xs">PDF wird per E-Mail zugestellt</p>
+                      <p className="text-white/50 text-xs">PDF will be sent via email</p>
                     </div>
                   </div>
 
@@ -194,7 +194,7 @@ export default function WhitepaperPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">What to Expect</h2>
-            <p className="text-white/50 text-sm max-w-2xl mx-auto">8 Chapters mit konkreten Handlungsempfehlungen für Ihren Markteintritt auf dem Westbalkan</p>
+            <p className="text-white/50 text-sm max-w-2xl mx-auto">8 chapters with actionable recommendations for your market entry in the Western Balkans</p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
