@@ -91,25 +91,27 @@ const AnalyticsDashboard = ({ credentials }) => {
 
   const exportLeadsCSV = async () => {
     try {
+      const XLSX = (await import('xlsx')).default;
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/leads`, {
         headers: { 'Authorization': 'Basic ' + btoa('admin:euroadria2025') }
       });
       if (!res.ok) return;
       const allLeads = await res.json();
       if (!allLeads?.length) return;
-      const headers = ['Name', 'Email', 'Phone', 'Source', 'Expose', 'Date'];
-      const rows = allLeads.map(l => [
-        l.name, l.email, l.phone || '', l.source || '', l.expose_name || '', l.submitted_at || ''
-      ]);
-      const csv = '\uFEFF' + [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `euroadria-leads-${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (err) { console.error('CSV export failed:', err); }
+      const rows = allLeads.map(l => ({
+        Name: l.name,
+        Email: l.email,
+        Phone: l.phone || '',
+        Source: l.source || '',
+        Expose: l.expose_name || '',
+        Date: l.submitted_at ? new Date(l.submitted_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      ws['!cols'] = [{ wch: 22 }, { wch: 30 }, { wch: 18 }, { wch: 22 }, { wch: 40 }, { wch: 22 }];
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Leads');
+      XLSX.writeFile(wb, `euroadria-leads-${new Date().toISOString().split('T')[0]}.xlsx`);
+    } catch (err) { console.error('Export failed:', err); }
   };
 
   if (loading) {
@@ -444,7 +446,7 @@ const AnalyticsDashboard = ({ credentials }) => {
               data-testid="export-leads-csv"
             >
               <Download className="w-4 h-4" />
-              CSV Export
+              Excel Export
             </button>
           )}
         </div>
