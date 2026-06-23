@@ -65,7 +65,7 @@ const ROICalculator = () => {
     <>
       <SEO 
         title="ROI Calculator for Real Estate | EuroAdria Corporate Solutions"
-        description="Berechnen Sie die Rendite Ihrer Immobilieninvestition in Montenegro und Serbien."
+        description="Calculate the return on your real estate investment in Montenegro and Serbia."
       />
       
       <div className="min-h-screen bg-gradient-to-b from-ea-dark via-ea-navy to-ea-dark pt-28 sm:pt-24 pb-16 px-4">
@@ -190,7 +190,7 @@ const ROICalculator = () => {
                   className="w-full bg-ea-gold text-ea-dark font-bold py-4 rounded-xl hover:bg-ea-gold/80 transition-all disabled:opacity-50"
                   data-testid="roi-calculate-btn"
                 >
-                  {loading ? <T>Berechne...</T> : <T>ROI Berechnen</T>}
+                  {loading ? <T>Calculating...</T> : <T>Calculate ROI</T>}
                 </button>
               </div>
             </div>
@@ -206,7 +206,7 @@ const ROICalculator = () => {
                 <div className="space-y-4">
                   {/* Total Investment */}
                   <div className="bg-white/5 rounded-xl p-4 border border-white/5">
-                    <p className="text-ea-light/60 text-sm mb-1"><T>Gesamtinvestition</T></p>
+                    <p className="text-ea-light/60 text-sm mb-1"><T>Total Investment</T></p>
                     <p className="text-2xl font-bold text-white">{formatCurrency(result.total_investment)}</p>
                   </div>
 
@@ -226,7 +226,7 @@ const ROICalculator = () => {
                       <p className="text-2xl font-bold text-ea-gold">{result.roi_percent}%</p>
                     </div>
                     <div className="bg-blue-500/10 rounded-xl p-4 border border-blue-500/20">
-                      <p className="text-blue-400/80 text-sm mb-1"><T>Netto-Rendite</T></p>
+                      <p className="text-blue-400/80 text-sm mb-1"><T>Net Yield</T></p>
                       <p className="text-2xl font-bold text-blue-400">{result.net_yield_percent}%</p>
                     </div>
                   </div>
@@ -259,7 +259,7 @@ const ROICalculator = () => {
                         <span className="text-red-400">-{formatCurrency(inputs.running_costs_monthly * 12)}</span>
                       </div>
                       <div className="border-t border-white/10 pt-2 mt-2 flex justify-between">
-                        <span className="text-white font-medium"><T>Netto-Mieteinnahmen</T></span>
+                        <span className="text-white font-medium"><T>Net Rental Income</T></span>
                         <span className="text-green-400 font-bold">{formatCurrency(result.net_rental_income)}</span>
                       </div>
                     </div>
@@ -270,7 +270,7 @@ const ROICalculator = () => {
                   <div>
                     <Calculator className="w-16 h-16 text-ea-light/20 mx-auto mb-4" />
                     <p className="text-ea-light/50">
-                      <T>Geben Sie Ihre Investitionsdaten ein und klicken Sie auf "ROI Berechnen"</T>
+                      <T>Enter your investment data and click "Calculate ROI"</T>
                     </p>
                   </div>
                 </div>
@@ -279,10 +279,10 @@ const ROICalculator = () => {
           </div>
 
           <div className="mt-8 bg-ea-gold/10 border border-ea-gold/20 rounded-2xl p-6">
-            <h3 className="text-ea-gold font-bold mb-3">Hinweise zur Berechnung</h3>
+            <h3 className="text-ea-gold font-bold mb-3">Calculation Notes</h3>
             <ul className="text-ea-light/70 text-sm space-y-2">
               <li>• <strong>ROI</strong> = Annual Cashflow / Total Investment x 100</li>
-              <li>• <strong>Netto-Rendite</strong> = Netto-Mieteinnahmen / Gesamtinvestition x 100</li>
+              <li>• <strong>Net Yield</strong> = Net Rental Income / Total Investment x 100</li>
               <li>• <strong>Break-Even</strong> = Total Investment / Annual Cashflow</li>
               <li>• The calculation does not include taxes, financing costs or appreciation</li>
             </ul>
@@ -293,7 +293,7 @@ const ROICalculator = () => {
             <p className="text-amber-400/80 text-xs font-bold uppercase tracking-wider mb-2">Wichtiger Hinweis — Keine Anlageberatung</p>
             <p className="text-ea-light/40 text-xs leading-relaxed">
               This calculation is for informational and illustrative purposes only and does not constitute investment advice.
-              Kaufempfehlung oder Renditegarantie dar. Alle Ergebnisse basieren auf vereinfachten Annahmen.
+              purchase recommendation or return guarantee. All results are based on simplified assumptions.
               Actual results may vary significantly. Consult a qualified financial advisor before making any investment decision.
               a qualified and independent financial advisor.
             </p>
@@ -308,7 +308,7 @@ const ROICalculator = () => {
               data-testid="link-simulation"
             >
               <TrendingUp className="w-4 h-4" />
-              Erweiterte 10-Jahres-Simulation mit IRR, NPV & PDF-Export
+              Advanced 10-Year Simulation with IRR, NPV & PDF Export
             </a>
           </div>
         </div>
