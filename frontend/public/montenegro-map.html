@@ -75,13 +75,13 @@
 
     <div class="card">
       <h2>Status + Zeithorizont</h2>
-      <div class="row"><span class="ln" style="border-top-color:var(--existing)"></span> Bestand</div>
-      <div class="row"><span class="ln" style="border-top-color:var(--modern)"></span> Modernisiert / Modernisierung</div>
+      <div class="row"><span class="ln" style="border-top-color:var(--existing)"></span> Existing</div>
+      <div class="row"><span class="ln" style="border-top-color:var(--modern)"></span> Modernized / Modernization</div>
       <div class="row"><span class="ln" style="border-top-color:var(--construction)"></span> Im Bau</div>
       <div class="row"><span class="ln dash" style="border-top-color:var(--planned)"></span> Geplant</div>
-      <div class="row"><span class="sw" style="background:var(--short)"></span> Kurzfristig, 0 bis 3 Jahre</div>
-      <div class="row"><span class="sw" style="background:var(--mediumh)"></span> Mittelfristig, 3 bis 7 Jahre</div>
-      <div class="row"><span class="sw" style="background:var(--long)"></span> Langfristig, 7 Jahre plus</div>
+      <div class="row"><span class="sw" style="background:var(--short)"></span> Short-term, 0 to 3 years</div>
+      <div class="row"><span class="sw" style="background:var(--mediumh)"></span> Medium-term, 3 to 7 years</div>
+      <div class="row"><span class="sw" style="background:var(--long)"></span> Long-term, 7+ years</div>
     </div>
 
     <div class="card controls">
@@ -106,9 +106,9 @@
 
     <div class="card controls">
       <h2>Zeithorizont-Filter</h2>
-      <label><input type="checkbox" data-horizon="short" checked> Kurzfristig</label>
-      <label><input type="checkbox" data-horizon="medium" checked> Mittelfristig</label>
-      <label><input type="checkbox" data-horizon="long" checked> Langfristig</label>
+      <label><input type="checkbox" data-horizon="short" checked> Short-term</label>
+      <label><input type="checkbox" data-horizon="medium" checked> Medium-term</label>
+      <label><input type="checkbox" data-horizon="long" checked> Long-term</label>
     </div>
 
     <div class="card">
@@ -127,14 +127,14 @@
       <h2>EuroAdria-Zonen</h2>
       <div class="row"><span class="dotzone" style="background:rgba(239,131,84,.18)"></span> Nordost-Acceleration Zone</div>
       <div class="row"><span class="dotzone" style="background:rgba(94,197,118,.18)"></span> Hauptstadt-Residential Belt</div>
-      <div class="row"><span class="dotzone" style="background:rgba(244,211,94,.18)"></span> Südlogistik- und Green-Port Zone</div>
+      <div class="row"><span class="dotzone" style="background:rgba(244,211,94,.18)"></span> South Logistics & Green Port Zone</div>
       <div class="row"><span class="dotzone" style="background:rgba(142,202,230,.18)"></span> Premium Coast & Boka Zone</div>
       <div class="row"><span class="dotzone" style="background:rgba(200,169,106,.18)"></span> Durmitor Alpine Tourism Zone</div>
     </div>
 
     <div class="card" id="infoBox">
       <div class="info-title">Karte geladen</div>
-      <div class="meta">Webinar- und Exposé-Logik</div>
+      <div class="meta">Webinar & Exposé Logic</div>
       <div class="info-text">Click on a location, segment or zone. Status, time horizon, use case and investment summary are displayed.</div>
     </div>
 
@@ -168,78 +168,78 @@ const statusStyles = {
   planned: {color:css('--planned'), weight:4, opacity:.95, dashArray:'10 7'}
 };
 const horizonColors = {short:css('--short'), medium:css('--mediumh'), long:css('--long')};
-function statusLabel(s){return ({existing:'Bestand',modern:'Modernisiert / Modernisierung',construction:'Im Bau',planned:'Geplant'})[s]||s;}
-function horizonLabel(h){return ({short:'Kurzfristig',medium:'Mittelfristig',long:'Langfristig'})[h]||h;}
+function statusLabel(s){return ({existing:'Existing',modern:'Modernized',construction:'Under Construction',planned:'Planned'})[s]||s;}
+function horizonLabel(h){return ({short:'Short-term',medium:'Medium-term',long:'Long-term'})[h]||h;}
 function potColor(score){ return score>=85 ? css('--high') : score>=70 ? css('--medium') : css('--stable'); }
 function usesLabel(arr){ const m={logistics:'Logistik',residential:'Residential',tourism:'Tourismus',relocation:'Relocation'}; return arr.map(x=>m[x]).join(', '); }
 
 const places = {
-  boljare:{name:'Boljare',lat:43.103,lng:19.931,score:67,priority:3,uses:['logistics'],meta:'Grenzportal Serbien',case:'Transit- und Grenzlogik. Stark abhängig vom Vollausbau der Nordachse.'},
-  berane:{name:'Berane',lat:42.846,lng:19.873,score:89,priority:5,uses:['logistics','residential','relocation'],meta:'KBC Nord, Regionalflughafen-Potenzial',case:'Nordzentrum mit Gesundheitsanker und Flughafenoption. Profitiert überproportional von A1 Phase II und dem geplanten regionalen Luftverkehr.'},
-  andrijevica:{name:'Andrijevica',lat:42.733,lng:19.792,score:94,priority:5,uses:['logistics','residential'],meta:'A1-Knotenpunkt',case:'Einer der stärksten Frühphasen-Cases des Landes. Hebel aus Erreichbarkeit, Transit und Flächenlogik.'},
-  kolasin:{name:'Kolašin',lat:42.822,lng:19.518,score:82,priority:4,uses:['tourism','residential','relocation'],meta:'Bergtourismus, Bestand',case:'Reiferer Bergmarkt mit bestehender Autobahnanbindung. Weniger explosiv als Andrijevica, aber robuster.'},
-  matesevo:{name:'Mateševo',lat:42.813,lng:19.432,score:76,priority:4,uses:['logistics'],meta:'A1 Bestand',case:'Bestandsanker der Autobahn. Funktionaler Wert als Übergabepunkt Richtung Norden.'},
-  smokovac:{name:'Smokovac',lat:42.500,lng:19.307,score:78,priority:4,uses:['logistics','relocation'],meta:'A1 Südportal',case:'Technischer Hub zwischen Hauptstadt und Autobahn, eher funktional als wohnlich.'},
-  podgorica:{name:'Podgorica',lat:42.441,lng:19.263,score:90,priority:5,uses:['logistics','residential','relocation'],meta:'KCCG, Flughafen, Verwaltung',case:'Stärkster Gesamtstandort des Landes. Kombination aus Wohnmarkt, Verwaltung, Gesundheit, IT und Logistik.'},
-  zeta:{name:'Zeta',lat:42.402,lng:19.198,score:83,priority:4,uses:['logistics','residential'],meta:'Flughafen- und Logistikraum',case:'Profitiert von Bahn, Flughafen und der Nähe zu Podgorica. Gute Flächenlogik.'},
-  danilovgrad:{name:'Danilovgrad',lat:42.553,lng:19.146,score:84,priority:4,uses:['residential','relocation','logistics'],meta:'Pendler- und Binnenraum',case:'Stiller Gewinner der Podgorica-Expansion und der Schnellstraßenlogik Richtung Nikšić.'},
-  niksic:{name:'Nikšić',lat:42.773,lng:18.944,score:80,priority:4,uses:['logistics','residential','relocation'],meta:'Binnenzentrum',case:'Relevanter Flächen- und Industrieort. Stärker für unternehmerische Nutzung als für Premium-Tourismus.'},
+  boljare:{name:'Boljare',lat:43.103,lng:19.931,score:67,priority:3,uses:['logistics'],meta:'Serbia Border Portal',case:'Transit and border logistics. Highly dependent on full northern axis expansion.'},
+  berane:{name:'Berane',lat:42.846,lng:19.873,score:89,priority:5,uses:['logistics','residential','relocation'],meta:'KBC North, Regional Airport Potential',case:'Northern center with healthcare anchor and airport option. Benefits disproportionately from A1 Phase II and planned regional air traffic.'},
+  andrijevica:{name:'Andrijevica',lat:42.733,lng:19.792,score:94,priority:5,uses:['logistics','residential'],meta:'A1 Junction',case:'One of the strongest early-phase cases in the country. Leverage from accessibility, transit and spatial logic.'},
+  kolasin:{name:'Kolašin',lat:42.822,lng:19.518,score:82,priority:4,uses:['tourism','residential','relocation'],meta:'Mountain Tourism, Existing',case:'More mature mountain market with existing highway connection. Less explosive than Andrijevica, but more robust.'},
+  matesevo:{name:'Mateševo',lat:42.813,lng:19.432,score:76,priority:4,uses:['logistics'],meta:'A1 Existing',case:'Existing highway anchor. Functional value as handover point towards the north.'},
+  smokovac:{name:'Smokovac',lat:42.500,lng:19.307,score:78,priority:4,uses:['logistics','relocation'],meta:'A1 South Portal',case:'Technical hub between capital and highway, more functional than residential.'},
+  podgorica:{name:'Podgorica',lat:42.441,lng:19.263,score:90,priority:5,uses:['logistics','residential','relocation'],meta:'KCCG, Airport, Administration',case:'Strongest overall location in the country. Combination of residential market, administration, healthcare, IT and logistics.'},
+  zeta:{name:'Zeta',lat:42.402,lng:19.198,score:83,priority:4,uses:['logistics','residential'],meta:'Airport & Logistics Area',case:'Benefits from railway, airport and proximity to Podgorica. Good spatial logic.'},
+  danilovgrad:{name:'Danilovgrad',lat:42.553,lng:19.146,score:84,priority:4,uses:['residential','relocation','logistics'],meta:'Commuter & Inland Area',case:'Silent winner of Podgorica expansion and expressway logic towards Nikšić.'},
+  niksic:{name:'Nikšić',lat:42.773,lng:18.944,score:80,priority:4,uses:['logistics','residential','relocation'],meta:'Inland Center',case:'Relevant industrial and land location. Stronger for business use than premium tourism.'},
   savnik:{name:'Šavnik',lat:42.956,lng:19.096,score:73,priority:3,uses:['tourism','residential'],meta:'Semolj-Tunnel-Hebel',case:'More speculative than Žabljak, but with high relative leverage if the Semolj connection and road improvements are realized.'},
-  zabljak:{name:'Žabljak',lat:43.154,lng:19.123,score:81,priority:4,uses:['tourism','residential','relocation'],meta:'Durmitor, Alpinflughafen-Perspektive',case:'Strong alpine tourism case. Additional momentum from road improvements, Semolj debate and spatial planning for a smaller airfield.'},
-  virpazar:{name:'Virpazar',lat:42.246,lng:19.092,score:74,priority:3,uses:['tourism','logistics'],meta:'Skadar-See-Scharnier',case:'Profitiert von Bahnmodernisierung und dem Binnen-Küsten-Korridor.'},
-  sutomore:{name:'Sutomore',lat:42.141,lng:19.046,score:72,priority:3,uses:['tourism','residential'],meta:'Küsten-Bahnanbindung',case:'Gewinnt moderat über Bar und die Schienenmodernisierung.'},
-  bar:{name:'Bar',lat:42.095,lng:19.100,score:92,priority:5,uses:['logistics','residential','tourism'],meta:'Green Port, Fähre, Bahn',case:'Logistik-Herz des Landes. Modernisierungen im Hafen, an der Bahn und im Südkorridor wirken direkt wertsteigernd.'},
-  zaljevo:{name:'Zaljevo',lat:42.122,lng:19.159,score:79,priority:4,uses:['logistics','residential'],meta:'Südkorridor-Bar-Ulcinj',case:'Interessant als Vorfeldlage des südlichen Entwicklungskorridors.'},
-  ulcinj:{name:'Ulcinj',lat:41.929,lng:19.223,score:88,priority:5,uses:['tourism','residential','relocation'],meta:'Velika Plaža, Štoj-Flughafenidee',case:'Starker Südcase mit touristischer Tiefe und Flächenpotenzial. Hoher Hebel, aber stark vom Korridorausbau abhängig.'},
-  sukobin:{name:'Sukobin',lat:41.998,lng:19.359,score:65,priority:3,uses:['logistics'],meta:'Grenzportal Albanien',case:'Funktionaler Grenzstandort, relevant vor allem im Vollausbau der Adriatisch-Ionischen Achse.'},
-  budva:{name:'Budva',lat:42.286,lng:18.840,score:79,priority:4,uses:['tourism','residential'],meta:'Umfahrung / Entlastung',case:'Weiterhin starker Markt, aber eher Nutzbarkeits- als Frühphasenhebel. Bypass wichtig.'},
-  kotor:{name:'Kotor',lat:42.425,lng:18.771,score:77,priority:4,uses:['tourism','residential','relocation'],meta:'KBC Süd, UNESCO-Raum',case:'Hoher Qualitätsstandort, aber begrenzte Fläche und starke Regulierung.'},
-  tivat:{name:'Tivat',lat:42.430,lng:18.695,score:78,priority:4,uses:['tourism','relocation','residential'],meta:'Flughafen, Marina',case:'Premium-Standort mit guter Stabilität, weniger Frühphasenhebel.'},
-  hercegNovi:{name:'Herceg Novi',lat:42.454,lng:18.531,score:84,priority:4,uses:['tourism','residential','relocation'],meta:'Boka-Nordportal, Fast-Road, Igalo',case:'Wertet stark über die geplante Schnellstraße Richtung Budva, Projekte auf Luštica und die Stärkung von Igalo als Gesundheits- und Reha-Standort.'},
-  pljevlja:{name:'Pljevlja',lat:43.356,lng:19.359,score:69,priority:3,uses:['residential','relocation'],meta:'Krankenhaus-Neubau',case:'Regionaler Qualitätsgewinn durch Gesundheit, aber begrenzter Markt.'},
-  bijeloPolje:{name:'Bijelo Polje',lat:43.038,lng:19.747,score:74,priority:3,uses:['logistics','residential'],meta:'Nordbahn und Binnennetz',case:'Solider Binnenstandort mit Schienen- und Gesundheitslogik.'},
-  podAirport:{name:'Flughafen Podgorica',lat:42.3594,lng:19.2519,score:80,priority:4,uses:['logistics','relocation'],meta:'Luftverkehr',case:'Entscheidend für Business und Erreichbarkeit, stützt Zeta und Podgorica.'},
-  tivatAirport:{name:'Flughafen Tivat',lat:42.4047,lng:18.7233,score:80,priority:4,uses:['tourism','relocation'],meta:'Luftverkehr',case:'Knoten der Premiumküste.'},
-  beraneAirport:{name:'Flughafen Berane',lat:42.839,lng:19.861,score:78,priority:3,uses:['tourism','logistics'],meta:'Reaktivierungsoption',case:'Würde Berane, Andrijevica, Plav und Rožaje touristisch und logistisch massiv aufwerten.'},
+  zabljak:{name:'Žabljak',lat:43.154,lng:19.123,score:81,priority:4,uses:['tourism','residential','relocation'],meta:'Durmitor, Alpine Airport Perspective',case:'Strong alpine tourism case. Additional momentum from road improvements, Semolj debate and spatial planning for a smaller airfield.'},
+  virpazar:{name:'Virpazar',lat:42.246,lng:19.092,score:74,priority:3,uses:['tourism','logistics'],meta:'Skadar Lake Hub',case:'Benefits from railway modernization and the inland-coastal corridor.'},
+  sutomore:{name:'Sutomore',lat:42.141,lng:19.046,score:72,priority:3,uses:['tourism','residential'],meta:'Coastal Railway Connection',case:'Moderately gains through Bar and railway modernization.'},
+  bar:{name:'Bar',lat:42.095,lng:19.100,score:92,priority:5,uses:['logistics','residential','tourism'],meta:'Green Port, Ferry, Railway',case:'Logistics heart of the country. Modernizations at port, railway and southern corridor directly increase value.'},
+  zaljevo:{name:'Zaljevo',lat:42.122,lng:19.159,score:79,priority:4,uses:['logistics','residential'],meta:'South Corridor Bar-Ulcinj',case:'Interesting as a frontline location of the southern development corridor.'},
+  ulcinj:{name:'Ulcinj',lat:41.929,lng:19.223,score:88,priority:5,uses:['tourism','residential','relocation'],meta:'Velika Plaža, Štoj Airport Concept',case:'Strong southern case with touristic depth and land potential. High leverage, but strongly dependent on corridor expansion.'},
+  sukobin:{name:'Sukobin',lat:41.998,lng:19.359,score:65,priority:3,uses:['logistics'],meta:'Albania Border Portal',case:'Functional border location, relevant primarily in the full expansion of the Adriatic-Ionian axis.'},
+  budva:{name:'Budva',lat:42.286,lng:18.840,score:79,priority:4,uses:['tourism','residential'],meta:'Bypass / Relief',case:'Still a strong market, but more usability than early-phase leverage. Bypass important.'},
+  kotor:{name:'Kotor',lat:42.425,lng:18.771,score:77,priority:4,uses:['tourism','residential','relocation'],meta:'KBC South, UNESCO Area',case:'High quality location, but limited space and strong regulation.'},
+  tivat:{name:'Tivat',lat:42.430,lng:18.695,score:78,priority:4,uses:['tourism','relocation','residential'],meta:'Airport, Marina',case:'Premium location with good stability, less early-phase leverage.'},
+  hercegNovi:{name:'Herceg Novi',lat:42.454,lng:18.531,score:84,priority:4,uses:['tourism','residential','relocation'],meta:'Boka North Portal, Fast Road, Igalo',case:'Strongly appreciates through planned expressway to Budva, Luštica projects and strengthening of Igalo as health and rehab location.'},
+  pljevlja:{name:'Pljevlja',lat:43.356,lng:19.359,score:69,priority:3,uses:['residential','relocation'],meta:'New Hospital Construction',case:'Regional quality gain through healthcare, but limited market.'},
+  bijeloPolje:{name:'Bijelo Polje',lat:43.038,lng:19.747,score:74,priority:3,uses:['logistics','residential'],meta:'Northern Railway & Inland Network',case:'Solid inland location with railway and healthcare logic.'},
+  podAirport:{name:'Podgorica Airport',lat:42.3594,lng:19.2519,score:80,priority:4,uses:['logistics','relocation'],meta:'Air Traffic',case:'Crucial for business and accessibility, supports Zeta and Podgorica.'},
+  tivatAirport:{name:'Tivat Airport',lat:42.4047,lng:18.7233,score:80,priority:4,uses:['tourism','relocation'],meta:'Air Traffic',case:'Premium coast hub.'},
+  beraneAirport:{name:'Berane Airport',lat:42.839,lng:19.861,score:78,priority:3,uses:['tourism','logistics'],meta:'Reactivation Option',case:'Would massively upgrade Berane, Andrijevica, Plav and Rožaje for tourism and logistics.'},
   niksicAirport:{name:'Kapino Polje Nikšić',lat:42.786,lng:18.939,score:66,priority:2,uses:['logistics'],meta:'Allgemeine Luftfahrt',case:'Eher technischer Zusatznutzen als unmittelbarer Immobilienhebel.'},
-  zabljakAirport:{name:'Flugfeld Žabljak',lat:43.149,lng:19.098,score:71,priority:2,uses:['tourism'],meta:'Raumplan-Perspektive',case:'Signalwirkung für exklusiven Bergtourismus, aber noch frühe Phase.'},
-  ulcinjAirport:{name:'Štoj / Ulcinj Flugfeld-Idee',lat:41.902,lng:19.318,score:74,priority:2,uses:['tourism'],meta:'Großprojekt-Stütze',case:'Könnte die Südlogik beschleunigen, ist aber klar spekulativer Natur.'},
-  portBar:{name:'Port of Bar',lat:42.086,lng:19.094,score:92,priority:5,uses:['logistics'],meta:'Hafenanlage',case:'Logistischer Kern mit Green-Port-Hebel und direkter Wirkung auf Flächen, Lager, Industrie und Verkehrswert.'},
-  kccg:{name:'KCCG Podgorica',lat:42.4418,lng:19.2438,score:89,priority:5,uses:['relocation','residential'],meta:'Klinisches Zentrum',case:'Nationaler Gesundheitsanker, zentral für Familien und Langzeitnutzung.'},
-  beraneHealth:{name:'KBC Nord Berane',lat:42.846,lng:19.873,score:86,priority:4,uses:['relocation','residential'],meta:'Gesundheitsanker Nord',case:'Hebt die Wohn- und Standortqualität des Nordens.'},
-  kotorHealth:{name:'KBC Süd Kotor',lat:42.424,lng:18.771,score:78,priority:4,uses:['relocation','residential','tourism'],meta:'Gesundheitsanker Süd',case:'Wichtiger Stabilitätsfaktor für die Boka.'},
-  igalo:{name:'Institut Dr Simo Milošević Igalo',lat:42.461,lng:18.499,score:82,priority:4,uses:['tourism','relocation','residential'],meta:'Reha- und Gesundheitsstandort',case:'Die angekündigten Investitionen bis 2028 stärken Herceg Novi / Igalo als Health- und Senior-Living-Case.'}
+  zabljakAirport:{name:'Žabljak Airfield',lat:43.149,lng:19.098,score:71,priority:2,uses:['tourism'],meta:'Spatial Planning Perspective',case:'Signal effect for exclusive mountain tourism, but still early phase.'},
+  ulcinjAirport:{name:'Štoj / Ulcinj Airfield Concept',lat:41.902,lng:19.318,score:74,priority:2,uses:['tourism'],meta:'Major Project Support',case:'Could accelerate southern logic, but clearly speculative in nature.'},
+  portBar:{name:'Port of Bar',lat:42.086,lng:19.094,score:92,priority:5,uses:['logistics'],meta:'Port Facility',case:'Logistics core with Green Port leverage and direct impact on land, warehousing, industry and transport value.'},
+  kccg:{name:'KCCG Podgorica',lat:42.4418,lng:19.2438,score:89,priority:5,uses:['relocation','residential'],meta:'Clinical Center',case:'National healthcare anchor, central for families and long-term use.'},
+  beraneHealth:{name:'KBC Nord Berane',lat:42.846,lng:19.873,score:86,priority:4,uses:['relocation','residential'],meta:'Northern Healthcare Anchor',case:'Elevates residential and location quality of the north.'},
+  kotorHealth:{name:'KBC South Kotor',lat:42.424,lng:18.771,score:78,priority:4,uses:['relocation','residential','tourism'],meta:'Southern Healthcare Anchor',case:'Important stability factor for the Boka.'},
+  igalo:{name:'Institut Dr Simo Milošević Igalo',lat:42.461,lng:18.499,score:82,priority:4,uses:['tourism','relocation','residential'],meta:'Rehab & Health Location',case:'Announced investments until 2028 strengthen Herceg Novi / Igalo as health and senior living case.'}
 };
 
 const roadSegments = [
-  {name:'A1 Smokovac–Mateševo', pts:['smokovac','matesevo'], status:'existing', horizon:'short', priority:5, uses:['logistics','relocation'], text:'Bestehender Autobahnabschnitt und Basis für die Nordlogik.'},
+  {name:'A1 Smokovac–Mateševo', pts:['smokovac','matesevo'], status:'existing', horizon:'short', priority:5, uses:['logistics','relocation'], text:'Existing highway section and basis for northern logic.'},
   {name:'A1 Mateševo–Andrijevica', pts:['matesevo','kolasin','andrijevica'], status:'construction', horizon:'short', priority:5, uses:['logistics','residential'], text:'Zentraler Ausbauabschnitt mit unmittelbarer Wirkung auf Kolašin und Andrijevica.'},
-  {name:'A1 Andrijevica–Berane–Boljare', pts:['andrijevica','berane','boljare'], status:'planned', horizon:'long', priority:4, uses:['logistics'], text:'Langfristige Nordverlängerung bis zur serbischen Grenze.'},
-  {name:'Schnellstraße Podgorica–Danilovgrad–Nikšić', pts:['podgorica','danilovgrad','niksic'], status:'planned', horizon:'medium', priority:4, uses:['residential','relocation','logistics'], text:'Hebel für Pendlergürtel, Binnenentwicklung und unternehmerische Flächen.'},
-  {name:'Semolj-Verbindung Mojkovac/Kolašin–Šavnik–Žabljak', pts:[[42.935,19.518],'savnik','zabljak'], status:'planned', horizon:'medium', priority:4, uses:['tourism','residential'], text:'Politisch stark diskutierter Nordwest-Hebel. Für Šavnik und Žabljak ein echter Gamechanger, falls realisiert.'},
+  {name:'A1 Andrijevica–Berane–Boljare', pts:['andrijevica','berane','boljare'], status:'planned', horizon:'long', priority:4, uses:['logistics'], text:'Long-term northern extension to the Serbian border.'},
+  {name:'Expressway Podgorica–Danilovgrad–Nikšić', pts:['podgorica','danilovgrad','niksic'], status:'planned', horizon:'medium', priority:4, uses:['residential','relocation','logistics'], text:'Leverage for commuter belt, inland development and business areas.'},
+  {name:'Semolj Connection Mojkovac/Kolašin–Šavnik–Žabljak', pts:[[42.935,19.518],'savnik','zabljak'], status:'planned', horizon:'medium', priority:4, uses:['tourism','residential'], text:'Politically highly debated northwest leverage. A real gamechanger for Šavnik and Žabljak if realized.'},
   {name:'Marina Dolina–Radovan Luka, Žabljak', pts:['zabljak',[43.137,19.096],[43.122,19.071]], status:'construction', horizon:'short', priority:3, uses:['tourism'], text:'Ongoing road improvement for the touristic development of Žabljak.'},
-  {name:'Fast Road Herceg Novi–Budva inkl. Buchtquerung', pts:['hercegNovi',[42.401,18.615],'tivat','budva'], status:'planned', horizon:'medium', priority:5, uses:['tourism','residential','relocation','logistics'], text:'Eines der wichtigsten Küstenprojekte. Starker Effekt auf Herceg Novi und die Boka.'},
-  {name:'Luštica / Monte Rose Straßeninfrastruktur', pts:['hercegNovi',[42.393,18.577],[42.360,18.626]], status:'construction', horizon:'short', priority:3, uses:['tourism','residential'], text:'Lokaler Ausbau mit Relevanz für hochwertige Küstenlagen.'},
-  {name:'Adria-Ionen-Korridor Zaljevo–Bar–Ulcinj–Sukobin', pts:['zaljevo','bar','ulcinj','sukobin'], status:'planned', horizon:'medium', priority:5, uses:['tourism','logistics','residential'], text:'Stärkster Südkorridor für Bar und Ulcinj.'},
-  {name:'Budva Umfahrung / Küstenentlastung', pts:['budva',[42.251,18.886],[42.214,18.940]], status:'planned', horizon:'medium', priority:4, uses:['tourism','residential'], text:'Verbessert Reisezeiten und Nutzbarkeit im touristisch überlasteten Küstenraum.'},
-  {name:'Sozina-Tunnel', pts:[[42.208,19.006],[42.245,19.013],[42.257,19.024]], status:'existing', horizon:'short', priority:4, uses:['logistics','tourism','relocation'], text:'Zentrale Binnen-Küsten-Verbindung. Jede Kapazitäts- oder Qualitätsverbesserung wirkt breit.'},
+  {name:'Fast Road Herceg Novi–Budva incl. Bay Crossing', pts:['hercegNovi',[42.401,18.615],'tivat','budva'], status:'planned', horizon:'medium', priority:5, uses:['tourism','residential','relocation','logistics'], text:'One of the most important coastal projects. Strong effect on Herceg Novi and the Boka.'},
+  {name:'Luštica / Monte Rose Road Infrastructure', pts:['hercegNovi',[42.393,18.577],[42.360,18.626]], status:'construction', horizon:'short', priority:3, uses:['tourism','residential'], text:'Local expansion relevant for high-quality coastal locations.'},
+  {name:'Adriatic Ion Corridor Zaljevo–Bar–Ulcinj–Sukobin', pts:['zaljevo','bar','ulcinj','sukobin'], status:'planned', horizon:'medium', priority:5, uses:['tourism','logistics','residential'], text:'Strongest southern corridor for Bar and Ulcinj.'},
+  {name:'Budva Bypass / Coastal Relief', pts:['budva',[42.251,18.886],[42.214,18.940]], status:'planned', horizon:'medium', priority:4, uses:['tourism','residential'], text:'Improves travel times and usability in the touristically overloaded coastal area.'},
+  {name:'Sozina-Tunnel', pts:[[42.208,19.006],[42.245,19.013],[42.257,19.024]], status:'existing', horizon:'short', priority:4, uses:['logistics','tourism','relocation'], text:'Central inland-coastal connection. Any capacity or quality improvement has broad impact.'},
   {name:'Vrmac-Tunnel', pts:[[42.430,18.744],[42.415,18.744],[42.401,18.765]], status:'existing', horizon:'short', priority:3, uses:['tourism','residential'], text:'Bestandsentlastung im Raum Kotor/Tivat.'}
 ];
 
 const railSegments = [
   {name:'Bahn Bar–Sutomore', pts:['bar','sutomore'], status:'existing', horizon:'short', priority:4, uses:['logistics','tourism'], text:'Bestandsachse der Hafenbahn.'},
-  {name:'Bahn Sutomore–Virpazar–Golubovci', pts:['sutomore','virpazar','zeta'], status:'modern', horizon:'short', priority:5, uses:['logistics','tourism','relocation'], text:'Modernisierungshebel für die Verbindung Küste–Binnenraum.'},
-  {name:'Bahn Golubovci–Podgorica', pts:['zeta','podgorica'], status:'existing', horizon:'short', priority:4, uses:['logistics','relocation'], text:'Kernstück des Hauptstadtzugangs.'},
-  {name:'Bahn Podgorica–Bijelo Polje–Nordgrenze', pts:['podgorica','bijeloPolje',[43.104,19.851]], status:'existing', horizon:'medium', priority:4, uses:['logistics','residential'], text:'Nördliche Hauptachse des Landes.'},
-  {name:'Bahn Podgorica–Nikšić', pts:['podgorica','niksic'], status:'existing', horizon:'short', priority:3, uses:['logistics','residential'], text:'Bestehende Binnenlinie mit Nutzen für Flächen und Pendlerströme.'},
+  {name:'Bahn Sutomore–Virpazar–Golubovci', pts:['sutomore','virpazar','zeta'], status:'modern', horizon:'short', priority:5, uses:['logistics','tourism','relocation'], text:'Modernization leverage for the coast-inland connection.'},
+  {name:'Bahn Golubovci–Podgorica', pts:['zeta','podgorica'], status:'existing', horizon:'short', priority:4, uses:['logistics','relocation'], text:'Core piece of capital access.'},
+  {name:'Bahn Podgorica–Bijelo Polje–Nordgrenze', pts:['podgorica','bijeloPolje',[43.104,19.851]], status:'existing', horizon:'medium', priority:4, uses:['logistics','residential'], text:'Northern main axis of the country.'},
+  {name:'Railway Podgorica–Nikšić', pts:['podgorica','niksic'], status:'existing', horizon:'short', priority:3, uses:['logistics','residential'], text:'Existing inland line beneficial for land and commuter flows.'},
   {name:'Bahn Podgorica–Tuzi / Albanien', pts:['podgorica',[42.406,19.323],[42.365,19.331]], status:'modern', horizon:'medium', priority:3, uses:['logistics'], text:'Grenznahe Linie mit Modernisierungsperspektive.'}
 ];
 
 const zones = [
-  {name:'Nordost-Acceleration Zone', center:[42.79,19.79], radius:26000, color:'rgba(239,131,84,0.18)', border:'#ef8354', text:'Andrijevica, Berane und angrenzende Räume. Fokus auf A1, Gesundheit und Nordanbindung. Aggressivster Frühphasenhebel.'},
+  {name:'Nordost-Acceleration Zone', center:[42.79,19.79], radius:26000, color:'rgba(239,131,84,0.18)', border:'#ef8354', text:'Andrijevica, Berane and adjacent areas. Focus on A1, healthcare and northern connection. Most aggressive early-phase leverage.'},
   {name:'Hauptstadt-Residential Belt', center:[42.48,19.20], radius:24000, color:'rgba(94,197,118,0.18)', border:'#5ec576', text:'Podgorica, Zeta, Danilovgrad und der funktionale Flughafenraum. Fokus auf Relocation, Wohnen und Business.'},
-  {name:'Südlogistik- und Green-Port Zone', center:[42.07,19.14], radius:28000, color:'rgba(244,211,94,0.18)', border:'#f4d35e', text:'Bar, Zaljevo, Sutomore bis Ulcinj. Fokus auf Hafen, Bahn, Green Port und Adriatisch-Ionische Achse.'},
-  {name:'Premium Coast & Boka Zone', center:[42.43,18.60], radius:23000, color:'rgba(142,202,230,0.18)', border:'#8ecae6', text:'Herceg Novi, Tivat, Kotor. Fokus auf hochwertige Residential- und Tourismuscases mit stärkerer Küstenmobilität.'},
+  {name:'South Logistics & Green Port Zone', center:[42.07,19.14], radius:28000, color:'rgba(244,211,94,0.18)', border:'#f4d35e', text:'Bar, Zaljevo, Sutomore bis Ulcinj. Fokus auf Hafen, Bahn, Green Port und Adriatisch-Ionische Achse.'},
+  {name:'Premium Coast & Boka Zone', center:[42.43,18.60], radius:23000, color:'rgba(142,202,230,0.18)', border:'#8ecae6', text:'Herceg Novi, Tivat, Kotor. Focus on high-quality residential and tourism cases with stronger coastal mobility.'},
   {name:'Durmitor Alpine Tourism Zone', center:[43.10,19.10], radius:22000, color:'rgba(200,169,106,0.18)', border:'#c8a96a', text:'Žabljak und Šavnik. Fokus auf Bergtourismus, Erreichbarkeit und selektive alpine Entwicklung.'}
 ];
 
@@ -247,14 +247,14 @@ const layers = {roads:L.layerGroup(), rails:L.layerGroup(), air:L.layerGroup(), 
 const placeMarkers=[]; const segmentRefs=[]; const zoneRefs=[];
 
 function coordsOf(item){ if(Array.isArray(item)) return item; const p=places[item]; return [p.lat,p.lng]; }
-function popupPlace(p){ return `<div class="popup-title">${p.name}</div><div class="popup-meta">${p.meta} · Score ${p.score}/100 · Priorität ${p.priority}/5 · ${usesLabel(p.uses)}</div><div class="popup-text">${p.case}</div>`; }
-function popupSegment(s,kind){ return `<div class="popup-title">${s.name}</div><div class="popup-meta">${kind==='road'?'Straßensegment':'Bahnsegment'} · ${statusLabel(s.status)} · ${horizonLabel(s.horizon)} · Priorität ${s.priority}/5 · ${usesLabel(s.uses)}</div><div class="popup-text">${s.text}</div>`; }
+function popupPlace(p){ return `<div class="popup-title">${p.name}</div><div class="popup-meta">${p.meta} · Score ${p.score}/100 · Priority ${p.priority}/5 · ${usesLabel(p.uses)}</div><div class="popup-text">${p.case}</div>`; }
+function popupSegment(s,kind){ return `<div class="popup-title">${s.name}</div><div class="popup-meta">${kind==='road'?'Road Segment':'Railway Segment'} · ${statusLabel(s.status)} · ${horizonLabel(s.horizon)} · Priority ${s.priority}/5 · ${usesLabel(s.uses)}</div><div class="popup-text">${s.text}</div>`; }
 function updateInfo(title,meta,text){ document.getElementById('infoBox').innerHTML=`<div class="info-title">${title}</div><div class="meta">${meta}</div><div class="info-text">${text}</div>`; }
 function makePlace(key,target){
   const p=places[key];
   const m=L.circleMarker([p.lat,p.lng],{radius:p.score>=88?10:p.score>=80?9:7,color:'#0b1629',weight:2,fillColor:potColor(p.score),fillOpacity:.96});
   m.bindPopup(popupPlace(p));
-  m.on('click',()=>updateInfo(p.name,`${p.meta} · Score ${p.score}/100 · Priorität ${p.priority}/5 · ${usesLabel(p.uses)}`,p.case));
+  m.on('click',()=>updateInfo(p.name,`${p.meta} · Score ${p.score}/100 · Priority ${p.priority}/5 · ${usesLabel(p.uses)}`,p.case));
   m.placeData=p; m.addTo(target); placeMarkers.push(m); return m;
 }
 function makeSegment(s,kind,target){
@@ -263,13 +263,13 @@ function makeSegment(s,kind,target){
   const line=L.polyline(s.pts.map(coordsOf),opts).addTo(target);
   line.bindPopup(popupSegment(s,kind));
   line.segmentData=s; line.segmentKind=kind;
-  line.on('click',()=>updateInfo(s.name,`${kind==='road'?'Straßensegment':'Bahnsegment'} · ${statusLabel(s.status)} · ${horizonLabel(s.horizon)} · Priorität ${s.priority}/5 · ${usesLabel(s.uses)}`,s.text));
+  line.on('click',()=>updateInfo(s.name,`${kind==='road'?'Road Segment':'Railway Segment'} · ${statusLabel(s.status)} · ${horizonLabel(s.horizon)} · Priority ${s.priority}/5 · ${usesLabel(s.uses)}`,s.text));
   segmentRefs.push(line); return line;
 }
 function makeZone(z,target){
   const c=L.circle(z.center,{radius:z.radius,color:z.border,weight:2,fillColor:z.color,fillOpacity:.55});
-  c.bindPopup(`<div class="popup-title">${z.name}</div><div class="popup-meta">EuroAdria-Opportunitätszone</div><div class="popup-text">${z.text}</div>`);
-  c.on('click',()=>updateInfo(z.name,'EuroAdria-Opportunitätszone',z.text));
+  c.bindPopup(`<div class="popup-title">${z.name}</div><div class="popup-meta">EuroAdria Opportunity Zone</div><div class="popup-text">${z.text}</div>`);
+  c.on('click',()=>updateInfo(z.name,'EuroAdria Opportunity Zone',z.text));
   c.zoneData=z; c.addTo(target); zoneRefs.push(c); return c;
 }
 
@@ -367,16 +367,16 @@ document.querySelectorAll('[data-layer]').forEach(el=>el.addEventListener('chang
 }));
 document.querySelectorAll('[data-use],[data-horizon]').forEach(el=>el.addEventListener('change',applyFilters));
 applyFilters();
-updateInfo('V5 bereit','Top-Logik für Webinar und Exposé','Neu bewertet wurden insbesondere Šavnik, Žabljak und Herceg Novi. Die Karte kombiniert Score, Zeithorizont, Opportunitätszonen und segmentierte Infrastruktur.' );
+updateInfo('V5 Ready','Top logic for webinar and exposé','Šavnik, Žabljak and Herceg Novi were reassessed. The map combines score, time horizon, opportunity zones and segmented infrastructure.' );
 
 // === CATEGORY TABS (Entdecken) ===
 const catData = {
   airports: [
-    {name:'Flughafen Podgorica',sub:'TGD, International',lat:42.3594,lng:19.2519},
-    {name:'Flughafen Tivat',sub:'TIV, International',lat:42.4047,lng:18.7233},
-    {name:'Flughafen Berane',sub:'Reaktivierung geplant',lat:42.839,lng:19.861},
+    {name:'Podgorica Airport',sub:'TGD, International',lat:42.3594,lng:19.2519},
+    {name:'Tivat Airport',sub:'TIV, International',lat:42.4047,lng:18.7233},
+    {name:'Berane Airport',sub:'Reaktivierung geplant',lat:42.839,lng:19.861},
     {name:'Kapino Polje Nikšić',sub:'Allgemeine Luftfahrt',lat:42.786,lng:18.939},
-    {name:'Flugfeld Žabljak',sub:'Alpine Perspektive',lat:43.149,lng:19.098}
+    {name:'Žabljak Airfield',sub:'Alpine Perspektive',lat:43.149,lng:19.098}
   ],
   municipalities: [
     {name:'Podgorica',sub:'Hauptstadt, 200.000 Ew.',lat:42.441,lng:19.263},
@@ -430,7 +430,7 @@ const catData = {
     {name:'Sinjajevina',sub:'2.277 m',lat:42.920,lng:19.250}
   ],
   lakes: [
-    {name:'Skadarsko jezero',sub:'Groesster See Südeuropas',lat:42.210,lng:19.130},
+    {name:'Skadarsko jezero',sub:'Largest Lake in Southern Europe',lat:42.210,lng:19.130},
     {name:'Pivsko jezero',sub:'Piva-Stausee, 188 m tief',lat:43.060,lng:18.850},
     {name:'Crno jezero',sub:'Schwarzer See, Durmitor',lat:43.148,lng:19.090},
     {name:'Biogradsko jezero',sub:'Gletschersee, 1.094 m',lat:42.894,lng:19.600},
