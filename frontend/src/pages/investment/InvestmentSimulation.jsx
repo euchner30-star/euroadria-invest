@@ -246,7 +246,7 @@ export default function InvestmentSimulation() {
 
           {/* Header */}
           <div className="text-center mb-10">
-            <p className="text-ea-gold text-sm font-bold tracking-widest uppercase mb-3">Marktanalysen & Beratung</p>
+            <p className="text-ea-gold text-sm font-bold tracking-widest uppercase mb-3">Market Analysis & Advisory</p>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3">
               Investment-<span className="text-ea-gold">Simulation</span>
             </h1>
@@ -267,7 +267,7 @@ export default function InvestmentSimulation() {
                 {/* City Selector */}
                 <div className="mb-5 pb-5 border-b border-white/[0.06]">
                   <label className="flex items-center gap-1.5 text-xs font-medium text-white/60 mb-2">
-                    <MapPin className="w-3.5 h-3.5 text-ea-gold" /> Standort wählen
+                    <MapPin className="w-3.5 h-3.5 text-ea-gold" /> Select Location
                   </label>
                   <select
                     value={selectedCity}
@@ -276,7 +276,7 @@ export default function InvestmentSimulation() {
                                focus:outline-none focus:border-ea-gold/50 appearance-none cursor-pointer"
                     data-testid="city-selector"
                   >
-                    <option value="" className="bg-ea-dark">Manuelle Eingabe</option>
+                    <option value="" className="bg-ea-dark">Manual Input</option>
                     {locations.map(loc => (
                       <option key={loc.city} value={loc.city} className="bg-ea-dark">
                         {loc.city} ({loc.country}) — Score {Math.round(loc.investment_score)}
