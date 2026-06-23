@@ -42,7 +42,7 @@ const LeistungenPage = () => {
   return (
     <div className="min-h-screen pt-28 bg-white">
       <SEO
-        title="Our Services — Company Formation, Real Estate, Legal & Investments"
+        title="Our Services - Company Formation, Real Estate, Legal & Investments"
         description="EuroAdria Corporate Solutions supports you with company formation, residency, real estate & investments in Montenegro and Serbia."
         url="/leistungen"
       />

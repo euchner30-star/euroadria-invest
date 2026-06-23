@@ -196,7 +196,7 @@ async def _run_migration():
     # 1. Homepage settings
     await db.site_settings.update_one({"key": "homepage"}, {"$set": {
         "hero_title": "Company Formation, Residency & Investments in Montenegro and Serbia",
-        "hero_subtitle": "EuroAdria is your bridge to successful investments, legally secure relocation, and international business structuring — in the Adriatic region and Asia. We are your Trusted Advisor for all entrepreneurial and private ventures abroad.",
+        "hero_subtitle": "EuroAdria is your bridge to successful investments, legally secure relocation, and international business structuring - in the Adriatic region and Asia. We are your Trusted Advisor for all entrepreneurial and private ventures abroad.",
         "hero_cta_text": "Request Consultation",
         "testimonial_quote": "Thanks to EuroAdria, I was able to set up my company in Montenegro quickly, securely, and completely stress-free. I felt extremely well taken care of and can warmly recommend EuroAdria to any entrepreneur and investor.",
         "testimonial_author": "Maximilian R., Entrepreneur from Germany",
@@ -250,7 +250,7 @@ async def _run_migration():
     leistungen_update = {
         "hero.tagline": "Precise. Efficient. Strategic.",
         "hero.title": "Our Services for Your Future",
-        "hero.description": "We develop concepts for company formation, asset structuring, real estate, residency and financial solutions — tailored to your situation.",
+        "hero.description": "We develop concepts for company formation, asset structuring, real estate, residency and financial solutions - tailored to your situation.",
         "cta.title": "Contact us for an initial consultation",
         "cta.description": "Planning a purchase or already in a risk zone? Get in touch with our law-firm-backed task force now.",
         "cta.button_text": "Request a free initial consultation",
@@ -266,12 +266,12 @@ async def _run_migration():
         "guarantee.owner.highlight": "We resolve open claims, complete missing registrations and transform a risk asset into a bankable, exit-ready asset.",
         "compliance_risks.title": "Exit Security & Compliance",
         "compliance_risks.description": "Yield properties require more than just a nice building. They require clear compliance and a tax-defensible payment structure.",
-        "compliance_risks.conclusion": "No political blind flying — guaranteed resaleability of your property.",
+        "compliance_risks.conclusion": "No political blind flying - guaranteed resaleability of your property.",
         "compliance_risks.items.0.problem": "Illegal Short-Term Rental (Airbnb)",
-        "compliance_risks.items.0.risk": "Many properties are not approved for tourist use — this jeopardizes your entire return.",
+        "compliance_risks.items.0.risk": "Many properties are not approved for tourist use - this jeopardizes your entire return.",
         "compliance_risks.items.0.solution": "Review & application of tourist use permit. Registration with the tax authority.",
         "compliance_risks.items.1.problem": "Grey Zone Payments",
-        "compliance_risks.items.1.risk": "Low purchase price in the deed, rest in cash — destroys the exit strategy and creates a money laundering issue.",
+        "compliance_risks.items.1.risk": "Low purchase price in the deed, rest in cash - destroys the exit strategy and creates a money laundering issue.",
         "compliance_risks.items.1.solution": "Transparent purchase price structure. Complete documentation for Western banks and tax authorities.",
         "compliance_risks.items.2.problem": "Political & Regulatory Risks",
         "compliance_risks.items.2.risk": "Sudden construction freeze, expropriation or change of use by the municipality.",
@@ -296,7 +296,7 @@ async def _run_migration():
         "legal_risks.description": "Before any investment, identify and resolve the key legal risks of properties in Montenegro and Serbia.",
         "legal_risks.conclusion": "A secure legal foundation is the prerequisite for any profitable exit.",
         "legal_risks.items.0.problem": "Missing Building Permit & Legalization",
-        "legal_risks.items.0.risk": "Many properties lack proper building permits — this blocks resale and mortgage financing.",
+        "legal_risks.items.0.risk": "Many properties lack proper building permits - this blocks resale and mortgage financing.",
         "legal_risks.items.0.solution": "Complete legalization procedure with building authorities. Retroactive permits where possible.",
         "legal_risks.items.1.problem": "Unclear Cadastral Entries",
         "legal_risks.items.1.risk": "Discrepancies between cadastre and actual property boundaries create ownership disputes.",
@@ -380,7 +380,7 @@ async def update_tracking_settings(data: dict, admin: str = Depends(verify_admin
 
 HOMEPAGE_DEFAULTS = {
     "hero_title": "Company Formation, Residency & Investments in Montenegro and Serbia",
-    "hero_subtitle": "EuroAdria is your bridge to successful investments, legally secure relocation, and international business structuring — in the Adriatic region and Asia. We are your Trusted Advisor for all entrepreneurial and private ventures abroad.",
+    "hero_subtitle": "EuroAdria is your bridge to successful investments, legally secure relocation, and international business structuring - in the Adriatic region and Asia. We are your Trusted Advisor for all entrepreneurial and private ventures abroad.",
     "hero_cta_text": "Request Consultation",
     "testimonial_image": "",
     "testimonial_image_position": 50,
