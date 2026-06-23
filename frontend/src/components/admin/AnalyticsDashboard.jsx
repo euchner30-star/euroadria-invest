@@ -89,20 +89,27 @@ const AnalyticsDashboard = ({ credentials }) => {
     setResetting(false);
   };
 
-  const exportLeadsCSV = () => {
-    if (!data?.recent_leads?.length) return;
-    const headers = ['Name', 'E-Mail', 'Telefon', 'Quelle', 'Exposé', 'Datum'];
-    const rows = data.recent_leads.map(l => [
-      l.name, l.email, l.phone || '', l.source, l.expose_name || '', l.submitted_at || ''
-    ]);
-    const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `euroadria-leads-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const exportLeadsCSV = async () => {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/leads`, {
+        headers: { 'Authorization': 'Basic ' + btoa('admin:euroadria2025') }
+      });
+      if (!res.ok) return;
+      const allLeads = await res.json();
+      if (!allLeads?.length) return;
+      const headers = ['Name', 'Email', 'Phone', 'Source', 'Expose', 'Date'];
+      const rows = allLeads.map(l => [
+        l.name, l.email, l.phone || '', l.source || '', l.expose_name || '', l.submitted_at || ''
+      ]);
+      const csv = '\uFEFF' + [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `euroadria-leads-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) { console.error('CSV export failed:', err); }
   };
 
   if (loading) {
@@ -116,7 +123,7 @@ const AnalyticsDashboard = ({ credentials }) => {
   if (!data) {
     return (
       <div className="text-center py-20 text-ea-dark/50">
-        Keine Daten verfügbar. Die Analytics werden ab sofort gesammelt.
+        No data available. Analytics will be collected from now on.
       </div>
     );
   }
@@ -136,7 +143,7 @@ const AnalyticsDashboard = ({ credentials }) => {
               <h3 className="text-lg font-bold text-ea-dark">Analytics zurücksetzen?</h3>
             </div>
             <p className="text-sm text-ea-dark/60 mb-6">
-              Alle Seitenaufrufe, Kontaktanfragen und Tracking-Daten werden unwiderruflich gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.
+              All page views, contact requests and tracking data will be permanently deleted. This action cannot be undone.
             </p>
             <div className="flex gap-3 justify-end">
               <button
@@ -174,7 +181,7 @@ const AnalyticsDashboard = ({ credentials }) => {
               }`}
               data-testid={`period-${d || 'all'}`}
             >
-              {d === 0 ? 'Gesamt' : `${d} Tage`}
+              {d === 0 ? 'All Time' : `${d} Days`}
             </button>
           ))}
           <button
@@ -192,7 +199,7 @@ const AnalyticsDashboard = ({ credentials }) => {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           icon={Eye}
-          label="Seitenaufrufe"
+          label="Page Views"
           value={data.total_views.toLocaleString('de-DE')}
           color="bg-blue-50 text-blue-600"
           testId="kpi-views"
@@ -225,7 +232,7 @@ const AnalyticsDashboard = ({ credentials }) => {
       {/* Traffic Chart */}
       {data.daily_views.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-          <h3 className="text-base font-semibold text-ea-dark mb-4">Seitenaufrufe (letzte {period} Tage)</h3>
+          <h3 className="text-base font-semibold text-ea-dark mb-4">Page Views (last {period} days)</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data.daily_views}>
@@ -345,7 +352,7 @@ const AnalyticsDashboard = ({ credentials }) => {
       {/* Leads by Source */}
       {data.lead_sources.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-          <h3 className="text-base font-semibold text-ea-dark mb-4">Leads nach Expose</h3>
+          <h3 className="text-base font-semibold text-ea-dark mb-4">Leads by Expose</h3>
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.lead_sources.map(l => ({ ...l, label: l.source.replace('_expose', '').replace('_', ' ') }))}>
@@ -366,9 +373,9 @@ const AnalyticsDashboard = ({ credentials }) => {
           <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <Share2 className="w-4 h-4 text-ea-gold" />
-              <h3 className="text-base font-semibold text-ea-dark">Traffic nach UTM-Quelle</h3>
+              <h3 className="text-base font-semibold text-ea-dark">Traffic by UTM Source</h3>
             </div>
-            <p className="text-xs text-ea-dark/40 mb-4">Besucher mit utm_source Parameter (z.B. TikTok, Instagram)</p>
+            <p className="text-xs text-ea-dark/40 mb-4">Visitors with utm_source parameter (e.g. TikTok, Instagram)</p>
             {data.utm_sources?.length > 0 ? (
               <div className="space-y-3">
                 {data.utm_sources.map((u, i) => {
@@ -429,7 +436,7 @@ const AnalyticsDashboard = ({ credentials }) => {
       {/* Recent Leads Table */}
       <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-          <h3 className="text-base font-semibold text-ea-dark">Letzte Leads</h3>
+          <h3 className="text-base font-semibold text-ea-dark">Recent Leads</h3>
           {data.recent_leads.length > 0 && (
             <button
               onClick={exportLeadsCSV}
