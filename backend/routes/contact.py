@@ -143,6 +143,12 @@ async def capture_lead(lead: LeadForm):
             "utm_source": None, "utm_medium": None, "utm_campaign": None,
             "entry_page": None,
             "tool_used": lead_dict.get("expose_name", lead_dict.get("source", "expose")),
+            "country": lead_dict.get("country"),
+            "state": lead_dict.get("state"),
+            "city": lead_dict.get("city"),
+            "interest": lead_dict.get("interest"),
+            "timeline": lead_dict.get("timeline"),
+            "contact_method": lead_dict.get("contact_method"),
             "status": "new",
             "created_at": lead_dict["submitted_at"]
         })
@@ -162,25 +168,35 @@ async def capture_lead(lead: LeadForm):
     if RESEND_API_KEY:
         try:
             resend.api_key = RESEND_API_KEY
+            # Build extra fields section for qualified leads
+            extra_fields = ""
+            if lead_dict.get('country'):
+                extra_fields += f"""
+                <p style="margin: 0 0 8px; color: #333;"><strong>Location:</strong> {lead_dict.get('city', '')}, {lead_dict.get('state', '')}, {lead_dict.get('country', '')}</p>
+                <p style="margin: 0 0 8px; color: #333;"><strong>Interest:</strong> {lead_dict.get('interest', '-')}</p>
+                <p style="margin: 0 0 8px; color: #333;"><strong>Timeline:</strong> {lead_dict.get('timeline', '-')}</p>
+                <p style="margin: 0 0 8px; color: #333;"><strong>Preferred Contact:</strong> {lead_dict.get('contact_method', '-')}</p>
+                """
             content = f"""
-            <h2 style="color: #04151F; margin: 0 0 20px 0;">Neuer Exposé-Download Lead</h2>
+            <h2 style="color: #04151F; margin: 0 0 20px 0;">New Lead: Expose Download</h2>
             <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 3px solid #C8A96A; margin-bottom: 20px;">
                 <p style="margin: 0 0 8px; color: #333;"><strong>Name:</strong> {lead_dict['name']}</p>
-                <p style="margin: 0 0 8px; color: #333;"><strong>E-Mail:</strong> {lead_dict['email']}</p>
-                <p style="margin: 0 0 8px; color: #333;"><strong>Telefon:</strong> {lead_dict.get('phone', 'Nicht angegeben')}</p>
-                <p style="margin: 0; color: #333;"><strong>Exposé:</strong> {lead_dict.get('expose_name', lead_dict['source'])}</p>
+                <p style="margin: 0 0 8px; color: #333;"><strong>Email:</strong> {lead_dict['email']}</p>
+                <p style="margin: 0 0 8px; color: #333;"><strong>Phone:</strong> {lead_dict.get('phone', 'Not provided')}</p>
+                <p style="margin: 0 0 8px; color: #333;"><strong>Expose:</strong> {lead_dict.get('expose_name', lead_dict['source'])}</p>
+                {extra_fields}
             </div>
-            <p style="color: #888; font-size: 12px;">Dieser Lead wurde über den Exposé-Download auf euroadria.me generiert.</p>
+            <p style="color: #888; font-size: 12px;">This lead was generated via expose download on euroadria.me.</p>
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
                 <tr><td align="center" style="padding: 8px 0;">
-                    <a href="https://euroadria.me/admin" style="display: inline-block; background-color: #C8A96A; color: #04151F; font-size: 14px; font-weight: bold; text-decoration: none; padding: 12px 28px; border-radius: 6px;">Im CRM anzeigen</a>
+                    <a href="https://euroadria.me/admin" style="display: inline-block; background-color: #C8A96A; color: #04151F; font-size: 14px; font-weight: bold; text-decoration: none; padding: 12px 28px; border-radius: 6px;">View in CRM</a>
                 </td></tr>
             </table>
             """
             resend.Emails.send({
                 "from": "EuroAdria Leads <noreply@euroadria.me>",
                 "to": [NOTIFICATION_EMAIL],
-                "subject": f"Neuer Lead: {lead_dict.get('expose_name', lead_dict['source'])} - {lead_dict['name']}",
+                "subject": f"New Lead: {lead_dict.get('expose_name', lead_dict['source'])} - {lead_dict['name']}",
                 "html": wrap_email(content),
                 "reply_to": lead_dict['email']
             })

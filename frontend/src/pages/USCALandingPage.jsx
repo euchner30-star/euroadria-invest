@@ -25,15 +25,27 @@ function FAQItem({ q, a }) {
 }
 
 export default function USCALandingPage() {
-  const [form, setForm] = useState({ name: '', email: '' });
+  const [form, setForm] = useState({
+    firstName: '', lastName: '', email: '', phone: '',
+    country: '', state: '', city: '',
+    interest: '', timeline: '', contactMethod: '', consent: false
+  });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [showPrivacy, setShowPrivacy] = useState(false);
 
+  const trackEvent = (event) => {
+    if (typeof window.fbq === 'function') window.fbq('trackCustom', event);
+    if (typeof window.gtag === 'function') window.gtag('event', event);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.email) return;
+    if (!form.firstName || !form.lastName || !form.email || !form.phone || !form.country || !form.state || !form.city || !form.interest || !form.timeline || !form.contactMethod || !form.consent) {
+      setError('Please fill in all required fields.');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
@@ -41,16 +53,28 @@ export default function USCALandingPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: form.name,
+          name: `${form.firstName} ${form.lastName}`,
           email: form.email,
-          phone: '',
+          phone: form.phone,
           source: 'usca_strategy_brief',
-          expose_name: 'Montenegro Strategy Brief 2026 (USCA)'
+          expose_name: 'Montenegro Strategy Brief 2026 (USCA)',
+          country: form.country,
+          state: form.state,
+          city: form.city,
+          interest: form.interest,
+          timeline: form.timeline,
+          contact_method: form.contactMethod,
+          consent: form.consent
         })
       });
-      if (res.ok) setSuccess(true);
-      if (res.ok && typeof window.fbq === 'function') window.fbq('track', 'Lead');
-      else setError('Something went wrong. Please try again.');
+      if (res.ok) {
+        setSuccess(true);
+        trackEvent('form_submitted');
+        trackEvent('strategy_brief_requested');
+        if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
     } catch {
       setError('Connection error. Please try again.');
     } finally {
@@ -271,16 +295,65 @@ export default function USCALandingPage() {
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto" data-testid="usca-brief-form">
-              <input type="text" placeholder="Your Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white placeholder:text-white/25 focus:outline-none focus:border-[#C8A96A]/50 text-sm" data-testid="usca-brief-name" />
-              <input type="email" placeholder="Your Email Address" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white placeholder:text-white/25 focus:outline-none focus:border-[#C8A96A]/50 text-sm" data-testid="usca-brief-email" />
+            <form onSubmit={handleSubmit} className="space-y-4 max-w-lg mx-auto" data-testid="usca-brief-form">
+              {/* Name */}
+              <div className="grid grid-cols-2 gap-3">
+                <input type="text" placeholder="First Name *" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} required className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white placeholder:text-white/25 focus:outline-none focus:border-[#C8A96A]/50 text-sm" data-testid="usca-brief-firstname" />
+                <input type="text" placeholder="Last Name *" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} required className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white placeholder:text-white/25 focus:outline-none focus:border-[#C8A96A]/50 text-sm" data-testid="usca-brief-lastname" />
+              </div>
+              {/* Email */}
+              <input type="email" placeholder="Email Address *" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white placeholder:text-white/25 focus:outline-none focus:border-[#C8A96A]/50 text-sm" data-testid="usca-brief-email" />
+              {/* Phone */}
+              <input type="tel" placeholder="Phone incl. country code (e.g. +1 555 123 4567) *" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required pattern="\+[0-9\s\-]{7,20}" title="Please enter a valid international phone number starting with +" className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white placeholder:text-white/25 focus:outline-none focus:border-[#C8A96A]/50 text-sm" data-testid="usca-brief-phone" />
+              {/* Location */}
+              <input type="text" placeholder="Country of Residence *" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} required className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white placeholder:text-white/25 focus:outline-none focus:border-[#C8A96A]/50 text-sm" data-testid="usca-brief-country" />
+              <div className="grid grid-cols-2 gap-3">
+                <input type="text" placeholder="State / Province / Region *" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} required className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white placeholder:text-white/25 focus:outline-none focus:border-[#C8A96A]/50 text-sm" data-testid="usca-brief-state" />
+                <input type="text" placeholder="City or nearest major city *" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} required className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white placeholder:text-white/25 focus:outline-none focus:border-[#C8A96A]/50 text-sm" data-testid="usca-brief-city" />
+              </div>
+              {/* Interest */}
+              <select value={form.interest} onChange={(e) => setForm({ ...form, interest: e.target.value })} required className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#C8A96A]/50 text-sm appearance-none" style={{ colorScheme: 'dark' }} data-testid="usca-brief-interest">
+                <option value="" disabled className="bg-[#0B1120]">Primary Interest *</option>
+                <option value="Relocation to Montenegro" className="bg-[#0B1120]">Relocation to Montenegro</option>
+                <option value="Real Estate in Montenegro" className="bg-[#0B1120]">Real Estate in Montenegro</option>
+                <option value="Company Setup" className="bg-[#0B1120]">Company Setup</option>
+                <option value="Banking and Compliance" className="bg-[#0B1120]">Banking and Compliance</option>
+                <option value="Tax and Residency Structure" className="bg-[#0B1120]">Tax and Residency Structure</option>
+                <option value="Investment Opportunities" className="bg-[#0B1120]">Investment Opportunities</option>
+                <option value="European Second Base" className="bg-[#0B1120]">European Second Base</option>
+                <option value="Other" className="bg-[#0B1120]">Other</option>
+              </select>
+              {/* Timeline */}
+              <select value={form.timeline} onChange={(e) => setForm({ ...form, timeline: e.target.value })} required className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#C8A96A]/50 text-sm appearance-none" style={{ colorScheme: 'dark' }} data-testid="usca-brief-timeline">
+                <option value="" disabled className="bg-[#0B1120]">Timeline *</option>
+                <option value="Within 3 months" className="bg-[#0B1120]">Within 3 months</option>
+                <option value="Within 6 months" className="bg-[#0B1120]">Within 6 months</option>
+                <option value="Within 12 months" className="bg-[#0B1120]">Within 12 months</option>
+                <option value="General research only" className="bg-[#0B1120]">General research only</option>
+              </select>
+              {/* Contact Method */}
+              <select value={form.contactMethod} onChange={(e) => setForm({ ...form, contactMethod: e.target.value })} required className="w-full px-4 py-3.5 bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#C8A96A]/50 text-sm appearance-none" style={{ colorScheme: 'dark' }} data-testid="usca-brief-contact-method">
+                <option value="" disabled className="bg-[#0B1120]">Preferred Contact Method *</option>
+                <option value="WhatsApp" className="bg-[#0B1120]">WhatsApp</option>
+                <option value="Phone Call" className="bg-[#0B1120]">Phone Call</option>
+                <option value="SMS" className="bg-[#0B1120]">SMS</option>
+                <option value="Email" className="bg-[#0B1120]">Email</option>
+              </select>
+              {/* Consent */}
+              <label className="flex items-start gap-3 cursor-pointer py-2" data-testid="usca-brief-consent-label">
+                <input type="checkbox" checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })} required className="mt-1 w-4 h-4 accent-[#C8A96A] shrink-0" data-testid="usca-brief-consent" />
+                <span className="text-white/50 text-xs leading-relaxed">
+                  I agree that EuroAdria Corporate Solutions may contact me regarding my inquiry by email, phone, SMS or WhatsApp. I can withdraw this consent at any time.{' '}
+                  <a href="/datenschutz" target="_blank" className="text-[#C8A96A] underline hover:text-[#d4b87a]">Privacy Policy</a>
+                </span>
+              </label>
               {error && <p className="text-red-400 text-xs">{error}</p>}
               <button type="submit" disabled={loading} className="w-full px-6 py-4 bg-[#C8A96A] text-[#0B1120] font-bold tracking-wider uppercase text-sm hover:bg-[#d4b87a] transition-all disabled:opacity-50 flex items-center justify-center gap-2" data-testid="usca-brief-submit">
                 {loading ? 'Sending...' : 'Get the Strategy Brief'}
                 {!loading && <ArrowRight className="w-4 h-4" />}
               </button>
-              <p className="text-white/20 text-xs text-center flex items-center justify-center gap-1">
-                <Lock className="w-3 h-3" /> Your data is secure. No spam.
+              <p className="text-white/20 text-[10px] text-center flex items-center justify-center gap-1">
+                <Lock className="w-3 h-3" /> Your data is encrypted and never shared with third parties.
               </p>
             </form>
           )}
@@ -308,7 +381,7 @@ export default function USCALandingPage() {
       <section className="py-16 border-t border-white/10">
         <div className="max-w-xl mx-auto px-6 text-center">
           <p className="text-white/70 text-base mb-6">Ready to discuss your project?</p>
-          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-10 py-4 border-2 border-[#C8A96A] text-[#C8A96A] text-sm font-semibold tracking-wider uppercase hover:bg-[#C8A96A] hover:text-[#0B1120] transition-all" data-testid="usca-book-call">
+          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('calendly_clicked')} className="inline-flex items-center gap-2 px-10 py-4 border-2 border-[#C8A96A] text-[#C8A96A] text-sm font-semibold tracking-wider uppercase hover:bg-[#C8A96A] hover:text-[#0B1120] transition-all" data-testid="usca-book-call">
             Book a Free Zoom Call
           </a>
         </div>

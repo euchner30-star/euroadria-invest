@@ -320,6 +320,13 @@ class LeadForm(BaseModel):
     phone: Optional[str] = None
     source: str
     expose_name: Optional[str] = None
+    country: Optional[str] = None
+    state: Optional[str] = None
+    city: Optional[str] = None
+    interest: Optional[str] = None
+    timeline: Optional[str] = None
+    contact_method: Optional[str] = None
+    consent: Optional[bool] = None
 
 
 # ── Analytics ───────────────────────────────────────────────────────────

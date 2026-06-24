@@ -97,9 +97,10 @@ const AnalyticsDashboard = ({ credentials }) => {
       if (!res.ok) return;
       const allLeads = await res.json();
       if (!allLeads?.length) return;
-      const headers = ['Name', 'Email', 'Phone', 'Source', 'Expose', 'Date'];
+      const headers = ['Name', 'Email', 'Phone', 'Source', 'Expose', 'Country', 'State', 'City', 'Interest', 'Timeline', 'Contact Method', 'Date'];
       const rows = allLeads.map(l => [
         l.name, l.email, l.phone || '', l.source || '', l.expose_name || '',
+        l.country || '', l.state || '', l.city || '', l.interest || '', l.timeline || '', l.contact_method || '',
         l.submitted_at ? new Date(l.submitted_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : ''
       ]);
       const csv = '\uFEFF' + [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
