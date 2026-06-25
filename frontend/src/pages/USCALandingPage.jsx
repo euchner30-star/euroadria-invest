@@ -336,14 +336,13 @@ export default function USCALandingPage() {
                 <option value="" disabled className="bg-[#0B1120]">Preferred Contact Method *</option>
                 <option value="WhatsApp" className="bg-[#0B1120]">WhatsApp</option>
                 <option value="Phone Call" className="bg-[#0B1120]">Phone Call</option>
-                <option value="SMS" className="bg-[#0B1120]">SMS</option>
                 <option value="Email" className="bg-[#0B1120]">Email</option>
               </select>
               {/* Consent */}
               <label className="flex items-start gap-3 cursor-pointer py-2" data-testid="usca-brief-consent-label">
                 <input type="checkbox" checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })} required className="mt-1 w-4 h-4 accent-[#C8A96A] shrink-0" data-testid="usca-brief-consent" />
                 <span className="text-white/50 text-xs leading-relaxed">
-                  I agree that EuroAdria Corporate Solutions may contact me regarding my inquiry by email, phone, SMS or WhatsApp. I can withdraw this consent at any time.{' '}
+                  I agree that EuroAdria Corporate Solutions may contact me regarding my inquiry by email, phone or WhatsApp. I can withdraw this consent at any time.{' '}
                   <a href="/datenschutz" target="_blank" className="text-[#C8A96A] underline hover:text-[#d4b87a]">Privacy Policy</a>
                 </span>
               </label>
