@@ -123,26 +123,29 @@ async def upload_pdf_file_to_db(file: UploadFile = File(...), pdf_key: str = "pr
 
 @router.get("/pdf/{pdf_key}")
 async def serve_pdf(pdf_key: str):
-    """Stream a stored PDF. Used by Resend path attachments to avoid loading into app memory."""
+    """Stream a stored PDF chunk by chunk to minimize memory usage."""
     full_key = f"pdf_{pdf_key}"
-    pdf_doc = await db.site_settings.find_one({"key": full_key}, {"_id": 0})
+    pdf_doc = await db.site_settings.find_one({"key": full_key}, {"_id": 0, "base64": 0})
     if not pdf_doc:
         raise HTTPException(status_code=404, detail="PDF not found")
 
-    if pdf_doc.get("chunked"):
-        chunks = await db.pdf_chunks.find({"pdf_key": full_key}, {"_id": 0}).sort("chunk_index", 1).to_list(100)
-        full_b64 = "".join([c["data"] for c in chunks])
-    else:
-        full_b64 = pdf_doc.get("base64", "")
-
-    if not full_b64:
-        raise HTTPException(status_code=404, detail="PDF data empty")
-
-    pdf_bytes = base64.b64decode(full_b64)
-    del full_b64
     filename = pdf_doc.get("filename", "document.pdf")
-    return Response(content=pdf_bytes, media_type="application/pdf",
-                    headers={"Content-Disposition": f'inline; filename="{filename}"'})
+
+    async def stream_pdf():
+        if pdf_doc.get("chunked"):
+            chunks = await db.pdf_chunks.find({"pdf_key": full_key}, {"_id": 0}).sort("chunk_index", 1).to_list(100)
+            for chunk in chunks:
+                yield base64.b64decode(chunk["data"])
+        else:
+            b64 = (await db.site_settings.find_one({"key": full_key}, {"base64": 1})).get("base64", "")
+            if b64:
+                yield base64.b64decode(b64)
+
+    return StreamingResponse(
+        stream_pdf(),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'inline; filename="{filename}"'}
+    )
 
 
 @router.get("/admin/settings/pdf-status")
