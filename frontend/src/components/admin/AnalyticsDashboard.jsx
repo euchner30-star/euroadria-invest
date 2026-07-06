@@ -456,10 +456,11 @@ const AnalyticsDashboard = ({ credentials }) => {
               <thead>
                 <tr className="border-b border-gray-100">
                   <th className="text-left py-2.5 text-ea-dark/50 font-medium">Name</th>
-                  <th className="text-left py-2.5 text-ea-dark/50 font-medium">E-Mail</th>
-                  <th className="text-left py-2.5 text-ea-dark/50 font-medium hidden sm:table-cell">Telefon</th>
-                  <th className="text-left py-2.5 text-ea-dark/50 font-medium">Exposé</th>
-                  <th className="text-left py-2.5 text-ea-dark/50 font-medium hidden md:table-cell">Datum</th>
+                  <th className="text-left py-2.5 text-ea-dark/50 font-medium">Email</th>
+                  <th className="text-left py-2.5 text-ea-dark/50 font-medium hidden sm:table-cell">Phone</th>
+                  <th className="text-left py-2.5 text-ea-dark/50 font-medium">Expose</th>
+                  <th className="text-left py-2.5 text-ea-dark/50 font-medium">Email Status</th>
+                  <th className="text-left py-2.5 text-ea-dark/50 font-medium hidden md:table-cell">Date</th>
                   <th className="text-right py-2.5 text-ea-dark/50 font-medium w-10"></th>
                 </tr>
               </thead>
@@ -474,16 +475,25 @@ const AnalyticsDashboard = ({ credentials }) => {
                         {lead.expose_name || lead.source}
                       </span>
                     </td>
+                    <td className="py-2.5">
+                      {lead.email_opened
+                        ? <span className="text-green-600 text-xs font-medium flex items-center gap-1">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                            Opened{lead.email_open_count > 1 ? ` (${lead.email_open_count}x)` : ''}
+                          </span>
+                        : <span className="text-ea-dark/30 text-xs">Not opened</span>
+                      }
+                    </td>
                     <td className="py-2.5 text-ea-dark/50 text-xs hidden md:table-cell">
                       {lead.submitted_at ? new Date(lead.submitted_at).toLocaleDateString('de-DE') : '-'}
                     </td>
                     <td className="py-2.5 text-right">
                       <button
                         onClick={async () => {
-                          if (!window.confirm(`Lead "${lead.name}" wirklich löschen?`)) return;
+                          if (!window.confirm(`Delete lead "${lead.name}"?`)) return;
                           try {
                             const leadId = lead.lead_id;
-                            if (!leadId) { alert('Lead-ID nicht gefunden'); return; }
+                            if (!leadId) { alert('Lead ID not found'); return; }
                             await fetch(
                               `${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${leadId}`,
                               { method: 'DELETE', headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) } }
@@ -492,11 +502,11 @@ const AnalyticsDashboard = ({ credentials }) => {
                               ...prev,
                               recent_leads: prev.recent_leads.filter((_, idx) => idx !== i)
                             }));
-                          } catch (e) { alert('Fehler beim Löschen'); }
+                          } catch (e) { alert('Error deleting lead'); }
                         }}
                         className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-all"
                         data-testid={`delete-lead-${i}`}
-                        title="Lead löschen"
+                        title="Delete lead"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
