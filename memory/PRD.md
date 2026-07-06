@@ -39,6 +39,10 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - CSV Export: All leads, UTF-8 BOM, English headers
 - Analytics Dashboard labels translated to English
 - Long em-dashes removed from all visible text
+- Team CRM at /admin/team (Milena login, lead management, notes, Kanban pipeline)
+- Email open tracking via 1x1 pixel (visible in Admin + Team CRM)
+- USCA Lead Form expanded (country, state, city, timeline, interest, contact method)
+- **Lead Detail Modal in Admin Dashboard** (2026-07-06): Clickable lead rows open modal with full details, email status, team CRM notes, and admin note input. Backend: GET /api/admin/leads/{id} with notes, POST /api/admin/leads/{id}/notes. Tested 100% backend+frontend.
 
 ## Pending / In Progress
 - [BLOCKED] VSL Video for `/us` and `/usca` (waiting on user)
@@ -56,6 +60,11 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 ## Backlog (P2)
 - Template-Speichern im PDF Generator
 - Google Docs Import via URL
+
+## Refactoring Needed
+- AnalyticsDashboard.jsx (833 lines) - Extract LeadDetailModal into separate component
+- AdminPage.jsx (4550 lines) - Split per-tab for maintainability
+- Duplicate cookie consent banner in DOM
 
 ## Key Architecture Notes
 - All media stored in MongoDB GridFS (no local disk on Render)
@@ -78,3 +87,8 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - `GET /api/img/{filename}` - Streams optimized webp images from GridFS
 - `POST /api/leads` - Lead capture with PDF email attachment
 - `GET /api/admin/leads` - Get all leads (used by CSV export)
+- `GET /api/admin/leads/{lead_id}` - Get single lead with notes (Admin modal)
+- `POST /api/admin/leads/{lead_id}/notes` - Add admin note to lead
+- `DELETE /api/admin/leads/{lead_id}` - Delete a lead
+- `GET /api/team/leads` - Get leads with notes (Team CRM, JWT auth)
+- `POST /api/team/leads/{lead_id}/notes` - Add team member note
