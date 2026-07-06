@@ -115,7 +115,8 @@ async def capture_lead(lead: LeadForm):
     lead_dict["submitted_at"] = datetime.now(timezone.utc).isoformat()
     lead_dict["type"] = "expose_download"
 
-    await db.leads.insert_one(lead_dict)
+    result = await db.leads.insert_one(lead_dict)
+    lead_id_str = str(result.inserted_id)
 
     # Auto-create CRM lead + deal
     existing_crm = await db.crm_leads.find_one({"email": lead_dict.get("email", "")})
@@ -288,7 +289,7 @@ async def capture_lead(lead: LeadForm):
                 "from": "EuroAdria Corporate Solutions <noreply@euroadria.me>",
                 "to": [lead_dict['email']],
                 "subject": f"Your Strategy Brief — EuroAdria" if is_us_brief else (f"Ihr Whitepaper — EuroAdria" if is_whitepaper else (f"Ihr Praxisleitfaden — EuroAdria" if is_praxisleitfaden else f"Ihr Investment Exposé — {expose_name}")),
-                "html": wrap_email(content, lang="en") if is_us_brief else wrap_email(content),
+                "html": wrap_email(content, lang="en", lead_id=lead_id_str) if is_us_brief else wrap_email(content, lead_id=lead_id_str),
                 "reply_to": NOTIFICATION_EMAIL
             }
 
@@ -319,5 +320,7 @@ async def capture_lead(lead: LeadForm):
 @router.get("/admin/leads")
 async def get_leads(admin: str = Depends(verify_admin)):
     """Get all collected leads (Admin only)"""
-    leads = await db.leads.find({}, {"_id": 0}).sort("submitted_at", -1).to_list(500)
+    leads = await db.leads.find({}).sort("submitted_at", -1).to_list(500)
+    for l in leads:
+        l["_id"] = str(l["_id"])
     return leads

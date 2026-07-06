@@ -124,6 +124,13 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
           </div>
           <StatusBadge status={status} />
         </div>
+        {lead.email_opened && (
+          <div className="mt-3 flex items-center gap-2 text-green-400 text-sm">
+            <Mail className="w-4 h-4" />
+            <span>Email opened{lead.email_opened_at ? ` on ${new Date(lead.email_opened_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}</span>
+            {lead.email_open_count > 1 && <span className="text-green-400/60">({lead.email_open_count}x)</span>}
+          </div>
+        )}
 
         {/* Quick info */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
@@ -325,6 +332,7 @@ export default function TeamPage() {
                         { field: 'phone', label: 'Phone' },
                         { field: 'interest', label: 'Interest' },
                         { field: 'status', label: 'Status' },
+                        { field: 'email_opened', label: 'Email' },
                         { field: 'submitted_at', label: 'Date' },
                       ].map(col => (
                         <th key={col.field} className="text-left text-white/40 font-medium px-4 py-3 cursor-pointer hover:text-white/60 select-none" onClick={() => toggleSort(col.field)}>
@@ -338,7 +346,7 @@ export default function TeamPage() {
                   </thead>
                   <tbody>
                     {filteredLeads.length === 0 && (
-                      <tr><td colSpan={6} className="text-center text-white/30 py-12">No leads found</td></tr>
+                      <tr><td colSpan={7} className="text-center text-white/30 py-12">No leads found</td></tr>
                     )}
                     {filteredLeads.map((lead) => (
                       <tr key={lead._id} onClick={() => setSelectedLead(lead)} className="border-b border-white/5 hover:bg-white/5 cursor-pointer transition-all" data-testid={`lead-row-${lead._id}`}>
@@ -350,6 +358,12 @@ export default function TeamPage() {
                         <td className="px-4 py-3 text-white/60">{lead.phone || '-'}</td>
                         <td className="px-4 py-3 text-white/60">{lead.interest || lead.source || '-'}</td>
                         <td className="px-4 py-3"><StatusBadge status={lead.status || 'new'} /></td>
+                        <td className="px-4 py-3">
+                          {lead.email_opened
+                            ? <span className="text-green-400 text-xs font-medium flex items-center gap-1"><Mail className="w-3.5 h-3.5" /> Opened</span>
+                            : <span className="text-white/20 text-xs">Not opened</span>
+                          }
+                        </td>
                         <td className="px-4 py-3 text-white/40">{lead.submitted_at ? new Date(lead.submitted_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '-'}</td>
                       </tr>
                     ))}
