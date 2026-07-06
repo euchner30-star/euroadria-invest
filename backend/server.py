@@ -25,6 +25,7 @@ from routes.settings import router as settings_router
 from routes.uploads import router as uploads_router
 # from routes.translate import router as translate_router  # Removed: saves ~300MB RAM
 from routes.youtube import router as youtube_router
+from routes.team import router as team_router
 
 app = FastAPI()
 
@@ -86,6 +87,7 @@ api_router.include_router(settings_router)
 api_router.include_router(uploads_router)
 # api_router.include_router(translate_router)  # Removed: saves ~300MB RAM
 api_router.include_router(youtube_router)
+api_router.include_router(team_router)
 
 app.include_router(api_router)
 

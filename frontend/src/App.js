@@ -45,6 +45,7 @@ const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const WhitepaperPage = lazy(() => import("./pages/WhitepaperPage"));
 const USLandingPage = lazy(() => import("./pages/USLandingPage"));
 const USCALandingPage = lazy(() => import("./pages/USCALandingPage"));
+const TeamCRM = lazy(() => import("./pages/TeamCRM"));
 
 function PageTracker() {
   usePageTracker();
@@ -127,6 +128,7 @@ function App() {
           {/* Standalone pages (no Header/Footer) */}
           <Route path="/us" element={<USLandingPage />} />
           <Route path="/usca" element={<USCALandingPage />} />
+          <Route path="/team" element={<TeamCRM />} />
           {/* Main layout pages */}
           <Route path="/*" element={<AppLayout />} />
         </Routes>
