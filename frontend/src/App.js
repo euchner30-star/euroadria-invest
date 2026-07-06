@@ -128,7 +128,7 @@ function App() {
           {/* Standalone pages (no Header/Footer) */}
           <Route path="/us" element={<USLandingPage />} />
           <Route path="/usca" element={<USCALandingPage />} />
-          <Route path="/team" element={<TeamCRM />} />
+          <Route path="/admin/team" element={<TeamCRM />} />
           {/* Main layout pages */}
           <Route path="/*" element={<AppLayout />} />
         </Routes>
