@@ -55,6 +55,9 @@ const AnalyticsDashboard = ({ credentials }) => {
   const [loadingLead, setLoadingLead] = useState(false);
   const [newNote, setNewNote] = useState('');
   const [savingNote, setSavingNote] = useState(false);
+  const [allLeads, setAllLeads] = useState(null);
+  const [loadingAllLeads, setLoadingAllLeads] = useState(false);
+  const [leadSearch, setLeadSearch] = useState('');
 
   useEffect(() => {
     fetchAnalytics();
@@ -161,6 +164,32 @@ const AnalyticsDashboard = ({ credentials }) => {
       console.error('Note save failed:', err);
     }
     setSavingNote(false);
+  };
+
+  const loadAllLeads = async () => {
+    setLoadingAllLeads(true);
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/leads`, {
+        headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) }
+      });
+      if (res.ok) {
+        const leads = await res.json();
+        setAllLeads(leads);
+      }
+    } catch (err) { console.error('Load all leads failed:', err); }
+    setLoadingAllLeads(false);
+  };
+
+  const deleteLeadFromList = async (leadId, leadName) => {
+    if (!window.confirm(`Lead "${leadName}" wirklich löschen?`)) return;
+    try {
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${leadId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) }
+      });
+      setAllLeads(prev => prev.filter(l => l._id !== leadId));
+      setData(prev => prev ? { ...prev, recent_leads: prev.recent_leads.filter(l => l.lead_id !== leadId) } : prev);
+    } catch (e) { alert('Fehler beim Löschen'); }
   };
 
   if (loading) {
@@ -619,94 +648,136 @@ const AnalyticsDashboard = ({ credentials }) => {
         </div>
       )}
 
-      {/* Recent Leads Table */}
+      {/* Leads Table */}
       <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-          <h3 className="text-base font-semibold text-ea-dark">Recent Leads</h3>
-          {data.recent_leads.length > 0 && (
+          <h3 className="text-base font-semibold text-ea-dark">
+            {allLeads ? `Alle Leads (${allLeads.length})` : 'Recent Leads'}
+          </h3>
+          <div className="flex items-center gap-2">
+            {!allLeads ? (
+              <button
+                onClick={loadAllLeads}
+                disabled={loadingAllLeads}
+                className="flex items-center gap-2 px-4 py-2 bg-ea-gold/10 text-ea-dark text-sm font-medium rounded-lg hover:bg-ea-gold/20 transition-all disabled:opacity-50"
+                data-testid="load-all-leads"
+              >
+                <Users className="w-4 h-4" />
+                {loadingAllLeads ? 'Laden...' : 'Alle Leads anzeigen'}
+              </button>
+            ) : (
+              <button
+                onClick={() => { setAllLeads(null); setLeadSearch(''); }}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-ea-dark/70 text-sm font-medium rounded-lg hover:bg-gray-200 transition-all"
+                data-testid="show-recent-leads"
+              >
+                Nur aktuelle
+              </button>
+            )}
             <button
               onClick={exportLeadsCSV}
               className="flex items-center gap-2 px-4 py-2 bg-ea-dark text-white text-sm font-medium rounded-lg hover:bg-ea-dark/90 transition-all"
               data-testid="export-leads-csv"
             >
               <Download className="w-4 h-4" />
-              CSV Export
+              CSV
             </button>
-          )}
-        </div>
-        {data.recent_leads.length > 0 ? (
-          <div className="overflow-x-auto -mx-6 px-6">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left py-2.5 text-ea-dark/50 font-medium">Name</th>
-                  <th className="text-left py-2.5 text-ea-dark/50 font-medium">Email</th>
-                  <th className="text-left py-2.5 text-ea-dark/50 font-medium hidden sm:table-cell">Phone</th>
-                  <th className="text-left py-2.5 text-ea-dark/50 font-medium">Expose</th>
-                  <th className="text-left py-2.5 text-ea-dark/50 font-medium">Email Status</th>
-                  <th className="text-left py-2.5 text-ea-dark/50 font-medium hidden md:table-cell">Date</th>
-                  <th className="text-right py-2.5 text-ea-dark/50 font-medium w-10"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.recent_leads.map((lead, i) => (
-                  <tr key={i} className="border-b border-gray-50 hover:bg-ea-gold/5 group cursor-pointer transition-colors" onClick={() => openLeadDetail(lead.lead_id)} data-testid={`lead-row-${i}`}>
-                    <td className="py-2.5 font-medium text-ea-dark">{lead.name}</td>
-                    <td className="py-2.5 text-ea-dark/70">{lead.email}</td>
-                    <td className="py-2.5 text-ea-dark/70 hidden sm:table-cell">{lead.phone || '-'}</td>
-                    <td className="py-2.5">
-                      <span className="bg-ea-gold/10 text-ea-dark text-xs px-2 py-1 rounded-full">
-                        {lead.expose_name || lead.source}
-                      </span>
-                    </td>
-                    <td className="py-2.5">
-                      {lead.email_opened
-                        ? <span className="text-green-600 text-xs font-medium flex items-center gap-1">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                            Opened{lead.email_open_count > 1 ? ` (${lead.email_open_count}x)` : ''}
-                          </span>
-                        : <span className="text-ea-dark/30 text-xs">Not opened</span>
-                      }
-                    </td>
-                    <td className="py-2.5 text-ea-dark/50 text-xs hidden md:table-cell">
-                      {lead.submitted_at ? new Date(lead.submitted_at).toLocaleDateString('de-DE') : '-'}
-                    </td>
-                    <td className="py-2.5 text-right">
-                      <button
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          if (!window.confirm(`Delete lead "${lead.name}"?`)) return;
-                          try {
-                            const leadId = lead.lead_id;
-                            if (!leadId) { alert('Lead ID not found'); return; }
-                            await fetch(
-                              `${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${leadId}`,
-                              { method: 'DELETE', headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) } }
-                            );
-                            setData(prev => ({
-                              ...prev,
-                              recent_leads: prev.recent_leads.filter((_, idx) => idx !== i)
-                            }));
-                          } catch (e) { alert('Error deleting lead'); }
-                        }}
-                        className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-all"
-                        data-testid={`delete-lead-${i}`}
-                        title="Delete lead"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
-        ) : (
-          <div className="text-center py-8 text-ea-dark/40">
-            <FileText className="w-8 h-8 mx-auto mb-2 opacity-30" />
-            <p>Noch keine Leads gesammelt</p>
+        </div>
+
+        {/* Search bar (only when all leads loaded) */}
+        {allLeads && (
+          <div className="mb-4">
+            <input
+              type="text"
+              value={leadSearch}
+              onChange={e => setLeadSearch(e.target.value)}
+              placeholder="Suche nach Name, Email, Telefon..."
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-ea-dark focus:outline-none focus:border-ea-gold"
+              data-testid="lead-search-input"
+            />
           </div>
         )}
+
+        {(() => {
+          const leadsToShow = allLeads
+            ? allLeads.filter(l => {
+                if (!leadSearch.trim()) return true;
+                const q = leadSearch.toLowerCase();
+                return (l.name || '').toLowerCase().includes(q)
+                  || (l.email || '').toLowerCase().includes(q)
+                  || (l.phone || '').toLowerCase().includes(q);
+              })
+            : data.recent_leads;
+
+          return leadsToShow.length > 0 ? (
+            <div className="overflow-x-auto -mx-6 px-6" style={{ maxHeight: allLeads ? '600px' : 'none', overflowY: allLeads ? 'auto' : 'visible' }}>
+              {allLeads && leadSearch && (
+                <p className="text-xs text-ea-dark/40 mb-2">{leadsToShow.length} Ergebnis{leadsToShow.length !== 1 ? 'se' : ''}</p>
+              )}
+              <table className="w-full text-sm">
+                <thead className="sticky top-0 bg-white">
+                  <tr className="border-b border-gray-100">
+                    <th className="text-left py-2.5 text-ea-dark/50 font-medium">Name</th>
+                    <th className="text-left py-2.5 text-ea-dark/50 font-medium">Email</th>
+                    <th className="text-left py-2.5 text-ea-dark/50 font-medium hidden sm:table-cell">Phone</th>
+                    <th className="text-left py-2.5 text-ea-dark/50 font-medium">Expose</th>
+                    <th className="text-left py-2.5 text-ea-dark/50 font-medium">Email Status</th>
+                    <th className="text-left py-2.5 text-ea-dark/50 font-medium hidden md:table-cell">Date</th>
+                    <th className="text-right py-2.5 text-ea-dark/50 font-medium w-10"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {leadsToShow.map((lead, i) => {
+                    const leadId = lead.lead_id || lead._id;
+                    return (
+                      <tr key={leadId || i} className="border-b border-gray-50 hover:bg-ea-gold/5 group cursor-pointer transition-colors" onClick={() => openLeadDetail(leadId)} data-testid={`lead-row-${i}`}>
+                        <td className="py-2.5 font-medium text-ea-dark">{lead.name}</td>
+                        <td className="py-2.5 text-ea-dark/70">{lead.email}</td>
+                        <td className="py-2.5 text-ea-dark/70 hidden sm:table-cell">{lead.phone || '-'}</td>
+                        <td className="py-2.5">
+                          <span className="bg-ea-gold/10 text-ea-dark text-xs px-2 py-1 rounded-full">
+                            {lead.expose_name || lead.source || '-'}
+                          </span>
+                        </td>
+                        <td className="py-2.5">
+                          {lead.email_opened
+                            ? <span className="text-green-600 text-xs font-medium flex items-center gap-1">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                Opened{lead.email_open_count > 1 ? ` (${lead.email_open_count}x)` : ''}
+                              </span>
+                            : <span className="text-ea-dark/30 text-xs">Not opened</span>
+                          }
+                        </td>
+                        <td className="py-2.5 text-ea-dark/50 text-xs hidden md:table-cell">
+                          {lead.submitted_at ? new Date(lead.submitted_at).toLocaleDateString('de-DE') : '-'}
+                        </td>
+                        <td className="py-2.5 text-right">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteLeadFromList(leadId, lead.name);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-all"
+                            data-testid={`delete-lead-${i}`}
+                            title="Lead löschen"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-ea-dark/40">
+              <FileText className="w-8 h-8 mx-auto mb-2 opacity-30" />
+              <p>{leadSearch ? 'Keine Treffer' : 'Noch keine Leads gesammelt'}</p>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
