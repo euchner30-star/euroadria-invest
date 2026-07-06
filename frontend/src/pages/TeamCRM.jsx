@@ -201,9 +201,10 @@ export default function TeamPage() {
   const [loading, setLoading] = useState(true);
   const [sortField, setSortField] = useState('submitted_at');
   const [sortDir, setSortDir] = useState('desc');
-  const token = localStorage.getItem('team_token');
+  const [token, setToken] = useState(() => localStorage.getItem('team_token'));
 
   const fetchLeads = useCallback(async () => {
+    if (!token) return;
     try {
       const res = await fetch(`${API}/api/team/leads`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -213,6 +214,7 @@ export default function TeamPage() {
         setLeads(data);
       } else if (res.status === 401) {
         localStorage.removeItem('team_token');
+        setToken(null);
         setUser(null);
       }
     } catch {}
@@ -220,15 +222,28 @@ export default function TeamPage() {
   }, [token]);
 
   useEffect(() => {
-    if (token) {
-      fetch(`${API}/api/team/me`, { headers: { 'Authorization': `Bearer ${token}` } })
-        .then(r => r.ok ? r.json() : Promise.reject())
-        .then(d => { setUser(d); fetchLeads(); })
-        .catch(() => { localStorage.removeItem('team_token'); setLoading(false); });
-    } else {
-      setLoading(false);
-    }
+    if (!token) { setLoading(false); return; }
+    fetch(`${API}/api/team/me`, { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(r => {
+        if (!r.ok) throw new Error('unauthorized');
+        return r.json();
+      })
+      .then(d => { setUser(d); fetchLeads(); })
+      .catch(() => { setLoading(false); });
   }, [token, fetchLeads]);
+
+  const handleLogin = (data) => {
+    localStorage.setItem('team_token', data.token);
+    setToken(data.token);
+    setUser(data);
+    fetchLeads();
+  };
+
+  const logout = () => {
+    localStorage.removeItem('team_token');
+    setToken(null);
+    setUser(null);
+  };
 
   useEffect(() => {
     let filtered = leads;
@@ -259,10 +274,8 @@ export default function TeamPage() {
     else { setSortField(field); setSortDir('desc'); }
   };
 
-  const logout = () => { localStorage.removeItem('team_token'); setUser(null); };
-
   if (loading) return <div className="min-h-screen bg-[#04151F] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#C8A96A] border-t-transparent rounded-full animate-spin" /></div>;
-  if (!user) return <TeamLogin onLogin={(d) => { setUser(d); fetchLeads(); }} />;
+  if (!user) return <TeamLogin onLogin={handleLogin} />;
 
   return (
     <div className="min-h-screen bg-[#04151F]" data-testid="team-dashboard">
