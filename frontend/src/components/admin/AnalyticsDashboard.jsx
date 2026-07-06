@@ -51,6 +51,10 @@ const AnalyticsDashboard = ({ credentials }) => {
   const [period, setPeriod] = useState(30);
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [selectedLead, setSelectedLead] = useState(null);
+  const [loadingLead, setLoadingLead] = useState(false);
+  const [newNote, setNewNote] = useState('');
+  const [savingNote, setSavingNote] = useState(false);
 
   useEffect(() => {
     fetchAnalytics();
@@ -115,6 +119,50 @@ const AnalyticsDashboard = ({ credentials }) => {
     } catch (err) { console.error('CSV export failed:', err); }
   };
 
+  const openLeadDetail = async (leadId) => {
+    setLoadingLead(true);
+    setNewNote('');
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${leadId}`,
+        { headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) } }
+      );
+      if (res.ok) {
+        const lead = await res.json();
+        setSelectedLead(lead);
+      }
+    } catch (err) {
+      console.error('Lead detail fetch failed:', err);
+    }
+    setLoadingLead(false);
+  };
+
+  const addAdminNote = async () => {
+    if (!newNote.trim() || !selectedLead) return;
+    setSavingNote(true);
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${selectedLead._id}/notes`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+          },
+          body: JSON.stringify({ text: newNote.trim() })
+        }
+      );
+      if (res.ok) {
+        const note = await res.json();
+        setSelectedLead(prev => ({ ...prev, notes: [note, ...(prev.notes || [])] }));
+        setNewNote('');
+      }
+    } catch (err) {
+      console.error('Note save failed:', err);
+    }
+    setSavingNote(false);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -164,6 +212,141 @@ const AnalyticsDashboard = ({ credentials }) => {
               >
                 {resetting ? 'Wird gelöscht...' : 'Ja, alles löschen'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lead Detail Modal */}
+      {loadingLead && (
+        <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
+          <div className="w-10 h-10 border-3 border-ea-gold border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      {selectedLead && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" data-testid="lead-detail-modal" onClick={() => setSelectedLead(null)}>
+          <div className="bg-white rounded-2xl max-w-2xl w-full shadow-xl max-h-[85vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <div>
+                <h3 className="text-lg font-bold text-ea-dark" data-testid="lead-detail-name">{selectedLead.name}</h3>
+                <p className="text-sm text-ea-dark/50">{selectedLead.email}</p>
+              </div>
+              <button onClick={() => setSelectedLead(null)} className="p-2 rounded-lg hover:bg-gray-100 transition-all" data-testid="lead-detail-close">
+                <X className="w-5 h-5 text-ea-dark/50" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="overflow-y-auto flex-1 p-6 space-y-5">
+              {/* Lead Info Grid */}
+              <div className="grid grid-cols-2 gap-3">
+                {selectedLead.phone && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Phone className="w-4 h-4 text-ea-dark/40" />
+                    <span className="text-ea-dark">{selectedLead.phone}</span>
+                  </div>
+                )}
+                {(selectedLead.country || selectedLead.city) && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <MapPin className="w-4 h-4 text-ea-dark/40" />
+                    <span className="text-ea-dark">{[selectedLead.city, selectedLead.state, selectedLead.country].filter(Boolean).join(', ')}</span>
+                  </div>
+                )}
+                {selectedLead.timeline && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Clock className="w-4 h-4 text-ea-dark/40" />
+                    <span className="text-ea-dark">{selectedLead.timeline}</span>
+                  </div>
+                )}
+                {selectedLead.interest && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Target className="w-4 h-4 text-ea-dark/40" />
+                    <span className="text-ea-dark">{selectedLead.interest}</span>
+                  </div>
+                )}
+                {selectedLead.contact_method && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Mail className="w-4 h-4 text-ea-dark/40" />
+                    <span className="text-ea-dark">Bevorzugt: {selectedLead.contact_method}</span>
+                  </div>
+                )}
+                {(selectedLead.expose_name || selectedLead.source) && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <FileText className="w-4 h-4 text-ea-dark/40" />
+                    <span className="bg-ea-gold/10 text-ea-dark text-xs px-2 py-1 rounded-full">{selectedLead.expose_name || selectedLead.source}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Email Status */}
+              <div className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-3">
+                <Mail className="w-4 h-4 text-ea-dark/40" />
+                <span className="text-sm text-ea-dark/60">Email Status:</span>
+                {selectedLead.email_opened
+                  ? <span className="text-green-600 text-sm font-medium">Geöffnet{selectedLead.email_open_count > 1 ? ` (${selectedLead.email_open_count}x)` : ''}</span>
+                  : <span className="text-ea-dark/30 text-sm">Nicht geöffnet</span>
+                }
+              </div>
+
+              {/* Notes Section */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <MessageSquare className="w-4 h-4 text-ea-gold" />
+                  <h4 className="text-sm font-semibold text-ea-dark">Notizen ({selectedLead.notes?.length || 0})</h4>
+                </div>
+
+                {/* Add Note */}
+                <div className="flex gap-2 mb-4">
+                  <input
+                    type="text"
+                    value={newNote}
+                    onChange={e => setNewNote(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && addAdminNote()}
+                    placeholder="Notiz hinzufügen..."
+                    className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold"
+                    data-testid="lead-note-input"
+                  />
+                  <button
+                    onClick={addAdminNote}
+                    disabled={!newNote.trim() || savingNote}
+                    className="px-4 py-2 bg-ea-dark text-white text-sm font-medium rounded-lg hover:bg-ea-dark/90 transition-all disabled:opacity-40 flex items-center gap-1.5"
+                    data-testid="lead-note-save"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    {savingNote ? '...' : 'Speichern'}
+                  </button>
+                </div>
+
+                {/* Notes List */}
+                {selectedLead.notes?.length > 0 ? (
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {selectedLead.notes.map((note, idx) => (
+                      <div key={note._id || idx} className="bg-gray-50 rounded-lg px-4 py-3" data-testid={`lead-note-${idx}`}>
+                        <p className="text-sm text-ea-dark">{note.text}</p>
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <span className="text-xs font-medium text-ea-gold">{note.author}</span>
+                          <span className="text-xs text-ea-dark/30">
+                            {note.created_at ? new Date(note.created_at).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-ea-dark/30 text-center py-4">Noch keine Notizen vorhanden</p>
+                )}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="border-t border-gray-100 px-6 py-3 flex justify-between items-center">
+              <span className="text-xs text-ea-dark/30">
+                Lead vom {selectedLead.submitted_at ? new Date(selectedLead.submitted_at).toLocaleDateString('de-DE') : '-'}
+              </span>
+              {selectedLead.status && (
+                <span className="text-xs font-medium px-2 py-1 rounded-full bg-blue-50 text-blue-600">{selectedLead.status}</span>
+              )}
             </div>
           </div>
         </div>
@@ -467,7 +650,7 @@ const AnalyticsDashboard = ({ credentials }) => {
               </thead>
               <tbody>
                 {data.recent_leads.map((lead, i) => (
-                  <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 group">
+                  <tr key={i} className="border-b border-gray-50 hover:bg-ea-gold/5 group cursor-pointer transition-colors" onClick={() => openLeadDetail(lead.lead_id)} data-testid={`lead-row-${i}`}>
                     <td className="py-2.5 font-medium text-ea-dark">{lead.name}</td>
                     <td className="py-2.5 text-ea-dark/70">{lead.email}</td>
                     <td className="py-2.5 text-ea-dark/70 hidden sm:table-cell">{lead.phone || '-'}</td>
@@ -490,7 +673,8 @@ const AnalyticsDashboard = ({ credentials }) => {
                     </td>
                     <td className="py-2.5 text-right">
                       <button
-                        onClick={async () => {
+                        onClick={async (e) => {
+                          e.stopPropagation();
                           if (!window.confirm(`Delete lead "${lead.name}"?`)) return;
                           try {
                             const leadId = lead.lead_id;

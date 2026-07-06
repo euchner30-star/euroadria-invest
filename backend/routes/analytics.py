@@ -1,5 +1,6 @@
 """Analytics & Tracking endpoints."""
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone, timedelta
 
@@ -276,6 +277,49 @@ async def reset_analytics(admin: str = Depends(verify_admin)):
         "deleted_calculator_tracking": ct.deleted_count,
         "deleted_leads": ld.deleted_count
     }
+
+
+@router.get("/admin/leads/{lead_id}")
+async def get_lead_detail(lead_id: str, admin: str = Depends(verify_admin)):
+    """Get single lead with notes (Admin)"""
+    from bson import ObjectId
+    try:
+        lead = await db.leads.find_one({"_id": ObjectId(lead_id)})
+        if not lead:
+            raise HTTPException(status_code=404, detail="Lead nicht gefunden")
+        lead["_id"] = str(lead["_id"])
+        notes = await db.lead_notes.find({"lead_id": lead_id}).sort("created_at", -1).to_list(100)
+        for n in notes:
+            n["_id"] = str(n["_id"])
+        lead["notes"] = notes
+        return lead
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+class AdminNoteCreate(BaseModel):
+    text: str
+
+
+@router.post("/admin/leads/{lead_id}/notes")
+async def admin_add_note(lead_id: str, data: AdminNoteCreate, admin: str = Depends(verify_admin)):
+    """Add a note to a lead (Admin)"""
+    from bson import ObjectId
+    from datetime import datetime, timezone
+    lead = await db.leads.find_one({"_id": ObjectId(lead_id)})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead nicht gefunden")
+    note = {
+        "lead_id": lead_id,
+        "text": data.text,
+        "author": "Admin (Holger)",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    result = await db.lead_notes.insert_one(note)
+    note["_id"] = str(result.inserted_id)
+    return note
 
 
 @router.delete("/admin/leads/{lead_id}")
