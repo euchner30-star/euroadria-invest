@@ -5,19 +5,20 @@ import {
 } from 'recharts';
 import { 
   Eye, Users, Calculator, Mail, TrendingUp, Monitor, Smartphone, Tablet,
-  Download, ArrowUpRight, ArrowDownRight, FileText, Share2, Megaphone, RotateCcw, AlertTriangle, Trash2
+  Download, ArrowUpRight, ArrowDownRight, FileText, Share2, Megaphone, RotateCcw, AlertTriangle, Trash2,
+  MessageSquare, Plus, X, Phone, MapPin, Clock, Target
 } from 'lucide-react';
 
 const COLORS = ['#C8A96A', '#04151F', '#6B7280', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
 const PAGE_LABELS = {
-  '/': 'Startseite',
+  '/': 'Homepage',
   '/blog': 'Blog',
-  '/contact': 'Kontakt',
+  '/contact': 'Contact',
   '/team': 'Team',
   '/investment': 'Investment Dashboard',
-  '/investment/rechner': 'ROI-Rechner',
-  '/investment/vergleich': 'Standort-Vergleich',
+  '/investment/rechner': 'ROI Calculator',
+  '/investment/vergleich': 'Location Comparison',
   '/immobilien/budva': 'Budva',
   '/immobilien/niksic': 'Nikšić',
   '/immobilien/podgorica': 'Podgorica',
