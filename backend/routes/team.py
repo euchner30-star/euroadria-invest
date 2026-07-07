@@ -232,9 +232,10 @@ async def send_lead_email(lead_id: str, data: EmailSend, member=Depends(get_curr
 
     # Build HTML body with personal greeting + corporate signature
     body_html = data.body.replace("\n", "<br>")
-    personal_line = ""
-    if data.signature:
+    if data.signature and data.signature.strip():
         personal_line = f'<p style="margin: 20px 0 0; color: #555; font-size: 14px; line-height: 1.6;">{data.signature.replace(chr(10), "<br>")}</p>'
+    else:
+        personal_line = f'<p style="margin: 20px 0 0; color: #555; font-size: 14px; line-height: 1.6;">Kind regards,<br>{member["name"]}</p>'
 
     content = f"""
     <div style="color: #333; font-size: 15px; line-height: 1.7;">

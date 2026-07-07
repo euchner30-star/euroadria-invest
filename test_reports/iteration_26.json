@@ -1,0 +1,39 @@
+{
+  "summary": "Verified the bug fix in /app/backend/routes/team.py:233-238 (send_lead_email) that ensures every outbound Team CRM email includes a personal greeting — the custom saved signature when present, or a default 'Kind regards,<br>{member_name}' when the signature field is empty/null/whitespace. Because RESEND_API_KEY is intentionally absent in the preview environment (endpoint returns 500 before reaching the greeting branch), the fix was verified with an in-process unit test that (a) imports the FastAPI app, (b) monkeypatches routes.team.RESEND_API_KEY to a dummy value, (c) monkeypatches resend.Emails.send to capture the outgoing HTML payload, and (d) drives the endpoint via httpx.AsyncClient + ASGITransport (same event loop as the motor client, to avoid 'Event loop is closed'). Created /app/backend/tests/test_team_email_greeting.py with 7 focused tests — ALL 7 PASS. Also re-ran the existing /app/backend/tests/test_team_email_signature.py regression suite: 10/10 PASS. Cleaned up TEST_ leads and lead_emails after run.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_team_email_greeting.py",
+    "/app/backend/tests/test_team_email_signature.py",
+    "/app/test_reports/pytest/team_email_greeting.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "routes/team.py send_lead_email(): the branch at lines 235-238 uses `data.signature and data.signature.strip()` which correctly treats null, empty string, and whitespace-only signatures as 'no signature'. Good.",
+    "The default greeting is hard-coded in English ('Kind regards,'). Consider making it language-aware based on the lead's `lang` field (the wrap_email helper already accepts `lang='en'`) so German leads receive 'Mit freundlichen Grüßen,' automatically. Minor UX enhancement.",
+    "The custom signature branch does `data.signature.replace(chr(10), '<br>')` but does NOT HTML-escape user input — a member could technically inject HTML into their own outgoing email signature (self-XSS surface, low risk since only authenticated team members can write it). Consider html.escape() then swap newlines.",
+    "The default greeting uses `member['name']` verbatim (no HTML escape). If a team member's name ever contained '<' or '&' the HTML would break. Low risk in practice but easy to harden.",
+    "signature field on the EmailSend Pydantic model is Optional[str] = None — good — but there is no max_length. Consider adding a constraint (e.g. Field(max_length=2000)) to avoid abuse.",
+    "resend.api_key is set inside the request handler on every call (`resend.api_key = RESEND_API_KEY`). Set it once at module import time to avoid a per-request mutation of module-level state."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_team_email_greeting.py (new, 7 tests)"
+  ],
+  "success_rate": {
+    "backend": "100% (7/7 new greeting tests + 10/10 existing signature tests)",
+    "frontend": "N/A - backend-only testing per review request"
+  },
+  "test_credentials": "Team CRM: milena@euroadria.me / mb2026!mnfgz (verified working via POST /api/team/login)",
+  "seed_data_creation": "Created a TEST_GreetingLogic Lead (test-greeting-logic@example.com) via POST /api/leads, sent 7 test emails through the (stubbed) resend client, then deleted the lead + 7 lead_emails rows via cleanup script.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "In preview, RESEND_API_KEY is unset — POST /api/team/leads/{id}/email will always 500 with 'Email service not configured' when hit against the live URL. To verify the greeting logic use the in-process pattern in /app/backend/tests/test_team_email_greeting.py: httpx.AsyncClient(ASGITransport(app=app)) + pytest_asyncio.fixture(loop_scope='module') + monkeypatch team_module.RESEND_API_KEY and resend.Emails.send. Do NOT use starlette.TestClient — motor binds to the ASGI-lifespan loop and TestClient closes it between tests → 'Event loop is closed'. The known lead id in the review request (6a4ca31e83b7ddc8715a822d) is 24 hex chars but not present in the preview DB; create a fresh TEST_ lead per session as done in the fixture.",
+  "rca of the issue": "Root cause verified: PRE-FIX, lines 233-236 of routes/team.py rendered `personal_line = f'<p ...>{data.signature.replace(chr(10), \"<br>\")}</p>'` unconditionally — so if data.signature was None the code would crash on .replace(), and if it was '' the paragraph would be empty, resulting in emails with NO personal greeting line (Milena's emails looked cold vs Holger's admin emails which always show 'Kind regards, Holger Kuhlmann, CEO & Founder'). POST-FIX (lines 235-238) branches on `data.signature and data.signature.strip()` — truthy branch renders the custom signature (with \\n → <br>), falsy branch renders the default 'Kind regards,<br>{member[\"name\"]}'. Test test_empty_signature_uses_default_kind_regards_milena confirms the default greeting IS present in the captured HTML when signature='' , test_null_signature_uses_default_greeting confirms same when the field is omitted (None), test_whitespace_only_signature_uses_default_greeting confirms same for '  \\n\\t  ', and test_custom_signature_used_verbatim confirms the fallback is NOT rendered when a real signature is supplied. Fix is correct and complete."
+}
