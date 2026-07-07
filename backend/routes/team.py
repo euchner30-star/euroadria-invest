@@ -177,6 +177,51 @@ async def save_signature(data: SignatureUpdate, member=Depends(get_current_membe
 
 # ── Outbound Emails ─────────────────────────────────────────────────────
 
+SIGNATURE_HTML_TEMPLATE = """
+<div style="margin-top: 28px; padding-top: 20px; border-top: 2px solid #C8A96A; font-family: Arial, sans-serif;">
+    <table cellpadding="0" cellspacing="0" border="0" style="font-size: 13px; color: #333;">
+        <tr>
+            <td style="vertical-align: top; padding-right: 20px; border-right: 2px solid #C8A96A;">
+                <img src="https://euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width: 120px; display: block; margin-bottom: 8px;">
+            </td>
+            <td style="vertical-align: top; padding-left: 20px; line-height: 1.5;">
+                <p style="margin: 0 0 2px; font-size: 15px; font-weight: bold; color: #04151F;">EuroAdria Corporate Solutions</p>
+                <p style="margin: 0 0 6px;"><a href="https://euroadria.me" style="color: #C8A96A; text-decoration: none; font-size: 12px;">https://euroadria.me</a></p>
+                <p style="margin: 0 0 10px; font-size: 11px; color: #888;">a brand of <strong style="color: #555;">Montaris &amp; Co. d.o.o.</strong></p>
+                <table cellpadding="0" cellspacing="0" border="0" style="font-size: 12px; color: #555; line-height: 1.6;">
+                    <tr>
+                        <td style="vertical-align: top; padding-right: 24px;">
+                            <p style="margin: 0 0 2px; font-weight: bold; color: #04151F; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Headquarters</p>
+                            <p style="margin: 0;">Novi Sad | Podgorica | D&uuml;sseldorf</p>
+                            <p style="margin: 0;">Marka Miljanova 12</p>
+                            <p style="margin: 0;">21000 Novi Sad, Serbien</p>
+                            <p style="margin: 4px 0 0; font-size: 11px; color: #888;">Reg. no.: 22147382 | PIB: 115356237</p>
+                        </td>
+                    </tr>
+                    <tr><td style="padding-top: 8px;">
+                        <table cellpadding="0" cellspacing="0" border="0" style="font-size: 12px; color: #555; line-height: 1.5;">
+                            <tr>
+                                <td style="vertical-align: top; padding-right: 20px;">
+                                    <p style="margin: 0 0 2px; font-weight: bold; color: #04151F; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Office Podgorica</p>
+                                    <p style="margin: 0;">Studentska br. 11</p>
+                                    <p style="margin: 0;">Podgorica, Crna Gora</p>
+                                </td>
+                                <td style="vertical-align: top;">
+                                    <p style="margin: 0 0 2px; font-weight: bold; color: #04151F; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Office D&uuml;sseldorf</p>
+                                    <p style="margin: 0;">Speditionsstra&szlig;e 15a</p>
+                                    <p style="margin: 0;">40221 D&uuml;sseldorf, Germany</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td></tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+"""
+
+
 @router.post("/team/leads/{lead_id}/email")
 async def send_lead_email(lead_id: str, data: EmailSend, member=Depends(get_current_member)):
     """Send an email to a lead from the Team CRM."""
@@ -194,17 +239,18 @@ async def send_lead_email(lead_id: str, data: EmailSend, member=Depends(get_curr
     if not lead_email:
         raise HTTPException(status_code=400, detail="Lead has no email address")
 
-    # Build HTML body with signature
+    # Build HTML body with personal greeting + corporate signature
     body_html = data.body.replace("\n", "<br>")
-    signature_html = ""
+    personal_line = ""
     if data.signature:
-        signature_html = f'<div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb; color: #666; font-size: 13px; line-height: 1.6;">{data.signature.replace(chr(10), "<br>")}</div>'
+        personal_line = f'<p style="margin: 20px 0 0; color: #555; font-size: 14px; line-height: 1.6;">{data.signature.replace(chr(10), "<br>")}</p>'
 
     content = f"""
     <div style="color: #333; font-size: 15px; line-height: 1.7;">
         {body_html}
     </div>
-    {signature_html}
+    {personal_line}
+    {SIGNATURE_HTML_TEMPLATE}
     """
 
     try:

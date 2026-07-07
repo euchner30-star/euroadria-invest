@@ -255,17 +255,31 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowSignatureEdit(false)}>
             <div className="bg-[#0a2230] border border-white/10 rounded-xl p-6 max-w-lg w-full" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-4">
-                <h4 className="text-white font-bold">Signatur bearbeiten</h4>
+                <h4 className="text-white font-bold">Persönlicher Gruß</h4>
                 <button onClick={() => setShowSignatureEdit(false)} className="text-white/30 hover:text-white/60"><X className="w-5 h-5" /></button>
               </div>
+              <p className="text-white/40 text-xs mb-3">Dieser Text erscheint vor der EuroAdria-Firmensignatur mit Logo.</p>
               <textarea
                 value={signatureDraft}
                 onChange={e => setSignatureDraft(e.target.value)}
-                placeholder={"Mit freundlichen Grüßen,\nMilena Bubanja\nEuroAdria Corporate Solutions\n+382 68 559 776\nmilena@euroadria.me"}
-                rows={6}
+                placeholder={"Mit freundlichen Grüßen,\nMilena Bubanja\nSenior Investment Advisor"}
+                rows={4}
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/20 text-sm focus:outline-none focus:border-[#C8A96A] resize-none"
                 data-testid="signature-textarea"
               />
+              {/* Company signature preview */}
+              <div className="mt-4 bg-white/[0.03] border border-white/5 rounded-lg p-4">
+                <p className="text-white/20 text-[10px] uppercase tracking-wider mb-2">Firmensignatur (automatisch angehängt)</p>
+                <div className="flex items-start gap-3">
+                  <img src="/euroadria-logo.png" alt="" className="w-20 opacity-50" onError={e => e.target.style.display='none'} />
+                  <div className="text-white/30 text-xs leading-relaxed">
+                    <p className="font-bold text-white/50">EuroAdria Corporate Solutions</p>
+                    <p className="text-[#C8A96A]/50 text-[10px]">euroadria.me</p>
+                    <p className="mt-1">a brand of Montaris & Co. d.o.o.</p>
+                    <p>Novi Sad | Podgorica | Düsseldorf</p>
+                  </div>
+                </div>
+              </div>
               <div className="flex gap-2 mt-4">
                 <button onClick={() => setShowSignatureEdit(false)} className="flex-1 py-2.5 text-white/50 text-sm rounded-lg border border-white/10 hover:bg-white/5 transition-all">Abbrechen</button>
                 <button onClick={saveSignature} className="flex-1 py-2.5 bg-[#C8A96A] text-[#04151F] font-bold text-sm rounded-lg hover:bg-[#d4b87a] transition-all" data-testid="signature-save-btn">Speichern</button>
@@ -296,12 +310,22 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
               className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-[#C8A96A] resize-none"
               data-testid="email-body-textarea"
             />
-            {signature && (
-              <div className="bg-white/[0.03] border border-white/5 rounded-lg px-4 py-3">
-                <p className="text-white/20 text-xs mb-1">Signatur:</p>
-                <p className="text-white/40 text-sm whitespace-pre-line">{signature}</p>
+            {/* Signature Preview */}
+            <div className="bg-white/[0.03] border border-white/5 rounded-lg px-4 py-3">
+              {signature && (
+                <p className="text-white/50 text-sm whitespace-pre-line mb-3">{signature}</p>
+              )}
+              <div className="border-t border-[#C8A96A]/30 pt-3 flex items-start gap-3">
+                <img src="/euroadria-logo.png" alt="" className="w-16 opacity-40" onError={e => e.target.style.display='none'} />
+                <div className="text-white/30 text-xs leading-relaxed">
+                  <p className="font-bold text-white/40 text-sm">EuroAdria Corporate Solutions</p>
+                  <p className="text-[#C8A96A]/40 text-[10px]">euroadria.me</p>
+                  <p className="mt-1">a brand of Montaris & Co. d.o.o.</p>
+                  <p>Novi Sad | Podgorica | Düsseldorf</p>
+                  <p>Marka Miljanova 12, 21000 Novi Sad</p>
+                </div>
               </div>
-            )}
+            </div>
             <button
               onClick={sendEmail}
               disabled={sendingEmail || !emailSubject.trim() || !emailBody.trim()}
