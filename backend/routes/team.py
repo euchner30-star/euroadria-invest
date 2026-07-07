@@ -1,4 +1,4 @@
-"""Team CRM routes - Member login, lead management, notes, email tracking."""
+"""Team CRM routes - Member login, lead management, notes, email tracking, outbound emails."""
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import Response
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -8,8 +8,9 @@ from datetime import datetime, timezone
 import bcrypt
 import jwt
 import os
+import resend
 
-from core import db
+from core import db, RESEND_API_KEY, logger
 
 router = APIRouter()
 security = HTTPBearer()
@@ -31,6 +32,14 @@ class LeadUpdate(BaseModel):
     interest: Optional[str] = None
     timeline: Optional[str] = None
     contact_method: Optional[str] = None
+
+class EmailSend(BaseModel):
+    subject: str
+    body: str
+    signature: Optional[str] = None
+
+class SignatureUpdate(BaseModel):
+    signature: str
 
 
 # ── Auth helpers ────────────────────────────────────────────────────────
@@ -144,6 +153,107 @@ async def delete_note(lead_id: str, note_id: str, member=Depends(get_current_mem
     from bson import ObjectId
     await db.lead_notes.delete_one({"_id": ObjectId(note_id), "lead_id": lead_id})
     return {"success": True}
+
+
+# ── Signature ───────────────────────────────────────────────────────────
+
+@router.get("/team/signature")
+async def get_signature(member=Depends(get_current_member)):
+    """Get saved signature for current team member."""
+    sig = await db.team_signatures.find_one({"email": member["email"]})
+    return {"signature": sig.get("signature", "") if sig else ""}
+
+
+@router.put("/team/signature")
+async def save_signature(data: SignatureUpdate, member=Depends(get_current_member)):
+    """Save/update signature for current team member."""
+    await db.team_signatures.update_one(
+        {"email": member["email"]},
+        {"$set": {"signature": data.signature, "updated_at": datetime.now(timezone.utc).isoformat()}},
+        upsert=True
+    )
+    return {"success": True}
+
+
+# ── Outbound Emails ─────────────────────────────────────────────────────
+
+@router.post("/team/leads/{lead_id}/email")
+async def send_lead_email(lead_id: str, data: EmailSend, member=Depends(get_current_member)):
+    """Send an email to a lead from the Team CRM."""
+    from bson import ObjectId
+    from emails import wrap_email
+
+    lead = await db.leads.find_one({"_id": ObjectId(lead_id)})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    if not RESEND_API_KEY:
+        raise HTTPException(status_code=500, detail="Email service not configured")
+
+    lead_email = lead.get("email")
+    if not lead_email:
+        raise HTTPException(status_code=400, detail="Lead has no email address")
+
+    # Build HTML body with signature
+    body_html = data.body.replace("\n", "<br>")
+    signature_html = ""
+    if data.signature:
+        signature_html = f'<div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb; color: #666; font-size: 13px; line-height: 1.6;">{data.signature.replace(chr(10), "<br>")}</div>'
+
+    content = f"""
+    <div style="color: #333; font-size: 15px; line-height: 1.7;">
+        {body_html}
+    </div>
+    {signature_html}
+    """
+
+    try:
+        resend.api_key = RESEND_API_KEY
+        result = resend.Emails.send({
+            "from": f"EuroAdria Team <noreply@euroadria.me>",
+            "to": [lead_email],
+            "subject": data.subject,
+            "html": wrap_email(content, lead_id=lead_id),
+            "reply_to": member["email"]
+        })
+
+        # Store sent email in DB
+        email_record = {
+            "lead_id": lead_id,
+            "to": lead_email,
+            "subject": data.subject,
+            "body": data.body,
+            "signature": data.signature or "",
+            "sent_by": member["name"],
+            "sent_by_email": member["email"],
+            "sent_at": datetime.now(timezone.utc).isoformat(),
+            "resend_id": result.get("id") if isinstance(result, dict) else str(result)
+        }
+        await db.lead_emails.insert_one(email_record)
+
+        # Auto-add note
+        await db.lead_notes.insert_one({
+            "lead_id": lead_id,
+            "text": f"Email gesendet: \"{data.subject}\"",
+            "author": member["name"],
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+
+        logger.info(f"Team email sent by {member['name']} to {lead_email}: {data.subject}")
+        return {"success": True, "message": f"Email sent to {lead_email}"}
+
+    except Exception as e:
+        logger.error(f"Team email send failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Email sending failed: {str(e)}")
+
+
+@router.get("/team/leads/{lead_id}/emails")
+async def get_lead_emails(lead_id: str, member=Depends(get_current_member)):
+    """Get all sent emails for a lead."""
+    emails = await db.lead_emails.find({"lead_id": lead_id}).sort("sent_at", -1).to_list(50)
+    for e in emails:
+        e["_id"] = str(e["_id"])
+    return emails
 
 
 # ── Seed member ─────────────────────────────────────────────────────────

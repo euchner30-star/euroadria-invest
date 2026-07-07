@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { LogOut, Search, ChevronDown, ChevronUp, Phone, Mail, MapPin, Clock, Target, MessageSquare, Plus, Trash2, Edit3, User, Calendar, DollarSign, Filter } from 'lucide-react';
+import { LogOut, Search, ChevronDown, ChevronUp, Phone, Mail, MapPin, Clock, Target, MessageSquare, Plus, Trash2, Edit3, User, Calendar, DollarSign, Filter, Send, X, Settings } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -71,6 +71,26 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
   const [status, setStatus] = useState(lead.status || 'new');
   const [leadValue, setLeadValue] = useState(lead.lead_value || '');
   const [saving, setSaving] = useState(false);
+  const [showEmailComposer, setShowEmailComposer] = useState(false);
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailBody, setEmailBody] = useState('');
+  const [signature, setSignature] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [sentEmails, setSentEmails] = useState([]);
+  const [showSignatureEdit, setShowSignatureEdit] = useState(false);
+  const [signatureDraft, setSignatureDraft] = useState('');
+
+  useEffect(() => {
+    // Load signature
+    fetch(`${API}/api/team/signature`, { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.signature) setSignature(d.signature); });
+    // Load sent emails
+    fetch(`${API}/api/team/leads/${lead._id}/emails`, { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : [])
+      .then(d => setSentEmails(d));
+  }, [lead._id, token]);
 
   const addNote = async () => {
     if (!noteText.trim()) return;
@@ -103,6 +123,39 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
     });
     setSaving(false);
     onUpdate();
+  };
+
+  const sendEmail = async () => {
+    if (!emailSubject.trim() || !emailBody.trim()) return;
+    setSendingEmail(true);
+    setEmailSent(false);
+    try {
+      const res = await fetch(`${API}/api/team/leads/${lead._id}/email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ subject: emailSubject, body: emailBody, signature })
+      });
+      if (res.ok) {
+        setEmailSent(true);
+        setNotes(prev => [{ _id: Date.now(), text: `Email gesendet: "${emailSubject}"`, author: 'System', created_at: new Date().toISOString() }, ...prev]);
+        setSentEmails(prev => [{ subject: emailSubject, body: emailBody, sent_at: new Date().toISOString(), to: lead.email }, ...prev]);
+        setTimeout(() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); setEmailSent(false); }, 1500);
+      } else {
+        const err = await res.json();
+        alert(err.detail || 'Email konnte nicht gesendet werden');
+      }
+    } catch { alert('Verbindungsfehler'); }
+    setSendingEmail(false);
+  };
+
+  const saveSignature = async () => {
+    await fetch(`${API}/api/team/signature`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ signature: signatureDraft })
+    });
+    setSignature(signatureDraft);
+    setShowSignatureEdit(false);
   };
 
   return (
@@ -161,6 +214,130 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Email Composer */}
+      <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-white font-bold flex items-center gap-2"><Mail className="w-4 h-4 text-[#C8A96A]" /> Email</h3>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setShowSignatureEdit(true); setSignatureDraft(signature); }}
+              className="text-white/30 hover:text-white/60 transition-all p-1.5 rounded-lg hover:bg-white/5"
+              title="Signatur bearbeiten"
+              data-testid="email-signature-edit-btn"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+            {!showEmailComposer ? (
+              <button
+                onClick={() => setShowEmailComposer(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-[#C8A96A] text-[#04151F] text-sm font-bold rounded-lg hover:bg-[#d4b87a] transition-all"
+                data-testid="email-compose-btn"
+              >
+                <Send className="w-4 h-4" />
+                Email senden
+              </button>
+            ) : (
+              <button
+                onClick={() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); }}
+                className="text-white/30 hover:text-white/60 transition-all"
+                data-testid="email-compose-close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Signature Editor Modal */}
+        {showSignatureEdit && (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowSignatureEdit(false)}>
+            <div className="bg-[#0a2230] border border-white/10 rounded-xl p-6 max-w-lg w-full" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-white font-bold">Signatur bearbeiten</h4>
+                <button onClick={() => setShowSignatureEdit(false)} className="text-white/30 hover:text-white/60"><X className="w-5 h-5" /></button>
+              </div>
+              <textarea
+                value={signatureDraft}
+                onChange={e => setSignatureDraft(e.target.value)}
+                placeholder={"Mit freundlichen Grüßen,\nMilena Bubanja\nEuroAdria Corporate Solutions\n+382 68 559 776\nmilena@euroadria.me"}
+                rows={6}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/20 text-sm focus:outline-none focus:border-[#C8A96A] resize-none"
+                data-testid="signature-textarea"
+              />
+              <div className="flex gap-2 mt-4">
+                <button onClick={() => setShowSignatureEdit(false)} className="flex-1 py-2.5 text-white/50 text-sm rounded-lg border border-white/10 hover:bg-white/5 transition-all">Abbrechen</button>
+                <button onClick={saveSignature} className="flex-1 py-2.5 bg-[#C8A96A] text-[#04151F] font-bold text-sm rounded-lg hover:bg-[#d4b87a] transition-all" data-testid="signature-save-btn">Speichern</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Compose Form */}
+        {showEmailComposer && (
+          <div className="space-y-3" data-testid="email-composer">
+            <div className="bg-white/5 rounded-lg px-4 py-2.5 text-white/40 text-sm">
+              An: <span className="text-white/70">{lead.email}</span>
+            </div>
+            <input
+              type="text"
+              value={emailSubject}
+              onChange={e => setEmailSubject(e.target.value)}
+              placeholder="Betreff"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-[#C8A96A]"
+              data-testid="email-subject-input"
+            />
+            <textarea
+              value={emailBody}
+              onChange={e => setEmailBody(e.target.value)}
+              placeholder="Nachricht schreiben..."
+              rows={6}
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-[#C8A96A] resize-none"
+              data-testid="email-body-textarea"
+            />
+            {signature && (
+              <div className="bg-white/[0.03] border border-white/5 rounded-lg px-4 py-3">
+                <p className="text-white/20 text-xs mb-1">Signatur:</p>
+                <p className="text-white/40 text-sm whitespace-pre-line">{signature}</p>
+              </div>
+            )}
+            <button
+              onClick={sendEmail}
+              disabled={sendingEmail || !emailSubject.trim() || !emailBody.trim()}
+              className={`w-full py-3 font-bold text-sm rounded-lg transition-all flex items-center justify-center gap-2 ${
+                emailSent
+                  ? 'bg-green-500 text-white'
+                  : 'bg-[#C8A96A] text-[#04151F] hover:bg-[#d4b87a] disabled:opacity-40'
+              }`}
+              data-testid="email-send-btn"
+            >
+              {emailSent ? (
+                <><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg> Gesendet!</>
+              ) : sendingEmail ? 'Wird gesendet...' : (
+                <><Send className="w-4 h-4" /> Email senden</>
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* Sent Emails History */}
+        {!showEmailComposer && sentEmails.length > 0 && (
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {sentEmails.map((em, i) => (
+              <div key={em._id || i} className="bg-white/5 rounded-lg px-4 py-3" data-testid={`sent-email-${i}`}>
+                <div className="flex items-center justify-between">
+                  <p className="text-white text-sm font-medium">{em.subject}</p>
+                  <span className="text-white/20 text-xs">{em.sent_at ? new Date(em.sent_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</span>
+                </div>
+                <p className="text-white/40 text-xs mt-1 line-clamp-2">{em.body}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        {!showEmailComposer && sentEmails.length === 0 && (
+          <p className="text-white/20 text-sm text-center py-3">Noch keine Emails gesendet</p>
+        )}
       </div>
 
       {/* Notes */}
