@@ -137,7 +137,7 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
       });
       if (res.ok) {
         setEmailSent(true);
-        setNotes(prev => [{ _id: Date.now(), text: `Email gesendet: "${emailSubject}"`, author: 'System', created_at: new Date().toISOString() }, ...prev]);
+        setNotes(prev => [{ _id: Date.now(), text: `Email sent: "${emailSubject}"`, author: 'System', created_at: new Date().toISOString() }, ...prev]);
         setSentEmails(prev => [{ subject: emailSubject, body: emailBody, sent_at: new Date().toISOString(), to: lead.email }, ...prev]);
         setTimeout(() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); setEmailSent(false); }, 1500);
       } else {
@@ -224,7 +224,7 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
             <button
               onClick={() => { setShowSignatureEdit(true); setSignatureDraft(signature); }}
               className="text-white/30 hover:text-white/60 transition-all p-1.5 rounded-lg hover:bg-white/5"
-              title="Signatur bearbeiten"
+              title="Edit signature"
               data-testid="email-signature-edit-btn"
             >
               <Settings className="w-4 h-4" />
@@ -236,7 +236,7 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
                 data-testid="email-compose-btn"
               >
                 <Send className="w-4 h-4" />
-                Email senden
+                Send Email
               </button>
             ) : (
               <button
@@ -255,21 +255,21 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowSignatureEdit(false)}>
             <div className="bg-[#0a2230] border border-white/10 rounded-xl p-6 max-w-lg w-full" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-4">
-                <h4 className="text-white font-bold">Persönlicher Gruß</h4>
+                <h4 className="text-white font-bold">Personal Greeting</h4>
                 <button onClick={() => setShowSignatureEdit(false)} className="text-white/30 hover:text-white/60"><X className="w-5 h-5" /></button>
               </div>
-              <p className="text-white/40 text-xs mb-3">Dieser Text erscheint vor der EuroAdria-Firmensignatur mit Logo.</p>
+              <p className="text-white/40 text-xs mb-3">This text appears above the EuroAdria corporate signature with logo.</p>
               <textarea
                 value={signatureDraft}
                 onChange={e => setSignatureDraft(e.target.value)}
-                placeholder={"Mit freundlichen Grüßen,\nMilena Bubanja\nSenior Investment Advisor"}
+                placeholder={"Kind regards,\nMilena Bubanja\nSenior Investment Advisor"}
                 rows={4}
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/20 text-sm focus:outline-none focus:border-[#C8A96A] resize-none"
                 data-testid="signature-textarea"
               />
               {/* Company signature preview */}
               <div className="mt-4 bg-white/[0.03] border border-white/5 rounded-lg p-4">
-                <p className="text-white/20 text-[10px] uppercase tracking-wider mb-2">Firmensignatur (automatisch angehängt)</p>
+                <p className="text-white/20 text-[10px] uppercase tracking-wider mb-2">Corporate signature (auto-attached)</p>
                 <div className="flex items-start gap-3">
                   <img src="/euroadria-logo.png" alt="" className="w-20 opacity-50" onError={e => e.target.style.display='none'} />
                   <div className="text-white/30 text-xs leading-relaxed">
@@ -281,8 +281,8 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
                 </div>
               </div>
               <div className="flex gap-2 mt-4">
-                <button onClick={() => setShowSignatureEdit(false)} className="flex-1 py-2.5 text-white/50 text-sm rounded-lg border border-white/10 hover:bg-white/5 transition-all">Abbrechen</button>
-                <button onClick={saveSignature} className="flex-1 py-2.5 bg-[#C8A96A] text-[#04151F] font-bold text-sm rounded-lg hover:bg-[#d4b87a] transition-all" data-testid="signature-save-btn">Speichern</button>
+                <button onClick={() => setShowSignatureEdit(false)} className="flex-1 py-2.5 text-white/50 text-sm rounded-lg border border-white/10 hover:bg-white/5 transition-all">Cancel</button>
+                <button onClick={saveSignature} className="flex-1 py-2.5 bg-[#C8A96A] text-[#04151F] font-bold text-sm rounded-lg hover:bg-[#d4b87a] transition-all" data-testid="signature-save-btn">Save</button>
               </div>
             </div>
           </div>
@@ -298,14 +298,14 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
               type="text"
               value={emailSubject}
               onChange={e => setEmailSubject(e.target.value)}
-              placeholder="Betreff"
+              placeholder="Subject"
               className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-[#C8A96A]"
               data-testid="email-subject-input"
             />
             <textarea
               value={emailBody}
               onChange={e => setEmailBody(e.target.value)}
-              placeholder="Nachricht schreiben..."
+              placeholder="Write your message..."
               rows={6}
               className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-[#C8A96A] resize-none"
               data-testid="email-body-textarea"
@@ -337,9 +337,9 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
               data-testid="email-send-btn"
             >
               {emailSent ? (
-                <><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg> Gesendet!</>
-              ) : sendingEmail ? 'Wird gesendet...' : (
-                <><Send className="w-4 h-4" /> Email senden</>
+                <><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg> Sent!</>
+              ) : sendingEmail ? 'Sending...' : (
+                <><Send className="w-4 h-4" /> Send Email</>
               )}
             </button>
           </div>

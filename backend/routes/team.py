@@ -280,7 +280,7 @@ async def send_lead_email(lead_id: str, data: EmailSend, member=Depends(get_curr
         # Auto-add note
         await db.lead_notes.insert_one({
             "lead_id": lead_id,
-            "text": f"Email gesendet: \"{data.subject}\"",
+            "text": f"Email sent: \"{data.subject}\"",
             "author": member["name"],
             "created_at": datetime.now(timezone.utc).isoformat()
         })
