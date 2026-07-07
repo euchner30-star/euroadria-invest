@@ -200,8 +200,8 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="text-white/40 text-xs mb-1 block">Status</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" style={{ colorScheme: 'dark' }} data-testid="lead-status-select">
-              {STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full px-3 py-2.5 bg-[#0a2230] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="lead-status-select">
+              {STATUSES.map(s => <option key={s.value} value={s.value} style={{ background: '#0a2230', color: '#fff' }}>{s.label}</option>)}
             </select>
           </div>
           <div>
@@ -528,9 +528,9 @@ export default function TeamPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <input type="text" placeholder="Search leads..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="team-search" />
               </div>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" style={{ colorScheme: 'dark' }} data-testid="team-status-filter">
-                <option value="all">All Statuses</option>
-                {STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 bg-[#0a2230] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="team-status-filter">
+                <option value="all" style={{ background: '#0a2230', color: '#fff' }}>All Statuses</option>
+                {STATUSES.map(s => <option key={s.value} value={s.value} style={{ background: '#0a2230', color: '#fff' }}>{s.label}</option>)}
               </select>
             </div>
 
