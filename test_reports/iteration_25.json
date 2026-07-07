@@ -1,0 +1,38 @@
+{
+  "summary": "Verified new Admin Email feature (send-to-lead + history) end-to-end. Backend: 11/11 pytest cases in /app/backend/tests/test_admin_email.py PASS covering (a) auth 401 on POST /api/admin/leads/{id}/email and GET /api/admin/leads/{id}/emails without credentials and with wrong Basic Auth, (b) Pydantic 422 for missing subject/body/empty JSON, (c) 404 on nonexistent lead (ObjectId 000000000000000000000000), (d) POST returns 500 with detail 'Email service not configured' when lead exists and RESEND_API_KEY is absent (preview env — expected), (e) GET /api/admin/leads/{id}/emails returns JSON list (no ObjectId leak; _id stringified). Frontend: after dismissing the cookie banner by pre-seeding localStorage['euroadria_cookie_consent'], admin login (admin/euroadria2025) succeeds and the analytics dashboard renders. Clicking lead-row-0 opens data-testid='lead-detail-modal'. The 'Email senden' section is present with admin-email-compose-btn ('Neue Email'). Clicking it opens admin-email-composer containing admin-email-subject, admin-email-body, the signature preview line 'Signatur: Holger Kuhlmann, CEO & Founder + EuroAdria Corporate', and admin-email-send-btn. Send button is correctly disabled with empty inputs and enabled after filling both fields. On submit the frontend POSTs to /api/admin/leads/{id}/email and gracefully surfaces the backend 500 as a browser alert with the exact text 'Email service not configured' — matching the expected behavior in the preview environment.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_admin_email.py",
+    "/app/test_reports/pytest/admin_email_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "AnalyticsDashboard.jsx: after send failure the composer stays open and both subject/body remain filled — good UX. However on any non-2xx response the code calls `alert(err.detail || ...)` which is jarring; consider replacing with an inline toast / error banner near admin-email-send-btn (aligns with rest of the app).",
+    "analytics.py POST /api/admin/leads/{lead_id}/email: `bson.ObjectId(lead_id)` is called without try/except at the top of the function, so a malformed lead_id string (non-24-hex) triggers a raw 500 InvalidId. Wrap in try/except and return 400 like the sibling delete_lead endpoint does. Minor — auth path stops most attackers first.",
+    "GET /api/admin/leads/{lead_id}/emails does NOT validate that the lead exists; it silently returns [] for any string. Fine for the current UI, but a mismatch with the POST behavior (which 404s). Consider aligning: either both 404 or both return [].",
+    "Signature preview in the composer is a static text line; the actual email includes SIGNATURE_HTML_TEMPLATE + `Kind regards / Holger Kuhlmann / CEO & Founder` block appended in the backend. Preview is sufficient but does not literally show what will be rendered — acceptable trade-off given the corporate template.",
+    "Cookie consent modal (2 duplicate 'Accept All' buttons with the SAME data-testid='cookie-accept-all-main' — main + inline card) makes automation and a11y harder. Consider giving them unique testids (e.g. cookie-accept-all-main-inline vs cookie-accept-all-main-bar) so tests don't need strict-mode workarounds. Not related to this feature but observed while testing.",
+    "AnalyticsDashboard.jsx sendAdminEmail() uses `catch { alert('Verbindungsfehler') }` (empty catch binding) — fine on modern JS but consider logging the actual error to console for debugging."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_admin_email.py (new)"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11)",
+    "frontend": "100% (all critical composer + integration checks passed)"
+  },
+  "test_credentials": "Admin: admin / euroadria2025 (HTTP Basic Auth) — verified working.",
+  "seed_data_creation": "None. Used the existing 'TEST_EmailFeature Lead' (lead-row-0, email test-email-feature@example.com) already present in DB.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Cookie banner has TWO buttons with the SAME data-testid='cookie-accept-all-main' which causes Playwright strict-mode failures — reliable workaround is to pre-seed localStorage.setItem('euroadria_cookie_consent', JSON.stringify({accepted:true,analytics:true,marketing:true,timestamp:Date.now()})) BEFORE the admin login step and then reload(). After that lead-row-0..N testids are directly clickable and data-testid='lead-detail-modal' opens with the full email composer (compose btn / subject / body / signature preview / send btn / sent-email history items). RESEND_API_KEY is intentionally missing in preview, so POST /api/admin/leads/{id}/email will always 500 with 'Email service not configured' — the frontend surfaces this via window.alert. Backend regression suite: /app/backend/tests/test_admin_email.py (11 tests, JUnit at /app/test_reports/pytest/admin_email_results.xml).",
+  "rca of the issue": "N/A — feature verified working within the constraints of the preview environment. The only 'failure path' exercised (POST returning 500) is by design because RESEND_API_KEY is not configured for the preview; the endpoint correctly detects this and returns HTTPException(500, 'Email service not configured') BEFORE attempting resend.Emails.send(), and the frontend correctly surfaces the alert. In production (with RESEND_API_KEY set) the same code path will call resend.Emails.send({from: 'Holger Kuhlmann - EuroAdria <office@euroadria.me>', to:[lead_email], subject, html: wrap_email(content, include_footer=False), reply_to:'office@euroadria.me'}), persist a record in db.lead_emails, and append a lead-note 'Email sent: \"<subject>\"'."
+}

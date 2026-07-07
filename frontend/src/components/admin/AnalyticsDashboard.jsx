@@ -6,7 +6,7 @@ import {
 import { 
   Eye, Users, Calculator, Mail, TrendingUp, Monitor, Smartphone, Tablet,
   Download, ArrowUpRight, ArrowDownRight, FileText, Share2, Megaphone, RotateCcw, AlertTriangle, Trash2,
-  MessageSquare, Plus, X, Phone, MapPin, Clock, Target
+  MessageSquare, Plus, X, Phone, MapPin, Clock, Target, Send
 } from 'lucide-react';
 
 const COLORS = ['#C8A96A', '#04151F', '#6B7280', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
@@ -58,6 +58,12 @@ const AnalyticsDashboard = ({ credentials }) => {
   const [allLeads, setAllLeads] = useState(null);
   const [loadingAllLeads, setLoadingAllLeads] = useState(false);
   const [leadSearch, setLeadSearch] = useState('');
+  const [showEmailComposer, setShowEmailComposer] = useState(false);
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailBody, setEmailBody] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [sentEmails, setSentEmails] = useState([]);
 
   useEffect(() => {
     fetchAnalytics();
@@ -125,6 +131,10 @@ const AnalyticsDashboard = ({ credentials }) => {
   const openLeadDetail = async (leadId) => {
     setLoadingLead(true);
     setNewNote('');
+    setShowEmailComposer(false);
+    setEmailSubject('');
+    setEmailBody('');
+    setSentEmails([]);
     try {
       const res = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${leadId}`,
@@ -133,6 +143,7 @@ const AnalyticsDashboard = ({ credentials }) => {
       if (res.ok) {
         const lead = await res.json();
         setSelectedLead(lead);
+        loadSentEmails(leadId);
       }
     } catch (err) {
       console.error('Lead detail fetch failed:', err);
@@ -164,6 +175,48 @@ const AnalyticsDashboard = ({ credentials }) => {
       console.error('Note save failed:', err);
     }
     setSavingNote(false);
+  };
+
+  const sendAdminEmail = async () => {
+    if (!emailSubject.trim() || !emailBody.trim() || !selectedLead) return;
+    setSendingEmail(true);
+    setEmailSent(false);
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${selectedLead._id}/email`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+          },
+          body: JSON.stringify({ subject: emailSubject, body: emailBody })
+        }
+      );
+      if (res.ok) {
+        setEmailSent(true);
+        setSelectedLead(prev => ({
+          ...prev,
+          notes: [{ _id: Date.now(), text: `Email sent: "${emailSubject}"`, author: 'Admin (Holger)', created_at: new Date().toISOString() }, ...(prev.notes || [])]
+        }));
+        setSentEmails(prev => [{ subject: emailSubject, body: emailBody, sent_at: new Date().toISOString() }, ...prev]);
+        setTimeout(() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); setEmailSent(false); }, 1500);
+      } else {
+        const err = await res.json();
+        alert(err.detail || 'Email konnte nicht gesendet werden');
+      }
+    } catch { alert('Verbindungsfehler'); }
+    setSendingEmail(false);
+  };
+
+  const loadSentEmails = async (leadId) => {
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${leadId}/emails`,
+        { headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) } }
+      );
+      if (res.ok) setSentEmails(await res.json());
+    } catch {}
   };
 
   const loadAllLeads = async () => {
@@ -316,6 +369,80 @@ const AnalyticsDashboard = ({ credentials }) => {
                   ? <span className="text-green-600 text-sm font-medium">Geöffnet{selectedLead.email_open_count > 1 ? ` (${selectedLead.email_open_count}x)` : ''}</span>
                   : <span className="text-ea-dark/30 text-sm">Nicht geöffnet</span>
                 }
+              </div>
+
+              {/* Email Composer */}
+              <div className="border border-gray-200 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-semibold text-ea-dark flex items-center gap-2">
+                    <Send className="w-4 h-4 text-ea-gold" /> Email senden
+                  </h4>
+                  {!showEmailComposer ? (
+                    <button
+                      onClick={() => setShowEmailComposer(true)}
+                      className="px-3 py-1.5 bg-ea-gold text-ea-dark text-xs font-bold rounded-lg hover:bg-ea-gold/80 transition-all"
+                      data-testid="admin-email-compose-btn"
+                    >
+                      Neue Email
+                    </button>
+                  ) : (
+                    <button onClick={() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); }} className="text-ea-dark/30 hover:text-ea-dark/60">
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+                {showEmailComposer && (
+                  <div className="space-y-2" data-testid="admin-email-composer">
+                    <div className="bg-gray-50 rounded-lg px-3 py-2 text-xs text-ea-dark/40">
+                      An: <span className="text-ea-dark/70">{selectedLead.email}</span>
+                    </div>
+                    <input
+                      type="text"
+                      value={emailSubject}
+                      onChange={e => setEmailSubject(e.target.value)}
+                      placeholder="Subject"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold"
+                      data-testid="admin-email-subject"
+                    />
+                    <textarea
+                      value={emailBody}
+                      onChange={e => setEmailBody(e.target.value)}
+                      placeholder="Message..."
+                      rows={4}
+                      className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold resize-none"
+                      data-testid="admin-email-body"
+                    />
+                    <div className="bg-gray-50 rounded-lg px-3 py-2 text-xs text-ea-dark/30">
+                      Signatur: Holger Kuhlmann, CEO & Founder + EuroAdria Corporate
+                    </div>
+                    <button
+                      onClick={sendAdminEmail}
+                      disabled={sendingEmail || !emailSubject.trim() || !emailBody.trim()}
+                      className={`w-full py-2 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
+                        emailSent ? 'bg-green-500 text-white' : 'bg-ea-dark text-white hover:bg-ea-dark/90 disabled:opacity-40'
+                      }`}
+                      data-testid="admin-email-send-btn"
+                    >
+                      {emailSent ? 'Gesendet!' : sendingEmail ? 'Wird gesendet...' : <><Send className="w-3.5 h-3.5" /> Senden</>}
+                    </button>
+                  </div>
+                )}
+                {!showEmailComposer && sentEmails.length > 0 && (
+                  <div className="space-y-1.5 max-h-32 overflow-y-auto">
+                    {sentEmails.map((em, i) => (
+                      <div key={em._id || i} className="bg-gray-50 rounded-lg px-3 py-2 flex items-center justify-between" data-testid={`admin-sent-email-${i}`}>
+                        <div>
+                          <p className="text-sm text-ea-dark font-medium">{em.subject}</p>
+                          <p className="text-xs text-ea-dark/30">{em.sent_by || 'Admin'}</p>
+                        </div>
+                        <span className="text-xs text-ea-dark/30">{em.sent_at ? new Date(em.sent_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {!showEmailComposer && sentEmails.length === 0 && (
+                  <p className="text-xs text-ea-dark/30 text-center py-2">Keine Emails gesendet</p>
+                )}
               </div>
 
               {/* Notes Section */}

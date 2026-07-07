@@ -3,8 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone, timedelta
+import resend
 
-from core import db, verify_admin, parse_device_type
+from core import db, verify_admin, parse_device_type, RESEND_API_KEY, logger
 from models import PageViewEvent, StatusCheck, StatusCheckCreate
 
 router = APIRouter()
@@ -320,6 +321,86 @@ async def admin_add_note(lead_id: str, data: AdminNoteCreate, admin: str = Depen
     result = await db.lead_notes.insert_one(note)
     note["_id"] = str(result.inserted_id)
     return note
+
+
+# ── Admin Email ─────────────────────────────────────────────────────────
+
+class AdminEmailSend(BaseModel):
+    subject: str
+    body: str
+
+
+@router.post("/admin/leads/{lead_id}/email")
+async def admin_send_email(lead_id: str, data: AdminEmailSend, admin: str = Depends(verify_admin)):
+    """Send email to a lead from Admin panel (Holger)."""
+    from bson import ObjectId
+    from emails import wrap_email
+    from routes.team import SIGNATURE_HTML_TEMPLATE
+
+    lead = await db.leads.find_one({"_id": ObjectId(lead_id)})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    if not RESEND_API_KEY:
+        raise HTTPException(status_code=500, detail="Email service not configured")
+
+    lead_email = lead.get("email")
+    if not lead_email:
+        raise HTTPException(status_code=400, detail="Lead has no email address")
+
+    body_html = data.body.replace("\n", "<br>")
+    personal = '<p style="margin: 20px 0 0; color: #555; font-size: 14px; line-height: 1.6;">Kind regards,<br>Holger Kuhlmann<br>CEO &amp; Founder</p>'
+
+    content = f"""
+    <div style="color: #333; font-size: 15px; line-height: 1.7;">
+        {body_html}
+    </div>
+    {personal}
+    {SIGNATURE_HTML_TEMPLATE}
+    """
+
+    try:
+        resend.api_key = RESEND_API_KEY
+        result = resend.Emails.send({
+            "from": "Holger Kuhlmann - EuroAdria <office@euroadria.me>",
+            "to": [lead_email],
+            "subject": data.subject,
+            "html": wrap_email(content, lang="en", lead_id=lead_id, include_footer=False),
+            "reply_to": "office@euroadria.me"
+        })
+
+        email_record = {
+            "lead_id": lead_id,
+            "to": lead_email,
+            "subject": data.subject,
+            "body": data.body,
+            "sent_by": "Admin (Holger)",
+            "sent_by_email": "office@euroadria.me",
+            "sent_at": datetime.now(timezone.utc).isoformat(),
+            "resend_id": result.get("id") if isinstance(result, dict) else str(result)
+        }
+        await db.lead_emails.insert_one(email_record)
+
+        await db.lead_notes.insert_one({
+            "lead_id": lead_id,
+            "text": f"Email sent: \"{data.subject}\"",
+            "author": "Admin (Holger)",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+
+        logger.info(f"Admin email sent to {lead_email}: {data.subject}")
+        return {"success": True, "message": f"Email sent to {lead_email}"}
+    except Exception as e:
+        logger.error(f"Admin email send failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Email sending failed: {str(e)}")
+
+
+@router.get("/admin/leads/{lead_id}/emails")
+async def admin_get_lead_emails(lead_id: str, admin: str = Depends(verify_admin)):
+    """Get sent email history for a lead."""
+    emails = await db.lead_emails.find({"lead_id": lead_id}).sort("sent_at", -1).to_list(50)
+    for e in emails:
+        e["_id"] = str(e["_id"])
+    return emails
 
 
 @router.delete("/admin/leads/{lead_id}")
