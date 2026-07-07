@@ -42,15 +42,17 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - Team CRM at /admin/team (Milena login, lead management, notes, Kanban pipeline)
 - Email open tracking via 1x1 pixel (visible in Admin + Team CRM)
 - USCA Lead Form expanded (country, state, city, timeline, interest, contact method)
-- **Lead Detail Modal in Admin Dashboard** (2026-07-06): Clickable lead rows open modal with full details, email status, team CRM notes, and admin note input. Backend: GET /api/admin/leads/{id} with notes, POST /api/admin/leads/{id}/notes. Tested 100% backend+frontend.
+- **Lead Detail Modal in Admin Dashboard** (2026-07-06): Clickable lead rows, full details, notes, admin note input
+- **Admin "Alle Leads anzeigen"** (2026-07-07): Full leads list with search/filter, manual deletion
+- **Team CRM Email Tool** (2026-07-07): Milena can send emails to leads with customizable signature, email history, auto-note on send. Emails via Resend API.
 
 ## Pending / In Progress
 - [BLOCKED] VSL Video for `/us` and `/usca` (waiting on user)
 - [BLOCKED] TikTok + LinkedIn Pixel IDs (waiting on Holger)
 
 ## TODO (P1 - Next)
-- CRM Email Tool: Send emails with attachments directly from pipeline, mark leads as qualified
 - Lead Reactivation: Identify dead leads (7+ days no response), WhatsApp group invitation workflow
+- Notification system: Badge/alert for Milena when admin adds notes
 
 ## Upcoming (P1)
 - Apartment-Listing Funktionalitat (real DB data)
@@ -62,8 +64,9 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - Google Docs Import via URL
 
 ## Refactoring Needed
-- AnalyticsDashboard.jsx (833 lines) - Extract LeadDetailModal into separate component
-- AdminPage.jsx (4550 lines) - Split per-tab for maintainability
+- AnalyticsDashboard.jsx (905 lines) - Extract LeadDetailModal + Leads table
+- AdminPage.jsx (4550 lines) - Split per-tab
+- TeamCRM.jsx (572 lines) - Extract LeadDetail into own file
 - Duplicate cookie consent banner in DOM
 
 ## Key Architecture Notes
@@ -79,16 +82,30 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 
 ## Key API Endpoints
 - `GET /api/settings/migrate-en-{token}` - One-time DB migration to English
-- `GET /api/pdf/{pdf_key}` - Serves stored PDFs (used by Resend path attachments)
+- `GET /api/pdf/{pdf_key}` - Serves stored PDFs
 - `GET /api/admin/settings/pdf-status` - Returns upload status for all PDFs
 - `GET /api/settings/tracking` - Returns GTM ID
 - `PUT /api/admin/settings/tracking` - Save GTM ID
 - `POST /api/settings/upload-pdf-file` - Uploads PDFs in chunks
 - `GET /api/img/{filename}` - Streams optimized webp images from GridFS
 - `POST /api/leads` - Lead capture with PDF email attachment
-- `GET /api/admin/leads` - Get all leads (used by CSV export)
-- `GET /api/admin/leads/{lead_id}` - Get single lead with notes (Admin modal)
-- `POST /api/admin/leads/{lead_id}/notes` - Add admin note to lead
+- `GET /api/admin/leads` - Get all leads (CSV export + Alle Leads)
+- `GET /api/admin/leads/{lead_id}` - Get single lead with notes
+- `POST /api/admin/leads/{lead_id}/notes` - Add admin note
 - `DELETE /api/admin/leads/{lead_id}` - Delete a lead
-- `GET /api/team/leads` - Get leads with notes (Team CRM, JWT auth)
-- `POST /api/team/leads/{lead_id}/notes` - Add team member note
+- `GET /api/team/leads` - Get leads with notes (JWT)
+- `POST /api/team/leads/{lead_id}/notes` - Add team note
+- `POST /api/team/leads/{lead_id}/email` - Send email to lead (Resend)
+- `GET /api/team/leads/{lead_id}/emails` - Email history for lead
+- `GET /api/team/signature` - Get member signature
+- `PUT /api/team/signature` - Save member signature
+
+## DB Collections
+- `leads` - All captured leads
+- `lead_notes` - Notes on leads (by admin and team)
+- `lead_emails` - Sent email records (subject, body, signature, sent_by, sent_at)
+- `team_members` - Team CRM users (Milena)
+- `team_signatures` - Email signatures per team member
+- `contact_submissions` - Contact form entries
+- `page_views` - Analytics tracking
+- `calculator_usage` - ROI calculator events
