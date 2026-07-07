@@ -142,9 +142,9 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
         setTimeout(() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); setEmailSent(false); }, 1500);
       } else {
         const err = await res.json();
-        alert(err.detail || 'Email konnte nicht gesendet werden');
+        alert(err.detail || 'Email could not be sent');
       }
-    } catch { alert('Verbindungsfehler'); }
+    } catch { alert('Connection error'); }
     setSendingEmail(false);
   };
 
@@ -360,7 +360,7 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
           </div>
         )}
         {!showEmailComposer && sentEmails.length === 0 && (
-          <p className="text-white/20 text-sm text-center py-3">Noch keine Emails gesendet</p>
+          <p className="text-white/20 text-sm text-center py-3">No emails sent yet</p>
         )}
       </div>
 
