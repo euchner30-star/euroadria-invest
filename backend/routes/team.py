@@ -247,7 +247,7 @@ async def send_lead_email(lead_id: str, data: EmailSend, member=Depends(get_curr
     try:
         resend.api_key = RESEND_API_KEY
         result = resend.Emails.send({
-            "from": f"EuroAdria Team <noreply@euroadria.me>",
+            "from": f"{member['name']} - EuroAdria <{member['email']}>",
             "to": [lead_email],
             "subject": data.subject,
             "html": wrap_email(content, lang="en", lead_id=lead_id, include_footer=False),
