@@ -33,12 +33,13 @@ FOOTER_HTML = """
 """
 
 
-def wrap_email(content: str, lang: str = "de", lead_id: str = None) -> str:
+def wrap_email(content: str, lang: str = "de", lead_id: str = None, include_footer: bool = True) -> str:
     """Wrap email content in the unified light EuroAdria template."""
     tagline = "Advisory &amp; Investment Platform" if lang == "en" else "Beratung &amp; Angebotsplattform"
     tracking_pixel = ""
     if lead_id:
         tracking_pixel = f'<img src="https://www.euroadria.me/api/t/{lead_id}.png" width="1" height="1" style="display:block;width:1px;height:1px;border:0;" alt="" />'
+    footer = FOOTER_HTML if include_footer else ""
     return f"""
     <html>
     <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
@@ -51,7 +52,7 @@ def wrap_email(content: str, lang: str = "de", lead_id: str = None) -> str:
             <div style="padding: 32px; color: #333; font-size: 15px; line-height: 1.7;">
                 {content}
             </div>
-            {FOOTER_HTML}
+            {footer}
             {tracking_pixel}
         </div>
     </body>

@@ -187,33 +187,24 @@ SIGNATURE_HTML_TEMPLATE = """
             <td style="vertical-align: top; padding-left: 20px; line-height: 1.5;">
                 <p style="margin: 0 0 2px; font-size: 15px; font-weight: bold; color: #04151F;">EuroAdria Corporate Solutions</p>
                 <p style="margin: 0 0 6px;"><a href="https://euroadria.me" style="color: #C8A96A; text-decoration: none; font-size: 12px;">https://euroadria.me</a></p>
-                <p style="margin: 0 0 10px; font-size: 11px; color: #888;">a brand of <strong style="color: #555;">Montaris &amp; Co. d.o.o.</strong></p>
-                <table cellpadding="0" cellspacing="0" border="0" style="font-size: 12px; color: #555; line-height: 1.6;">
+                <p style="margin: 0 0 12px; font-size: 11px; color: #888;">a brand of <strong style="color: #555;">Montaris &amp; Co. d.o.o.</strong></p>
+                <p style="margin: 0; color: #555; font-size: 12px;">Novi Sad | Podgorica | D&uuml;sseldorf</p>
+                <p style="margin: 0; color: #555; font-size: 12px;">Marka Miljanova 12</p>
+                <p style="margin: 0 0 4px; color: #555; font-size: 12px;">21000 Novi Sad, Serbien</p>
+                <p style="margin: 0 0 12px; font-size: 11px; color: #999;">Reg. no.: 22147382 &nbsp;|&nbsp; PIB: 115356237</p>
+                <table cellpadding="0" cellspacing="0" border="0" style="font-size: 12px; color: #555; line-height: 1.5;">
                     <tr>
                         <td style="vertical-align: top; padding-right: 24px;">
-                            <p style="margin: 0 0 2px; font-weight: bold; color: #04151F; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Headquarters</p>
-                            <p style="margin: 0;">Novi Sad | Podgorica | D&uuml;sseldorf</p>
-                            <p style="margin: 0;">Marka Miljanova 12</p>
-                            <p style="margin: 0;">21000 Novi Sad, Serbien</p>
-                            <p style="margin: 4px 0 0; font-size: 11px; color: #888;">Reg. no.: 22147382 | PIB: 115356237</p>
+                            <p style="margin: 0 0 3px; font-weight: bold; color: #04151F; font-size: 11px; letter-spacing: 0.5px;">OFFICE PODGORICA</p>
+                            <p style="margin: 0;">Studentska br. 11</p>
+                            <p style="margin: 0;">Podgorica, Crna Gora</p>
+                        </td>
+                        <td style="vertical-align: top;">
+                            <p style="margin: 0 0 3px; font-weight: bold; color: #04151F; font-size: 11px; letter-spacing: 0.5px;">OFFICE D&Uuml;SSELDORF</p>
+                            <p style="margin: 0;">Speditionsstra&szlig;e 15a</p>
+                            <p style="margin: 0;">40221 D&uuml;sseldorf, Germany</p>
                         </td>
                     </tr>
-                    <tr><td style="padding-top: 8px;">
-                        <table cellpadding="0" cellspacing="0" border="0" style="font-size: 12px; color: #555; line-height: 1.5;">
-                            <tr>
-                                <td style="vertical-align: top; padding-right: 20px;">
-                                    <p style="margin: 0 0 2px; font-weight: bold; color: #04151F; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Office Podgorica</p>
-                                    <p style="margin: 0;">Studentska br. 11</p>
-                                    <p style="margin: 0;">Podgorica, Crna Gora</p>
-                                </td>
-                                <td style="vertical-align: top;">
-                                    <p style="margin: 0 0 2px; font-weight: bold; color: #04151F; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Office D&uuml;sseldorf</p>
-                                    <p style="margin: 0;">Speditionsstra&szlig;e 15a</p>
-                                    <p style="margin: 0;">40221 D&uuml;sseldorf, Germany</p>
-                                </td>
-                            </tr>
-                        </table>
-                    </td></tr>
                 </table>
             </td>
         </tr>
@@ -259,7 +250,7 @@ async def send_lead_email(lead_id: str, data: EmailSend, member=Depends(get_curr
             "from": f"EuroAdria Team <noreply@euroadria.me>",
             "to": [lead_email],
             "subject": data.subject,
-            "html": wrap_email(content, lead_id=lead_id),
+            "html": wrap_email(content, lang="en", lead_id=lead_id, include_footer=False),
             "reply_to": member["email"]
         })
 
