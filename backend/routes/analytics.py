@@ -405,6 +405,41 @@ async def admin_get_lead_emails(lead_id: str, admin: str = Depends(verify_admin)
     return emails
 
 
+class ManualLeadCreate(BaseModel):
+    name: str
+    email: str
+    phone: Optional[str] = ""
+    source: Optional[str] = "Manual"
+    interest: Optional[str] = ""
+    country: Optional[str] = ""
+    city: Optional[str] = ""
+
+
+@router.post("/admin/leads")
+async def create_manual_lead(data: ManualLeadCreate, admin: str = Depends(verify_admin)):
+    """Manually create a lead from Admin panel."""
+    email = data.email.strip().lower()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    existing = await db.leads.find_one({"email": email})
+    if existing:
+        raise HTTPException(status_code=409, detail=f"Lead with email {email} already exists")
+    lead = {
+        "name": data.name.strip(),
+        "email": email,
+        "phone": data.phone.strip() if data.phone else "",
+        "source": data.source.strip() if data.source else "Manual",
+        "interest": data.interest.strip() if data.interest else "",
+        "country": data.country.strip() if data.country else "",
+        "city": data.city.strip() if data.city else "",
+        "submitted_at": datetime.now(timezone.utc).isoformat(),
+        "manual": True,
+    }
+    result = await db.leads.insert_one(lead)
+    lead["_id"] = str(result.inserted_id)
+    return lead
+
+
 @router.delete("/admin/leads/{lead_id}")
 async def delete_lead(lead_id: str, admin: str = Depends(verify_admin)):
     """Delete a lead from the leads collection"""

@@ -69,6 +69,9 @@ const AnalyticsDashboard = ({ credentials }) => {
   const [importLabel, setImportLabel] = useState('Facebook Campaign');
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState(null);
+  const [showAddLead, setShowAddLead] = useState(false);
+  const [newLead, setNewLead] = useState({ name: '', email: '', phone: '', source: 'Manual', interest: '', country: '', city: '' });
+  const [addingLead, setAddingLead] = useState(false);
 
   useEffect(() => {
     fetchAnalytics();
@@ -252,6 +255,31 @@ const AnalyticsDashboard = ({ credentials }) => {
     setImporting(false);
   };
 
+  const addManualLead = async () => {
+    if (!newLead.name.trim() || !newLead.email.trim()) return;
+    setAddingLead(true);
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/leads`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+        },
+        body: JSON.stringify(newLead)
+      });
+      if (res.ok) {
+        setShowAddLead(false);
+        setNewLead({ name: '', email: '', phone: '', source: 'Manual', interest: '', country: '', city: '' });
+        fetchAnalytics();
+        if (allLeads) loadAllLeads();
+      } else {
+        const err = await res.json();
+        alert(err.detail || 'Error');
+      }
+    } catch { alert('Connection error'); }
+    setAddingLead(false);
+  };
+
   const loadAllLeads = async () => {
     setLoadingAllLeads(true);
     try {
@@ -386,6 +414,67 @@ const AnalyticsDashboard = ({ credentials }) => {
               {importResult?.error && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-600">{importResult.error}</div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Lead Modal */}
+      {showAddLead && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" data-testid="add-lead-modal" onClick={() => setShowAddLead(false)}>
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
+                  <Plus className="w-5 h-5 text-green-600" />
+                </div>
+                <h3 className="text-lg font-bold text-ea-dark">Lead hinzufügen</h3>
+              </div>
+              <button onClick={() => setShowAddLead(false)} className="p-2 rounded-lg hover:bg-gray-100"><X className="w-5 h-5 text-ea-dark/40" /></button>
+            </div>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-ea-dark/50 mb-1 block">Name *</label>
+                  <input type="text" value={newLead.name} onChange={e => setNewLead(p => ({ ...p, name: e.target.value }))} placeholder="Max Mustermann" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="add-lead-name" />
+                </div>
+                <div>
+                  <label className="text-xs text-ea-dark/50 mb-1 block">Email *</label>
+                  <input type="email" value={newLead.email} onChange={e => setNewLead(p => ({ ...p, email: e.target.value }))} placeholder="email@example.com" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="add-lead-email" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-ea-dark/50 mb-1 block">Telefon</label>
+                  <input type="text" value={newLead.phone} onChange={e => setNewLead(p => ({ ...p, phone: e.target.value }))} placeholder="+49..." className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="add-lead-phone" />
+                </div>
+                <div>
+                  <label className="text-xs text-ea-dark/50 mb-1 block">Quelle</label>
+                  <input type="text" value={newLead.source} onChange={e => setNewLead(p => ({ ...p, source: e.target.value }))} placeholder="Manual" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="add-lead-source" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-ea-dark/50 mb-1 block">Land</label>
+                  <input type="text" value={newLead.country} onChange={e => setNewLead(p => ({ ...p, country: e.target.value }))} placeholder="Germany" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="add-lead-country" />
+                </div>
+                <div>
+                  <label className="text-xs text-ea-dark/50 mb-1 block">Stadt</label>
+                  <input type="text" value={newLead.city} onChange={e => setNewLead(p => ({ ...p, city: e.target.value }))} placeholder="Berlin" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="add-lead-city" />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-ea-dark/50 mb-1 block">Interesse</label>
+                <input type="text" value={newLead.interest} onChange={e => setNewLead(p => ({ ...p, interest: e.target.value }))} placeholder="Real Estate in Montenegro" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="add-lead-interest" />
+              </div>
+              <button
+                onClick={addManualLead}
+                disabled={!newLead.name.trim() || !newLead.email.trim() || addingLead}
+                className="w-full py-2.5 bg-ea-dark text-white font-bold text-sm rounded-lg hover:bg-ea-dark/90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+                data-testid="add-lead-submit"
+              >
+                {addingLead ? 'Wird gespeichert...' : <><Plus className="w-4 h-4" /> Lead speichern</>}
+              </button>
             </div>
           </div>
         </div>
@@ -893,6 +982,14 @@ const AnalyticsDashboard = ({ credentials }) => {
                 Nur aktuelle
               </button>
             )}
+            <button
+              onClick={() => setShowAddLead(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 text-sm font-medium rounded-lg hover:bg-green-100 transition-all"
+              data-testid="add-lead-btn"
+            >
+              <Plus className="w-4 h-4" />
+              Lead
+            </button>
             <button
               onClick={() => { setShowImportModal(true); setImportResult(null); setImportFile(null); }}
               className="flex items-center gap-2 px-4 py-2 bg-ea-gold/10 text-ea-dark text-sm font-medium rounded-lg hover:bg-ea-gold/20 transition-all"
