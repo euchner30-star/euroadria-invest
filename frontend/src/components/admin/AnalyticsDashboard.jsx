@@ -58,6 +58,7 @@ const AnalyticsDashboard = ({ credentials }) => {
   const [allLeads, setAllLeads] = useState(null);
   const [loadingAllLeads, setLoadingAllLeads] = useState(false);
   const [leadSearch, setLeadSearch] = useState('');
+  const [sourceFilter, setSourceFilter] = useState('all');
   const [showEmailComposer, setShowEmailComposer] = useState(false);
   const [emailSubject, setEmailSubject] = useState('');
   const [emailBody, setEmailBody] = useState('');
@@ -1013,7 +1014,7 @@ const AnalyticsDashboard = ({ credentials }) => {
               </button>
             ) : (
               <button
-                onClick={() => { setAllLeads(null); setLeadSearch(''); }}
+                onClick={() => { setAllLeads(null); setLeadSearch(''); setSourceFilter('all'); }}
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-ea-dark/70 text-sm font-medium rounded-lg hover:bg-gray-200 transition-all"
                 data-testid="show-recent-leads"
               >
@@ -1047,23 +1048,35 @@ const AnalyticsDashboard = ({ credentials }) => {
           </div>
         </div>
 
-        {/* Search bar (only when all leads loaded) */}
+        {/* Search bar + Source Filter (only when all leads loaded) */}
         {allLeads && (
-          <div className="mb-4">
+          <div className="flex gap-3 mb-4">
             <input
               type="text"
               value={leadSearch}
               onChange={e => setLeadSearch(e.target.value)}
               placeholder="Suche nach Name, Email, Telefon..."
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-ea-dark focus:outline-none focus:border-ea-gold"
+              className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-ea-dark focus:outline-none focus:border-ea-gold"
               data-testid="lead-search-input"
             />
+            <select
+              value={sourceFilter}
+              onChange={e => setSourceFilter(e.target.value)}
+              className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-ea-dark focus:outline-none focus:border-ea-gold"
+              data-testid="lead-source-filter"
+            >
+              <option value="all">Alle Quellen</option>
+              {[...new Set(allLeads.map(l => l.source).filter(Boolean))].sort().map(s => (
+                <option key={s} value={s}>{s} ({allLeads.filter(l => l.source === s).length})</option>
+              ))}
+            </select>
           </div>
         )}
 
         {(() => {
           const leadsToShow = allLeads
             ? allLeads.filter(l => {
+                if (sourceFilter !== 'all' && l.source !== sourceFilter) return false;
                 if (!leadSearch.trim()) return true;
                 const q = leadSearch.toLowerCase();
                 return (l.name || '').toLowerCase().includes(q)
