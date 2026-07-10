@@ -440,6 +440,36 @@ async def create_manual_lead(data: ManualLeadCreate, admin: str = Depends(verify
     return lead
 
 
+class LeadAssign(BaseModel):
+    assigned_to: Optional[str] = None  # email of team member, or None to unassign
+
+
+@router.put("/admin/leads/{lead_id}/assign")
+async def assign_lead(lead_id: str, data: LeadAssign, admin: str = Depends(verify_admin)):
+    """Assign a lead to a team member (or unassign)."""
+    from bson import ObjectId
+    lead = await db.leads.find_one({"_id": ObjectId(lead_id)})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    update = {"assigned_to": data.assigned_to or None}
+    if data.assigned_to:
+        member = await db.team_members.find_one({"email": data.assigned_to})
+        update["assigned_to_name"] = member["name"] if member else data.assigned_to
+    else:
+        update["assigned_to_name"] = None
+    await db.leads.update_one({"_id": ObjectId(lead_id)}, {"$set": update})
+    return {"success": True, "assigned_to": data.assigned_to}
+
+
+@router.get("/admin/team-members")
+async def get_team_members(admin: str = Depends(verify_admin)):
+    """Get all team members for assignment dropdown."""
+    members = await db.team_members.find({}, {"password": 0}).to_list(50)
+    for m in members:
+        m["_id"] = str(m["_id"])
+    return members
+
+
 @router.delete("/admin/leads/{lead_id}")
 async def delete_lead(lead_id: str, admin: str = Depends(verify_admin)):
     """Delete a lead from the leads collection"""

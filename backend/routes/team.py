@@ -82,8 +82,14 @@ async def team_me(member=Depends(get_current_member)):
 
 @router.get("/team/leads")
 async def get_team_leads(member=Depends(get_current_member)):
-    """Get all leads for team view."""
-    leads = await db.leads.find({}).sort("submitted_at", -1).to_list(1000)
+    """Get leads for team view. Restricted members only see assigned leads."""
+    role = member.get("role", "member")
+    if role == "restricted":
+        # Only show leads assigned to this member
+        leads = await db.leads.find({"assigned_to": member["email"]}).sort("submitted_at", -1).to_list(1000)
+    else:
+        # Full access (Milena, admins)
+        leads = await db.leads.find({}).sort("submitted_at", -1).to_list(1000)
     for l in leads:
         l["_id"] = str(l["_id"])
         notes = await db.lead_notes.find({"lead_id": l["_id"]}).sort("created_at", -1).to_list(50)
@@ -95,11 +101,14 @@ async def get_team_leads(member=Depends(get_current_member)):
 
 @router.get("/team/leads/{lead_id}")
 async def get_team_lead(lead_id: str, member=Depends(get_current_member)):
-    """Get single lead with notes."""
+    """Get single lead with notes. Restricted members can only access assigned leads."""
     from bson import ObjectId
     lead = await db.leads.find_one({"_id": ObjectId(lead_id)})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
+    # Check access for restricted members
+    if member.get("role") == "restricted" and lead.get("assigned_to") != member["email"]:
+        raise HTTPException(status_code=403, detail="Access denied")
     lead["_id"] = str(lead["_id"])
     notes = await db.lead_notes.find({"lead_id": lead_id}).sort("created_at", -1).to_list(100)
     for n in notes:
@@ -298,19 +307,32 @@ async def get_lead_emails(lead_id: str, member=Depends(get_current_member)):
 
 @router.get("/team/seed")
 async def seed_team():
-    """Seed initial team members (run once)."""
-    existing = await db.team_members.find_one({"email": "milena@euroadria.me"})
-    if existing:
-        return {"message": "Already seeded"}
-    hashed = bcrypt.hashpw("mb2026!mnfgz".encode(), bcrypt.gensalt()).decode()
-    await db.team_members.insert_one({
-        "email": "milena@euroadria.me",
-        "name": "Milena Bubanja",
-        "password": hashed,
-        "role": "member",
-        "created_at": datetime.now(timezone.utc).isoformat()
-    })
-    return {"message": "Team member Milena seeded"}
+    """Seed team members (run once per new member)."""
+    results = []
+    members = [
+        {"email": "milena@euroadria.me", "name": "Milena Bubanja", "password": "mb2026!mnfgz", "role": "member"},
+        {"email": "d.lein@euroadria.me", "name": "D. Lein", "password": "Dl2026!xuzlq", "role": "restricted"},
+    ]
+    for m in members:
+        existing = await db.team_members.find_one({"email": m["email"]})
+        if existing:
+            # Update role if changed
+            if existing.get("role") != m["role"]:
+                await db.team_members.update_one({"email": m["email"]}, {"$set": {"role": m["role"]}})
+                results.append(f"{m['name']}: role updated to {m['role']}")
+            else:
+                results.append(f"{m['name']}: already exists")
+            continue
+        hashed = bcrypt.hashpw(m["password"].encode(), bcrypt.gensalt()).decode()
+        await db.team_members.insert_one({
+            "email": m["email"],
+            "name": m["name"],
+            "password": hashed,
+            "role": m["role"],
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        results.append(f"{m['name']}: created ({m['role']})")
+    return {"results": results}
 
 
 # ── Email open tracking ─────────────────────────────────────────────────

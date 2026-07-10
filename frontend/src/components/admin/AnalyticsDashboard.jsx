@@ -72,10 +72,21 @@ const AnalyticsDashboard = ({ credentials }) => {
   const [showAddLead, setShowAddLead] = useState(false);
   const [newLead, setNewLead] = useState({ name: '', email: '', phone: '', source: 'Manual', interest: '', country: '', city: '' });
   const [addingLead, setAddingLead] = useState(false);
+  const [teamMembers, setTeamMembers] = useState([]);
 
   useEffect(() => {
     fetchAnalytics();
+    fetchTeamMembers();
   }, [period]);
+
+  const fetchTeamMembers = async () => {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/team-members`, {
+        headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) }
+      });
+      if (res.ok) setTeamMembers(await res.json());
+    } catch {}
+  };
 
   const fetchAnalytics = async () => {
     setLoading(true);
@@ -278,6 +289,20 @@ const AnalyticsDashboard = ({ credentials }) => {
       }
     } catch { alert('Connection error'); }
     setAddingLead(false);
+  };
+
+  const assignLead = async (leadId, memberEmail) => {
+    try {
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${leadId}/assign`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+        },
+        body: JSON.stringify({ assigned_to: memberEmail || null })
+      });
+      setSelectedLead(prev => prev ? { ...prev, assigned_to: memberEmail || null, assigned_to_name: teamMembers.find(m => m.email === memberEmail)?.name || null } : prev);
+    } catch {}
   };
 
   const loadAllLeads = async () => {
@@ -676,14 +701,27 @@ const AnalyticsDashboard = ({ credentials }) => {
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="border-t border-gray-100 px-6 py-3 flex justify-between items-center">
+            {/* Footer with Assignment */}
+            <div className="border-t border-gray-100 px-6 py-3 flex items-center justify-between gap-3">
               <span className="text-xs text-ea-dark/30">
                 Lead vom {selectedLead.submitted_at ? new Date(selectedLead.submitted_at).toLocaleDateString('de-DE') : '-'}
               </span>
-              {selectedLead.status && (
-                <span className="text-xs font-medium px-2 py-1 rounded-full bg-blue-50 text-blue-600">{selectedLead.status}</span>
-              )}
+              <div className="flex items-center gap-2">
+                {selectedLead.status && (
+                  <span className="text-xs font-medium px-2 py-1 rounded-full bg-blue-50 text-blue-600">{selectedLead.status}</span>
+                )}
+                <select
+                  value={selectedLead.assigned_to || ''}
+                  onChange={e => assignLead(selectedLead._id, e.target.value)}
+                  className="text-xs bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-ea-dark focus:outline-none focus:border-ea-gold"
+                  data-testid="lead-assign-select"
+                >
+                  <option value="">Nicht zugewiesen</option>
+                  {teamMembers.map(m => (
+                    <option key={m.email} value={m.email}>{m.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
         </div>
