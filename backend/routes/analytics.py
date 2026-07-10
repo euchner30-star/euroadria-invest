@@ -1,9 +1,11 @@
 """Analytics & Tracking endpoints."""
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone, timedelta
 import resend
+import csv
+import io
 
 from core import db, verify_admin, parse_device_type, RESEND_API_KEY, logger
 from models import PageViewEvent, StatusCheck, StatusCheckCreate
@@ -415,6 +417,104 @@ async def delete_lead(lead_id: str, admin: str = Depends(verify_admin)):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
+# ── CSV Lead Import ─────────────────────────────────────────────────────
+
+FIELD_MAP = {
+    'e-mail': 'email', 'email': 'email', 'e_mail': 'email',
+    'name': 'name', 'full_name': 'name', 'fullname': 'name',
+    'vorname': 'first_name', 'first_name': 'first_name', 'firstname': 'first_name',
+    'nachname': 'last_name', 'last_name': 'last_name', 'lastname': 'last_name',
+    'telefonnummer': 'phone', 'phone': 'phone', 'telefon': 'phone', 'tel': 'phone',
+    'whatsapp-nummer': 'whatsapp', 'whatsapp': 'whatsapp', 'whatsapp_nummer': 'whatsapp',
+    'sekundäre telefonnummer': 'phone_secondary', 'secondary_phone': 'phone_secondary',
+    'quelle': 'csv_source', 'source': 'csv_source',
+}
+
+
+@router.post("/admin/leads/import")
+async def import_leads_csv(
+    file: UploadFile = File(...),
+    source_label: str = Form("CSV Import"),
+    admin: str = Depends(verify_admin)
+):
+    """Import leads from CSV file."""
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="Only CSV files are supported")
+
+    content = await file.read()
+    # Try UTF-8 BOM, then UTF-8, then latin-1
+    for enc in ['utf-8-sig', 'utf-8', 'latin-1']:
+        try:
+            text = content.decode(enc)
+            break
+        except UnicodeDecodeError:
+            continue
+    else:
+        raise HTTPException(status_code=400, detail="Could not decode CSV file")
+
+    reader = csv.DictReader(io.StringIO(text), delimiter=',')
+    # Auto-detect delimiter: if first field contains semicolons, switch
+    if reader.fieldnames and len(reader.fieldnames) <= 2 and ';' in (reader.fieldnames[0] or ''):
+        reader = csv.DictReader(io.StringIO(text), delimiter=';')
+
+    imported = 0
+    skipped = 0
+    errors = []
+
+    for i, row in enumerate(reader):
+        mapped = {}
+        for col, val in row.items():
+            if not col:
+                continue
+            key = FIELD_MAP.get(col.strip().lower(), None)
+            if key:
+                mapped[key] = (val or '').strip()
+
+        # Build name from parts if not present
+        if not mapped.get('name') and (mapped.get('first_name') or mapped.get('last_name')):
+            mapped['name'] = f"{mapped.get('first_name', '')} {mapped.get('last_name', '')}".strip()
+
+        email = mapped.get('email', '').strip().lower()
+        if not email:
+            skipped += 1
+            continue
+
+        # Check duplicate
+        existing = await db.leads.find_one({"email": email})
+        if existing:
+            skipped += 1
+            continue
+
+        phone = mapped.get('phone', '')
+        if phone and not phone.startswith('+'):
+            phone = '+' + phone
+
+        lead = {
+            "name": mapped.get('name', email.split('@')[0]),
+            "email": email,
+            "phone": phone,
+            "whatsapp": mapped.get('whatsapp', ''),
+            "source": source_label,
+            "csv_source": mapped.get('csv_source', ''),
+            "submitted_at": datetime.now(timezone.utc).isoformat(),
+            "imported": True,
+            "import_date": datetime.now(timezone.utc).isoformat(),
+        }
+        try:
+            await db.leads.insert_one(lead)
+            imported += 1
+        except Exception as e:
+            errors.append(f"Row {i+1}: {str(e)}")
+
+    logger.info(f"CSV Import: {imported} imported, {skipped} skipped, {len(errors)} errors")
+    return {
+        "success": True,
+        "imported": imported,
+        "skipped": skipped,
+        "errors": errors,
+        "total_rows": imported + skipped + len(errors)
+    }
 
 
 # ── Status Checks (legacy) ─────────────────────────────────────────────

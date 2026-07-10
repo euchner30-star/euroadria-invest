@@ -6,7 +6,7 @@ import {
 import { 
   Eye, Users, Calculator, Mail, TrendingUp, Monitor, Smartphone, Tablet,
   Download, ArrowUpRight, ArrowDownRight, FileText, Share2, Megaphone, RotateCcw, AlertTriangle, Trash2,
-  MessageSquare, Plus, X, Phone, MapPin, Clock, Target, Send
+  MessageSquare, Plus, X, Phone, MapPin, Clock, Target, Send, Upload
 } from 'lucide-react';
 
 const COLORS = ['#C8A96A', '#04151F', '#6B7280', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
@@ -64,6 +64,11 @@ const AnalyticsDashboard = ({ credentials }) => {
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [sentEmails, setSentEmails] = useState([]);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importFile, setImportFile] = useState(null);
+  const [importLabel, setImportLabel] = useState('Facebook Campaign');
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState(null);
 
   useEffect(() => {
     fetchAnalytics();
@@ -219,6 +224,34 @@ const AnalyticsDashboard = ({ credentials }) => {
     } catch {}
   };
 
+  const importCSV = async () => {
+    if (!importFile) return;
+    setImporting(true);
+    setImportResult(null);
+    try {
+      const formData = new FormData();
+      formData.append('file', importFile);
+      formData.append('source_label', importLabel);
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/import`, {
+        method: 'POST',
+        headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) },
+        body: formData
+      });
+      if (res.ok) {
+        const result = await res.json();
+        setImportResult(result);
+        if (result.imported > 0) {
+          fetchAnalytics();
+          if (allLeads) loadAllLeads();
+        }
+      } else {
+        const err = await res.json();
+        setImportResult({ error: err.detail || 'Import failed' });
+      }
+    } catch { setImportResult({ error: 'Connection error' }); }
+    setImporting(false);
+  };
+
   const loadAllLeads = async () => {
     setLoadingAllLeads(true);
     try {
@@ -294,6 +327,65 @@ const AnalyticsDashboard = ({ credentials }) => {
               >
                 {resetting ? 'Wird gelöscht...' : 'Ja, alles löschen'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Import Leads Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" data-testid="import-leads-modal" onClick={() => setShowImportModal(false)}>
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-ea-gold/10 flex items-center justify-center">
+                  <Upload className="w-5 h-5 text-ea-gold" />
+                </div>
+                <h3 className="text-lg font-bold text-ea-dark">Leads importieren</h3>
+              </div>
+              <button onClick={() => setShowImportModal(false)} className="p-2 rounded-lg hover:bg-gray-100"><X className="w-5 h-5 text-ea-dark/40" /></button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm text-ea-dark/60 mb-1 block">CSV-Datei</label>
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={e => setImportFile(e.target.files[0])}
+                  className="w-full text-sm text-ea-dark file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-ea-gold/10 file:text-ea-dark file:font-medium file:cursor-pointer hover:file:bg-ea-gold/20"
+                  data-testid="import-file-input"
+                />
+                <p className="text-xs text-ea-dark/30 mt-1">Spalten: Email, Name/Vorname/Nachname, Telefonnummer</p>
+              </div>
+              <div>
+                <label className="text-sm text-ea-dark/60 mb-1 block">Quelle / Label</label>
+                <input
+                  type="text"
+                  value={importLabel}
+                  onChange={e => setImportLabel(e.target.value)}
+                  placeholder="z.B. Facebook Campaign"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold"
+                  data-testid="import-label-input"
+                />
+              </div>
+              <button
+                onClick={importCSV}
+                disabled={!importFile || importing}
+                className="w-full py-2.5 bg-ea-dark text-white font-bold text-sm rounded-lg hover:bg-ea-dark/90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+                data-testid="import-submit-btn"
+              >
+                {importing ? 'Importiere...' : <><Upload className="w-4 h-4" /> Leads importieren</>}
+              </button>
+              {importResult && !importResult.error && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm" data-testid="import-result">
+                  <p className="text-green-700 font-semibold">{importResult.imported} Leads importiert</p>
+                  {importResult.skipped > 0 && <p className="text-green-600/70">{importResult.skipped} übersprungen (Duplikat oder keine Email)</p>}
+                  {importResult.errors?.length > 0 && <p className="text-red-500">{importResult.errors.length} Fehler</p>}
+                </div>
+              )}
+              {importResult?.error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-600">{importResult.error}</div>
+              )}
             </div>
           </div>
         </div>
@@ -801,6 +893,14 @@ const AnalyticsDashboard = ({ credentials }) => {
                 Nur aktuelle
               </button>
             )}
+            <button
+              onClick={() => { setShowImportModal(true); setImportResult(null); setImportFile(null); }}
+              className="flex items-center gap-2 px-4 py-2 bg-ea-gold/10 text-ea-dark text-sm font-medium rounded-lg hover:bg-ea-gold/20 transition-all"
+              data-testid="import-leads-btn"
+            >
+              <Upload className="w-4 h-4" />
+              Import
+            </button>
             <button
               onClick={exportLeadsCSV}
               className="flex items-center gap-2 px-4 py-2 bg-ea-dark text-white text-sm font-medium rounded-lg hover:bg-ea-dark/90 transition-all"

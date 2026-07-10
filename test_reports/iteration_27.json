@@ -1,0 +1,53 @@
+{
+  "summary": "Verified new CSV Lead Import feature end-to-end (backend + frontend). Backend: 10/10 pytest cases pass in /app/backend/tests/test_csv_leads_import.py covering auth, semicolon-delimited German-column parsing (E-Mail/Vorname/Nachname/Telefonnummer), duplicate detection, response shape ({imported, skipped, errors, total_rows}), source label persistence, phone '+' normalization, non-.csv rejection, and missing-email-column handling. Confirmed 53 leads with source='Facebook Campaign' present in the DB. Frontend: import modal (import-leads-btn → import-leads-modal) opens correctly after login, all three fields (import-file-input, import-label-input default='Facebook Campaign', import-submit-btn) render, uploading a fresh 2-row semicolon CSV via UI produced 'Leads importiert' with count=2 in import-result. Cleaned up 2 TEST_ leads after run.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/admin/leads/import", "issue": "Non-.csv extension check uses str.endswith('.csv') on file.filename — a file named 'foo.CSV' (uppercase) or missing extension will be rejected. Consider `filename.lower().endswith('.csv')` or MIME-type check for robustness."},
+      {"endpoint": "POST /api/admin/leads/import", "issue": "Delimiter auto-detect heuristic is fragile: it only switches to ';' if there are ≤2 comma-fieldnames AND the first field contains ';'. A single-column comma CSV whose header itself has a stray semicolon could false-positive. csv.Sniffer would be safer."},
+      {"endpoint": "POST /api/admin/leads/import", "issue": "Phone normalization blindly prepends '+' if the value doesn't start with '+'. If CSV already contains '00491701...' or a national format, it becomes '+00491701...' which is not a valid E.164 number."},
+      {"endpoint": "POST /api/admin/leads/import", "issue": "Duplicate check is a single find_one per row inside an async loop — for large CSVs this is N+1. A bulk pre-check (find({'email': {'$in': emails}}) once) would scale better and could dedup within the file itself as well."},
+      {"endpoint": "POST /api/admin/leads/import", "issue": "No unique index on leads.email → two concurrent imports of the same address can race past the find_one check and create duplicates. Add a MongoDB unique index on `email`."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Admin › Analytics Dashboard", "issues": ["Recharts throws repeated console warnings 'The width(-1) and height(-1) of chart should be greater than 0' on initial mount. Non-blocking but noisy — ResponsiveContainer parents likely need a minHeight/minWidth."]},
+      {"screen": "Import Leads modal", "issues": ["Clicking the dimmed backdrop closes the modal AND discards any in-progress import selection — a stray click while a file is chosen wipes the state. Consider requiring an explicit close via the X button when a file is selected."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_csv_leads_import.py",
+    "/app/test_reports/pytest/csv_import_results.xml"
+  ],
+  "action_items": [
+    "Optional: harden .csv extension check to be case-insensitive.",
+    "Optional: replace ad-hoc delimiter heuristic with csv.Sniffer.",
+    "Optional: guard phone '+' prefix — don't add if value starts with '00' or is empty-after-strip.",
+    "Optional: add MongoDB unique index on leads.email to prevent race-condition dupes."
+  ],
+  "critical_code_review_comments": [
+    "routes/analytics.py import_leads_csv(): the response includes `total_rows = imported + skipped + len(errors)` — this equals the number of rows PROCESSED, but a caller might reasonably expect it to equal the number of rows in the file (which could be different if the reader chokes mid-file). Consider renaming or documenting.",
+    "The FIELD_MAP is case-insensitive via col.strip().lower() but German umlauts in headers (e.g. 'Sekundäre Telefonnummer') rely on exact spelling — a variant like 'Sekundaere' won't map. Fine for the current Facebook export but worth documenting.",
+    "The imported lead document sets `name` to `email.split('@')[0]` when Vorname/Nachname/Name are all empty — a reasonable fallback but users importing anonymous email-only lists get pseudo-names like 'john.doe' in the UI.",
+    "AnalyticsDashboard.jsx importCSV(): no client-side validation of file size or row count — a user could accidentally upload a 100MB CSV and hang the UI + backend. Add basic size guard.",
+    "AnalyticsDashboard.jsx: on successful import, `importResult` remains in state indefinitely (only cleared when the modal reopens via setImportResult(null)); the modal's 'Leads importiert' banner will re-appear stale if the user closes the modal via ESC/backdrop and reopens without going through the button handler. Currently the import-leads-btn onClick does reset it — OK, but backdrop-close does not.",
+    "The dashboard component is 1131 lines in a single file, well over the recommended 700-line ceiling. Consider extracting LeadDetailModal, ImportModal, LeadsTable, and UTMLinkGenerator into separate files.",
+    "AnalyticsDashboard.jsx exportLeadsCSV() hard-codes credentials `btoa('admin:euroadria2025')` instead of using the passed-in `credentials` prop like every other call in the file. Copy-paste artifact — should be `btoa(\\`${credentials.username}:${credentials.password}\\`)`."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_csv_leads_import.py (new, 10 tests)"
+  ],
+  "success_rate": {
+    "backend": "100% (10/10)",
+    "frontend": "100% — import modal opens, all fields render, upload of fresh CSV shows '2 Leads importiert' in import-result"
+  },
+  "test_credentials": "Admin (verified): admin / euroadria2025 via HTTP Basic; also used for admin-login-button in UI.",
+  "seed_data_creation": "Created transient TEST_csvimport_* (backend, 3 rows) and TEST_ui_* (frontend, 2 rows) leads and cleaned them up after the run. 53 pre-existing 'Facebook Campaign' leads left intact.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Cookie consent localStorage key is `euroadria_cookie_consent` (JSON with keys necessary/analytics/marketing/timestamp) — must be pre-seeded BEFORE navigating or the banner overlays the import modal at the bottom of the analytics dashboard and blocks clicks. Facebook Campaign leads are exposed via GET /api/admin/leads (each with source='Facebook Campaign' and imported=true). Test file is in /app/backend/tests/test_csv_leads_import.py — reusable for regression. When creating test CSVs, remember the backend lower-cases emails at insert time, so lookups in GET results must be case-insensitive. Admin exportLeadsCSV in AnalyticsDashboard.jsx hardcodes credentials — flagged as code-review comment.",
+  "rca of the issue": "N/A — feature addition test, not a bug fix. All 7 required capabilities from the review request verified working: (1) POST /api/admin/leads/import accepts multipart file + source_label; (2) semicolon delimiter auto-detected with German columns mapped via FIELD_MAP; (3) duplicate emails skipped (re-import test returns imported=0, skipped=3); (4) GET /api/admin/leads returns Facebook Campaign leads (≥53 confirmed); (5) import-leads-btn opens import-leads-modal; (6) import-file-input / import-label-input / import-submit-btn all render and work; (7) import-result shows imported count after success."
+}
