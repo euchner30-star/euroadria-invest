@@ -1,0 +1,34 @@
+{
+  "summary": "Verified bug fix for admin lead-deletion page crash. Fix at /app/frontend/src/components/admin/AnalyticsDashboard.jsx:331 wraps setAllLeads with `if (allLeads)` guard, avoiding null.filter() TypeError when deleting from the 'Recent Leads' view (before 'Alle Leads anzeigen' is clicked). E2E Playwright test through the deployed UI passes both scenarios: (1) delete from Recent Leads with allLeads=null → row removed, dashboard alive, no page reload prompt; (2) delete from Alle Leads view → row removed, dashboard alive.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Admin › Analytics Dashboard", "issues": ["Recharts still emits 'width(-1) height(-1) of chart should be greater than 0' warnings on initial mount (pre-existing, non-blocking)."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "deleteLeadFromList swallows fetch failures silently: `catch {}` on line 333 means if the DELETE returns non-OK or throws, the user gets no feedback (no toast, no error state). Consider surfacing an alert or inline error so admins know the delete didn't persist.",
+    "Same function: on a non-OK response (`if (!res.ok) return;`) the row also stays visible with no error indication — same UX issue as above.",
+    "Line 331 uses `l._id !== leadId` for filtering allLeads, but leadId is derived earlier from `lead.lead_id || lead._id`. If a lead has both distinct `lead_id` and `_id` values (e.g. a lead_id chosen for URL routing), the filter could miss it. Consider filtering on both keys as done for data.recent_leads on line 332.",
+    "AnalyticsDashboard.jsx is 1285 lines — well over the 700-line recommended ceiling. Extract LeadDetailModal, ImportModal, AddLeadModal, LeadsTable and UTMLinkGenerator into separate modules.",
+    "exportLeadsCSV (line 129) still hardcodes `btoa('admin:euroadria2025')` instead of using the credentials prop — pre-existing carry-over from iteration_27."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only bug fix; no backend changes)",
+    "frontend": "100% — both delete scenarios (allLeads=null and allLeads populated) pass without crash"
+  },
+  "test_credentials": "Admin: admin / euroadria2025 via HTTP Basic (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Created two transient leads via POST /api/admin/leads (TEST_DeleteBug1 and TEST_DeleteBug2). Both were deleted through the UI as part of the test. Verified afterwards: 0 remaining TEST_DeleteBug leads in DB.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Bug fix verified via Playwright script that: (1) seeds euroadria_cookie_consent in localStorage first (otherwise the cookie banner overlays the leads table), (2) creates a fresh test lead via API so it appears at the top of Recent Leads, (3) hovers the row to reveal the opacity-0 delete button, (4) attaches a page.on('dialog', accept) handler for window.confirm, (5) clicks [data-testid='delete-lead-{i}'] and verifies the row disappears while [data-testid='analytics-dashboard'] remains mounted. Two stale TEST_EmailFeature leads from an earlier iteration remain in the DB (IDs 6a4cc2acd0ca57bd7e056a1b and 6a4ca31e83b7ddc8715a822d) — safe to leave or clean up.",
+  "rca of the issue": "ROOT CAUSE: deleteLeadFromList previously called `setAllLeads(prev => prev.filter(...))` unconditionally. `allLeads` state is initialised to `null` and only becomes an array after the user clicks 'Alle Leads anzeigen'. When a delete happened before that click, the updater invoked `null.filter(...)` inside React's render → TypeError → React unmounted the component tree → browser showed 'reload page?' prompt. FIX (verified): line 331 now guards with `if (allLeads) setAllLeads(prev => prev.filter(l => l._id !== leadId));`. REPRODUCTION STEPS: 1) Fresh admin login (allLeads=null). 2) Hover Recent Leads row. 3) Click delete-lead-{i}. 4) Confirm dialog. VERIFIED FIX: row removed via data.recent_leads filter (line 332), dashboard stays mounted, no TypeError in console, no reload prompt."
+}

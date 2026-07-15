@@ -323,13 +323,14 @@ const AnalyticsDashboard = ({ credentials }) => {
   const deleteLeadFromList = async (leadId, leadName) => {
     if (!window.confirm(`Lead "${leadName}" wirklich löschen?`)) return;
     try {
-      await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${leadId}`, {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${leadId}`, {
         method: 'DELETE',
         headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) }
       });
-      setAllLeads(prev => prev.filter(l => l._id !== leadId));
-      setData(prev => prev ? { ...prev, recent_leads: prev.recent_leads.filter(l => l.lead_id !== leadId) } : prev);
-    } catch (e) { alert('Fehler beim Löschen'); }
+      if (!res.ok) return;
+      if (allLeads) setAllLeads(prev => prev.filter(l => l._id !== leadId));
+      setData(prev => prev ? { ...prev, recent_leads: prev.recent_leads.filter(l => l.lead_id !== leadId && l._id !== leadId) } : prev);
+    } catch {}
   };
 
   if (loading) {
