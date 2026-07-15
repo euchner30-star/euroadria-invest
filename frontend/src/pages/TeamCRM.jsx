@@ -347,15 +347,20 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
 
         {/* Sent Emails History */}
         {!showEmailComposer && sentEmails.length > 0 && (
-          <div className="space-y-2 max-h-48 overflow-y-auto">
+          <div className="space-y-2 max-h-64 overflow-y-auto">
             {sentEmails.map((em, i) => (
-              <div key={em._id || i} className="bg-white/5 rounded-lg px-4 py-3" data-testid={`sent-email-${i}`}>
-                <div className="flex items-center justify-between">
-                  <p className="text-white text-sm font-medium">{em.subject}</p>
-                  <span className="text-white/20 text-xs">{em.sent_at ? new Date(em.sent_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</span>
+              <details key={em._id || i} className="bg-white/5 rounded-lg group" data-testid={`sent-email-${i}`}>
+                <summary className="px-4 py-3 flex items-center justify-between cursor-pointer list-none hover:bg-white/10 rounded-lg transition-all">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-sm font-medium truncate">{em.subject}</p>
+                    <p className="text-white/30 text-xs">{em.sent_at ? new Date(em.sent_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</p>
+                  </div>
+                  <svg className="w-4 h-4 text-white/20 shrink-0 ml-2 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                </summary>
+                <div className="px-4 pb-3 pt-1 border-t border-white/5">
+                  <p className="text-white/60 text-sm whitespace-pre-line leading-relaxed">{em.body}</p>
                 </div>
-                <p className="text-white/40 text-xs mt-1 line-clamp-2">{em.body}</p>
-              </div>
+              </details>
             ))}
           </div>
         )}

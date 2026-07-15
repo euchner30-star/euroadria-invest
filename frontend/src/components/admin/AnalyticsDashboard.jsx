@@ -635,20 +635,25 @@ const AnalyticsDashboard = ({ credentials }) => {
                   </div>
                 )}
                 {!showEmailComposer && sentEmails.length > 0 && (
-                  <div className="space-y-1.5 max-h-32 overflow-y-auto">
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
                     {sentEmails.map((em, i) => (
-                      <div key={em._id || i} className="bg-gray-50 rounded-lg px-3 py-2 flex items-center justify-between" data-testid={`admin-sent-email-${i}`}>
-                        <div>
-                          <p className="text-sm text-ea-dark font-medium">{em.subject}</p>
-                          <p className="text-xs text-ea-dark/30">{em.sent_by || 'Admin'}</p>
+                      <details key={em._id || i} className="bg-gray-50 rounded-lg group" data-testid={`admin-sent-email-${i}`}>
+                        <summary className="px-3 py-2.5 flex items-center justify-between cursor-pointer list-none hover:bg-gray-100 rounded-lg transition-all">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-ea-dark font-medium truncate">{em.subject}</p>
+                            <p className="text-xs text-ea-dark/30">{em.sent_by || 'Admin'} &middot; {em.sent_at ? new Date(em.sent_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</p>
+                          </div>
+                          <svg className="w-4 h-4 text-ea-dark/30 shrink-0 ml-2 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                        </summary>
+                        <div className="px-3 pb-3 pt-1 border-t border-gray-200/50">
+                          <p className="text-sm text-ea-dark/70 whitespace-pre-line leading-relaxed">{em.body}</p>
                         </div>
-                        <span className="text-xs text-ea-dark/30">{em.sent_at ? new Date(em.sent_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</span>
-                      </div>
+                      </details>
                     ))}
                   </div>
                 )}
                 {!showEmailComposer && sentEmails.length === 0 && (
-                  <p className="text-xs text-ea-dark/30 text-center py-2">Keine Emails gesendet</p>
+                  <p className="text-xs text-ea-dark/30 text-center py-2">No emails sent</p>
                 )}
               </div>
 
@@ -683,10 +688,10 @@ const AnalyticsDashboard = ({ credentials }) => {
 
                 {/* Notes List */}
                 {selectedLead.notes?.length > 0 ? (
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                  <div className="space-y-2 max-h-72 overflow-y-auto">
                     {selectedLead.notes.map((note, idx) => (
                       <div key={note._id || idx} className="bg-gray-50 rounded-lg px-4 py-3" data-testid={`lead-note-${idx}`}>
-                        <p className="text-sm text-ea-dark">{note.text}</p>
+                        <p className="text-sm text-ea-dark whitespace-pre-line leading-relaxed">{note.text}</p>
                         <div className="flex items-center gap-2 mt-1.5">
                           <span className="text-xs font-medium text-ea-gold">{note.author}</span>
                           <span className="text-xs text-ea-dark/30">
