@@ -463,11 +463,78 @@ async def assign_lead(lead_id: str, data: LeadAssign, admin: str = Depends(verif
 
 @router.get("/admin/team-members")
 async def get_team_members(admin: str = Depends(verify_admin)):
-    """Get all team members for assignment dropdown."""
+    """Get all team members with stats."""
     members = await db.team_members.find({}, {"password": 0}).to_list(50)
     for m in members:
         m["_id"] = str(m["_id"])
+        # Count assigned leads
+        assigned = await db.leads.count_documents({"assigned_to": m["email"]})
+        won = await db.leads.count_documents({"assigned_to": m["email"], "status": "won"})
+        m["assigned_leads"] = assigned
+        m["won_deals"] = won
     return members
+
+
+class TeamMemberCreate(BaseModel):
+    email: str
+    name: str
+    password: str
+    role: Optional[str] = "member"
+    commission_rate: Optional[float] = 3.0
+
+
+class TeamMemberUpdate(BaseModel):
+    name: Optional[str] = None
+    role: Optional[str] = None
+    commission_rate: Optional[float] = None
+
+
+@router.post("/admin/team-members")
+async def create_team_member(data: TeamMemberCreate, admin: str = Depends(verify_admin)):
+    """Create a new team member."""
+    import bcrypt
+    email = data.email.strip().lower()
+    existing = await db.team_members.find_one({"email": email})
+    if existing:
+        raise HTTPException(status_code=409, detail=f"Member {email} already exists")
+    hashed = bcrypt.hashpw(data.password.encode(), bcrypt.gensalt()).decode()
+    member = {
+        "email": email,
+        "name": data.name.strip(),
+        "password": hashed,
+        "role": data.role or "member",
+        "commission_rate": data.commission_rate or 3.0,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.team_members.insert_one(member)
+    return {"success": True, "email": email, "name": data.name}
+
+
+@router.put("/admin/team-members/{email}")
+async def update_team_member(email: str, data: TeamMemberUpdate, admin: str = Depends(verify_admin)):
+    """Update a team member."""
+    update = {}
+    if data.name is not None:
+        update["name"] = data.name.strip()
+    if data.role is not None:
+        update["role"] = data.role
+    if data.commission_rate is not None:
+        update["commission_rate"] = data.commission_rate
+    if not update:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    result = await db.team_members.update_one({"email": email}, {"$set": update})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Member not found")
+    return {"success": True}
+
+
+@router.delete("/admin/team-members/{email}")
+async def delete_team_member(email: str, admin: str = Depends(verify_admin)):
+    """Delete a team member."""
+    result = await db.team_members.delete_one({"email": email})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Member not found")
+    return {"success": True}
 
 
 class CommissionRateUpdate(BaseModel):
@@ -484,6 +551,31 @@ async def set_commission_rate(email: str, data: CommissionRateUpdate, admin: str
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Member not found")
     return {"success": True, "commission_rate": data.commission_rate}
+
+
+@router.get("/admin/commissions")
+async def get_all_commissions(admin: str = Depends(verify_admin)):
+    """Get commission overview across all team members for export."""
+    members = await db.team_members.find({}, {"password": 0}).to_list(50)
+    result = []
+    for m in members:
+        leads = await db.leads.find({"assigned_to": m["email"], "commission_amount": {"$gt": 0}}).to_list(500)
+        for l in leads:
+            result.append({
+                "lead_id": str(l["_id"]),
+                "member_name": m["name"],
+                "member_email": m["email"],
+                "lead_name": l.get("name", ""),
+                "lead_email": l.get("email", ""),
+                "property_value": l.get("property_value", 0),
+                "property_type": l.get("property_type", ""),
+                "property_location": l.get("property_location", ""),
+                "commission_amount": l.get("commission_amount", 0),
+                "status": l.get("status", ""),
+                "confirmed": l.get("commission_confirmed", False),
+                "confirmed_at": l.get("commission_confirmed_at", ""),
+            })
+    return result
 
 
 @router.put("/admin/leads/{lead_id}/confirm-commission")

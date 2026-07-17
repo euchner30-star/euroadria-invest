@@ -708,12 +708,29 @@ const AnalyticsDashboard = ({ credentials }) => {
               </div>
             </div>
 
-            {/* Footer with Assignment */}
+            {/* Footer with Assignment + Commission Confirm */}
             <div className="border-t border-gray-100 px-6 py-3 flex items-center justify-between gap-3">
               <span className="text-xs text-ea-dark/30">
                 Lead vom {selectedLead.submitted_at ? new Date(selectedLead.submitted_at).toLocaleDateString('de-DE') : '-'}
               </span>
               <div className="flex items-center gap-2">
+                {selectedLead.status === 'won' && selectedLead.commission_amount > 0 && !selectedLead.commission_confirmed && (
+                  <button
+                    onClick={async () => {
+                      await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${selectedLead._id}/confirm-commission`, {
+                        method: 'PUT', headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) }
+                      });
+                      setSelectedLead(prev => ({ ...prev, commission_confirmed: true }));
+                    }}
+                    className="text-xs font-bold px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all"
+                    data-testid="confirm-commission-btn"
+                  >
+                    ✓ Provision bestätigen ({selectedLead.commission_amount?.toLocaleString('de-DE')} €)
+                  </button>
+                )}
+                {selectedLead.commission_confirmed && selectedLead.commission_amount > 0 && (
+                  <span className="text-xs font-medium px-2 py-1 rounded-full bg-green-50 text-green-600">✓ {selectedLead.commission_amount?.toLocaleString('de-DE')} € bestätigt</span>
+                )}
                 {selectedLead.status && (
                   <span className="text-xs font-medium px-2 py-1 rounded-full bg-blue-50 text-blue-600">{selectedLead.status}</span>
                 )}

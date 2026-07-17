@@ -12,6 +12,7 @@ import SEO from '../components/SEO';
 import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHtml } from '../components/admin/WYSIWYGEditor';
 import ImageUploader, { ImageGalleryUploader } from '../components/admin/ImageUploader';
 import AnalyticsDashboard, { UTMLinkGenerator } from '../components/admin/AnalyticsDashboard';
+import TeamManagement from '../components/admin/TeamManagement';
 import NewsletterAdmin from '../components/admin/NewsletterAdmin';
 import PDFGenerator from '../components/admin/PDFGenerator';
 
@@ -22,6 +23,7 @@ const NAV_GROUPS = [
       { key: 'dashboard', icon: BarChart3, label: 'Dashboard' },
       { key: 'pipeline', icon: Target, label: 'Pipeline' },
       { key: 'revenue', icon: DollarSign, label: 'Revenue' },
+      { key: 'team', icon: Users, label: 'Team & Provisionen' },
     ]
   },
   {
@@ -2804,6 +2806,11 @@ const AdminPage = () => {
         {/* Revenue Tab */}
         {activeTab === 'revenue' && (
           <RevenueDashboard credentials={credentials} />
+        )}
+
+        {/* Team & Commissions Tab */}
+        {activeTab === 'team' && (
+          <TeamManagement credentials={credentials} />
         )}
 
           </div>
