@@ -35,6 +35,7 @@ class LeadUpdate(BaseModel):
     property_value: Optional[float] = None
     property_type: Optional[str] = None
     property_location: Optional[str] = None
+    commission_amount: Optional[float] = None
 
 class EmailSend(BaseModel):
     subject: str
@@ -130,7 +131,7 @@ async def update_team_lead(lead_id: str, data: LeadUpdate, member=Depends(get_cu
         if not lead or lead.get("assigned_to") != member["email"]:
             raise HTTPException(status_code=403, detail="Access denied")
     update = {}
-    for field in ['status', 'lead_value', 'interest', 'timeline', 'contact_method', 'property_value', 'property_type', 'property_location']:
+    for field in ['status', 'lead_value', 'interest', 'timeline', 'contact_method', 'property_value', 'property_type', 'property_location', 'commission_amount']:
         val = getattr(data, field, None)
         if val is not None:
             update[field] = val
@@ -171,11 +172,6 @@ async def delete_note(lead_id: str, note_id: str, member=Depends(get_current_mem
 @router.get("/team/commissions")
 async def get_my_commissions(member=Depends(get_current_member)):
     """Get commission overview for current team member."""
-    # Get member's commission rate
-    member_full = await db.team_members.find_one({"email": member["email"]})
-    commission_rate = member_full.get("commission_rate", 3.0) if member_full else 3.0
-
-    # Get leads based on role
     if member.get("role") == "restricted":
         query = {"assigned_to": member["email"]}
     else:
@@ -192,10 +188,10 @@ async def get_my_commissions(member=Depends(get_current_member)):
     for l in leads:
         pv = l.get("property_value", 0) or 0
         status = l.get("status", "new")
-        commission = pv * commission_rate / 100
+        commission = l.get("commission_amount", 0) or 0
         confirmed = l.get("commission_confirmed", False)
 
-        if status in ("won",) and pv > 0:
+        if status == "won" and commission > 0:
             total_won += pv
             if confirmed:
                 total_commission_confirmed += commission
@@ -216,7 +212,6 @@ async def get_my_commissions(member=Depends(get_current_member)):
             })
 
     return {
-        "commission_rate": commission_rate,
         "total_pipeline_value": round(total_pipeline, 2),
         "total_won_value": round(total_won, 2),
         "total_commission_pending": round(total_commission_pending, 2),

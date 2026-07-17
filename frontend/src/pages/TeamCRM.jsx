@@ -75,6 +75,7 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
   const [propertyValue, setPropertyValue] = useState(lead.property_value || '');
   const [propertyType, setPropertyType] = useState(lead.property_type || '');
   const [propertyLocation, setPropertyLocation] = useState(lead.property_location || '');
+  const [commissionAmount, setCommissionAmount] = useState(lead.commission_amount || '');
   const [saving, setSaving] = useState(false);
   const [showEmailComposer, setShowEmailComposer] = useState(false);
   const [emailSubject, setEmailSubject] = useState('');
@@ -130,6 +131,7 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
         property_value: propertyValue ? parseFloat(propertyValue) : null,
         property_type: propertyType || null,
         property_location: propertyLocation || null,
+        commission_amount: commissionAmount ? parseFloat(commissionAmount) : null,
       })
     });
     setSaving(false);
@@ -239,12 +241,14 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
             <input type="number" value={leadValue} onChange={(e) => setLeadValue(e.target.value)} placeholder="0" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="lead-value-input" />
           </div>
         </div>
-        {propertyValue > 0 && (
-          <div className="bg-[#C8A96A]/10 border border-[#C8A96A]/20 rounded-lg p-3 mb-4 flex items-center justify-between">
-            <span className="text-[#C8A96A] text-sm font-medium">Estimated Commission</span>
-            <span className="text-white font-bold text-lg">{(propertyValue * 0.03).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}</span>
-          </div>
-        )}
+        {/* Commission Input */}
+        <div className="bg-[#C8A96A]/10 border border-[#C8A96A]/20 rounded-lg p-4 mb-4">
+          <label className="text-[#C8A96A] text-xs font-bold mb-2 block">Commission (EUR)</label>
+          <input type="number" value={commissionAmount} onChange={(e) => setCommissionAmount(e.target.value)} placeholder="e.g. 7500" className="w-full px-3 py-2.5 bg-white/5 border border-[#C8A96A]/30 rounded-lg text-white text-lg font-bold focus:outline-none focus:border-[#C8A96A]" data-testid="commission-amount-input" />
+          {commissionAmount > 0 && propertyValue > 0 && (
+            <p className="text-white/30 text-xs mt-1">{(commissionAmount / propertyValue * 100).toFixed(1)}% of property value</p>
+          )}
+        </div>
         <button onClick={saveChanges} disabled={saving} className="w-full py-2.5 bg-[#C8A96A] text-[#04151F] font-bold rounded-lg text-sm hover:bg-[#d4b87a] transition-all disabled:opacity-50" data-testid="lead-save-btn">
           {saving ? 'Saving...' : 'Save Changes'}
         </button>
@@ -574,7 +578,7 @@ export default function TeamPage() {
             {/* Commission Overview */}
             {commissions && (commissions.total_pipeline_value > 0 || commissions.deals?.length > 0) && (
               <div className="bg-gradient-to-r from-[#C8A96A]/10 to-transparent border border-[#C8A96A]/20 rounded-xl p-5 mb-6">
-                <h3 className="text-[#C8A96A] font-bold text-sm mb-3 flex items-center gap-2"><TrendingUp className="w-4 h-4" /> Commission Overview ({commissions.commission_rate}%)</h3>
+                <h3 className="text-[#C8A96A] font-bold text-sm mb-3 flex items-center gap-2"><TrendingUp className="w-4 h-4" /> Commission Overview</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div>
                     <p className="text-white/40 text-xs">Pipeline Value</p>
