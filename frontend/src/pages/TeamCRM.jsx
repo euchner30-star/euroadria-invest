@@ -76,7 +76,15 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
   const [propertyType, setPropertyType] = useState(lead.property_type || '');
   const [propertyLocation, setPropertyLocation] = useState(lead.property_location || '');
   const [commissionAmount, setCommissionAmount] = useState(lead.commission_amount || '');
+  const [commissionModels, setCommissionModels] = useState({});
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    // Load commission models
+    fetch(`${API}/api/team/commission-models`)
+      .then(r => r.ok ? r.json() : {})
+      .then(d => setCommissionModels(d));
+  }, []);
   const [showEmailComposer, setShowEmailComposer] = useState(false);
   const [emailSubject, setEmailSubject] = useState('');
   const [emailBody, setEmailBody] = useState('');
@@ -219,16 +227,31 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
           </div>
           <div>
             <label className="text-white/40 text-xs mb-1 block">Property Value (EUR)</label>
-            <input type="number" value={propertyValue} onChange={(e) => setPropertyValue(e.target.value)} placeholder="e.g. 250000" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="property-value-input" />
+            <input type="number" value={propertyValue} onChange={(e) => {
+              const newVal = e.target.value;
+              setPropertyValue(newVal);
+              const rate = commissionModels[propertyType];
+              if (rate && newVal > 0) {
+                setCommissionAmount(Math.round(newVal * rate / 100));
+              }
+            }} placeholder="e.g. 250000" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="property-value-input" />
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
           <div>
             <label className="text-white/40 text-xs mb-1 block">Property Type</label>
-            <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)} className="w-full px-3 py-2.5 bg-[#0a2230] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="property-type-select">
+            <select value={propertyType} onChange={(e) => {
+              const newType = e.target.value;
+              setPropertyType(newType);
+              // Auto-calculate commission if model exists
+              const rate = commissionModels[newType];
+              if (rate && propertyValue > 0) {
+                setCommissionAmount(Math.round(propertyValue * rate / 100));
+              }
+            }} className="w-full px-3 py-2.5 bg-[#0a2230] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="property-type-select">
               <option value="" style={{ background: '#0a2230', color: '#fff' }}>Select...</option>
               {['Apartment', 'House', 'Villa', 'Land', 'Commercial', 'Hotel', 'Other'].map(t => (
-                <option key={t} value={t} style={{ background: '#0a2230', color: '#fff' }}>{t}</option>
+                <option key={t} value={t} style={{ background: '#0a2230', color: '#fff' }}>{t}{commissionModels[t] ? ` (${commissionModels[t]}%)` : ''}</option>
               ))}
             </select>
           </div>
@@ -243,7 +266,7 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
         </div>
         {/* Commission Input */}
         <div className="bg-[#C8A96A]/10 border border-[#C8A96A]/20 rounded-lg p-4 mb-4">
-          <label className="text-[#C8A96A] text-xs font-bold mb-2 block">Commission (EUR)</label>
+          <label className="text-[#C8A96A] text-xs font-bold mb-2 block">Commission (EUR){commissionModels[propertyType] ? <span className="font-normal text-white/30 ml-2">Auto: {commissionModels[propertyType]}% for {propertyType}</span> : ''}</label>
           <input type="number" value={commissionAmount} onChange={(e) => setCommissionAmount(e.target.value)} placeholder="e.g. 7500" className="w-full px-3 py-2.5 bg-white/5 border border-[#C8A96A]/30 rounded-lg text-white text-lg font-bold focus:outline-none focus:border-[#C8A96A]" data-testid="commission-amount-input" />
           {commissionAmount > 0 && propertyValue > 0 && (
             <p className="text-white/30 text-xs mt-1">{(commissionAmount / propertyValue * 100).toFixed(1)}% of property value</p>

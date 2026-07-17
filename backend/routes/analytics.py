@@ -559,6 +559,40 @@ async def set_commission_rate(email: str, data: CommissionRateUpdate, admin: str
     return {"success": True, "commission_rate": data.commission_rate}
 
 
+# ── Product Commission Models ───────────────────────────────────────────
+
+class ProductCommissionModel(BaseModel):
+    property_type: str
+    commission_rate: float
+    description: Optional[str] = ""
+
+
+@router.get("/admin/commission-models")
+async def get_commission_models(admin: str = Depends(verify_admin)):
+    """Get all product-specific commission models."""
+    models = await db.commission_models.find({}).sort("property_type", 1).to_list(50)
+    for m in models:
+        m["_id"] = str(m["_id"])
+    return models
+
+
+@router.put("/admin/commission-models")
+async def save_commission_models(models: List[ProductCommissionModel], admin: str = Depends(verify_admin)):
+    """Save all product commission models (replaces existing)."""
+    await db.commission_models.delete_many({})
+    if models:
+        docs = [{"property_type": m.property_type, "commission_rate": m.commission_rate, "description": m.description} for m in models]
+        await db.commission_models.insert_many(docs)
+    return {"success": True, "count": len(models)}
+
+
+@router.get("/team/commission-models")
+async def get_commission_models_team():
+    """Get product commission models (public for team CRM)."""
+    models = await db.commission_models.find({}).to_list(50)
+    return {m["property_type"]: m["commission_rate"] for m in models}
+
+
 @router.get("/admin/commissions")
 async def get_all_commissions(admin: str = Depends(verify_admin)):
     """Get commission overview across all team members for export."""

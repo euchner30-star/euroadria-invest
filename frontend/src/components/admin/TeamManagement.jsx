@@ -17,18 +17,22 @@ export default function TeamManagement({ credentials }) {
   const [editMember, setEditMember] = useState(null);
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'restricted', commission_rate: 3.0 });
   const [saving, setSaving] = useState(false);
+  const [commModels, setCommModels] = useState([]);
+  const [showModels, setShowModels] = useState(false);
 
   const authHeader = { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) };
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [mRes, cRes] = await Promise.all([
+      const [mRes, cRes, cmRes] = await Promise.all([
         fetch(`${API}/api/admin/team-members`, { headers: authHeader }),
         fetch(`${API}/api/admin/commissions`, { headers: authHeader }),
+        fetch(`${API}/api/admin/commission-models`, { headers: authHeader }),
       ]);
       if (mRes.ok) setMembers(await mRes.json());
       if (cRes.ok) setCommissions(await cRes.json());
+      if (cmRes.ok) setCommModels(await cmRes.json());
     } catch {}
     setLoading(false);
   };
@@ -82,6 +86,16 @@ export default function TeamManagement({ credentials }) {
   const confirmCommission = async (leadId) => {
     await fetch(`${API}/api/admin/leads/${leadId}/confirm-commission`, { method: 'PUT', headers: authHeader });
     fetchData();
+  };
+
+  const saveCommModels = async () => {
+    setSaving(true);
+    await fetch(`${API}/api/admin/commission-models`, {
+      method: 'PUT',
+      headers: { ...authHeader, 'Content-Type': 'application/json' },
+      body: JSON.stringify(commModels.filter(m => m.property_type && m.commission_rate > 0))
+    });
+    setSaving(false);
   };
 
   const exportCommissionsCSV = () => {
@@ -250,6 +264,46 @@ export default function TeamManagement({ credentials }) {
           ))}
           {members.length === 0 && <p className="text-center text-ea-dark/30 py-8">No team members yet</p>}
         </div>
+      </div>
+
+      {/* Product Commission Models */}
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-base font-semibold text-ea-dark">Commission Rates per Product</h3>
+          <button onClick={() => setShowModels(!showModels)} className="text-sm text-ea-gold hover:text-ea-dark transition-all font-medium" data-testid="toggle-commission-models">
+            {showModels ? 'Hide' : 'Configure'}
+          </button>
+        </div>
+        {!showModels ? (
+          <div className="flex flex-wrap gap-2">
+            {commModels.length > 0 ? commModels.map((m, i) => (
+              <span key={i} className="text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-ea-dark">
+                {m.property_type}: <strong className="text-ea-gold">{m.commission_rate}%</strong>
+              </span>
+            )) : <p className="text-sm text-ea-dark/30">No product commission models configured yet</p>}
+          </div>
+        ) : (
+          <div className="space-y-3" data-testid="commission-models-editor">
+            {commModels.map((m, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <input type="text" value={m.property_type} onChange={e => setCommModels(prev => prev.map((p, idx) => idx === i ? { ...p, property_type: e.target.value } : p))} placeholder="Product Type" className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold" data-testid={`cm-type-${i}`} />
+                <div className="flex items-center gap-1">
+                  <input type="number" step="0.1" value={m.commission_rate} onChange={e => setCommModels(prev => prev.map((p, idx) => idx === i ? { ...p, commission_rate: parseFloat(e.target.value) || 0 } : p))} className="w-20 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-right focus:outline-none focus:border-ea-gold" data-testid={`cm-rate-${i}`} />
+                  <span className="text-ea-dark/40 text-sm">%</span>
+                </div>
+                <button onClick={() => setCommModels(prev => prev.filter((_, idx) => idx !== i))} className="p-2 text-red-300 hover:text-red-500 transition-all"><Trash2 className="w-4 h-4" /></button>
+              </div>
+            ))}
+            <div className="flex gap-2">
+              <button onClick={() => setCommModels(prev => [...prev, { property_type: '', commission_rate: 3, description: '' }])} className="flex items-center gap-1 text-sm text-ea-gold hover:text-ea-dark transition-all" data-testid="add-commission-model">
+                <Plus className="w-4 h-4" /> Add Product Type
+              </button>
+              <button onClick={saveCommModels} disabled={saving} className="ml-auto px-5 py-2 bg-ea-dark text-white text-sm font-bold rounded-lg hover:bg-ea-dark/90 disabled:opacity-40" data-testid="save-commission-models">
+                {saving ? 'Saving...' : 'Save Models'}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Commissions Table */}
