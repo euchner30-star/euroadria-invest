@@ -521,6 +521,27 @@ export default function TeamPage() {
     setUser(null);
   };
 
+  // Auto-logout after 30 min inactivity
+  useEffect(() => {
+    if (!user) return;
+    let timer;
+    const TIMEOUT = 30 * 60 * 1000;
+    const resetTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        logout();
+        alert('Session expired due to inactivity');
+      }, TIMEOUT);
+    };
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+    events.forEach(e => window.addEventListener(e, resetTimer));
+    resetTimer();
+    return () => {
+      clearTimeout(timer);
+      events.forEach(e => window.removeEventListener(e, resetTimer));
+    };
+  }, [user]);
+
   useEffect(() => {
     let filtered = leads;
     if (search) {

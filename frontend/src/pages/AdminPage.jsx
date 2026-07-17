@@ -298,6 +298,27 @@ const AdminPage = () => {
     setComments([]);
   };
 
+  // Auto-logout after 30 min inactivity
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    let timer;
+    const TIMEOUT = 30 * 60 * 1000; // 30 minutes
+    const resetTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        handleLogout();
+        alert('Session expired due to inactivity');
+      }, TIMEOUT);
+    };
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+    events.forEach(e => window.addEventListener(e, resetTimer));
+    resetTimer();
+    return () => {
+      clearTimeout(timer);
+      events.forEach(e => window.removeEventListener(e, resetTimer));
+    };
+  }, [isAuthenticated]);
+
   const fetchArticles = async (creds) => {
     setArticlesLoading(true);
     try {
