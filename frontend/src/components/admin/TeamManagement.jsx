@@ -5,6 +5,7 @@ const API = process.env.REACT_APP_BACKEND_URL;
 
 const ROLES = [
   { value: 'member', label: 'Full Access', desc: 'Sees all leads' },
+  { value: 'teamleader', label: 'Team Leader', desc: 'Sees own + team leads, earns team commission' },
   { value: 'restricted', label: 'Restricted', desc: 'Only assigned leads' },
 ];
 
@@ -63,6 +64,8 @@ export default function TeamManagement({ credentials }) {
         name: editMember.name,
         role: editMember.role,
         commission_rate: editMember.commission_rate,
+        reports_to: editMember.reports_to || null,
+        teamleader_commission_rate: editMember.teamleader_commission_rate || 0,
       })
     });
     setEditMember(null);
@@ -180,6 +183,22 @@ export default function TeamManagement({ credentials }) {
                   </select>
                 </div>
                 <div>
+                  <label className="text-xs text-ea-dark/50 mb-1 block">Reports to (Team Leader)</label>
+                  <select value={editMember.reports_to || ''} onChange={e => setEditMember(p => ({ ...p, reports_to: e.target.value }))} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold" data-testid="edit-member-reports-to">
+                    <option value="">No Team Leader</option>
+                    {members.filter(m => m.email !== editMember.email && m.role === 'teamleader').map(m => (
+                      <option key={m.email} value={m.email}>{m.name}</option>
+                    ))}
+                  </select>
+                </div>
+                {editMember.role === 'teamleader' && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    <label className="text-xs text-amber-700 font-bold mb-1 block">Team Leader Commission Rate (%)</label>
+                    <p className="text-xs text-amber-600/70 mb-2">Commission earned on every deal closed by team members</p>
+                    <input type="number" step="0.1" value={editMember.teamleader_commission_rate || 0} onChange={e => setEditMember(p => ({ ...p, teamleader_commission_rate: parseFloat(e.target.value) }))} className="w-full bg-white border border-amber-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400" data-testid="edit-member-tl-commission" />
+                  </div>
+                )}
+                <div>
                   <label className="text-xs text-ea-dark/50 mb-1 block">Default Commission Rate (%)</label>
                   <input type="number" step="0.1" value={editMember.commission_rate || 3} onChange={e => setEditMember(p => ({ ...p, commission_rate: parseFloat(e.target.value) }))} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold" data-testid="edit-member-commission" />
                 </div>
@@ -203,13 +222,17 @@ export default function TeamManagement({ credentials }) {
                 <div>
                   <p className="text-sm font-semibold text-ea-dark">{m.name}</p>
                   <p className="text-xs text-ea-dark/40">{m.email}</p>
+                  {m.reports_to && <p className="text-xs text-amber-600">↳ reports to {members.find(x => x.email === m.reports_to)?.name || m.reports_to}</p>}
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right hidden sm:block">
-                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${m.role === 'restricted' ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600'}`}>
-                    {m.role === 'restricted' ? 'Restricted' : 'Full Access'}
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${m.role === 'teamleader' ? 'bg-amber-50 text-amber-700' : m.role === 'restricted' ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600'}`}>
+                    {m.role === 'teamleader' ? 'Team Leader' : m.role === 'restricted' ? 'Restricted' : 'Full Access'}
                   </span>
+                  {m.role === 'teamleader' && m.teamleader_commission_rate > 0 && (
+                    <span className="ml-1 text-xs text-amber-600 font-medium">{m.teamleader_commission_rate}%</span>
+                  )}
                 </div>
                 <div className="text-right hidden sm:block">
                   <p className="text-xs text-ea-dark/40">{m.assigned_leads || 0} Leads · {m.won_deals || 0} Won</p>

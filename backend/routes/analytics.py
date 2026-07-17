@@ -487,6 +487,8 @@ class TeamMemberUpdate(BaseModel):
     name: Optional[str] = None
     role: Optional[str] = None
     commission_rate: Optional[float] = None
+    reports_to: Optional[str] = None
+    teamleader_commission_rate: Optional[float] = None
 
 
 @router.post("/admin/team-members")
@@ -520,6 +522,10 @@ async def update_team_member(email: str, data: TeamMemberUpdate, admin: str = De
         update["role"] = data.role
     if data.commission_rate is not None:
         update["commission_rate"] = data.commission_rate
+    if data.reports_to is not None:
+        update["reports_to"] = data.reports_to if data.reports_to else None
+    if data.teamleader_commission_rate is not None:
+        update["teamleader_commission_rate"] = data.teamleader_commission_rate
     if not update:
         raise HTTPException(status_code=400, detail="No fields to update")
     result = await db.team_members.update_one({"email": email}, {"$set": update})

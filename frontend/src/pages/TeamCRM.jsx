@@ -597,15 +597,22 @@ export default function TeamPage() {
                     <p className="text-green-400 font-bold text-lg">{commissions.total_commission_confirmed.toLocaleString('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}</p>
                   </div>
                 </div>
+                {/* Team Leader Bonus */}
+                {commissions.total_team_commission > 0 && (
+                  <div className="mt-3 bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 flex items-center justify-between">
+                    <span className="text-amber-400 text-sm font-medium">Team Leader Bonus ({commissions.teamleader_rate}%)</span>
+                    <span className="text-white font-bold text-lg">{commissions.total_team_commission.toLocaleString('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}</span>
+                  </div>
+                )}
                 {commissions.deals?.length > 0 && (
-                  <div className="mt-4 space-y-2 max-h-40 overflow-y-auto">
+                  <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
                     {commissions.deals.map((d, i) => (
                       <div key={i} className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
                         <div className="flex items-center gap-3">
                           <Building className="w-4 h-4 text-white/30" />
                           <div>
                             <p className="text-white text-sm font-medium">{d.name}</p>
-                            <p className="text-white/30 text-xs">{d.property_type} {d.property_location ? `· ${d.property_location}` : ''}</p>
+                            <p className="text-white/30 text-xs">{d.property_type} {d.property_location ? `· ${d.property_location}` : ''} {d.type === 'team' ? <span className="text-amber-400">· Team Deal</span> : ''}</p>
                           </div>
                         </div>
                         <div className="text-right">

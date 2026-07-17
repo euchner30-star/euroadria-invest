@@ -86,13 +86,17 @@ async def team_me(member=Depends(get_current_member)):
 
 @router.get("/team/leads")
 async def get_team_leads(member=Depends(get_current_member)):
-    """Get leads for team view. Restricted members only see assigned leads."""
+    """Get leads for team view. Restricted: only assigned. Teamleader: own + team. Member: all."""
     role = member.get("role", "member")
     if role == "restricted":
-        # Only show leads assigned to this member
         leads = await db.leads.find({"assigned_to": member["email"]}).sort("submitted_at", -1).to_list(1000)
+    elif role == "teamleader":
+        # Own assigned + team members' leads
+        subordinates = await db.team_members.find({"reports_to": member["email"]}).to_list(50)
+        sub_emails = [s["email"] for s in subordinates]
+        all_emails = [member["email"]] + sub_emails
+        leads = await db.leads.find({"assigned_to": {"$in": all_emails}}).sort("submitted_at", -1).to_list(1000)
     else:
-        # Full access (Milena, admins)
         leads = await db.leads.find({}).sort("submitted_at", -1).to_list(1000)
     for l in leads:
         l["_id"] = str(l["_id"])
@@ -171,25 +175,45 @@ async def delete_note(lead_id: str, note_id: str, member=Depends(get_current_mem
 
 @router.get("/team/commissions")
 async def get_my_commissions(member=Depends(get_current_member)):
-    """Get commission overview for current team member."""
-    if member.get("role") == "restricted":
-        query = {"assigned_to": member["email"]}
-    else:
-        query = {"$or": [{"assigned_to": member["email"]}, {"updated_by": member["name"]}]}
+    """Get commission overview for current team member, including team leader commissions."""
+    role = member.get("role", "member")
+    email = member["email"]
 
-    leads = await db.leads.find(query).to_list(1000)
+    # Own leads
+    if role == "restricted":
+        query = {"assigned_to": email}
+    else:
+        query = {"$or": [{"assigned_to": email}, {"updated_by": member["name"]}]}
+
+    own_leads = await db.leads.find(query).to_list(1000)
+
+    # Team leader: also get leads from team members who report to me
+    team_member_emails = []
+    team_leads = []
+    if role == "teamleader":
+        subordinates = await db.team_members.find({"reports_to": email}).to_list(50)
+        team_member_emails = [s["email"] for s in subordinates]
+        if team_member_emails:
+            team_leads = await db.leads.find({"assigned_to": {"$in": team_member_emails}}).to_list(1000)
+
+    member_full = await db.team_members.find_one({"email": email})
+    tl_rate = member_full.get("teamleader_commission_rate", 0) if member_full else 0
 
     total_pipeline = 0
     total_won = 0
     total_commission_pending = 0
     total_commission_confirmed = 0
+    total_team_commission = 0
     deals = []
+    own_lead_ids = set()
 
-    for l in leads:
+    # Own deals
+    for l in own_leads:
         pv = l.get("property_value", 0) or 0
         status = l.get("status", "new")
         commission = l.get("commission_amount", 0) or 0
         confirmed = l.get("commission_confirmed", False)
+        own_lead_ids.add(str(l["_id"]))
 
         if status == "won" and commission > 0:
             total_won += pv
@@ -209,6 +233,36 @@ async def get_my_commissions(member=Depends(get_current_member)):
                 "status": status,
                 "commission": round(commission, 2),
                 "confirmed": confirmed,
+                "type": "own",
+                "assigned_to": l.get("assigned_to", ""),
+            })
+
+    # Team leader bonus on team deals
+    for l in team_leads:
+        lid = str(l["_id"])
+        if lid in own_lead_ids:
+            continue
+        pv = l.get("property_value", 0) or 0
+        status = l.get("status", "new")
+        member_commission = l.get("commission_amount", 0) or 0
+        confirmed = l.get("commission_confirmed", False)
+        tl_commission = round(pv * tl_rate / 100, 2) if tl_rate > 0 and pv > 0 else 0
+
+        if status == "won" and tl_commission > 0:
+            total_team_commission += tl_commission
+
+        if pv > 0:
+            deals.append({
+                "lead_id": lid,
+                "name": l.get("name", ""),
+                "property_value": pv,
+                "property_type": l.get("property_type", ""),
+                "property_location": l.get("property_location", ""),
+                "status": status,
+                "commission": round(tl_commission, 2),
+                "confirmed": confirmed,
+                "type": "team",
+                "assigned_to": l.get("assigned_to", ""),
             })
 
     return {
@@ -216,6 +270,9 @@ async def get_my_commissions(member=Depends(get_current_member)):
         "total_won_value": round(total_won, 2),
         "total_commission_pending": round(total_commission_pending, 2),
         "total_commission_confirmed": round(total_commission_confirmed, 2),
+        "total_team_commission": round(total_team_commission, 2),
+        "teamleader_rate": tl_rate,
+        "team_members": team_member_emails,
         "deals": deals,
     }
 
