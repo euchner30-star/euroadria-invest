@@ -35,7 +35,6 @@ class LeadUpdate(BaseModel):
     property_value: Optional[float] = None
     property_type: Optional[str] = None
     property_location: Optional[str] = None
-    commission_amount: Optional[float] = None
 
 class EmailSend(BaseModel):
     subject: str
@@ -135,7 +134,7 @@ async def update_team_lead(lead_id: str, data: LeadUpdate, member=Depends(get_cu
         if not lead or lead.get("assigned_to") != member["email"]:
             raise HTTPException(status_code=403, detail="Access denied")
     update = {}
-    for field in ['status', 'lead_value', 'interest', 'timeline', 'contact_method', 'property_value', 'property_type', 'property_location', 'commission_amount']:
+    for field in ['status', 'lead_value', 'interest', 'timeline', 'contact_method', 'property_value', 'property_type', 'property_location']:
         val = getattr(data, field, None)
         if val is not None:
             update[field] = val
