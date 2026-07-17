@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { LogOut, Search, ChevronDown, ChevronUp, Phone, Mail, MapPin, Clock, Target, MessageSquare, Plus, Trash2, Edit3, User, Calendar, DollarSign, Filter, Send, X, Settings } from 'lucide-react';
+import { LogOut, Search, ChevronDown, ChevronUp, Phone, Mail, MapPin, Clock, Target, MessageSquare, Plus, Trash2, Edit3, User, Calendar, DollarSign, Filter, Send, X, Settings, TrendingUp, Building } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -7,7 +7,9 @@ const STATUSES = [
   { value: 'new', label: 'New', color: 'bg-blue-500' },
   { value: 'contacted', label: 'Contacted', color: 'bg-yellow-500' },
   { value: 'qualified', label: 'Qualified', color: 'bg-purple-500' },
+  { value: 'offer', label: 'Offer', color: 'bg-cyan-500' },
   { value: 'negotiation', label: 'Negotiation', color: 'bg-orange-500' },
+  { value: 'contract', label: 'Contract', color: 'bg-indigo-500' },
   { value: 'won', label: 'Won', color: 'bg-green-500' },
   { value: 'lost', label: 'Lost', color: 'bg-red-500' },
 ];
@@ -70,6 +72,9 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
   const [notes, setNotes] = useState(lead.notes || []);
   const [status, setStatus] = useState(lead.status || 'new');
   const [leadValue, setLeadValue] = useState(lead.lead_value || '');
+  const [propertyValue, setPropertyValue] = useState(lead.property_value || '');
+  const [propertyType, setPropertyType] = useState(lead.property_type || '');
+  const [propertyLocation, setPropertyLocation] = useState(lead.property_location || '');
   const [saving, setSaving] = useState(false);
   const [showEmailComposer, setShowEmailComposer] = useState(false);
   const [emailSubject, setEmailSubject] = useState('');
@@ -119,7 +124,13 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
     await fetch(`${API}/api/team/leads/${lead._id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ status, lead_value: leadValue ? parseFloat(leadValue) : null })
+      body: JSON.stringify({
+        status,
+        lead_value: leadValue ? parseFloat(leadValue) : null,
+        property_value: propertyValue ? parseFloat(propertyValue) : null,
+        property_type: propertyType || null,
+        property_location: propertyLocation || null,
+      })
     });
     setSaving(false);
     onUpdate();
@@ -194,10 +205,10 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
         </div>
       </div>
 
-      {/* Status & Value Editor */}
+      {/* Deal & Property Details */}
       <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
-        <h3 className="text-white font-bold mb-4 flex items-center gap-2"><Edit3 className="w-4 h-4 text-[#C8A96A]" /> Update Lead</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <h3 className="text-white font-bold mb-4 flex items-center gap-2"><Edit3 className="w-4 h-4 text-[#C8A96A]" /> Deal Details</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="text-white/40 text-xs mb-1 block">Status</label>
             <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full px-3 py-2.5 bg-[#0a2230] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="lead-status-select">
@@ -205,15 +216,38 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
             </select>
           </div>
           <div>
+            <label className="text-white/40 text-xs mb-1 block">Property Value (EUR)</label>
+            <input type="number" value={propertyValue} onChange={(e) => setPropertyValue(e.target.value)} placeholder="e.g. 250000" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="property-value-input" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label className="text-white/40 text-xs mb-1 block">Property Type</label>
+            <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)} className="w-full px-3 py-2.5 bg-[#0a2230] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="property-type-select">
+              <option value="" style={{ background: '#0a2230', color: '#fff' }}>Select...</option>
+              {['Apartment', 'House', 'Villa', 'Land', 'Commercial', 'Hotel', 'Other'].map(t => (
+                <option key={t} value={t} style={{ background: '#0a2230', color: '#fff' }}>{t}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-white/40 text-xs mb-1 block">Property Location</label>
+            <input type="text" value={propertyLocation} onChange={(e) => setPropertyLocation(e.target.value)} placeholder="e.g. Budva, Montenegro" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="property-location-input" />
+          </div>
+          <div>
             <label className="text-white/40 text-xs mb-1 block">Lead Value (EUR)</label>
             <input type="number" value={leadValue} onChange={(e) => setLeadValue(e.target.value)} placeholder="0" className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="lead-value-input" />
           </div>
-          <div className="flex items-end">
-            <button onClick={saveChanges} disabled={saving} className="w-full py-2.5 bg-[#C8A96A] text-[#04151F] font-bold rounded-lg text-sm hover:bg-[#d4b87a] transition-all disabled:opacity-50" data-testid="lead-save-btn">
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
         </div>
+        {propertyValue > 0 && (
+          <div className="bg-[#C8A96A]/10 border border-[#C8A96A]/20 rounded-lg p-3 mb-4 flex items-center justify-between">
+            <span className="text-[#C8A96A] text-sm font-medium">Estimated Commission</span>
+            <span className="text-white font-bold text-lg">{(propertyValue * 0.03).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}</span>
+          </div>
+        )}
+        <button onClick={saveChanges} disabled={saving} className="w-full py-2.5 bg-[#C8A96A] text-[#04151F] font-bold rounded-lg text-sm hover:bg-[#d4b87a] transition-all disabled:opacity-50" data-testid="lead-save-btn">
+          {saving ? 'Saving...' : 'Save Changes'}
+        </button>
       </div>
 
       {/* Email Composer */}
@@ -408,6 +442,7 @@ export default function TeamPage() {
   const [sortField, setSortField] = useState('submitted_at');
   const [sortDir, setSortDir] = useState('desc');
   const [token, setToken] = useState(() => localStorage.getItem('team_token'));
+  const [commissions, setCommissions] = useState(null);
 
   const fetchLeads = useCallback(async () => {
     if (!token) return;
@@ -427,6 +462,14 @@ export default function TeamPage() {
     setLoading(false);
   }, [token]);
 
+  const fetchCommissions = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await fetch(`${API}/api/team/commissions`, { headers: { 'Authorization': `Bearer ${token}` } });
+      if (res.ok) setCommissions(await res.json());
+    } catch {}
+  }, [token]);
+
   useEffect(() => {
     if (!token) { setLoading(false); return; }
     fetch(`${API}/api/team/me`, { headers: { 'Authorization': `Bearer ${token}` } })
@@ -434,7 +477,7 @@ export default function TeamPage() {
         if (!r.ok) throw new Error('unauthorized');
         return r.json();
       })
-      .then(d => { setUser(d); fetchLeads(); })
+      .then(d => { setUser(d); fetchLeads(); fetchCommissions(); })
       .catch(() => { setLoading(false); });
   }, [token, fetchLeads]);
 
@@ -443,6 +486,7 @@ export default function TeamPage() {
     setToken(data.token);
     setUser(data);
     fetchLeads();
+    fetchCommissions();
   };
 
   const logout = () => {
@@ -510,11 +554,11 @@ export default function TeamPage() {
         ) : (
           <>
             {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
               {[
                 { label: 'Total Leads', value: leads.length, icon: Target },
                 { label: 'New', value: leads.filter(l => !l.status || l.status === 'new').length, icon: Clock },
-                { label: 'Qualified', value: leads.filter(l => l.status === 'qualified').length, icon: Filter },
+                { label: 'In Pipeline', value: leads.filter(l => ['contacted', 'qualified', 'offer', 'negotiation', 'contract'].includes(l.status)).length, icon: Filter },
                 { label: 'Won', value: leads.filter(l => l.status === 'won').length, icon: DollarSign },
               ].map(s => (
                 <div key={s.label} className="bg-white/5 border border-white/10 rounded-xl p-4">
@@ -526,6 +570,52 @@ export default function TeamPage() {
                 </div>
               ))}
             </div>
+
+            {/* Commission Overview */}
+            {commissions && (commissions.total_pipeline_value > 0 || commissions.deals?.length > 0) && (
+              <div className="bg-gradient-to-r from-[#C8A96A]/10 to-transparent border border-[#C8A96A]/20 rounded-xl p-5 mb-6">
+                <h3 className="text-[#C8A96A] font-bold text-sm mb-3 flex items-center gap-2"><TrendingUp className="w-4 h-4" /> Commission Overview ({commissions.commission_rate}%)</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div>
+                    <p className="text-white/40 text-xs">Pipeline Value</p>
+                    <p className="text-white font-bold text-lg">{commissions.total_pipeline_value.toLocaleString('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}</p>
+                  </div>
+                  <div>
+                    <p className="text-white/40 text-xs">Won Value</p>
+                    <p className="text-green-400 font-bold text-lg">{commissions.total_won_value.toLocaleString('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}</p>
+                  </div>
+                  <div>
+                    <p className="text-white/40 text-xs">Commission Pending</p>
+                    <p className="text-yellow-400 font-bold text-lg">{commissions.total_commission_pending.toLocaleString('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}</p>
+                  </div>
+                  <div>
+                    <p className="text-white/40 text-xs">Commission Confirmed</p>
+                    <p className="text-green-400 font-bold text-lg">{commissions.total_commission_confirmed.toLocaleString('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}</p>
+                  </div>
+                </div>
+                {commissions.deals?.length > 0 && (
+                  <div className="mt-4 space-y-2 max-h-40 overflow-y-auto">
+                    {commissions.deals.map((d, i) => (
+                      <div key={i} className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
+                        <div className="flex items-center gap-3">
+                          <Building className="w-4 h-4 text-white/30" />
+                          <div>
+                            <p className="text-white text-sm font-medium">{d.name}</p>
+                            <p className="text-white/30 text-xs">{d.property_type} {d.property_location ? `· ${d.property_location}` : ''}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-white text-sm font-bold">{d.property_value.toLocaleString('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}</p>
+                          <p className={`text-xs font-medium ${d.confirmed ? 'text-green-400' : d.status === 'won' ? 'text-yellow-400' : 'text-white/30'}`}>
+                            {d.confirmed ? `✓ ${d.commission.toLocaleString('de-DE')} €` : d.status === 'won' ? `⏳ ${d.commission.toLocaleString('de-DE')} €` : d.status}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Search & Filters */}
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -548,10 +638,9 @@ export default function TeamPage() {
                       {[
                         { field: 'name', label: 'Name' },
                         { field: 'email', label: 'Email' },
-                        { field: 'phone', label: 'Phone' },
-                        { field: 'interest', label: 'Interest' },
+                        { field: 'property_value', label: 'Value' },
                         { field: 'status', label: 'Status' },
-                        { field: 'email_opened', label: 'Email' },
+                        { field: 'interest', label: 'Interest' },
                         { field: 'submitted_at', label: 'Date' },
                       ].map(col => (
                         <th key={col.field} className="text-left text-white/40 font-medium px-4 py-3 cursor-pointer hover:text-white/60 select-none" onClick={() => toggleSort(col.field)}>
@@ -565,7 +654,7 @@ export default function TeamPage() {
                   </thead>
                   <tbody>
                     {filteredLeads.length === 0 && (
-                      <tr><td colSpan={7} className="text-center text-white/30 py-12">No leads found</td></tr>
+                      <tr><td colSpan={6} className="text-center text-white/30 py-12">No leads found</td></tr>
                     )}
                     {filteredLeads.map((lead) => (
                       <tr key={lead._id} onClick={() => setSelectedLead(lead)} className="border-b border-white/5 hover:bg-white/5 cursor-pointer transition-all" data-testid={`lead-row-${lead._id}`}>
@@ -574,15 +663,14 @@ export default function TeamPage() {
                           {lead.country && <p className="text-white/30 text-xs">{[lead.city, lead.country].filter(Boolean).join(', ')}</p>}
                         </td>
                         <td className="px-4 py-3 text-white/60">{lead.email}</td>
-                        <td className="px-4 py-3 text-white/60">{lead.phone || '-'}</td>
-                        <td className="px-4 py-3 text-white/60">{lead.interest || lead.source || '-'}</td>
-                        <td className="px-4 py-3"><StatusBadge status={lead.status || 'new'} /></td>
                         <td className="px-4 py-3">
-                          {lead.email_opened
-                            ? <span className="text-green-400 text-xs font-medium flex items-center gap-1"><Mail className="w-3.5 h-3.5" /> Opened</span>
-                            : <span className="text-white/20 text-xs">Not opened</span>
+                          {lead.property_value
+                            ? <span className="text-[#C8A96A] font-medium">{Number(lead.property_value).toLocaleString('de-DE')} €</span>
+                            : <span className="text-white/20">-</span>
                           }
                         </td>
+                        <td className="px-4 py-3"><StatusBadge status={lead.status || 'new'} /></td>
+                        <td className="px-4 py-3 text-white/60">{lead.interest || lead.source || '-'}</td>
                         <td className="px-4 py-3 text-white/40">{lead.submitted_at ? new Date(lead.submitted_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '-'}</td>
                       </tr>
                     ))}

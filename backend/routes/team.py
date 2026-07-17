@@ -32,6 +32,9 @@ class LeadUpdate(BaseModel):
     interest: Optional[str] = None
     timeline: Optional[str] = None
     contact_method: Optional[str] = None
+    property_value: Optional[float] = None
+    property_type: Optional[str] = None
+    property_location: Optional[str] = None
 
 class EmailSend(BaseModel):
     subject: str
@@ -119,19 +122,18 @@ async def get_team_lead(lead_id: str, member=Depends(get_current_member)):
 
 @router.put("/team/leads/{lead_id}")
 async def update_team_lead(lead_id: str, data: LeadUpdate, member=Depends(get_current_member)):
-    """Update lead status, value, etc."""
+    """Update lead status, value, property details etc."""
     from bson import ObjectId
+    # Check access for restricted members
+    if member.get("role") == "restricted":
+        lead = await db.leads.find_one({"_id": ObjectId(lead_id)})
+        if not lead or lead.get("assigned_to") != member["email"]:
+            raise HTTPException(status_code=403, detail="Access denied")
     update = {}
-    if data.status is not None:
-        update["status"] = data.status
-    if data.lead_value is not None:
-        update["lead_value"] = data.lead_value
-    if data.interest is not None:
-        update["interest"] = data.interest
-    if data.timeline is not None:
-        update["timeline"] = data.timeline
-    if data.contact_method is not None:
-        update["contact_method"] = data.contact_method
+    for field in ['status', 'lead_value', 'interest', 'timeline', 'contact_method', 'property_value', 'property_type', 'property_location']:
+        val = getattr(data, field, None)
+        if val is not None:
+            update[field] = val
     if not update:
         raise HTTPException(status_code=400, detail="No fields to update")
     update["updated_at"] = datetime.now(timezone.utc).isoformat()
@@ -164,7 +166,63 @@ async def delete_note(lead_id: str, note_id: str, member=Depends(get_current_mem
     return {"success": True}
 
 
-# ── Signature ───────────────────────────────────────────────────────────
+# ── Commission Dashboard ────────────────────────────────────────────────
+
+@router.get("/team/commissions")
+async def get_my_commissions(member=Depends(get_current_member)):
+    """Get commission overview for current team member."""
+    # Get member's commission rate
+    member_full = await db.team_members.find_one({"email": member["email"]})
+    commission_rate = member_full.get("commission_rate", 3.0) if member_full else 3.0
+
+    # Get leads based on role
+    if member.get("role") == "restricted":
+        query = {"assigned_to": member["email"]}
+    else:
+        query = {"$or": [{"assigned_to": member["email"]}, {"updated_by": member["name"]}]}
+
+    leads = await db.leads.find(query).to_list(1000)
+
+    total_pipeline = 0
+    total_won = 0
+    total_commission_pending = 0
+    total_commission_confirmed = 0
+    deals = []
+
+    for l in leads:
+        pv = l.get("property_value", 0) or 0
+        status = l.get("status", "new")
+        commission = pv * commission_rate / 100
+        confirmed = l.get("commission_confirmed", False)
+
+        if status in ("won",) and pv > 0:
+            total_won += pv
+            if confirmed:
+                total_commission_confirmed += commission
+            else:
+                total_commission_pending += commission
+
+        if pv > 0:
+            total_pipeline += pv
+            deals.append({
+                "lead_id": str(l["_id"]),
+                "name": l.get("name", ""),
+                "property_value": pv,
+                "property_type": l.get("property_type", ""),
+                "property_location": l.get("property_location", ""),
+                "status": status,
+                "commission": round(commission, 2),
+                "confirmed": confirmed,
+            })
+
+    return {
+        "commission_rate": commission_rate,
+        "total_pipeline_value": round(total_pipeline, 2),
+        "total_won_value": round(total_won, 2),
+        "total_commission_pending": round(total_commission_pending, 2),
+        "total_commission_confirmed": round(total_commission_confirmed, 2),
+        "deals": deals,
+    }
 
 @router.get("/team/signature")
 async def get_signature(member=Depends(get_current_member)):

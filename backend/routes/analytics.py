@@ -470,6 +470,36 @@ async def get_team_members(admin: str = Depends(verify_admin)):
     return members
 
 
+class CommissionRateUpdate(BaseModel):
+    commission_rate: float
+
+
+@router.put("/admin/team-members/{email}/commission")
+async def set_commission_rate(email: str, data: CommissionRateUpdate, admin: str = Depends(verify_admin)):
+    """Set commission rate for a team member."""
+    result = await db.team_members.update_one(
+        {"email": email},
+        {"$set": {"commission_rate": data.commission_rate}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Member not found")
+    return {"success": True, "commission_rate": data.commission_rate}
+
+
+@router.put("/admin/leads/{lead_id}/confirm-commission")
+async def confirm_commission(lead_id: str, admin: str = Depends(verify_admin)):
+    """Confirm a commission on a won deal."""
+    from bson import ObjectId
+    lead = await db.leads.find_one({"_id": ObjectId(lead_id)})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    await db.leads.update_one(
+        {"_id": ObjectId(lead_id)},
+        {"$set": {"commission_confirmed": True, "commission_confirmed_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True}
+
+
 @router.delete("/admin/leads/{lead_id}")
 async def delete_lead(lead_id: str, admin: str = Depends(verify_admin)):
     """Delete a lead from the leads collection"""
