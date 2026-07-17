@@ -6,7 +6,7 @@ import {
 import { 
   Eye, Users, Calculator, Mail, TrendingUp, Monitor, Smartphone, Tablet,
   Download, ArrowUpRight, ArrowDownRight, FileText, Share2, Megaphone, RotateCcw, AlertTriangle, Trash2,
-  MessageSquare, Plus, X, Phone, MapPin, Clock, Target, Send, Upload
+  MessageSquare, Plus, X, Phone, MapPin, Clock, Target, Send, Upload, DollarSign
 } from 'lucide-react';
 
 const COLORS = ['#C8A96A', '#04151F', '#6B7280', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
@@ -577,6 +577,54 @@ const AnalyticsDashboard = ({ credentials }) => {
                   ? <span className="text-green-600 text-sm font-medium">Geöffnet{selectedLead.email_open_count > 1 ? ` (${selectedLead.email_open_count}x)` : ''}</span>
                   : <span className="text-ea-dark/30 text-sm">Nicht geöffnet</span>
                 }
+              </div>
+
+              {/* Commission & Deal Details (Admin Edit) */}
+              <div className="border border-ea-gold/30 bg-ea-gold/5 rounded-xl p-4" data-testid="admin-deal-section">
+                <h4 className="text-sm font-semibold text-ea-dark mb-3 flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-ea-gold" /> Deal & Commission
+                </h4>
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label className="text-xs text-ea-dark/40 mb-1 block">Property Value (EUR)</label>
+                    <input type="number" value={selectedLead.property_value || ''} onChange={e => setSelectedLead(p => ({ ...p, property_value: e.target.value ? parseFloat(e.target.value) : null }))} placeholder="250000" className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="admin-property-value" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-ea-dark/40 mb-1 block">Property Type</label>
+                    <select value={selectedLead.property_type || ''} onChange={e => setSelectedLead(p => ({ ...p, property_type: e.target.value }))} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="admin-property-type">
+                      <option value="">Select...</option>
+                      {['Apartment', 'House', 'Villa', 'Land', 'Commercial', 'Hotel', 'Other'].map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label className="text-xs text-ea-dark/40 mb-1 block">Location</label>
+                    <input type="text" value={selectedLead.property_location || ''} onChange={e => setSelectedLead(p => ({ ...p, property_location: e.target.value }))} placeholder="Budva, Montenegro" className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-ea-dark focus:outline-none focus:border-ea-gold" data-testid="admin-property-location" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-ea-gold mb-1 block">Commission (EUR)</label>
+                    <input type="number" value={selectedLead.commission_amount || ''} onChange={e => setSelectedLead(p => ({ ...p, commission_amount: e.target.value ? parseFloat(e.target.value) : null }))} placeholder="7500" className="w-full bg-white border border-ea-gold/30 rounded-lg px-3 py-2 text-sm text-ea-dark font-bold focus:outline-none focus:border-ea-gold" data-testid="admin-commission-amount" />
+                  </div>
+                </div>
+                <button
+                  onClick={async () => {
+                    await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${selectedLead._id}/update`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json', 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) },
+                      body: JSON.stringify({
+                        property_value: selectedLead.property_value || null,
+                        property_type: selectedLead.property_type || null,
+                        property_location: selectedLead.property_location || null,
+                        commission_amount: selectedLead.commission_amount || null,
+                      })
+                    });
+                  }}
+                  className="w-full py-2 bg-ea-dark text-white text-sm font-bold rounded-lg hover:bg-ea-dark/90 transition-all"
+                  data-testid="admin-save-deal"
+                >
+                  Save Deal Details
+                </button>
               </div>
 
               {/* Email Composer */}

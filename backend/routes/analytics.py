@@ -306,6 +306,33 @@ class AdminNoteCreate(BaseModel):
     text: str
 
 
+class AdminLeadUpdate(BaseModel):
+    commission_amount: Optional[float] = None
+    property_value: Optional[float] = None
+    property_type: Optional[str] = None
+    property_location: Optional[str] = None
+    status: Optional[str] = None
+
+
+@router.put("/admin/leads/{lead_id}/update")
+async def admin_update_lead(lead_id: str, data: AdminLeadUpdate, admin: str = Depends(verify_admin)):
+    """Admin updates lead details (commission, property, status)."""
+    from bson import ObjectId
+    update = {}
+    for field in ['commission_amount', 'property_value', 'property_type', 'property_location', 'status']:
+        val = getattr(data, field, None)
+        if val is not None:
+            update[field] = val
+    if not update:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    update["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update["updated_by"] = "Admin (Holger)"
+    result = await db.leads.update_one({"_id": ObjectId(lead_id)}, {"$set": update})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    return {"success": True}
+
+
 @router.post("/admin/leads/{lead_id}/notes")
 async def admin_add_note(lead_id: str, data: AdminNoteCreate, admin: str = Depends(verify_admin)):
     """Add a note to a lead (Admin)"""
