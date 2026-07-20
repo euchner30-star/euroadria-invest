@@ -469,6 +469,9 @@ export default function TeamPage() {
   const [sortDir, setSortDir] = useState('desc');
   const [token, setToken] = useState(() => localStorage.getItem('team_token'));
   const [commissions, setCommissions] = useState(null);
+  const [showAddLead, setShowAddLead] = useState(false);
+  const [newLead, setNewLead] = useState({ name: '', email: '', phone: '', source: '', interest: '' });
+  const [addingLead, setAddingLead] = useState(false);
 
   const fetchLeads = useCallback(async () => {
     if (!token) return;
@@ -495,6 +498,27 @@ export default function TeamPage() {
       if (res.ok) setCommissions(await res.json());
     } catch {}
   }, [token]);
+
+  const addTeamLead = async () => {
+    if (!newLead.name.trim() || !newLead.email.trim()) return;
+    setAddingLead(true);
+    try {
+      const res = await fetch(`${API}/api/team/leads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(newLead)
+      });
+      if (res.ok) {
+        setShowAddLead(false);
+        setNewLead({ name: '', email: '', phone: '', source: '', interest: '' });
+        fetchLeads();
+      } else {
+        const err = await res.json();
+        alert(err.detail || 'Error');
+      }
+    } catch { alert('Connection error'); }
+    setAddingLead(false);
+  };
 
   useEffect(() => {
     if (!token) { setLoading(false); return; }
@@ -584,6 +608,9 @@ export default function TeamPage() {
             <span className="text-white/30 text-sm hidden sm:block">Team CRM</span>
           </div>
           <div className="flex items-center gap-4">
+            <button onClick={() => setShowAddLead(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-[#C8A96A] text-[#04151F] text-sm font-bold rounded-lg hover:bg-[#d4b87a] transition-all" data-testid="team-add-lead-btn">
+              <Plus className="w-4 h-4" /> Lead
+            </button>
             <span className="text-white/60 text-sm flex items-center gap-1.5"><User className="w-4 h-4" /> {user.name}</span>
             <button onClick={logout} className="text-white/30 hover:text-white/60 transition-all" data-testid="team-logout"><LogOut className="w-5 h-5" /></button>
           </div>
@@ -591,6 +618,48 @@ export default function TeamPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        {/* Add Lead Modal */}
+        {showAddLead && (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowAddLead(false)}>
+            <div className="bg-[#0a2230] border border-white/10 rounded-xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()} data-testid="team-add-lead-modal">
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="text-white font-bold text-lg">Add New Lead</h3>
+                <button onClick={() => setShowAddLead(false)} className="text-white/30 hover:text-white/60"><X className="w-5 h-5" /></button>
+              </div>
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-white/40 text-xs mb-1 block">Name *</label>
+                    <input type="text" value={newLead.name} onChange={e => setNewLead(p => ({ ...p, name: e.target.value }))} placeholder="Full Name" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="team-new-lead-name" />
+                  </div>
+                  <div>
+                    <label className="text-white/40 text-xs mb-1 block">Email *</label>
+                    <input type="email" value={newLead.email} onChange={e => setNewLead(p => ({ ...p, email: e.target.value }))} placeholder="email@example.com" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="team-new-lead-email" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-white/40 text-xs mb-1 block">Phone</label>
+                    <input type="text" value={newLead.phone} onChange={e => setNewLead(p => ({ ...p, phone: e.target.value }))} placeholder="+49..." className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="team-new-lead-phone" />
+                  </div>
+                  <div>
+                    <label className="text-white/40 text-xs mb-1 block">Interest</label>
+                    <input type="text" value={newLead.interest} onChange={e => setNewLead(p => ({ ...p, interest: e.target.value }))} placeholder="e.g. Villa in Budva" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="team-new-lead-interest" />
+                  </div>
+                </div>
+                <button
+                  onClick={addTeamLead}
+                  disabled={!newLead.name.trim() || !newLead.email.trim() || addingLead}
+                  className="w-full py-2.5 bg-[#C8A96A] text-[#04151F] font-bold text-sm rounded-lg hover:bg-[#d4b87a] transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+                  data-testid="team-new-lead-submit"
+                >
+                  {addingLead ? 'Saving...' : <><Plus className="w-4 h-4" /> Add Lead</>}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {selectedLead ? (
           <LeadDetail
             lead={selectedLead}

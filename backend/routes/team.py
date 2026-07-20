@@ -106,6 +106,42 @@ async def get_team_leads(member=Depends(get_current_member)):
     return leads
 
 
+class TeamLeadCreate(BaseModel):
+    name: str
+    email: str
+    phone: Optional[str] = ""
+    source: Optional[str] = ""
+    interest: Optional[str] = ""
+    country: Optional[str] = ""
+    city: Optional[str] = ""
+
+
+@router.post("/team/leads")
+async def create_team_lead(data: TeamLeadCreate, member=Depends(get_current_member)):
+    """Create a new lead from Team CRM."""
+    email = data.email.strip().lower()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    existing = await db.leads.find_one({"email": email})
+    if existing:
+        raise HTTPException(status_code=409, detail=f"Lead with email {email} already exists")
+    lead = {
+        "name": data.name.strip(),
+        "email": email,
+        "phone": data.phone.strip() if data.phone else "",
+        "source": data.source.strip() if data.source else "Team CRM",
+        "interest": data.interest.strip() if data.interest else "",
+        "country": data.country.strip() if data.country else "",
+        "city": data.city.strip() if data.city else "",
+        "submitted_at": datetime.now(timezone.utc).isoformat(),
+        "assigned_to": member["email"],
+        "created_by": member["name"],
+    }
+    result = await db.leads.insert_one(lead)
+    lead["_id"] = str(result.inserted_id)
+    return lead
+
+
 @router.get("/team/leads/{lead_id}")
 async def get_team_lead(lead_id: str, member=Depends(get_current_member)):
     """Get single lead with notes. Restricted members can only access assigned leads."""
