@@ -1,0 +1,52 @@
+{
+  "summary": "End-to-end tested the Property Listings feature (ImmoScout24-style). Backend: 17/17 pytest cases passed in test_properties_api.py — CRUD (create/read/update/delete + auth), public listing with location/property_type/price filters, GET-by-id + 404 case, image upload → serve → cover flow, PDF upload → serve, and inquiry → Lead creation (persisted in /api/admin/leads). Frontend: verified all data-testid attributes and full user flows on public /properties (grid, filters, card→detail navigation), /properties/:id (gallery, WhatsApp button with correct wa.me link, inquiry form submission with success confirmation), and Admin /admin → Properties tab (create modal with all fields, edit panel with image upload of a real PNG file → served back, PDF upload input, features toggles, published toggle, save-property-btn).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "GET /api/properties/{invalid_object_id}", "issue": "Non-24-char/non-hex property_id raises unhandled bson.errors.InvalidId → 500 Internal Server Error instead of a clean 400/404. Applies to all endpoints doing ObjectId(property_id) (get_property, property_inquiry, admin_update, admin_delete, admin_upload_images, admin_upload_pdf). Should wrap ObjectId() in try/except and raise HTTPException(400)."},
+      {"endpoint": "POST /api/admin/properties/{id}/images", "issue": "Files >15MB are silently skipped (`continue`) — client gets 200 with only the smaller files' IDs and no error/notice. Should either return per-file status or fail with 413."},
+      {"endpoint": "POST /api/admin/properties (Form)", "issue": "`published: bool = Form(True)` accepts only 'true'/'false' as string. Sending numeric or empty strings raises 422. Frontend PropertyManager sends published=true which is fine; documentation-worthy."},
+      {"endpoint": "GET /api/properties/pdf/{property_id}", "issue": "Content-Disposition uses raw property.title (may contain unicode/special chars); could break for titles with quotes. Consider URL-encoding filename."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/properties detail page — image gallery", "issues": ["When property has 0 images the counter still shows '1 / 0' at bottom-right of the empty gallery placeholder (see screenshot). Should hide the counter or show '0 / 0'."]},
+      {"screen": "PropertyManager admin — edit panel Photos grid", "issues": ["'Add Photos' upload tile keeps aspect-square even after images exist which is fine, but the images (grid-cols-4) get very small on wide viewports; consider grid-cols-3 or larger thumbs."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_properties_api.py",
+    "/app/test_reports/pytest/properties_api.xml"
+  ],
+  "action_items": [
+    "MINOR (backend robustness): Wrap ObjectId(property_id) parsing in try/except across routes/properties.py and return 400 'Invalid property id' instead of 500 when a malformed id is passed. Affects 6 endpoints.",
+    "MINOR (UX): Fix '1 / 0' gallery counter on detail page when property has no images (PropertyListings.jsx line 130). Wrap in `{images.length > 0 && ...}`.",
+    "OPTIONAL: Return per-file upload result or a 413 when an image >15MB is silently skipped in admin_upload_images (routes/properties.py line 246-247)."
+  ],
+  "critical_code_review_comments": [
+    "routes/properties.py line 49, 59, 111, 199, 213, 239, 271, 284, 294 — every ObjectId(property_id)/ObjectId(image_id) call can throw bson.errors.InvalidId (500). Add a shared helper `_oid(x)` that raises HTTPException(400).",
+    "routes/properties.py line 246: `if len(content) > 15*1024*1024: continue` silently skips oversized files. User gets 200 with truncated image_ids list, no way to know which file failed. Return {'skipped': [...], 'uploaded': [...]} or raise 413.",
+    "routes/properties.py line 64: existing lead lookup by email (`db.leads.find_one({'email': email.strip().lower()})`) uses lowercased email but the lead insert path also lowercases — good. BUT other lead-creating routes may store mixed-case emails, so this de-dup will miss them. Consider a case-insensitive index or a canonical field.",
+    "routes/properties.py: no rate limiting on public POST /properties/{id}/inquiry — could be spammed to create hundreds of leads. Add a simple IP-based cooldown or Cloudflare / captcha.",
+    "PropertyListings.jsx line 130: `{activeImg + 1} / {images.length}` renders '1 / 0' for empty gallery.",
+    "PropertyListings.jsx line 216-220: filter fetch has no debounce; changing three filters rapidly triggers 3 requests. Not critical but wastes calls.",
+    "PropertyManager.jsx line 45: `const err = await res.json(); alert(err.detail || 'Error');` — uses window.alert which is jarring; consider a toast/inline error.",
+    "PropertyManager.jsx line 54: `if (editProp[k] !== null && editProp[k] !== undefined)` — sends empty strings which triggers `.strip()` on server side, effectively wiping fields. Consider also skipping ''. Verified on update: sending empty description overwrote existing description in DB.",
+    "PropertyManager.jsx line 74: image upload does not validate file size client-side before POST; user waits for server to silently skip >15MB uploads.",
+    "PropertyListings.jsx line 195: hardcoded WhatsApp number `+38268559776`. Consider moving to env / settings."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% (17/17 pytest passed)",
+    "frontend": "100% — verified all 14 required data-testids and 3 full user flows (listings→detail→inquiry, admin create→edit→upload→save)"
+  },
+  "test_credentials": "Admin (form login): admin / euroadria2025 at /admin. HTTP Basic (backend): same admin / euroadria2025.",
+  "seed_data_creation": "Backend pytest creates a module-scoped TEST_ property (auto-deleted at teardown) and per-test TEST_-prefixed properties (also auto-deleted). Frontend Playwright test created 1 TEST_PW_Auto_Property + 2 TEST_ leads, ALL cleaned up post-run via DELETE /api/admin/properties/{id} and /api/admin/leads/{id}. Verified no residual TEST_ data remains from this iteration.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Cookie consent banner (data-testid='cookie-consent-banner') has localStorage key 'euroadria_cookie_consent'. To bypass in Playwright, use `page.add_init_script` to pre-set this key BEFORE navigation — clicking Necessary Only/Accept All within the same test session works but the banner re-shows on subsequent page navigations. Admin login is FORM-BASED at /admin (data-testid='admin-username-input', 'admin-password-input', 'admin-login-button'), NOT HTTP Basic. The Properties tab in admin sidebar has data-testid='nav-properties' (under 'Inhalte' section, but no group click needed — nav is visible directly). Backend inquiry endpoint uses Form fields (not JSON). Image upload uses multipart field name 'files' (plural). All 17 backend tests + full frontend flow pass on the current build.",
+  "rca of the issue": "No blocking bugs found. Only minor robustness issues: (1) invalid ObjectId → 500 instead of 400 on 6+ endpoints; (2) oversize image silently dropped with 200 response; (3) empty-string form fields on PUT wipe existing values because server .strip() a '' still writes ''. All three are documented in action_items and code review comments — none block current MVP."
+}
