@@ -5,6 +5,7 @@ import {
   ArrowRight, CheckCircle, Clock, Euro, FileText, Phone, Shield
 } from 'lucide-react';
 import ExposeLeadGate from '../../components/ExposeLeadGate';
+import LocationProperties from '../../components/LocationProperties';
 import SEO from '../../components/SEO';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -172,18 +173,7 @@ const BudvaPage = () => {
               {en ? 'Apartments, penthouses and villas with sea views. Contact us for current off-market offers.' : 'Apartments, Penthouses und Villen mit Meerblick. Kontaktieren Sie uns für aktuelle Off-Market Angebote.'}
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {[1, 2, 3].map((idx) => (
-              <div key={idx} className="bg-ea-light border border-dashed border-ea-gold/30 rounded-2xl p-8 text-center" data-testid={`apartment-placeholder-${idx}`}>
-                <div className="w-16 h-16 bg-ea-gold/10 rounded-full flex items-center justify-center mx-auto mb-4"><Building2 className="w-8 h-8 text-ea-gold" /></div>
-                <h3 className="text-lg font-semibold text-ea-dark mb-2">Coming Soon</h3>
-                <p className="text-ea-dark/50 text-sm mb-4">{en ? 'Premium properties in preparation.' : 'Premium-Objekte in Vorbereitung.'}</p>
-                <button onClick={() => setShowContactForm(true)} className="text-ea-gold font-semibold text-sm hover:text-ea-gold/80 transition-colors">
-                  {en ? 'Express Interest →' : 'Interesse bekunden →'}
-                </button>
-              </div>
-            ))}
-          </div>
+          <LocationProperties location="Budva" en={en} />
           <div className="text-center">
             <button onClick={() => setShowContactForm(true)} className="px-8 py-4 bg-ea-gold text-ea-dark font-semibold rounded-xl hover:bg-ea-gold/90 transition-all flex items-center gap-2 mx-auto">
               <Phone className="w-5 h-5" />{en ? 'Register for Offers' : 'Für Angebote registrieren'}
