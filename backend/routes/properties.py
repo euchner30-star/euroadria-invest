@@ -9,6 +9,14 @@ import io
 
 from core import db, verify_admin, logger
 
+
+def _oid(val: str) -> ObjectId:
+    """Parse ObjectId or raise 400."""
+    try:
+        return ObjectId(val)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid ID format")
+
 router = APIRouter()
 
 
@@ -46,7 +54,7 @@ async def get_properties(
 @router.get("/properties/{property_id}")
 async def get_property(property_id: str):
     """Get single property detail."""
-    prop = await db.properties.find_one({"_id": ObjectId(property_id)})
+    prop = await db.properties.find_one({"_id": _oid(property_id)})
     if not prop:
         raise HTTPException(status_code=404, detail="Property not found")
     prop["_id"] = str(prop["_id"])
@@ -56,7 +64,7 @@ async def get_property(property_id: str):
 @router.post("/properties/{property_id}/inquiry")
 async def property_inquiry(property_id: str, name: str = Form(...), email: str = Form(...), phone: str = Form(""), message: str = Form("")):
     """Submit an inquiry for a property - creates a lead."""
-    prop = await db.properties.find_one({"_id": ObjectId(property_id)})
+    prop = await db.properties.find_one({"_id": _oid(property_id)})
     if not prop:
         raise HTTPException(status_code=404, detail="Property not found")
 
@@ -95,7 +103,7 @@ async def serve_property_image(image_id: str):
     from motor.motor_asyncio import AsyncIOMotorGridFSBucket
     fs = AsyncIOMotorGridFSBucket(db)
     try:
-        grid_out = await fs.open_download_stream(ObjectId(image_id))
+        grid_out = await fs.open_download_stream(_oid(image_id))
         content = await grid_out.read()
         content_type = grid_out.metadata.get("content_type", "image/jpeg") if grid_out.metadata else "image/jpeg"
         return StreamingResponse(io.BytesIO(content), media_type=content_type)
@@ -108,7 +116,7 @@ async def serve_property_pdf(property_id: str):
     """Serve property PDF exposé."""
     from motor.motor_asyncio import AsyncIOMotorGridFSBucket
     fs = AsyncIOMotorGridFSBucket(db)
-    prop = await db.properties.find_one({"_id": ObjectId(property_id)})
+    prop = await db.properties.find_one({"_id": _oid(property_id)})
     if not prop or not prop.get("pdf_expose_id"):
         raise HTTPException(status_code=404, detail="PDF not found")
     try:
@@ -203,14 +211,14 @@ async def admin_update_property(
     if not update:
         raise HTTPException(status_code=400, detail="No fields to update")
     update["updated_at"] = datetime.now(timezone.utc).isoformat()
-    await db.properties.update_one({"_id": ObjectId(property_id)}, {"$set": update})
+    await db.properties.update_one({"_id": _oid(property_id)}, {"$set": update})
     return {"success": True}
 
 
 @router.delete("/admin/properties/{property_id}")
 async def admin_delete_property(property_id: str, admin: str = Depends(verify_admin)):
     """Delete a property and its images."""
-    prop = await db.properties.find_one({"_id": ObjectId(property_id)})
+    prop = await db.properties.find_one({"_id": _oid(property_id)})
     if not prop:
         raise HTTPException(status_code=404, detail="Property not found")
     # Delete images from GridFS
@@ -226,7 +234,7 @@ async def admin_delete_property(property_id: str, admin: str = Depends(verify_ad
             await fs.delete(ObjectId(prop["pdf_expose_id"]))
         except Exception:
             pass
-    await db.properties.delete_one({"_id": ObjectId(property_id)})
+    await db.properties.delete_one({"_id": _oid(property_id)})
     return {"success": True}
 
 
@@ -236,7 +244,7 @@ async def admin_upload_images(property_id: str, files: List[UploadFile] = File(.
     from motor.motor_asyncio import AsyncIOMotorGridFSBucket
     fs = AsyncIOMotorGridFSBucket(db)
 
-    prop = await db.properties.find_one({"_id": ObjectId(property_id)})
+    prop = await db.properties.find_one({"_id": _oid(property_id)})
     if not prop:
         raise HTTPException(status_code=404, detail="Property not found")
 
@@ -255,7 +263,7 @@ async def admin_upload_images(property_id: str, files: List[UploadFile] = File(.
     update = {"images": image_ids, "updated_at": datetime.now(timezone.utc).isoformat()}
     if not prop.get("cover_image") and image_ids:
         update["cover_image"] = image_ids[0]
-    await db.properties.update_one({"_id": ObjectId(property_id)}, {"$set": update})
+    await db.properties.update_one({"_id": _oid(property_id)}, {"$set": update})
     return {"success": True, "image_ids": image_ids}
 
 
@@ -265,23 +273,23 @@ async def admin_delete_image(property_id: str, image_id: str, admin: str = Depen
     from motor.motor_asyncio import AsyncIOMotorGridFSBucket
     fs = AsyncIOMotorGridFSBucket(db)
     try:
-        await fs.delete(ObjectId(image_id))
+        await fs.delete(_oid(image_id))
     except Exception:
         pass
-    prop = await db.properties.find_one({"_id": ObjectId(property_id)})
+    prop = await db.properties.find_one({"_id": _oid(property_id)})
     if prop:
         images = [i for i in prop.get("images", []) if i != image_id]
         update = {"images": images}
         if prop.get("cover_image") == image_id:
             update["cover_image"] = images[0] if images else None
-        await db.properties.update_one({"_id": ObjectId(property_id)}, {"$set": update})
+        await db.properties.update_one({"_id": _oid(property_id)}, {"$set": update})
     return {"success": True}
 
 
 @router.put("/admin/properties/{property_id}/cover/{image_id}")
 async def admin_set_cover(property_id: str, image_id: str, admin: str = Depends(verify_admin)):
     """Set cover image for a property."""
-    await db.properties.update_one({"_id": ObjectId(property_id)}, {"$set": {"cover_image": image_id}})
+    await db.properties.update_one({"_id": _oid(property_id)}, {"$set": {"cover_image": image_id}})
     return {"success": True}
 
 
@@ -291,7 +299,7 @@ async def admin_upload_pdf(property_id: str, file: UploadFile = File(...), admin
     from motor.motor_asyncio import AsyncIOMotorGridFSBucket
     fs = AsyncIOMotorGridFSBucket(db)
 
-    prop = await db.properties.find_one({"_id": ObjectId(property_id)})
+    prop = await db.properties.find_one({"_id": _oid(property_id)})
     if not prop:
         raise HTTPException(status_code=404, detail="Property not found")
 
@@ -309,7 +317,7 @@ async def admin_upload_pdf(property_id: str, file: UploadFile = File(...), admin
         metadata={"content_type": "application/pdf", "property_id": property_id}
     )
     await db.properties.update_one(
-        {"_id": ObjectId(property_id)},
+        {"_id": _oid(property_id)},
         {"$set": {"pdf_expose_id": str(grid_id), "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
     return {"success": True, "pdf_id": str(grid_id)}

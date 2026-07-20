@@ -127,7 +127,7 @@ export function PropertyDetailPage() {
           </>
         )}
         <Link to="/properties" className="absolute top-4 left-4 px-3 py-1.5 bg-white/80 backdrop-blur-sm rounded-lg text-sm text-[#04151F] hover:bg-white transition-all flex items-center gap-1"><ChevronLeft className="w-4 h-4" /> Back</Link>
-        <div className="absolute bottom-4 right-4 text-white/70 text-xs bg-black/40 backdrop-blur-sm px-2 py-1 rounded">{activeImg + 1} / {images.length}</div>
+        <div className="absolute bottom-4 right-4 text-white/70 text-xs bg-black/40 backdrop-blur-sm px-2 py-1 rounded">{images.length > 0 ? `${activeImg + 1} / ${images.length}` : ''}</div>
       </div>
 
       {/* Thumbnails */}
