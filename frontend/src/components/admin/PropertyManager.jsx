@@ -138,15 +138,21 @@ export default function PropertyManager({ credentials }) {
               <button onClick={() => setShowCreate(false)} className="p-2 rounded-lg hover:bg-gray-100"><X className="w-5 h-5 text-ea-dark/40" /></button>
             </div>
             <div className="space-y-3">
+              {/* Location first - most important */}
+              <div className="bg-ea-gold/5 border border-ea-gold/20 rounded-xl p-4">
+                <label className="text-xs font-bold text-ea-gold mb-2 block flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> Location (Standort) *</label>
+                <select value={form.location} onChange={e => setForm(p => ({ ...p, location: e.target.value }))} className="w-full bg-white border border-ea-gold/30 rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-ea-gold" data-testid="prop-location">
+                  <option value="">Select location...</option>
+                  {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
+                </select>
+                <p className="text-xs text-ea-dark/30 mt-1">The property will appear on this location's page</p>
+              </div>
               <input type="text" placeholder="Title *" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" data-testid="prop-title" />
               <div className="grid grid-cols-2 gap-3">
                 <select value={form.property_type} onChange={e => setForm(p => ({ ...p, property_type: e.target.value }))} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" data-testid="prop-type">
                   {PROPERTY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
-                <select value={form.location} onChange={e => setForm(p => ({ ...p, location: e.target.value }))} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" data-testid="prop-location">
-                  <option value="">Location...</option>
-                  {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
-                </select>
+                <input type="text" placeholder="Address" value={form.address || ''} onChange={e => setForm(p => ({ ...p, address: e.target.value }))} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" />
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <input type="number" placeholder="Price (EUR)" value={form.price} onChange={e => setForm(p => ({ ...p, price: e.target.value }))} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" data-testid="prop-price" />
@@ -222,6 +228,17 @@ export default function PropertyManager({ credentials }) {
 
             {/* Details Form */}
             <div className="space-y-3 mb-5">
+              {/* Location prominent */}
+              <div className="bg-ea-gold/5 border border-ea-gold/20 rounded-xl p-3 flex items-center gap-3">
+                <MapPin className="w-5 h-5 text-ea-gold shrink-0" />
+                <div className="flex-1">
+                  <label className="text-[10px] font-bold text-ea-gold uppercase tracking-wider">Location</label>
+                  <select value={editProp.location || ''} onChange={e => setEditProp(p => ({ ...p, location: e.target.value }))} className="w-full bg-transparent text-ea-dark font-semibold text-sm focus:outline-none" data-testid="edit-prop-location">
+                    <option value="">Select...</option>
+                    {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
+                  </select>
+                </div>
+              </div>
               <input type="text" value={editProp.title} onChange={e => setEditProp(p => ({ ...p, title: e.target.value }))} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:border-ea-gold" data-testid="edit-prop-title" />
               <div className="grid grid-cols-3 gap-3">
                 <div>
@@ -241,13 +258,10 @@ export default function PropertyManager({ credentials }) {
                 <select value={editProp.property_type} onChange={e => setEditProp(p => ({ ...p, property_type: e.target.value }))} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold">
                   {PROPERTY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
-                <select value={editProp.location || ''} onChange={e => setEditProp(p => ({ ...p, location: e.target.value }))} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold">
-                  <option value="">Location...</option>
-                  {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
-                </select>
                 <select value={editProp.status} onChange={e => setEditProp(p => ({ ...p, status: e.target.value }))} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold">
                   {STATUSES.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
                 </select>
+                <input type="number" placeholder="Bathrooms" value={editProp.bathrooms || ''} onChange={e => setEditProp(p => ({ ...p, bathrooms: parseInt(e.target.value) || 0 }))} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold" />
               </div>
               <input type="text" placeholder="Address" value={editProp.address || ''} onChange={e => setEditProp(p => ({ ...p, address: e.target.value }))} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold" />
               <textarea value={editProp.description || ''} onChange={e => setEditProp(p => ({ ...p, description: e.target.value }))} rows={4} placeholder="Description..." className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold resize-none" data-testid="edit-prop-desc" />
