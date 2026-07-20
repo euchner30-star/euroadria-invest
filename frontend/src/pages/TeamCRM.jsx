@@ -470,7 +470,7 @@ export default function TeamPage() {
   const [token, setToken] = useState(() => localStorage.getItem('team_token'));
   const [commissions, setCommissions] = useState(null);
   const [showAddLead, setShowAddLead] = useState(false);
-  const [newLead, setNewLead] = useState({ name: '', email: '', phone: '', source: '', interest: '' });
+  const [newLead, setNewLead] = useState({ name: '', email: '', phone: '', source: '', interest: '', note: '' });
   const [addingLead, setAddingLead] = useState(false);
 
   const fetchLeads = useCallback(async () => {
@@ -510,7 +510,7 @@ export default function TeamPage() {
       });
       if (res.ok) {
         setShowAddLead(false);
-        setNewLead({ name: '', email: '', phone: '', source: '', interest: '' });
+        setNewLead({ name: '', email: '', phone: '', source: '', interest: '', note: '' });
         fetchLeads();
       } else {
         const err = await res.json();
@@ -646,6 +646,10 @@ export default function TeamPage() {
                     <label className="text-white/40 text-xs mb-1 block">Interest</label>
                     <input type="text" value={newLead.interest} onChange={e => setNewLead(p => ({ ...p, interest: e.target.value }))} placeholder="e.g. Villa in Budva" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="team-new-lead-interest" />
                   </div>
+                </div>
+                <div>
+                  <label className="text-white/40 text-xs mb-1 block">Note</label>
+                  <textarea value={newLead.note} onChange={e => setNewLead(p => ({ ...p, note: e.target.value }))} placeholder="Initial notes about this lead..." rows={2} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#C8A96A] resize-none" data-testid="team-new-lead-note" />
                 </div>
                 <button
                   onClick={addTeamLead}

@@ -114,6 +114,7 @@ class TeamLeadCreate(BaseModel):
     interest: Optional[str] = ""
     country: Optional[str] = ""
     city: Optional[str] = ""
+    note: Optional[str] = ""
 
 
 @router.post("/team/leads")
@@ -139,6 +140,14 @@ async def create_team_lead(data: TeamLeadCreate, member=Depends(get_current_memb
     }
     result = await db.leads.insert_one(lead)
     lead["_id"] = str(result.inserted_id)
+    # Save initial note if provided
+    if data.note and data.note.strip():
+        await db.lead_notes.insert_one({
+            "lead_id": lead["_id"],
+            "text": data.note.strip(),
+            "author": member["name"],
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
     return lead
 
 
