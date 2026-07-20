@@ -1,0 +1,46 @@
+{
+  "summary": "End-to-end tested the 5 fixes (multipart email, attachment support, Dennis Lein rename, empty-signature no fallback, mobile div signature). Backend: 11/11 pytest cases pass in test_team_email_multipart.py after fixing a latent NameError bug in routes/team.py:451 (used undefined `data.subject` after JSON→Form refactor). Frontend: verified data-testid='team-add-lead-btn' in header, data-testid='team-new-lead-note' inside Add-Lead modal, data-testid='email-attachment-input' inside Email composer (opened via Send Email button on a lead detail); filename is displayed after upload and an X remove button is present.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/team/leads/{id}/email", "issue": "10MB oversize check raises HTTPException 400 inside an outer try/except that wraps it in a generic 500 with 'Email sending failed: 400: Attachment too large (max 10MB)'. Should re-raise HTTPException as-is so the client sees 400."},
+      {"endpoint": "POST /api/team/leads/{id}/email", "issue": "`import base64` on line 416 is unused (attachment content is sent as raw byte list). Safe to remove."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_team_email_multipart.py",
+    "/app/test_reports/pytest/team_email_multipart.xml"
+  ],
+  "action_items": [
+    "REVIEW MY FIX: /app/backend/routes/team.py line 451 — changed `{data.subject}` → `{subject}`. Before the fix every successful email send (i.e. once RESEND_API_KEY is configured in prod) would raise `NameError: name 'data' is not defined`, be caught, and be surfaced to the client as 500 'Email sending failed: name data is not defined'. The email would already have been sent by Resend AND the DB record & auto-note inserted (both happen before line 451), so users would experience 'ghost failures': email delivered but UI shows error → likely to trigger duplicate sends. Verified with in-process test that stubs resend.Emails.send.",
+    "Consider re-raising HTTPException in the attachment >10MB branch so the client actually sees 400 (see minor issue above).",
+    "Remove unused `import base64` in send_lead_email."
+  ],
+  "critical_code_review_comments": [
+    "routes/team.py:454 — the broad `except Exception` wrapping catches HTTPException too, converting the 400 (attachment too large) into 500. Add `except HTTPException: raise` before the generic handler.",
+    "routes/team.py:412 — reads the whole attachment into memory before size check. For large uploads this defeats the 10MB limit as the request is already buffered. Consider checking Content-Length header first or using UploadFile.spool_max_size.",
+    "TeamCRM.jsx:388 — the X remove button next to an uploaded attachment has no data-testid; add e.g. `data-testid=\"email-attachment-remove\"` for future tests.",
+    "TeamCRM.jsx:166 — after successful send the code compares `attachName` variable that is a snapshot of state; if user changes attachment mid-send race conditions may confuse the note text (minor).",
+    "SIGNATURE_HTML_TEMPLATE is duplicated between /app/backend/routes/team.py and any admin email templates (if any). Consider a shared emails/templates.py.",
+    "routes/team.py send_lead_email doesn't validate MIME type of attachment — a malicious .exe with mislabelled Content-Type will be forwarded to Resend as-is. Consider allowlisting doc/pdf/image types."
+  ],
+  "updated_files": [
+    "/app/backend/routes/team.py (fixed NameError: {data.subject} -> {subject} on line 451)",
+    "/app/backend/tests/test_team_email_multipart.py (new — 11 tests covering multipart, attachment, signature branches, Dennis Lein name, preview 500)"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 pytest passed)",
+    "frontend": "100% (3/3 required testids verified + attachment upload flow + filename display + remove button present)"
+  },
+  "test_credentials": "Team: milena@euroadria.me / mb2026!mnfgz  (member). Team: d.lein@euroadria.me / Dl2026!xuzlq (restricted). Admin (Basic auth): admin / euroadria2025.",
+  "seed_data_creation": "Backend tests create a TEST_Multipart lead + several TEST_-prefixed emails/notes; all cleaned up post-run via mongosh. No residual test data.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Team CRM route is /admin/team (NOT /team/login as suggested in the request; that path 404s). The email composer opens only after clicking Send Email button INSIDE the lead detail view (data-testid^='lead-row-{id}' to select a row). Attachment input is a hidden file input (data-testid='email-attachment-input'); after upload a card with filename + X button appears (the X currently has no data-testid). Backend endpoint switched from JSON body to multipart/form-data — any old code/tests posting JSON will get 422. RESEND_API_KEY is NOT set in preview, so live sends return 500 'Email service not configured' as expected; my pytest monkeypatches team_module.RESEND_API_KEY + resend.Emails.send to reach the full flow.",
+  "rca of the issue": "Bug: routes/team.py line 451 used `{data.subject}` in the log line but `data` no longer exists after refactoring the endpoint from `async def send_lead_email(..., data: EmailSend)` to `async def send_lead_email(..., subject: str = Form(...), body: str = Form(...), ...)`. Only manifests when RESEND_API_KEY is set (else the earlier 500 short-circuits execution). Reproduction: monkeypatch RESEND_API_KEY -> any string, POST multipart to /api/team/leads/{id}/email → 500 with detail 'Email sending failed: name data is not defined'. Fix: replaced `{data.subject}` with `{subject}` (the Form parameter). Verified with 11-test suite that all 5 fix scenarios (empty/whitespace/custom signature, div layout, attachment persistence, size limit, Dennis name, preview 500) now pass."
+}

@@ -377,7 +377,7 @@ async def admin_send_email(lead_id: str, data: AdminEmailSend, admin: str = Depe
         raise HTTPException(status_code=400, detail="Lead has no email address")
 
     body_html = data.body.replace("\n", "<br>")
-    personal = '<p style="margin: 20px 0 0; color: #555; font-size: 14px; line-height: 1.6;">Kind regards,<br>Holger Kuhlmann<br>CEO &amp; Founder</p>'
+    personal = ""
 
     content = f"""
     <div style="color: #333; font-size: 15px; line-height: 1.7;">

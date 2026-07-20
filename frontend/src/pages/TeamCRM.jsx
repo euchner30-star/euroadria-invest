@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { LogOut, Search, ChevronDown, ChevronUp, Phone, Mail, MapPin, Clock, Target, MessageSquare, Plus, Trash2, Edit3, User, Calendar, DollarSign, Filter, Send, X, Settings, TrendingUp, Building } from 'lucide-react';
+import { LogOut, Search, ChevronDown, ChevronUp, Phone, Mail, MapPin, Clock, Target, MessageSquare, Plus, Trash2, Edit3, User, Calendar, DollarSign, Filter, Send, X, Settings, TrendingUp, Building, Upload } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -94,6 +94,7 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
   const [sentEmails, setSentEmails] = useState([]);
   const [showSignatureEdit, setShowSignatureEdit] = useState(false);
   const [signatureDraft, setSignatureDraft] = useState('');
+  const [emailAttachment, setEmailAttachment] = useState(null);
 
   useEffect(() => {
     // Load signature
@@ -150,16 +151,22 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
     setSendingEmail(true);
     setEmailSent(false);
     try {
+      const formData = new FormData();
+      formData.append('subject', emailSubject);
+      formData.append('body', emailBody);
+      formData.append('signature', signature);
+      if (emailAttachment) formData.append('attachment', emailAttachment);
       const res = await fetch(`${API}/api/team/leads/${lead._id}/email`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ subject: emailSubject, body: emailBody, signature })
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
       });
       if (res.ok) {
         setEmailSent(true);
-        setNotes(prev => [{ _id: Date.now(), text: `Email sent: "${emailSubject}"`, author: 'System', created_at: new Date().toISOString() }, ...prev]);
-        setSentEmails(prev => [{ subject: emailSubject, body: emailBody, sent_at: new Date().toISOString(), to: lead.email }, ...prev]);
-        setTimeout(() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); setEmailSent(false); }, 1500);
+        const attachName = emailAttachment ? emailAttachment.name : null;
+        setNotes(prev => [{ _id: Date.now(), text: `Email sent: "${emailSubject}"${attachName ? ` (Attachment: ${attachName})` : ''}`, author: 'System', created_at: new Date().toISOString() }, ...prev]);
+        setSentEmails(prev => [{ subject: emailSubject, body: emailBody, sent_at: new Date().toISOString(), attachment: attachName }, ...prev]);
+        setTimeout(() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); setEmailSent(false); setEmailAttachment(null); }, 1500);
       } else {
         const err = await res.json();
         alert(err.detail || 'Email could not be sent');
@@ -370,6 +377,17 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
               className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-[#C8A96A] resize-none"
               data-testid="email-body-textarea"
             />
+            {/* Attachment */}
+            <div className="flex items-center gap-3">
+              <label className="flex-1 flex items-center gap-2 px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 transition-all">
+                <Upload className="w-4 h-4 text-white/40" />
+                <span className="text-white/40 text-sm">{emailAttachment ? emailAttachment.name : 'Attach file (max 10MB)'}</span>
+                <input type="file" className="hidden" onChange={e => setEmailAttachment(e.target.files[0] || null)} data-testid="email-attachment-input" />
+              </label>
+              {emailAttachment && (
+                <button onClick={() => setEmailAttachment(null)} className="text-white/30 hover:text-red-400 transition-all"><X className="w-4 h-4" /></button>
+              )}
+            </div>
             {/* Signature Preview */}
             <div className="bg-white/[0.03] border border-white/5 rounded-lg px-4 py-3">
               {signature && (
@@ -419,6 +437,7 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
                 </summary>
                 <div className="px-4 pb-3 pt-1 border-t border-white/5">
                   <p className="text-white/60 text-sm whitespace-pre-line leading-relaxed">{em.body}</p>
+                  {em.attachment && <p className="text-white/30 text-xs mt-2 flex items-center gap-1"><Upload className="w-3 h-3" /> {em.attachment}</p>}
                 </div>
               </details>
             ))}

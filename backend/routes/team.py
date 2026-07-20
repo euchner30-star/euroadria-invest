@@ -1,5 +1,5 @@
 """Team CRM routes - Member login, lead management, notes, email tracking, outbound emails."""
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, Form
 from fastapi.responses import Response
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
@@ -341,44 +341,33 @@ async def save_signature(data: SignatureUpdate, member=Depends(get_current_membe
 # ── Outbound Emails ─────────────────────────────────────────────────────
 
 SIGNATURE_HTML_TEMPLATE = """
-<div style="margin-top: 28px; padding-top: 20px; border-top: 2px solid #C8A96A; font-family: Arial, sans-serif;">
-    <table cellpadding="0" cellspacing="0" border="0" style="font-size: 13px; color: #333;">
-        <tr>
-            <td style="vertical-align: top; padding-right: 20px; border-right: 2px solid #C8A96A;">
-                <img src="https://euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width: 120px; display: block; margin-bottom: 8px;">
-            </td>
-            <td style="vertical-align: top; padding-left: 20px; line-height: 1.5;">
-                <p style="margin: 0 0 2px; font-size: 15px; font-weight: bold; color: #04151F;">EuroAdria Corporate Solutions</p>
-                <p style="margin: 0 0 6px;"><a href="https://euroadria.me" style="color: #C8A96A; text-decoration: none; font-size: 12px;">https://euroadria.me</a></p>
-                <p style="margin: 0 0 12px; font-size: 11px; color: #888;">a brand of <strong style="color: #555;">Montaris &amp; Co. d.o.o.</strong></p>
-                <p style="margin: 0; color: #555; font-size: 12px;">Novi Sad | Podgorica | D&uuml;sseldorf</p>
-                <p style="margin: 0; color: #555; font-size: 12px;">Marka Miljanova 12</p>
-                <p style="margin: 0 0 4px; color: #555; font-size: 12px;">21000 Novi Sad, Serbien</p>
-                <p style="margin: 0 0 12px; font-size: 11px; color: #999;">Reg. no.: 22147382 &nbsp;|&nbsp; PIB: 115356237</p>
-                <table cellpadding="0" cellspacing="0" border="0" style="font-size: 12px; color: #555; line-height: 1.5;">
-                    <tr>
-                        <td style="vertical-align: top; padding-right: 24px;">
-                            <p style="margin: 0 0 3px; font-weight: bold; color: #04151F; font-size: 11px; letter-spacing: 0.5px;">OFFICE PODGORICA</p>
-                            <p style="margin: 0;">Studentska br. 11</p>
-                            <p style="margin: 0;">Podgorica, Crna Gora</p>
-                        </td>
-                        <td style="vertical-align: top;">
-                            <p style="margin: 0 0 3px; font-weight: bold; color: #04151F; font-size: 11px; letter-spacing: 0.5px;">OFFICE D&Uuml;SSELDORF</p>
-                            <p style="margin: 0;">Speditionsstra&szlig;e 15a</p>
-                            <p style="margin: 0;">40221 D&uuml;sseldorf, Germany</p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+<div style="margin-top: 28px; padding-top: 20px; border-top: 2px solid #C8A96A; font-family: Arial, sans-serif; max-width: 100%;">
+    <div style="display: block; margin-bottom: 12px;">
+        <img src="https://euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width: 100px; display: block; margin-bottom: 10px;">
+        <p style="margin: 0 0 2px; font-size: 15px; font-weight: bold; color: #04151F;">EuroAdria Corporate Solutions</p>
+        <p style="margin: 0 0 4px;"><a href="https://euroadria.me" style="color: #C8A96A; text-decoration: none; font-size: 12px;">https://euroadria.me</a></p>
+        <p style="margin: 0 0 12px; font-size: 11px; color: #888;">a brand of <strong style="color: #555;">Montaris &amp; Co. d.o.o.</strong></p>
+    </div>
+    <div style="font-size: 12px; color: #555; line-height: 1.6;">
+        <p style="margin: 0;">Novi Sad | Podgorica | D&uuml;sseldorf</p>
+        <p style="margin: 0;">Marka Miljanova 12, 21000 Novi Sad, Serbien</p>
+        <p style="margin: 0 0 8px; font-size: 11px; color: #999;">Reg. no.: 22147382 &nbsp;|&nbsp; PIB: 115356237</p>
+        <div style="margin-bottom: 6px;">
+            <p style="margin: 0 0 2px; font-weight: bold; color: #04151F; font-size: 11px; letter-spacing: 0.5px;">OFFICE PODGORICA</p>
+            <p style="margin: 0;">Studentska br. 11, Podgorica, Crna Gora</p>
+        </div>
+        <div>
+            <p style="margin: 0 0 2px; font-weight: bold; color: #04151F; font-size: 11px; letter-spacing: 0.5px;">OFFICE D&Uuml;SSELDORF</p>
+            <p style="margin: 0;">Speditionsstra&szlig;e 15a, 40221 D&uuml;sseldorf, Germany</p>
+        </div>
+    </div>
 </div>
 """
 
 
 @router.post("/team/leads/{lead_id}/email")
-async def send_lead_email(lead_id: str, data: EmailSend, member=Depends(get_current_member)):
-    """Send an email to a lead from the Team CRM."""
+async def send_lead_email(lead_id: str, member=Depends(get_current_member), subject: str = Form(...), body: str = Form(...), signature: str = Form(""), attachment: Optional[UploadFile] = File(None)):
+    """Send an email to a lead from the Team CRM, optionally with an attachment."""
     from bson import ObjectId
     from emails import wrap_email
 
@@ -394,11 +383,11 @@ async def send_lead_email(lead_id: str, data: EmailSend, member=Depends(get_curr
         raise HTTPException(status_code=400, detail="Lead has no email address")
 
     # Build HTML body with personal greeting + corporate signature
-    body_html = data.body.replace("\n", "<br>")
-    if data.signature and data.signature.strip():
-        personal_line = f'<p style="margin: 20px 0 0; color: #555; font-size: 14px; line-height: 1.6;">{data.signature.replace(chr(10), "<br>")}</p>'
+    body_html = body.replace("\n", "<br>")
+    if signature and signature.strip():
+        personal_line = f'<p style="margin: 20px 0 0; color: #555; font-size: 14px; line-height: 1.6;">{signature.replace(chr(10), "<br>")}</p>'
     else:
-        personal_line = f'<p style="margin: 20px 0 0; color: #555; font-size: 14px; line-height: 1.6;">Kind regards,<br>{member["name"]}</p>'
+        personal_line = ""
 
     content = f"""
     <div style="color: #333; font-size: 15px; line-height: 1.7;">
@@ -410,21 +399,37 @@ async def send_lead_email(lead_id: str, data: EmailSend, member=Depends(get_curr
 
     try:
         resend.api_key = RESEND_API_KEY
-        result = resend.Emails.send({
+        email_params = {
             "from": f"{member['name']} - EuroAdria <{member['email']}>",
             "to": [lead_email],
-            "subject": data.subject,
+            "subject": subject,
             "html": wrap_email(content, lang="en", lead_id=lead_id, include_footer=False),
             "reply_to": member["email"]
-        })
+        }
+
+        # Handle attachment
+        attachment_name = None
+        if attachment and attachment.filename:
+            file_content = await attachment.read()
+            if len(file_content) > 10 * 1024 * 1024:
+                raise HTTPException(status_code=400, detail="Attachment too large (max 10MB)")
+            import base64
+            email_params["attachments"] = [{
+                "filename": attachment.filename,
+                "content": list(file_content),
+            }]
+            attachment_name = attachment.filename
+
+        result = resend.Emails.send(email_params)
 
         # Store sent email in DB
         email_record = {
             "lead_id": lead_id,
             "to": lead_email,
-            "subject": data.subject,
-            "body": data.body,
-            "signature": data.signature or "",
+            "subject": subject,
+            "body": body,
+            "signature": signature or "",
+            "attachment": attachment_name,
             "sent_by": member["name"],
             "sent_by_email": member["email"],
             "sent_at": datetime.now(timezone.utc).isoformat(),
@@ -433,14 +438,17 @@ async def send_lead_email(lead_id: str, data: EmailSend, member=Depends(get_curr
         await db.lead_emails.insert_one(email_record)
 
         # Auto-add note
+        note_text = f"Email sent: \"{subject}\""
+        if attachment_name:
+            note_text += f" (Attachment: {attachment_name})"
         await db.lead_notes.insert_one({
             "lead_id": lead_id,
-            "text": f"Email sent: \"{data.subject}\"",
+            "text": note_text,
             "author": member["name"],
             "created_at": datetime.now(timezone.utc).isoformat()
         })
 
-        logger.info(f"Team email sent by {member['name']} to {lead_email}: {data.subject}")
+        logger.info(f"Team email sent by {member['name']} to {lead_email}: {subject}")
         return {"success": True, "message": f"Email sent to {lead_email}"}
 
     except Exception as e:
@@ -465,7 +473,7 @@ async def seed_team():
     results = []
     members = [
         {"email": "milena@euroadria.me", "name": "Milena Bubanja", "password": "mb2026!mnfgz", "role": "member"},
-        {"email": "d.lein@euroadria.me", "name": "D. Lein", "password": "Dl2026!xuzlq", "role": "restricted"},
+        {"email": "d.lein@euroadria.me", "name": "Dennis Lein", "password": "Dl2026!xuzlq", "role": "restricted"},
     ]
     for m in members:
         existing = await db.team_members.find_one({"email": m["email"]})
