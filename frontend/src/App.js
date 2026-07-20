@@ -43,6 +43,8 @@ const LocationProfile = lazy(() => import("./pages/investment/LocationProfile"))
 const InvestmentSimulation = lazy(() => import("./pages/investment/InvestmentSimulation"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const WhitepaperPage = lazy(() => import("./pages/WhitepaperPage"));
+const PropertyListings = lazy(() => import("./pages/PropertyListings"));
+const PropertyDetailPage = lazy(() => import("./pages/PropertyListings").then(m => ({ default: m.PropertyDetailPage })));
 const USLandingPage = lazy(() => import("./pages/USLandingPage"));
 const USCALandingPage = lazy(() => import("./pages/USCALandingPage"));
 const TeamCRM = lazy(() => import("./pages/TeamCRM"));
@@ -85,6 +87,9 @@ function AppLayout() {
           <Route path="/immobilien/budva" element={<BudvaPage />} />
           <Route path="/immobilien/niksic" element={<NiksicPage />} />
           <Route path="/immobilien/podgorica" element={<PodgoricaPage />} />
+          {/* Property Listings */}
+          <Route path="/properties" element={<PropertyListings />} />
+          <Route path="/properties/:id" element={<PropertyDetailPage />} />
           {/* Investment Intelligence Routes */}
           <Route path="/investment" element={<InvestmentDashboard />} />
           <Route path="/investment/rechner" element={<ROICalculator />} />

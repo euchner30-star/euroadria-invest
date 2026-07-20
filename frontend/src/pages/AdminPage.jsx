@@ -13,6 +13,7 @@ import WYSIWYGEditor, { FormField, generateSlug, htmlToCleanContent, contentToHt
 import ImageUploader, { ImageGalleryUploader } from '../components/admin/ImageUploader';
 import AnalyticsDashboard, { UTMLinkGenerator } from '../components/admin/AnalyticsDashboard';
 import TeamManagement from '../components/admin/TeamManagement';
+import PropertyManager from '../components/admin/PropertyManager';
 import NewsletterAdmin from '../components/admin/NewsletterAdmin';
 import PDFGenerator from '../components/admin/PDFGenerator';
 
@@ -30,6 +31,7 @@ const NAV_GROUPS = [
     label: 'Inhalte',
     items: [
       { key: 'articles', icon: FileText, label: 'Artikel', badge: 'articles' },
+      { key: 'properties', icon: Building2, label: 'Properties' },
       { key: 'pages', icon: Layout, label: 'Seiten', badge: 'pages' },
       { key: 'homepage', icon: Home, label: 'Homepage' },
       { key: 'downloads', icon: Download, label: 'Downloads' },
@@ -2832,6 +2834,11 @@ const AdminPage = () => {
         {/* Team & Commissions Tab */}
         {activeTab === 'team' && (
           <TeamManagement credentials={credentials} />
+        )}
+
+        {/* Properties Tab */}
+        {activeTab === 'properties' && (
+          <PropertyManager credentials={credentials} />
         )}
 
           </div>
