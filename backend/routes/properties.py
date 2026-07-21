@@ -242,18 +242,31 @@ async def property_inquiry(property_id: str, name: str = Form(...), email: str =
                     <a href="{prop_url}" style="display:inline-block;background:#C8A96A;color:#04151F;padding:14px 40px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">View Property</a>
                 </div>
 
-                <!-- Contact Info -->
-                <div style="background:#f8f8f8;padding:24px 32px;border-top:1px solid #eee;">
-                    <p style="color:#04151F;margin:0 0 12px;font-size:14px;font-weight:600;">Questions? Reach us directly:</p>
-                    <table style="font-size:13px;color:#666;">
-                        <tr><td style="padding:3px 12px 3px 0;">WhatsApp</td><td><a href="https://wa.me/38268559776" style="color:#C8A96A;text-decoration:none;">+382 68 559 776</a></td></tr>
-                        <tr><td style="padding:3px 12px 3px 0;">Email</td><td><a href="mailto:office@euroadria.me" style="color:#C8A96A;text-decoration:none;">office@euroadria.me</a></td></tr>
-                    </table>
-                </div>
-
-                <!-- Footer -->
-                <div style="background:#04151F;padding:20px 32px;text-align:center;">
-                    <p style="color:#fff;margin:0;font-size:11px;opacity:0.4;">EuroAdria Corporate Solutions · Montaris & Co. d.o.o. · Novi Sad, Serbia</p>
+                <!-- Corporate Signature -->
+                <div style="padding:24px 32px;border-top:2px solid #C8A96A;">
+                    <img src="https://euroadria.me/euroadria-logo.png" alt="EuroAdria" style="width:100px;display:block;margin-bottom:10px;">
+                    <p style="margin:0 0 2px;font-size:15px;font-weight:bold;color:#04151F;">EuroAdria Corporate Solutions</p>
+                    <p style="margin:0 0 4px;"><a href="https://euroadria.me" style="color:#C8A96A;text-decoration:none;font-size:12px;">https://euroadria.me</a></p>
+                    <p style="margin:0 0 12px;font-size:11px;color:#888;">a brand of <strong style="color:#555;">Montaris &amp; Co. d.o.o.</strong></p>
+                    <div style="font-size:12px;color:#555;line-height:1.6;">
+                        <p style="margin:0;">Novi Sad | Podgorica | D&uuml;sseldorf</p>
+                        <p style="margin:0;">Marka Miljanova 12, 21000 Novi Sad, Serbien</p>
+                        <p style="margin:0 0 8px;font-size:11px;color:#999;">Reg. no.: 22147382 &nbsp;|&nbsp; PIB: 115356237</p>
+                        <div style="margin-bottom:6px;">
+                            <p style="margin:0 0 2px;font-weight:bold;color:#04151F;font-size:11px;letter-spacing:0.5px;">OFFICE PODGORICA</p>
+                            <p style="margin:0;">Studentska br. 11, Podgorica, Crna Gora</p>
+                        </div>
+                        <div>
+                            <p style="margin:0 0 2px;font-weight:bold;color:#04151F;font-size:11px;letter-spacing:0.5px;">OFFICE D&Uuml;SSELDORF</p>
+                            <p style="margin:0;">Speditionsstra&szlig;e 15a, 40221 D&uuml;sseldorf, Germany</p>
+                        </div>
+                    </div>
+                    <div style="margin-top:16px;">
+                        <table style="font-size:13px;color:#666;">
+                            <tr><td style="padding:3px 12px 3px 0;">WhatsApp</td><td><a href="https://wa.me/38268559776" style="color:#C8A96A;text-decoration:none;">+382 68 559 776</a></td></tr>
+                            <tr><td style="padding:3px 12px 3px 0;">Email</td><td><a href="mailto:office@euroadria.me" style="color:#C8A96A;text-decoration:none;">office@euroadria.me</a></td></tr>
+                        </table>
+                    </div>
                 </div>
             </div>"""
             resend.Emails.send({
