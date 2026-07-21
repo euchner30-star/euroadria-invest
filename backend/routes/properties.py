@@ -154,12 +154,18 @@ async def property_inquiry(property_id: str, name: str = Form(...), email: str =
     else:
         await db.leads.insert_one(lead)
 
-    # Send notification email
+    # Send notification emails
     if RESEND_API_KEY:
+        from core import SITE_URL
+        resend.api_key = RESEND_API_KEY
+        price_text = "Price on Request" if prop.get("price_on_request") else f"{prop.get('price', 0):,.0f} EUR"
+        cover = prop.get("cover_image") or (prop.get("images", []) or [None])[0]
+        img_url = f"{SITE_URL}/api/properties/img/{cover}" if cover else ""
+        prop_url = f"{SITE_URL}/properties/{property_id}"
+
+        # 1) Internal notification to team
         try:
-            resend.api_key = RESEND_API_KEY
-            price_text = "Price on Request" if prop.get("price_on_request") else f"{prop.get('price', 0):,.0f} EUR"
-            html = f"""
+            team_html = f"""
             <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
                 <div style="background:#04151F;padding:24px 32px;border-radius:12px 12px 0 0;">
                     <h2 style="color:#C8A96A;margin:0;font-size:20px;">New Property Inquiry</h2>
@@ -182,12 +188,83 @@ async def property_inquiry(property_id: str, name: str = Form(...), email: str =
                 "from": "EuroAdria <noreply@euroadria.me>",
                 "to": [NOTIFICATION_EMAIL],
                 "subject": f"Property Inquiry: {prop.get('title', '')} – {name}",
-                "html": html,
+                "html": team_html,
                 "reply_to": email.strip(),
             })
-            logger.info(f"Inquiry notification sent for property {property_id}")
+            logger.info(f"Team notification sent for property {property_id}")
         except Exception as e:
-            logger.error(f"Inquiry email failed: {e}")
+            logger.error(f"Team notification email failed: {e}")
+
+        # 2) Confirmation email to customer with property image
+        try:
+            features_html = ""
+            if prop.get("features"):
+                pills = "".join(f'<span style="display:inline-block;background:#f5f0e6;color:#04151F;padding:4px 12px;border-radius:20px;font-size:12px;margin:2px 4px 2px 0;">{f}</span>' for f in prop["features"][:6])
+                features_html = f'<div style="margin-top:16px;">{pills}</div>'
+
+            area_info = []
+            if prop.get("area_sqm") and prop["area_sqm"] > 0:
+                area_info.append(f'{prop["area_sqm"]} m²')
+            if prop.get("rooms") and prop["rooms"] > 0:
+                area_info.append(f'{prop["rooms"]} Rooms')
+            if prop.get("bathrooms") and prop["bathrooms"] > 0:
+                area_info.append(f'{prop["bathrooms"]} Bath')
+            details_line = " · ".join(area_info)
+
+            customer_html = f"""
+            <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
+                <!-- Header -->
+                <div style="background:#04151F;padding:28px 32px;text-align:center;">
+                    <h1 style="color:#C8A96A;margin:0;font-size:22px;font-weight:700;letter-spacing:0.5px;">EUROADRIA</h1>
+                    <p style="color:#ffffff;margin:6px 0 0;font-size:12px;opacity:0.5;letter-spacing:2px;">CORPORATE SOLUTIONS</p>
+                </div>
+
+                <!-- Greeting -->
+                <div style="padding:32px 32px 0;">
+                    <h2 style="color:#04151F;margin:0 0 8px;font-size:20px;">Thank you, {name}!</h2>
+                    <p style="color:#666;margin:0 0 24px;font-size:14px;line-height:1.6;">We have received your inquiry and our team will get back to you within 24 hours.</p>
+                </div>
+
+                <!-- Property Card -->
+                <div style="margin:0 32px 24px;border:1px solid #e8e8e8;border-radius:12px;overflow:hidden;">
+                    {'<img src="' + img_url + '" alt="' + prop.get("title", "") + '" style="width:100%;height:240px;object-fit:cover;display:block;" />' if img_url else ''}
+                    <div style="padding:20px 24px;">
+                        <p style="color:#C8A96A;margin:0 0 4px;font-size:12px;font-weight:600;">{prop.get('location', '')} · {prop.get('property_type', '')}</p>
+                        <h3 style="color:#04151F;margin:0 0 8px;font-size:18px;font-weight:700;">{prop.get('title', '')}</h3>
+                        <p style="color:#04151F;margin:0 0 4px;font-size:22px;font-weight:700;">{price_text}</p>
+                        <p style="color:#999;margin:0;font-size:13px;">{details_line}</p>
+                        {features_html}
+                    </div>
+                </div>
+
+                <!-- View Property Button -->
+                <div style="padding:0 32px 32px;text-align:center;">
+                    <a href="{prop_url}" style="display:inline-block;background:#C8A96A;color:#04151F;padding:14px 40px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">View Property</a>
+                </div>
+
+                <!-- Contact Info -->
+                <div style="background:#f8f8f8;padding:24px 32px;border-top:1px solid #eee;">
+                    <p style="color:#04151F;margin:0 0 12px;font-size:14px;font-weight:600;">Questions? Reach us directly:</p>
+                    <table style="font-size:13px;color:#666;">
+                        <tr><td style="padding:3px 12px 3px 0;">WhatsApp</td><td><a href="https://wa.me/38268559776" style="color:#C8A96A;text-decoration:none;">+382 68 559 776</a></td></tr>
+                        <tr><td style="padding:3px 12px 3px 0;">Email</td><td><a href="mailto:office@euroadria.me" style="color:#C8A96A;text-decoration:none;">office@euroadria.me</a></td></tr>
+                    </table>
+                </div>
+
+                <!-- Footer -->
+                <div style="background:#04151F;padding:20px 32px;text-align:center;">
+                    <p style="color:#fff;margin:0;font-size:11px;opacity:0.4;">EuroAdria Corporate Solutions · Montaris & Co. d.o.o. · Novi Sad, Serbia</p>
+                </div>
+            </div>"""
+            resend.Emails.send({
+                "from": "EuroAdria <noreply@euroadria.me>",
+                "to": [email.strip()],
+                "subject": f"Your Inquiry: {prop.get('title', '')} – EuroAdria",
+                "html": customer_html,
+            })
+            logger.info(f"Customer confirmation sent to {email} for property {property_id}")
+        except Exception as e:
+            logger.error(f"Customer confirmation email failed: {e}")
 
     return {"success": True, "message": "Inquiry submitted"}
 
