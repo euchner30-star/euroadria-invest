@@ -123,7 +123,10 @@ async def get_property(property_id: str):
 
 @router.post("/properties/{property_id}/inquiry")
 async def property_inquiry(property_id: str, name: str = Form(...), email: str = Form(...), phone: str = Form(""), message: str = Form("")):
-    """Submit an inquiry for a property - creates a lead."""
+    """Submit an inquiry for a property - creates a lead and sends notification email."""
+    import resend
+    from core import RESEND_API_KEY, NOTIFICATION_EMAIL
+
     prop = await db.properties.find_one({"_id": _oid(property_id)})
     if not prop:
         raise HTTPException(status_code=404, detail="Property not found")
@@ -142,17 +145,51 @@ async def property_inquiry(property_id: str, name: str = Form(...), email: str =
         "submitted_at": datetime.now(timezone.utc).isoformat(),
     }
     if existing:
-        # Update existing lead with new inquiry note
         await db.lead_notes.insert_one({
             "lead_id": str(existing["_id"]),
             "text": f"New property inquiry: {prop.get('title', '')} ({prop.get('location', '')})\nMessage: {message}",
             "author": "System",
             "created_at": datetime.now(timezone.utc).isoformat()
         })
-        return {"success": True, "message": "Inquiry submitted"}
     else:
         await db.leads.insert_one(lead)
-        return {"success": True, "message": "Inquiry submitted"}
+
+    # Send notification email
+    if RESEND_API_KEY:
+        try:
+            resend.api_key = RESEND_API_KEY
+            price_text = "Price on Request" if prop.get("price_on_request") else f"{prop.get('price', 0):,.0f} EUR"
+            html = f"""
+            <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+                <div style="background:#04151F;padding:24px 32px;border-radius:12px 12px 0 0;">
+                    <h2 style="color:#C8A96A;margin:0;font-size:20px;">New Property Inquiry</h2>
+                </div>
+                <div style="background:#f9f9f9;padding:24px 32px;border:1px solid #e5e5e5;">
+                    <h3 style="color:#04151F;margin:0 0 4px;">{prop.get('title', '')}</h3>
+                    <p style="color:#666;margin:0 0 16px;font-size:14px;">{prop.get('location', '')} · {prop.get('property_type', '')} · {price_text}</p>
+                    <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                        <tr><td style="padding:8px 0;color:#999;width:100px;">Name</td><td style="padding:8px 0;color:#04151F;font-weight:bold;">{name}</td></tr>
+                        <tr><td style="padding:8px 0;color:#999;">Email</td><td style="padding:8px 0;"><a href="mailto:{email}" style="color:#C8A96A;">{email}</a></td></tr>
+                        <tr><td style="padding:8px 0;color:#999;">Phone</td><td style="padding:8px 0;color:#04151F;">{phone or '–'}</td></tr>
+                    </table>
+                    {f'<div style="margin-top:16px;padding:12px 16px;background:#fff;border-left:3px solid #C8A96A;border-radius:4px;font-size:14px;color:#333;">{message}</div>' if message else ''}
+                </div>
+                <div style="padding:16px 32px;background:#04151F;border-radius:0 0 12px 12px;text-align:center;">
+                    <p style="color:#fff;margin:0;font-size:12px;opacity:0.5;">EuroAdria Corporate Solutions</p>
+                </div>
+            </div>"""
+            resend.Emails.send({
+                "from": "EuroAdria <noreply@euroadria.me>",
+                "to": [NOTIFICATION_EMAIL],
+                "subject": f"Property Inquiry: {prop.get('title', '')} – {name}",
+                "html": html,
+                "reply_to": email.strip(),
+            })
+            logger.info(f"Inquiry notification sent for property {property_id}")
+        except Exception as e:
+            logger.error(f"Inquiry email failed: {e}")
+
+    return {"success": True, "message": "Inquiry submitted"}
 
 
 # ── Property Image Serving ──────────────────────────────────────────────
