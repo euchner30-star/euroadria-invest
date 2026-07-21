@@ -86,7 +86,7 @@ export default function FeaturedProperties({ lang = 'en' }) {
                 {/* Price Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 pt-8">
                   <p className="text-white text-xl font-bold">
-                    {p.price > 0 ? `${p.price.toLocaleString('de-DE')} €` : 'On Request'}
+                    {p.price_on_request ? 'Price on Request' : p.price > 0 ? `${p.price.toLocaleString('de-DE')} €` : 'On Request'}
                   </p>
                 </div>
               </div>
@@ -109,7 +109,7 @@ export default function FeaturedProperties({ lang = 'en' }) {
                       {p.rooms} {en ? 'Rooms' : 'Zimmer'}
                     </span>
                   )}
-                  {p.area_sqm > 0 && p.price > 0 && (
+                  {p.area_sqm > 0 && p.price > 0 && !p.price_on_request && (
                     <span className="text-ea-gold font-medium">
                       {Math.round(p.price / p.area_sqm).toLocaleString('de-DE')} €/m²
                     </span>

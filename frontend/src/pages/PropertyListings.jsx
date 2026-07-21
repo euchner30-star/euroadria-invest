@@ -44,7 +44,9 @@ function PropertyCard({ property }) {
           {property.rooms > 0 && <span className="flex items-center gap-1"><BedDouble className="w-3.5 h-3.5" />{property.rooms} Rooms</span>}
           {property.bathrooms > 0 && <span className="flex items-center gap-1"><Bath className="w-3.5 h-3.5" />{property.bathrooms} Bath</span>}
         </div>
-        <p className="text-lg font-bold text-[#04151F]">{property.price?.toLocaleString('de-DE')} <span className="text-sm font-normal text-[#04151F]/40">EUR</span></p>
+        <p className="text-lg font-bold text-[#04151F]">
+          {property.price_on_request ? <span className="text-[#C8A96A]">Price on Request</span> : <>{property.price?.toLocaleString('de-DE')} <span className="text-sm font-normal text-[#04151F]/40">EUR</span></>}
+        </p>
       </div>
     </Link>
   );
@@ -281,13 +283,15 @@ export function PropertyDetailPage() {
             <h1 className="text-2xl sm:text-3xl font-bold text-[#04151F] mb-2">{property.title}</h1>
             <p className="text-sm text-[#C8A96A] flex items-center gap-1 mb-6"><MapPin className="w-4 h-4" />{property.location}{property.address ? ` · ${property.address}` : ''}</p>
 
-            <div className="text-3xl font-bold text-[#04151F] mb-6">{property.price?.toLocaleString('de-DE')} <span className="text-lg font-normal text-[#04151F]/40">EUR</span></div>
+            <div className="text-3xl font-bold text-[#04151F] mb-6">
+              {property.price_on_request ? <span className="text-[#C8A96A]">Price on Request</span> : <>{property.price?.toLocaleString('de-DE')} <span className="text-lg font-normal text-[#04151F]/40">EUR</span></>}
+            </div>
 
             <div className="flex gap-6 mb-8 pb-6 border-b border-gray-100">
               {property.area_sqm > 0 && <div className="text-center"><p className="text-2xl font-bold text-[#04151F]">{property.area_sqm}</p><p className="text-xs text-[#04151F]/40">m²</p></div>}
               {property.rooms > 0 && <div className="text-center"><p className="text-2xl font-bold text-[#04151F]">{property.rooms}</p><p className="text-xs text-[#04151F]/40">Rooms</p></div>}
               {property.bathrooms > 0 && <div className="text-center"><p className="text-2xl font-bold text-[#04151F]">{property.bathrooms}</p><p className="text-xs text-[#04151F]/40">Bathrooms</p></div>}
-              {property.area_sqm > 0 && property.price > 0 && <div className="text-center"><p className="text-2xl font-bold text-[#04151F]">{Math.round(property.price / property.area_sqm).toLocaleString('de-DE')}</p><p className="text-xs text-[#04151F]/40">EUR/m²</p></div>}
+              {property.area_sqm > 0 && property.price > 0 && !property.price_on_request && <div className="text-center"><p className="text-2xl font-bold text-[#04151F]">{Math.round(property.price / property.area_sqm).toLocaleString('de-DE')}</p><p className="text-xs text-[#04151F]/40">EUR/m²</p></div>}
             </div>
 
             {property.description && (

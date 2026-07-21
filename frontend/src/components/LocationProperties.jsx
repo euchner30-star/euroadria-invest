@@ -42,7 +42,7 @@ export default function LocationProperties({ location, en }) {
               {p.area_sqm > 0 && <span className="flex items-center gap-1"><Maximize className="w-3.5 h-3.5" />{p.area_sqm} m²</span>}
               {p.rooms > 0 && <span className="flex items-center gap-1"><BedDouble className="w-3.5 h-3.5" />{p.rooms} {en ? 'Rooms' : 'Zimmer'}</span>}
             </div>
-            <p className="text-lg font-bold text-ea-dark">{p.price?.toLocaleString('de-DE')} <span className="text-sm font-normal text-ea-dark/40">EUR</span></p>
+            <p className="text-lg font-bold text-ea-dark">{p.price_on_request ? <span className="text-[#C8A96A]">Price on Request</span> : <>{p.price?.toLocaleString('de-DE')} <span className="text-sm font-normal text-ea-dark/40">EUR</span></>}</p>
           </div>
         </Link>
       ))}

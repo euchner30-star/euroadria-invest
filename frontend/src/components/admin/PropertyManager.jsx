@@ -13,7 +13,7 @@ export default function PropertyManager({ credentials }) {
   const [editProp, setEditProp] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ title: '', description: '', price: '', area_sqm: '', rooms: '', bathrooms: '', property_type: 'Apartment', location: '', address: '', features: '', status: 'available', published: true });
+  const [form, setForm] = useState({ title: '', description: '', price: '', price_on_request: false, area_sqm: '', rooms: '', bathrooms: '', property_type: 'Apartment', location: '', address: '', features: '', status: 'available', published: true });
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const [locations, setLocations] = useState([]);
@@ -45,7 +45,7 @@ export default function PropertyManager({ credentials }) {
     if (res.ok) {
       const prop = await res.json();
       setShowCreate(false);
-      setForm({ title: '', description: '', price: '', area_sqm: '', rooms: '', bathrooms: '', property_type: 'Apartment', location: '', address: '', features: '', status: 'available', published: true });
+      setForm({ title: '', description: '', price: '', price_on_request: false, area_sqm: '', rooms: '', bathrooms: '', property_type: 'Apartment', location: '', address: '', features: '', status: 'available', published: true });
       setEditProp(prop);
       fetchProperties();
     } else { const err = await res.json(); alert(err.detail || 'Error'); }
@@ -56,7 +56,7 @@ export default function PropertyManager({ credentials }) {
     if (!editProp) return;
     setSaving(true);
     const fd = new FormData();
-    ['title', 'description', 'price', 'area_sqm', 'rooms', 'bathrooms', 'property_type', 'location', 'address', 'status', 'published'].forEach(k => {
+    ['title', 'description', 'price', 'price_on_request', 'area_sqm', 'rooms', 'bathrooms', 'property_type', 'location', 'address', 'status', 'published'].forEach(k => {
       if (editProp[k] !== null && editProp[k] !== undefined) fd.append(k, editProp[k]);
     });
     if (editProp.features) fd.append('features', Array.isArray(editProp.features) ? editProp.features.join(', ') : editProp.features);
@@ -203,10 +203,16 @@ export default function PropertyManager({ credentials }) {
                 <input type="text" placeholder="Address" value={form.address || ''} onChange={e => setForm(p => ({ ...p, address: e.target.value }))} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" />
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <input type="number" placeholder="Price (EUR)" value={form.price} onChange={e => setForm(p => ({ ...p, price: e.target.value }))} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" data-testid="prop-price" />
+                <div className="relative">
+                  <input type="number" placeholder="Price (EUR)" value={form.price} onChange={e => setForm(p => ({ ...p, price: e.target.value }))} disabled={form.price_on_request} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold disabled:opacity-40 disabled:bg-gray-100" data-testid="prop-price" />
+                </div>
                 <input type="number" placeholder="Area m²" value={form.area_sqm} onChange={e => setForm(p => ({ ...p, area_sqm: e.target.value }))} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" data-testid="prop-area" />
                 <input type="number" placeholder="Rooms" value={form.rooms} onChange={e => setForm(p => ({ ...p, rooms: e.target.value }))} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold" data-testid="prop-rooms" />
               </div>
+              <label className="flex items-center gap-2 cursor-pointer" data-testid="prop-price-on-request">
+                <input type="checkbox" checked={form.price_on_request} onChange={e => setForm(p => ({ ...p, price_on_request: e.target.checked, price: e.target.checked ? '' : p.price }))} className="w-4 h-4 accent-[#C8A96A] rounded" />
+                <span className="text-sm text-ea-dark/70">Price on Request</span>
+              </label>
               <textarea placeholder="Description" value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} rows={3} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-ea-gold resize-none" data-testid="prop-desc" />
               <button onClick={createProperty} disabled={saving || !form.title} className="w-full py-2.5 bg-ea-dark text-white font-bold text-sm rounded-lg hover:bg-ea-dark/90 disabled:opacity-40" data-testid="prop-create-submit">
                 {saving ? 'Creating...' : 'Create & Add Images'}
@@ -291,7 +297,7 @@ export default function PropertyManager({ credentials }) {
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="text-xs text-ea-dark/40 mb-1 block">Price (EUR)</label>
-                  <input type="number" value={editProp.price || ''} onChange={e => setEditProp(p => ({ ...p, price: parseFloat(e.target.value) || 0 }))} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold" data-testid="edit-prop-price" />
+                  <input type="number" value={editProp.price || ''} onChange={e => setEditProp(p => ({ ...p, price: parseFloat(e.target.value) || 0 }))} disabled={editProp.price_on_request} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold disabled:opacity-40 disabled:bg-gray-100" data-testid="edit-prop-price" />
                 </div>
                 <div>
                   <label className="text-xs text-ea-dark/40 mb-1 block">Area m²</label>
@@ -302,6 +308,10 @@ export default function PropertyManager({ credentials }) {
                   <input type="number" value={editProp.rooms || ''} onChange={e => setEditProp(p => ({ ...p, rooms: parseInt(e.target.value) || 0 }))} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold" />
                 </div>
               </div>
+              <label className="flex items-center gap-2 cursor-pointer" data-testid="edit-price-on-request">
+                <input type="checkbox" checked={!!editProp.price_on_request} onChange={e => setEditProp(p => ({ ...p, price_on_request: e.target.checked, price: e.target.checked ? 0 : p.price }))} className="w-4 h-4 accent-[#C8A96A] rounded" />
+                <span className="text-sm text-ea-dark/70">Price on Request</span>
+              </label>
               <div className="grid grid-cols-3 gap-3">
                 <select value={editProp.property_type} onChange={e => setEditProp(p => ({ ...p, property_type: e.target.value }))} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold">
                   {PROPERTY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}

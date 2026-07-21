@@ -224,6 +224,7 @@ async def admin_create_property(
     title: str = Form(...),
     description: str = Form(""),
     price: float = Form(0),
+    price_on_request: bool = Form(False),
     area_sqm: float = Form(0),
     rooms: int = Form(0),
     bathrooms: int = Form(0),
@@ -239,6 +240,7 @@ async def admin_create_property(
         "title": title.strip(),
         "description": description.strip(),
         "price": price,
+        "price_on_request": price_on_request,
         "currency": "EUR",
         "area_sqm": area_sqm,
         "rooms": rooms,
@@ -267,6 +269,7 @@ async def admin_update_property(
     title: str = Form(None),
     description: str = Form(None),
     price: float = Form(None),
+    price_on_request: bool = Form(None),
     area_sqm: float = Form(None),
     rooms: int = Form(None),
     bathrooms: int = Form(None),
@@ -279,7 +282,7 @@ async def admin_update_property(
 ):
     """Update property listing."""
     update = {}
-    for field, val in [("title", title), ("description", description), ("price", price), ("area_sqm", area_sqm), ("rooms", rooms), ("bathrooms", bathrooms), ("property_type", property_type), ("location", location), ("address", address), ("status", status), ("published", published)]:
+    for field, val in [("title", title), ("description", description), ("price", price), ("price_on_request", price_on_request), ("area_sqm", area_sqm), ("rooms", rooms), ("bathrooms", bathrooms), ("property_type", property_type), ("location", location), ("address", address), ("status", status), ("published", published)]:
         if val is not None:
             update[field] = val.strip() if isinstance(val, str) else val
     if features is not None:
