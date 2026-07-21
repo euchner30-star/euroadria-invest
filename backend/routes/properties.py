@@ -438,20 +438,18 @@ async def serve_og_image(property_id: str):
     top = (new_h - og_h) // 2
     base_img = base_img.crop((left, top, left + og_w, top + og_h))
 
-    # Fetch and overlay logo (top-right corner)
+    # Fetch and overlay logo (top-right corner) - transparent, no background
     try:
         logo_resp = req.get("https://www.euroadria.me/euroadria-logo.png", timeout=10)
         logo = Image.open(io.BytesIO(logo_resp.content)).convert("RGBA")
-        logo_h = 50
+        logo_h = 60
         logo_w = int(logo.width * (logo_h / logo.height))
         logo = logo.resize((logo_w, logo_h), Image.LANCZOS)
 
-        # White background pill behind logo
-        padding = 12
-        pill_w, pill_h = logo_w + padding * 2, logo_h + padding * 2
-        pill = Image.new("RGBA", (pill_w, pill_h), (255, 255, 255, 220))
-        pill.paste(logo, (padding, padding), logo)
-        base_img.paste(pill.convert("RGB"), (og_w - pill_w - 20, 20))
+        # Paste logo directly onto image with transparency
+        base_rgba = base_img.convert("RGBA")
+        base_rgba.paste(logo, (og_w - logo_w - 24, 20), logo)
+        base_img = base_rgba.convert("RGB")
     except Exception:
         pass  # Continue without logo if fetch fails
 
