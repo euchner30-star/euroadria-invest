@@ -238,7 +238,7 @@ export default function PropertyListings() {
           <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
             <select value={locationFilter} onChange={e => setLocationFilter(e.target.value)} className="bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="filter-location">
               <option value="" style={{ color: '#333' }}>All Locations</option>
-              {['Budva', 'Podgorica', 'Tivat', 'Bar', 'Kotor', 'Herceg Novi'].map(l => <option key={l} value={l} style={{ color: '#333' }}>{l}</option>)}
+              {['Budva', 'Sveti Stefan', 'Tivat', 'Kotor', 'Herceg Novi', 'Bar', 'Ulcinj', 'Podgorica', 'Nikšić', 'Žabljak'].map(l => <option key={l} value={l} style={{ color: '#333' }}>{l}</option>)}
             </select>
             <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} className="bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="filter-type">
               {PROPERTY_TYPES.map(t => <option key={t} value={t} style={{ color: '#333' }}>{t === 'All' ? 'All Types' : t}</option>)}

@@ -122,12 +122,18 @@ async def serve_property_pdf(property_id: str):
     try:
         grid_out = await fs.open_download_stream(ObjectId(prop["pdf_expose_id"]))
         content = await grid_out.read()
+        # RFC 5987 encoded filename to support unicode chars
+        from urllib.parse import quote
+        raw_title = prop.get("title", "expose")
+        ascii_title = raw_title.encode("ascii", "ignore").decode("ascii") or "expose"
+        utf8_title = quote(raw_title)
         return StreamingResponse(
             io.BytesIO(content),
             media_type="application/pdf",
-            headers={"Content-Disposition": f'inline; filename="{prop.get("title", "expose")}.pdf"'}
+            headers={"Content-Disposition": f'inline; filename="{ascii_title}.pdf"; filename*=UTF-8\'\'{utf8_title}.pdf'}
         )
-    except Exception:
+    except Exception as e:
+        logger.error(f"PDF serve failed for property {property_id} (pdf_id={prop.get('pdf_expose_id')}): {type(e).__name__}: {e}")
         raise HTTPException(status_code=404, detail="PDF not found")
 
 

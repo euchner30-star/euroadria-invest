@@ -1,0 +1,43 @@
+{
+  "summary": "End-to-end tested Sveti Stefan property + PDF exposé feature. Found and FIXED a critical bug: GET /api/properties/pdf/{id} was returning 404 for the Šipkov Krš villa because the Content-Disposition header contained the Unicode 'Š' character which cannot be encoded in latin-1 (HTTP header requirement) — Starlette raised UnicodeEncodeError which the endpoint's bare `except Exception` masked as 'PDF not found'. Fixed by using RFC 5987 encoding (filename* utf-8''<encoded> + ascii fallback). After fix: PDF downloads correctly (8,248,877 bytes = ~7.9MB, magic bytes %PDF-1.7). Verified 11/11 backend pytest cases and all 6 frontend/integration test items in the request pass. Also improved the endpoint to log the underlying exception instead of silently 404ing.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "GET /api/properties/pdf/{property_id}", "issue": "PRE-FIX bug: Content-Disposition header used raw title with unicode chars (Š) → UnicodeEncodeError swallowed by bare `except Exception` → returned 404. FIXED in this iteration (RFC 5987 encoded filename + ascii fallback + error logging).", "priority": "WAS-HIGH-NOW-FIXED"},
+      {"endpoint": "Multiple property routes", "issue": "Bare `except Exception:` in serve_property_pdf/get_image was silently returning 404 without logging root cause. Improved with logger.error in this iteration; other endpoints still have the same pattern (get_image line ~110)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_sveti_stefan_flow.py",
+    "/app/test_reports/pytest/sveti_stefan_flow.xml"
+  ],
+  "action_items": [
+    "Consider applying the same RFC 5987 filename encoding pattern anywhere else in the codebase where property/lead/article titles may end up in a Content-Disposition header.",
+    "Replace remaining bare `except Exception: raise HTTPException(404)` blocks in routes/properties.py with logging (e.g., serve_property_image line ~108-111) so future encoding/GridFS issues surface in logs immediately."
+  ],
+  "critical_code_review_comments": [
+    "routes/properties.py serve_property_pdf: bare `except Exception` masked a header-encoding bug that made the ENTIRE feature (PDF exposé download) unusable for any property whose title contained unicode. This is a clear anti-pattern — always log before swallowing.",
+    "routes/properties.py line ~104-111 (serve_property_image) has the same pattern: `except Exception: raise HTTPException(404)`. Should log at least at DEBUG.",
+    "LocationProperties.jsx line 12: fetch has no error state UI — if the API fails the component renders nothing (return null on empty). Acceptable but silent.",
+    "PropertyListings.jsx filter dropdown (line 241) hardcodes 10 locations but PropertyManager LOCATIONS constant has 14 — Novi Sad, Belgrade, Cetinje, Skadar Lake are NOT filterable on the public /properties page. Minor UX inconsistency (a Sveti Stefan property is filterable, but a Cetinje one won't be)."
+  ],
+  "updated_files": [
+    "/app/backend/routes/properties.py (fixed PDF Content-Disposition unicode encoding + added error logging)",
+    "/app/backend/tests/test_sveti_stefan_flow.py (new regression test file, 11 tests)"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 pytest passed after fix)",
+    "frontend": "100% — all 6 features from request verified end-to-end (list w/ Sveti Stefan filter, detail page + download-expose button linking to working PDF endpoint, WhatsApp button, /immobilien/budva shows Budva property in location-properties grid)"
+  },
+  "test_credentials": "Admin (form login): admin / euroadria2025 at /admin. HTTP Basic: same admin / euroadria2025.",
+  "seed_data_creation": "None. Used existing DB properties (Šipkov Krš at 6a5f5cd5f3b13d9e661f027b and Budva apartment at 6a5e4c6b671354f252e7d19e).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "PDF download for Sveti Stefan now works after this iteration's fix. Filter dropdown on /properties includes 10 of 14 admin LOCATIONS — Cetinje/Novi Sad/Belgrade/Skadar Lake are NOT in the public filter dropdown even though PropertyManager allows setting them. LocationProperties.jsx renders 'null' when a location has 0 properties which is correct behavior for the /immobilien/{location} pages.",
+  "rca of the issue": "The Šipkov Krš property has title 'Šipkov Krš - Exclusive Luxury Villa' with non-latin-1 chars (Š). The old serve_property_pdf used `f'inline; filename=\"{prop.get(\"title\")}.pdf\"'` directly in a header value. Starlette's Response encoder does `header_value.encode('latin-1')` which raised `UnicodeEncodeError: 'latin-1' codec can't encode character '\\u0160' in position 18`. The endpoint wrapped everything in `except Exception: raise HTTPException(404, 'PDF not found')` which masked the real error and made the feature look like a data-missing issue. Fix: use RFC 5987 format — `filename=\"<ascii-safe>.pdf\"; filename*=UTF-8''<percent-encoded>.pdf` — and log the underlying exception before raising 404. Reproduction: `curl https://<host>/api/properties/pdf/6a5f5cd5f3b13d9e661f027b` returned 404 before fix, returns 200 with 8.2MB PDF after fix. Verified via pytest and Playwright end-to-end."
+}
