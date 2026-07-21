@@ -438,20 +438,19 @@ async def serve_og_image(property_id: str):
     top = (new_h - og_h) // 2
     base_img = base_img.crop((left, top, left + og_w, top + og_h))
 
-    # Fetch and overlay logo (top-right corner) - transparent, no background
+    # Fetch and overlay logo (top-right corner) - white version, transparent
     try:
-        logo_resp = req.get("https://www.euroadria.me/euroadria-logo.png", timeout=10)
+        logo_resp = req.get("https://www.euroadria.me/euroadria-logo-white.png", timeout=10)
         logo = Image.open(io.BytesIO(logo_resp.content)).convert("RGBA")
-        logo_h = 60
+        logo_h = 120
         logo_w = int(logo.width * (logo_h / logo.height))
         logo = logo.resize((logo_w, logo_h), Image.LANCZOS)
 
-        # Paste logo directly onto image with transparency
         base_rgba = base_img.convert("RGBA")
-        base_rgba.paste(logo, (og_w - logo_w - 24, 20), logo)
+        base_rgba.paste(logo, (og_w - logo_w - 30, 24), logo)
         base_img = base_rgba.convert("RGB")
     except Exception:
-        pass  # Continue without logo if fetch fails
+        pass
 
     # Add dark gradient bar at bottom with property info
     overlay = Image.new("RGBA", (og_w, og_h), (0, 0, 0, 0))
