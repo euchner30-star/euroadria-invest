@@ -19,12 +19,28 @@ def _oid(val: str) -> ObjectId:
 
 router = APIRouter()
 
+# ── Default Locations Seed ───────────────────────────────────────────────
+DEFAULT_LOCATIONS = [
+    "Budva", "Sveti Stefan", "Pržno", "Tivat", "Kotor", "Herceg Novi",
+    "Bar", "Ulcinj", "Podgorica", "Nikšić", "Žabljak", "Skadar Lake",
+    "Cetinje", "Danilovgrad", "Buljarica", "Čanj", "Novi Sad", "Belgrade"
+]
+
+async def seed_default_locations():
+    """Seed default locations if collection is empty."""
+    count = await db.property_locations.count_documents({})
+    if count == 0:
+        docs = [{"name": n, "created_at": datetime.now(timezone.utc).isoformat()} for n in DEFAULT_LOCATIONS]
+        await db.property_locations.insert_many(docs)
+        logger.info(f"Seeded {len(docs)} default property locations")
+
 
 # ── Location Management ─────────────────────────────────────────────────
 
 @router.get("/property-locations")
 async def get_property_locations():
     """Get all property locations (public)."""
+    await seed_default_locations()
     locations = await db.property_locations.find({}).sort("name", 1).to_list(100)
     for l in locations:
         l["_id"] = str(l["_id"])
@@ -34,6 +50,7 @@ async def get_property_locations():
 @router.get("/admin/property-locations")
 async def admin_get_property_locations(admin: str = Depends(verify_admin)):
     """Get all property locations (admin)."""
+    await seed_default_locations()
     locations = await db.property_locations.find({}).sort("name", 1).to_list(100)
     for l in locations:
         l["_id"] = str(l["_id"])
