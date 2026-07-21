@@ -53,7 +53,7 @@ BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '')
 BREVO_LIST_ID = 3
 
 # ── Site Config ─────────────────────────────────────────────────────────
-SITE_URL = "https://euroadria.me"
+SITE_URL = os.environ.get('SITE_URL', 'https://www.euroadria.me')
 
 # ── Object Storage ──────────────────────────────────────────────────────
 STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
