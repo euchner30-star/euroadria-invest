@@ -352,6 +352,100 @@ async def serve_property_image(image_id: str):
         raise HTTPException(status_code=404, detail="Image not found")
 
 
+@router.get("/properties/og/{property_id}.jpg")
+async def serve_og_image(property_id: str):
+    """Generate Open Graph image: property cover + EuroAdria logo overlay."""
+    from PIL import Image, ImageDraw, ImageFont
+    import requests as req
+
+    prop = await db.properties.find_one({"_id": _oid(property_id)})
+    if not prop:
+        raise HTTPException(status_code=404, detail="Property not found")
+
+    cover = prop.get("cover_image") or (prop.get("images", []) or [None])[0]
+    if not cover:
+        raise HTTPException(status_code=404, detail="No image available")
+
+    # Fetch property image
+    try:
+        if "/" in cover:
+            img_data, _ = get_object(cover)
+        else:
+            from motor.motor_asyncio import AsyncIOMotorGridFSBucket
+            fs = AsyncIOMotorGridFSBucket(db)
+            grid_out = await fs.open_download_stream(_oid(cover))
+            img_data = await grid_out.read()
+        base_img = Image.open(io.BytesIO(img_data)).convert("RGB")
+    except Exception:
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    # Resize to OG dimensions (1200x630)
+    og_w, og_h = 1200, 630
+    img_ratio = base_img.width / base_img.height
+    og_ratio = og_w / og_h
+    if img_ratio > og_ratio:
+        new_h = og_h
+        new_w = int(og_h * img_ratio)
+    else:
+        new_w = og_w
+        new_h = int(og_w / img_ratio)
+    base_img = base_img.resize((new_w, new_h), Image.LANCZOS)
+    left = (new_w - og_w) // 2
+    top = (new_h - og_h) // 2
+    base_img = base_img.crop((left, top, left + og_w, top + og_h))
+
+    # Fetch and overlay logo (top-right corner)
+    try:
+        logo_resp = req.get("https://www.euroadria.me/euroadria-logo.png", timeout=10)
+        logo = Image.open(io.BytesIO(logo_resp.content)).convert("RGBA")
+        logo_h = 50
+        logo_w = int(logo.width * (logo_h / logo.height))
+        logo = logo.resize((logo_w, logo_h), Image.LANCZOS)
+
+        # White background pill behind logo
+        padding = 12
+        pill_w, pill_h = logo_w + padding * 2, logo_h + padding * 2
+        pill = Image.new("RGBA", (pill_w, pill_h), (255, 255, 255, 220))
+        pill.paste(logo, (padding, padding), logo)
+        base_img.paste(pill.convert("RGB"), (og_w - pill_w - 20, 20))
+    except Exception:
+        pass  # Continue without logo if fetch fails
+
+    # Add dark gradient bar at bottom with property info
+    overlay = Image.new("RGBA", (og_w, og_h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(overlay)
+    # Bottom gradient
+    for y in range(og_h - 140, og_h):
+        alpha = int(180 * (y - (og_h - 140)) / 140)
+        draw.rectangle([(0, y), (og_w, y + 1)], fill=(4, 21, 31, alpha))
+
+    base_rgba = base_img.convert("RGBA")
+    base_rgba = Image.alpha_composite(base_rgba, overlay)
+    final = base_rgba.convert("RGB")
+
+    # Add text
+    draw = ImageDraw.Draw(final)
+    try:
+        font_title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
+        font_sub = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
+    except Exception:
+        font_title = ImageFont.load_default()
+        font_sub = font_title
+
+    title = prop.get("title", "")[:60]
+    location = prop.get("location", "")
+    price_text = "Price on Request" if prop.get("price_on_request") else f"{prop.get('price', 0):,.0f} EUR"
+
+    draw.text((40, og_h - 90), title, fill=(255, 255, 255), font=font_title)
+    draw.text((40, og_h - 50), f"{location}  ·  {price_text}", fill=(200, 169, 106), font=font_sub)
+
+    buf = io.BytesIO()
+    final.save(buf, format="JPEG", quality=85)
+    buf.seek(0)
+    return Response(content=buf.getvalue(), media_type="image/jpeg", headers={"Cache-Control": "public, max-age=3600"})
+
+
+
 @router.get("/properties/pdf/{property_id}")
 async def serve_property_pdf(property_id: str):
     """Serve property PDF exposé."""
