@@ -121,6 +121,50 @@ async def get_property(property_id: str):
     return prop
 
 
+@router.get("/p/{property_id}")
+async def property_share_page(property_id: str):
+    """Share URL for properties. Serves OG meta tags for crawlers, redirects browsers to the SPA."""
+    from starlette.responses import HTMLResponse
+    from core import SITE_URL
+
+    prop = await db.properties.find_one({"_id": _oid(property_id)})
+    if not prop:
+        raise HTTPException(status_code=404, detail="Property not found")
+
+    title = prop.get("title", "Property")
+    location = prop.get("location", "")
+    ptype = prop.get("property_type", "")
+    price = "Price on Request" if prop.get("price_on_request") else f"{prop.get('price', 0):,.0f} EUR"
+    desc = f"{location} · {ptype} · {price}"
+    og_img = f"{SITE_URL}/api/properties/og/{property_id}.jpg"
+    canonical = f"{SITE_URL}/properties/{property_id}"
+
+    html = f"""<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>{title} – EuroAdria</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{desc}">
+<meta property="og:image" content="{og_img}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="{canonical}">
+<meta property="og:site_name" content="EuroAdria Corporate Solutions">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{title}">
+<meta name="twitter:description" content="{desc}">
+<meta name="twitter:image" content="{og_img}">
+</head>
+<body>
+<script>window.location.replace("{canonical}");</script>
+<noscript><meta http-equiv="refresh" content="0;url={canonical}"></noscript>
+<p>Redirecting to <a href="{canonical}">{title}</a>...</p>
+</body></html>"""
+    return HTMLResponse(content=html)
+
+
+
 @router.post("/properties/{property_id}/inquiry")
 async def property_inquiry(property_id: str, name: str = Form(...), email: str = Form(...), phone: str = Form(""), message: str = Form("")):
     """Submit an inquiry for a property - creates a lead and sends notification email."""

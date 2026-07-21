@@ -241,7 +241,7 @@ export function PropertyDetailPage() {
   const images = property.images || [];
   const priceText = property.price_on_request ? 'Price on Request' : `${property.price?.toLocaleString('de-DE')} EUR`;
   const whatsappMsg = encodeURIComponent(`Hi, I'm interested in: ${property.title} (${property.location}) - ${priceText}`);
-  const shareUrl = `${window.location.origin}/properties/${id}`;
+  const shareUrl = `${API}/api/p/${property._id}`;
   const ogImage = `${API}/api/properties/og/${property._id}.jpg`;
 
   const copyLink = () => {
