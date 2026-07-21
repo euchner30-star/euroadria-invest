@@ -239,24 +239,28 @@ export function PropertyDetailPage() {
   return (
     <div className="min-h-screen bg-white" data-testid="property-detail-page">
       {/* Image Gallery */}
-      <div className="relative bg-gray-100 h-[50vh] sm:h-[60vh]">
-        {images.length > 0 ? (
-          <img src={`${API}/api/properties/img/${images[activeImg]}`} alt={property.title} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center"><Building2 className="w-16 h-16 text-gray-200" /></div>
-        )}
-        {images.length > 1 && (
-          <>
-            <button onClick={() => setActiveImg(i => i > 0 ? i - 1 : images.length - 1)} className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-all"><ChevronLeft className="w-5 h-5" /></button>
-            <button onClick={() => setActiveImg(i => i < images.length - 1 ? i + 1 : 0)} className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-all"><ChevronRight className="w-5 h-5" /></button>
-          </>
-        )}
-        <div className="absolute bottom-4 right-4 text-white/70 text-xs bg-black/40 backdrop-blur-sm px-2 py-1 rounded">{images.length > 0 ? `${activeImg + 1} / ${images.length}` : ''}</div>
+      <div className="bg-[#f5f5f5] pt-4 pb-4">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8">
+          <div className="relative rounded-2xl overflow-hidden bg-gray-200">
+            {images.length > 0 ? (
+              <img src={`${API}/api/properties/img/${images[activeImg]}`} alt={property.title} className="w-full max-h-[70vh] object-contain mx-auto" />
+            ) : (
+              <div className="w-full h-64 flex items-center justify-center"><Building2 className="w-16 h-16 text-gray-300" /></div>
+            )}
+            {images.length > 1 && (
+              <>
+                <button onClick={() => setActiveImg(i => i > 0 ? i - 1 : images.length - 1)} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-all shadow-sm"><ChevronLeft className="w-5 h-5" /></button>
+                <button onClick={() => setActiveImg(i => i < images.length - 1 ? i + 1 : 0)} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-all shadow-sm"><ChevronRight className="w-5 h-5" /></button>
+              </>
+            )}
+            <div className="absolute bottom-3 right-3 text-white/90 text-xs bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full">{images.length > 0 ? `${activeImg + 1} / ${images.length}` : ''}</div>
+          </div>
+        </div>
       </div>
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="flex gap-2 px-4 sm:px-8 py-3 overflow-x-auto">
+        <div className="max-w-5xl mx-auto flex gap-2 px-4 sm:px-8 py-3 overflow-x-auto">
           {images.map((imgId, i) => (
             <button key={imgId} onClick={() => setActiveImg(i)} className={`shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${i === activeImg ? 'border-[#C8A96A]' : 'border-transparent opacity-60 hover:opacity-100'}`}>
               <img src={`${API}/api/properties/img/${imgId}`} alt="" className="w-full h-full object-cover" />
