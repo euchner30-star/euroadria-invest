@@ -133,7 +133,7 @@ async def get_article_og_html(slug: str, request: Request):
 <title>{title}</title>
 <meta name="description" content="{description}"/>
 <meta property="og:type" content="article"/>
-<meta property="og:url" content="{redirect_url}"/>
+<meta property="og:url" content="{SITE_URL}/api/og/blog/{slug}"/>
 <meta property="og:title" content="{title}"/>
 <meta property="og:description" content="{description}"/>
 <meta property="og:image" content="{image}"/>

@@ -135,8 +135,9 @@ async def property_share_page(property_id: str):
     location = prop.get("location", "")
     ptype = prop.get("property_type", "")
     price = "Price on Request" if prop.get("price_on_request") else f"{prop.get('price', 0):,.0f} EUR"
-    desc = f"{location} · {ptype} · {price}"
+    desc = f"{location} · {ptype} · {price} – EuroAdria Corporate Solutions"
     og_img = f"{SITE_URL}/api/properties/og/{property_id}.jpg"
+    share_url = f"{SITE_URL}/api/p/{property_id}"
     canonical = f"{SITE_URL}/properties/{property_id}"
 
     html = f"""<!DOCTYPE html>
@@ -149,12 +150,13 @@ async def property_share_page(property_id: str):
 <meta property="og:image" content="{og_img}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:url" content="{canonical}">
+<meta property="og:url" content="{share_url}">
 <meta property="og:site_name" content="EuroAdria Corporate Solutions">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{title}">
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="{og_img}">
+<link rel="canonical" href="{canonical}">
 </head>
 <body>
 <script>window.location.replace("{canonical}");</script>
