@@ -245,16 +245,6 @@ export function PropertyDetailPage() {
         ) : (
           <div className="w-full h-full flex items-center justify-center"><Building2 className="w-16 h-16 text-gray-200" /></div>
         )}
-        {/* Breadcrumb overlay on image */}
-        <div className="absolute top-0 left-0 right-0 pt-20 pb-3 px-4 sm:px-8 bg-gradient-to-b from-black/50 to-transparent">
-          <div className="max-w-6xl mx-auto flex items-center gap-2 text-sm">
-            <Link to="/" className="text-white/70 hover:text-white transition-colors" data-testid="breadcrumb-home">Home</Link>
-            <span className="text-white/40">/</span>
-            <Link to="/properties" className="text-white/70 hover:text-white transition-colors" data-testid="breadcrumb-properties">All Properties</Link>
-            <span className="text-white/40">/</span>
-            <span className="text-white truncate max-w-xs">{property.title}</span>
-          </div>
-        </div>
         {images.length > 1 && (
           <>
             <button onClick={() => setActiveImg(i => i > 0 ? i - 1 : images.length - 1)} className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-all"><ChevronLeft className="w-5 h-5" /></button>
