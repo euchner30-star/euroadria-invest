@@ -125,6 +125,7 @@ async def get_property(property_id: str):
 async def property_inquiry(property_id: str, name: str = Form(...), email: str = Form(...), phone: str = Form(""), message: str = Form("")):
     """Submit an inquiry for a property - creates a lead and sends notification email."""
     import resend
+    import uuid as _uuid
     from core import RESEND_API_KEY, NOTIFICATION_EMAIL
 
     prop = await db.properties.find_one({"_id": _oid(property_id)})
@@ -151,8 +152,22 @@ async def property_inquiry(property_id: str, name: str = Form(...), email: str =
             "author": "System",
             "created_at": datetime.now(timezone.utc).isoformat()
         })
+        lead_id = str(existing["_id"])
     else:
-        await db.leads.insert_one(lead)
+        result = await db.leads.insert_one(lead)
+        lead_id = str(result.inserted_id)
+
+    # Generate tracking ID for email open tracking
+    tracking_id = str(_uuid.uuid4())
+    await db.email_opens.insert_one({
+        "tracking_id": tracking_id,
+        "lead_id": lead_id,
+        "email": email.strip().lower(),
+        "property_id": property_id,
+        "property_title": prop.get("title", ""),
+        "sent_at": datetime.now(timezone.utc).isoformat(),
+        "open_count": 0,
+    })
 
     # Send notification emails
     if RESEND_API_KEY:
@@ -268,6 +283,8 @@ async def property_inquiry(property_id: str, name: str = Form(...), email: str =
                         </table>
                     </div>
                 </div>
+                <!-- Tracking Pixel -->
+                <img src="{SITE_URL}/api/properties/track/{tracking_id}.gif" width="1" height="1" style="display:block;width:1px;height:1px;border:0;" alt="" />
             </div>"""
             resend.Emails.send({
                 "from": "EuroAdria <noreply@euroadria.me>",
@@ -280,6 +297,33 @@ async def property_inquiry(property_id: str, name: str = Form(...), email: str =
             logger.error(f"Customer confirmation email failed: {e}")
 
     return {"success": True, "message": "Inquiry submitted"}
+
+
+@router.get("/admin/email-opens")
+async def admin_get_email_opens(admin: str = Depends(verify_admin)):
+    """Get email open tracking data for property inquiries."""
+    opens = await db.email_opens.find({"open_count": {"$gt": 0}}).sort("last_opened", -1).to_list(200)
+    for o in opens:
+        o["_id"] = str(o["_id"])
+    return opens
+
+
+
+
+# ── Email Open Tracking ─────────────────────────────────────────────────
+
+# 1x1 transparent GIF
+PIXEL_GIF = b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff\x00\x00\x00\x21\xf9\x04\x00\x00\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b'
+
+@router.get("/properties/track/{tracking_id}.gif")
+async def track_email_open(tracking_id: str):
+    """Track email open via invisible pixel."""
+    await db.email_opens.update_one(
+        {"tracking_id": tracking_id},
+        {"$set": {"last_opened": datetime.now(timezone.utc).isoformat()}, "$inc": {"open_count": 1}},
+        upsert=True,
+    )
+    return Response(content=PIXEL_GIF, media_type="image/gif", headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"})
 
 
 # ── Property Image Serving ──────────────────────────────────────────────
