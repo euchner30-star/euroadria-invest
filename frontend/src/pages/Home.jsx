@@ -8,6 +8,7 @@ import FAQSection from '../components/FAQSection';
 import MediaBadge from '../components/MediaBadge';
 import YouTubeSlider from '../components/YouTubeSlider';
 import TrustBar from '../components/TrustBar';
+import FeaturedProperties from '../components/FeaturedProperties';
 import NewsletterSignup from '../components/NewsletterSignup';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -75,6 +76,9 @@ const Home = () => {
       />
 
       <TrustBar />
+
+      {/* Featured Properties Section */}
+      <FeaturedProperties lang={lang} />
 
       {/* Balkan vs EU Section - GEO-optimiert mit Fakten */}
       <section className="py-20 bg-ea-light">
