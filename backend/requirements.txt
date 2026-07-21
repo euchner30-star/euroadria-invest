@@ -29,6 +29,7 @@ distro==1.9.0
 dnspython==2.8.0
 ecdsa==0.19.1
 email-validator==2.3.0
+emergentintegrations==0.1.0
 emoji==2.15.0
 et_xmlfile==2.0.0
 fastapi==0.115.12
@@ -133,6 +134,7 @@ pyparsing==3.3.2
 PyPDF2==3.0.1
 pypdfium2==5.7.0
 pytest==9.0.2
+pytest-asyncio==1.4.0
 python-dateutil==2.9.0.post0
 python-docx==1.2.0
 python-dotenv==1.1.0

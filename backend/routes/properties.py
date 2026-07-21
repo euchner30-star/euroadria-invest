@@ -1,6 +1,6 @@
 """Property listings endpoints - CRUD for real estate listings with images and PDF exposé."""
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, Response
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
@@ -8,6 +8,7 @@ from bson import ObjectId
 import io
 
 from core import db, verify_admin, logger
+from object_storage import init_storage, upload_image, get_object
 
 
 def _oid(val: str) -> ObjectId:
@@ -156,16 +157,26 @@ async def property_inquiry(property_id: str, name: str = Form(...), email: str =
 
 # ── Property Image Serving ──────────────────────────────────────────────
 
-@router.get("/properties/img/{image_id}")
+@router.get("/properties/img/{image_id:path}")
 async def serve_property_image(image_id: str):
-    """Serve a property image from GridFS."""
+    """Serve a property image. Tries Object Storage first, falls back to GridFS."""
+    # Object Storage path (contains '/')
+    if "/" in image_id:
+        try:
+            data, content_type = get_object(image_id)
+            return Response(content=data, media_type=content_type, headers={"Cache-Control": "public, max-age=86400"})
+        except Exception as e:
+            logger.error(f"Object Storage fetch failed for {image_id}: {e}")
+            raise HTTPException(status_code=404, detail="Image not found")
+
+    # Legacy GridFS fallback (ObjectId string)
     from motor.motor_asyncio import AsyncIOMotorGridFSBucket
     fs = AsyncIOMotorGridFSBucket(db)
     try:
         grid_out = await fs.open_download_stream(_oid(image_id))
         content = await grid_out.read()
         content_type = grid_out.metadata.get("content_type", "image/jpeg") if grid_out.metadata else "image/jpeg"
-        return StreamingResponse(io.BytesIO(content), media_type=content_type)
+        return Response(content=content, media_type=content_type, headers={"Cache-Control": "public, max-age=86400"})
     except Exception:
         raise HTTPException(status_code=404, detail="Image not found")
 
@@ -305,10 +316,7 @@ async def admin_delete_property(property_id: str, admin: str = Depends(verify_ad
 
 @router.post("/admin/properties/{property_id}/images")
 async def admin_upload_images(property_id: str, files: List[UploadFile] = File(...), admin: str = Depends(verify_admin)):
-    """Upload images to a property listing (stored in GridFS)."""
-    from motor.motor_asyncio import AsyncIOMotorGridFSBucket
-    fs = AsyncIOMotorGridFSBucket(db)
-
+    """Upload images to a property listing (stored in Object Storage)."""
     prop = await db.properties.find_one({"_id": _oid(property_id)})
     if not prop:
         raise HTTPException(status_code=404, detail="Property not found")
@@ -318,12 +326,20 @@ async def admin_upload_images(property_id: str, files: List[UploadFile] = File(.
         content = await file.read()
         if len(content) > 15 * 1024 * 1024:
             continue  # Skip files > 15MB
-        grid_id = await fs.upload_from_stream(
-            file.filename,
-            io.BytesIO(content),
-            metadata={"content_type": file.content_type, "property_id": property_id}
-        )
-        image_ids.append(str(grid_id))
+        try:
+            storage_path = upload_image(content, file.filename, file.content_type or "image/jpeg")
+            image_ids.append(storage_path)
+        except Exception as e:
+            logger.error(f"Object Storage upload failed: {e}")
+            # Fallback to GridFS
+            from motor.motor_asyncio import AsyncIOMotorGridFSBucket
+            fs = AsyncIOMotorGridFSBucket(db)
+            grid_id = await fs.upload_from_stream(
+                file.filename,
+                io.BytesIO(content),
+                metadata={"content_type": file.content_type, "property_id": property_id}
+            )
+            image_ids.append(str(grid_id))
 
     update = {"images": image_ids, "updated_at": datetime.now(timezone.utc).isoformat()}
     if not prop.get("cover_image") and image_ids:
@@ -332,15 +348,17 @@ async def admin_upload_images(property_id: str, files: List[UploadFile] = File(.
     return {"success": True, "image_ids": image_ids}
 
 
-@router.delete("/admin/properties/{property_id}/images/{image_id}")
+@router.delete("/admin/properties/{property_id}/images/{image_id:path}")
 async def admin_delete_image(property_id: str, image_id: str, admin: str = Depends(verify_admin)):
     """Delete an image from a property."""
-    from motor.motor_asyncio import AsyncIOMotorGridFSBucket
-    fs = AsyncIOMotorGridFSBucket(db)
-    try:
-        await fs.delete(_oid(image_id))
-    except Exception:
-        pass
+    # Only attempt GridFS delete for legacy ObjectId-style IDs
+    if "/" not in image_id:
+        from motor.motor_asyncio import AsyncIOMotorGridFSBucket
+        fs = AsyncIOMotorGridFSBucket(db)
+        try:
+            await fs.delete(_oid(image_id))
+        except Exception:
+            pass
     prop = await db.properties.find_one({"_id": _oid(property_id)})
     if prop:
         images = [i for i in prop.get("images", []) if i != image_id]

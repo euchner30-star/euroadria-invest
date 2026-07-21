@@ -102,7 +102,13 @@ if UPLOAD_DIR.exists():
 @app.on_event("startup")
 async def startup_event():
     asyncio.create_task(followup_email_loop())
-    logger.info("Server started - Object storage will init on first use")
+    # Init Object Storage eagerly
+    try:
+        from object_storage import init_storage
+        init_storage()
+    except Exception as e:
+        logger.warning(f"Object Storage init deferred: {e}")
+    logger.info("Server started")
 
 
 @app.on_event("shutdown")
