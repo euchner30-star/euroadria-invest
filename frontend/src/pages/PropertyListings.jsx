@@ -90,6 +90,104 @@ function InquiryForm({ property, onClose }) {
   );
 }
 
+// ── Formatted Description Renderer ─────────────────────────────────────
+function FormattedDescription({ text }) {
+  if (!text) return null;
+
+  const lines = text.split('\n');
+  const blocks = [];
+  let currentBullets = [];
+
+  const flushBullets = () => {
+    if (currentBullets.length > 0) {
+      blocks.push({ type: 'bullets', items: [...currentBullets] });
+      currentBullets = [];
+    }
+  };
+
+  const isHeading = (line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.length > 80) return false;
+    if (trimmed.startsWith('•') || trimmed.startsWith('·') || trimmed.startsWith('-') || trimmed.startsWith('📍')) return false;
+    // Short standalone lines that look like section titles
+    const nextIdx = lines.indexOf(line) + 1;
+    const words = trimmed.split(/\s+/).length;
+    if (words <= 6 && !trimmed.endsWith('.') && !trimmed.endsWith(',')) return true;
+    return false;
+  };
+
+  const isBullet = (line) => {
+    const t = line.trim();
+    return t.startsWith('•') || t.startsWith('·') || t.startsWith('- ') || t.startsWith('📍');
+  };
+
+  const cleanBullet = (line) => {
+    return line.trim().replace(/^[•·📍]\s*/, '').replace(/^-\s+/, '');
+  };
+
+  lines.forEach((line, i) => {
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      flushBullets();
+      return;
+    }
+
+    if (isBullet(trimmed)) {
+      currentBullets.push(cleanBullet(trimmed));
+      return;
+    }
+
+    flushBullets();
+
+    // Check if this is a heading: short line followed by content
+    if (isHeading(line) && i > 0) {
+      blocks.push({ type: 'heading', text: trimmed });
+    } else {
+      // Merge consecutive paragraph lines
+      const lastBlock = blocks[blocks.length - 1];
+      if (lastBlock?.type === 'paragraph') {
+        lastBlock.text += ' ' + trimmed;
+      } else {
+        blocks.push({ type: 'paragraph', text: trimmed });
+      }
+    }
+  });
+
+  flushBullets();
+
+  return (
+    <div className="space-y-4">
+      {blocks.map((block, i) => {
+        if (block.type === 'heading') {
+          return (
+            <h3 key={i} className="text-base font-bold text-[#04151F] pt-3 pb-1 border-l-2 border-[#C8A96A] pl-3">
+              {block.text}
+            </h3>
+          );
+        }
+        if (block.type === 'bullets') {
+          return (
+            <div key={i} className="bg-[#04151F]/[0.02] rounded-xl p-4 space-y-2.5">
+              {block.items.map((item, j) => (
+                <div key={j} className="flex items-start gap-2.5 text-sm text-[#04151F]/70">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#C8A96A] mt-1.5 shrink-0" />
+                  <span className="leading-relaxed">{item}</span>
+                </div>
+              ))}
+            </div>
+          );
+        }
+        return (
+          <p key={i} className="text-sm text-[#04151F]/70 leading-relaxed">
+            {block.text}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Property Detail Page ───────────────────────────────────────────────
 export function PropertyDetailPage() {
   const { id } = useParams();
@@ -200,9 +298,9 @@ export function PropertyDetailPage() {
             </div>
 
             {property.description && (
-              <div className="mb-8">
-                <h2 className="text-lg font-bold text-[#04151F] mb-3">Description</h2>
-                <p className="text-sm text-[#04151F]/70 leading-relaxed whitespace-pre-line">{property.description}</p>
+              <div className="mb-8" data-testid="property-description">
+                <h2 className="text-lg font-bold text-[#04151F] mb-4">Description</h2>
+                <FormattedDescription text={property.description} />
               </div>
             )}
 
