@@ -113,6 +113,17 @@ export function PropertyDetailPage() {
 
   return (
     <div className="min-h-screen bg-white" data-testid="property-detail-page">
+      {/* Breadcrumb Navigation */}
+      <div className="bg-[#04151F] pt-20 pb-4 px-4 sm:px-8">
+        <div className="max-w-6xl mx-auto flex items-center gap-2 text-sm">
+          <Link to="/" className="text-white/50 hover:text-white transition-colors" data-testid="breadcrumb-home">Home</Link>
+          <span className="text-white/30">/</span>
+          <Link to="/properties" className="text-white/50 hover:text-white transition-colors" data-testid="breadcrumb-properties">Alle Immobilien</Link>
+          <span className="text-white/30">/</span>
+          <span className="text-white/80 truncate max-w-xs">{property.title}</span>
+        </div>
+      </div>
+
       {/* Image Gallery */}
       <div className="relative bg-gray-100 h-[50vh] sm:h-[60vh]">
         {images.length > 0 ? (
@@ -126,7 +137,6 @@ export function PropertyDetailPage() {
             <button onClick={() => setActiveImg(i => i < images.length - 1 ? i + 1 : 0)} className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-all"><ChevronRight className="w-5 h-5" /></button>
           </>
         )}
-        <Link to="/properties" className="absolute top-4 left-4 px-3 py-1.5 bg-white/80 backdrop-blur-sm rounded-lg text-sm text-[#04151F] hover:bg-white transition-all flex items-center gap-1"><ChevronLeft className="w-4 h-4" /> Back</Link>
         <div className="absolute bottom-4 right-4 text-white/70 text-xs bg-black/40 backdrop-blur-sm px-2 py-1 rounded">{images.length > 0 ? `${activeImg + 1} / ${images.length}` : ''}</div>
       </div>
 
@@ -185,6 +195,13 @@ export function PropertyDetailPage() {
                 <Download className="w-4 h-4" /> Download Exposé (PDF)
               </a>
             )}
+
+            {/* Back to listings */}
+            <div className="pt-4 border-t border-gray-100">
+              <Link to="/properties" className="inline-flex items-center gap-2 text-sm text-[#C8A96A] hover:text-[#04151F] font-medium transition-colors" data-testid="back-to-properties">
+                <ChevronLeft className="w-4 h-4" /> Zurück zu allen Immobilien
+              </Link>
+            </div>
           </div>
 
           {/* Right: Inquiry */}
