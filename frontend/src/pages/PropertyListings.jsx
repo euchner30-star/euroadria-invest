@@ -241,7 +241,7 @@ export function PropertyDetailPage() {
   return (
     <div className="min-h-screen bg-white" data-testid="property-detail-page">
       {/* Image Gallery */}
-      <div className="bg-[#f5f5f5] pt-24 pb-4">
+      <div className="bg-[#f5f5f5] pt-28 pb-4">
         <div className="max-w-5xl mx-auto px-4 sm:px-8">
           <div className="relative rounded-2xl overflow-hidden bg-gray-200">
             {images.length > 0 ? (
