@@ -226,7 +226,7 @@ export function PropertyDetailPage() {
             {/* Back to listings */}
             <div className="pt-4 border-t border-gray-100">
               <Link to="/properties" className="inline-flex items-center gap-2 text-sm text-[#C8A96A] hover:text-[#04151F] font-medium transition-colors" data-testid="back-to-properties">
-                <ChevronLeft className="w-4 h-4" /> Zurück zu allen Immobilien
+                <ChevronLeft className="w-4 h-4" /> Back to all properties
               </Link>
             </div>
           </div>
