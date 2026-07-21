@@ -68,6 +68,7 @@ const Header = () => {
         { name: 'Sveti Stefan', path: '/investment/standort/Sveti%20Stefan', desc: 'Ultra-Premium' },
         { name: 'Kotor', path: '/investment/standort/Kotor', desc: 'UNESCO' },
         { name: 'Budva', path: '/immobilien/budva', desc: lang === 'en' ? 'Tourism Hotspot' : 'Tourismus-Hotspot' },
+        { name: 'Pržno', path: '/investment/standort/Pr%C5%BEno', desc: 'Boutique' },
       ]
     },
     {
@@ -91,6 +92,8 @@ const Header = () => {
       ]
     },
   ];
+
+  const allPropertiesLink = { name: lang === 'en' ? 'All Properties' : 'Alle Immobilien', path: '/properties' };
 
   // Sekundäre Nav-Items (rechts vom Infrastruktur-Radar)
   const secondaryNavItems = [
@@ -175,10 +178,18 @@ const Header = () => {
                       </div>
                     ))}
                   </div>
-                  <div className="border-t border-gray-100 mt-2 pt-2 px-3">
+                  <div className="border-t border-gray-100 mt-2 pt-2 px-3 space-y-1">
+                    <Link 
+                      to="/properties" 
+                      className="flex items-center justify-center gap-2 text-xs font-semibold text-ea-gold hover:text-ea-dark transition-colors py-1"
+                      onClick={() => setIsImmobilienOpen(false)}
+                    >
+                      <Building2 className="w-3 h-3" />
+                      {lang === 'en' ? 'All Properties →' : 'Alle Immobilien →'}
+                    </Link>
                     <Link 
                       to="/investment" 
-                      className="flex items-center justify-center gap-2 text-xs font-semibold text-ea-gold hover:text-ea-dark transition-colors py-1"
+                      className="flex items-center justify-center gap-2 text-xs font-semibold text-ea-dark/40 hover:text-ea-dark transition-colors py-1"
                       onClick={() => setIsImmobilienOpen(false)}
                     >
                       <TrendingUp className="w-3 h-3" />
@@ -386,6 +397,14 @@ const Header = () => {
                         </div>
                       </div>
                     ))}
+                    <Link 
+                      to="/properties" 
+                      className="flex items-center gap-2 text-xs font-semibold text-ea-gold px-3 pt-3 pb-1"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Building2 className="w-3 h-3" />
+                      {lang === 'en' ? 'All Properties' : 'Alle Immobilien'} →
+                    </Link>
                     <Link 
                       to="/investment" 
                       className="flex items-center gap-2 text-xs font-semibold text-ea-gold px-3 pt-2"

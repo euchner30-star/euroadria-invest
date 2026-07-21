@@ -20,6 +20,43 @@ def _oid(val: str) -> ObjectId:
 router = APIRouter()
 
 
+# ── Location Management ─────────────────────────────────────────────────
+
+@router.get("/locations")
+async def get_locations():
+    """Get all locations (public)."""
+    locations = await db.property_locations.find({}).sort("name", 1).to_list(100)
+    for l in locations:
+        l["_id"] = str(l["_id"])
+    return locations
+
+
+@router.get("/admin/locations")
+async def admin_get_locations(admin: str = Depends(verify_admin)):
+    """Get all locations (admin)."""
+    locations = await db.property_locations.find({}).sort("name", 1).to_list(100)
+    for l in locations:
+        l["_id"] = str(l["_id"])
+    return locations
+
+
+@router.post("/admin/locations")
+async def admin_add_location(admin: str = Depends(verify_admin), name: str = Form(...)):
+    """Add a new location."""
+    existing = await db.property_locations.find_one({"name": name.strip()})
+    if existing:
+        raise HTTPException(status_code=409, detail="Location already exists")
+    result = await db.property_locations.insert_one({"name": name.strip(), "created_at": datetime.now(timezone.utc).isoformat()})
+    return {"success": True, "_id": str(result.inserted_id), "name": name.strip()}
+
+
+@router.delete("/admin/locations/{location_id}")
+async def admin_delete_location(location_id: str, admin: str = Depends(verify_admin)):
+    """Delete a location."""
+    await db.property_locations.delete_one({"_id": ObjectId(location_id)})
+    return {"success": True}
+
+
 # ── Public Endpoints ────────────────────────────────────────────────────
 
 @router.get("/properties")

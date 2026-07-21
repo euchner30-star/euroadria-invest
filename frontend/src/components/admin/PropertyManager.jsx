@@ -4,7 +4,6 @@ import { Plus, Edit3, Trash2, X, Image, Upload, FileText, Eye, EyeOff, Star, Map
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const PROPERTY_TYPES = ['Apartment', 'House', 'Villa', 'Land', 'Commercial', 'Hotel', 'Other'];
-const LOCATIONS = ['Budva', 'Sveti Stefan', 'Pržno', 'Tivat', 'Kotor', 'Herceg Novi', 'Bar', 'Ulcinj', 'Podgorica', 'Nikšić', 'Žabljak', 'Skadar Lake', 'Cetinje', 'Novi Sad', 'Belgrade'];
 const STATUSES = ['available', 'reserved', 'sold'];
 const FEATURES_OPTIONS = ['Sea View', 'Pool', 'Parking', 'Balcony', 'Garden', 'Furnished', 'Air Conditioning', 'Elevator', 'New Build', 'Renovation Needed'];
 
@@ -17,14 +16,21 @@ export default function PropertyManager({ credentials }) {
   const [form, setForm] = useState({ title: '', description: '', price: '', area_sqm: '', rooms: '', bathrooms: '', property_type: 'Apartment', location: '', address: '', features: '', status: 'available', published: true });
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [locations, setLocations] = useState([]);
+  const [showLocations, setShowLocations] = useState(false);
+  const [newLocation, setNewLocation] = useState('');
 
   const authHeader = { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) };
 
   const fetchProperties = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/admin/properties`, { headers: authHeader });
-      if (res.ok) setProperties(await res.json());
+      const [pRes, lRes] = await Promise.all([
+        fetch(`${API}/api/admin/properties`, { headers: authHeader }),
+        fetch(`${API}/api/admin/locations`, { headers: authHeader }),
+      ]);
+      if (pRes.ok) setProperties(await pRes.json());
+      if (lRes.ok) setLocations(await lRes.json());
     } catch {}
     setLoading(false);
   };
@@ -122,12 +128,54 @@ export default function PropertyManager({ credentials }) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-ea-dark">Property Listings</h2>
-          <p className="text-sm text-ea-dark/50">{properties.length} properties · {properties.filter(p => p.published).length} published</p>
+          <p className="text-sm text-ea-dark/50">{properties.length} properties · {properties.filter(p => p.published).length} published · {locations.length} locations</p>
         </div>
-        <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 px-4 py-2.5 bg-ea-dark text-white text-sm font-medium rounded-lg hover:bg-ea-dark/90 transition-all" data-testid="create-property-btn">
-          <Plus className="w-4 h-4" /> Add Property
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowLocations(!showLocations)} className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 text-ea-dark text-sm font-medium rounded-lg hover:bg-gray-100 transition-all border border-gray-200" data-testid="manage-locations-btn">
+            <MapPin className="w-4 h-4" /> Locations
+          </button>
+          <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 px-4 py-2.5 bg-ea-dark text-white text-sm font-medium rounded-lg hover:bg-ea-dark/90 transition-all" data-testid="create-property-btn">
+            <Plus className="w-4 h-4" /> Add Property
+          </button>
+        </div>
       </div>
+
+      {/* Locations Manager */}
+      {showLocations && (
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm" data-testid="locations-manager">
+          <h3 className="text-sm font-semibold text-ea-dark mb-3">Manage Locations</h3>
+          <div className="flex flex-wrap gap-2 mb-3">
+            {locations.map(loc => (
+              <span key={loc._id} className="text-xs bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 text-ea-dark flex items-center gap-1.5">
+                <MapPin className="w-3 h-3 text-ea-gold" />
+                {loc.name}
+                <button onClick={async () => {
+                  if (!window.confirm(`Delete "${loc.name}"?`)) return;
+                  await fetch(`${API}/api/admin/locations/${loc._id}`, { method: 'DELETE', headers: authHeader });
+                  setLocations(prev => prev.filter(l => l._id !== loc._id));
+                }} className="ml-1 text-red-300 hover:text-red-500"><X className="w-3 h-3" /></button>
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input type="text" value={newLocation} onChange={e => setNewLocation(e.target.value)} onKeyDown={async e => {
+              if (e.key === 'Enter' && newLocation.trim()) {
+                const fd = new FormData(); fd.append('name', newLocation.trim());
+                const res = await fetch(`${API}/api/admin/locations`, { method: 'POST', headers: authHeader, body: fd });
+                if (res.ok) { const d = await res.json(); setLocations(prev => [...prev, d].sort((a, b) => a.name.localeCompare(b.name))); setNewLocation(''); }
+                else { const err = await res.json(); alert(err.detail || 'Error'); }
+              }
+            }} placeholder="New location name..." className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold" data-testid="new-location-input" />
+            <button onClick={async () => {
+              if (!newLocation.trim()) return;
+              const fd = new FormData(); fd.append('name', newLocation.trim());
+              const res = await fetch(`${API}/api/admin/locations`, { method: 'POST', headers: authHeader, body: fd });
+              if (res.ok) { const d = await res.json(); setLocations(prev => [...prev, d].sort((a, b) => a.name.localeCompare(b.name))); setNewLocation(''); }
+              else { const err = await res.json(); alert(err.detail || 'Error'); }
+            }} className="px-4 py-2 bg-ea-dark text-white text-sm font-medium rounded-lg hover:bg-ea-dark/90" data-testid="add-location-btn">Add</button>
+          </div>
+        </div>
+      )}
 
       {/* Create Modal */}
       {showCreate && (
@@ -143,7 +191,7 @@ export default function PropertyManager({ credentials }) {
                 <label className="text-xs font-bold text-ea-gold mb-2 block flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> Location (Standort) *</label>
                 <select value={form.location} onChange={e => setForm(p => ({ ...p, location: e.target.value }))} className="w-full bg-white border border-ea-gold/30 rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-ea-gold" data-testid="prop-location">
                   <option value="">Select location...</option>
-                  {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
+                  {locations.map(l => <option key={l._id} value={l.name}>{l.name}</option>)}
                 </select>
                 <p className="text-xs text-ea-dark/30 mt-1">The property will appear on this location's page</p>
               </div>
@@ -235,7 +283,7 @@ export default function PropertyManager({ credentials }) {
                   <label className="text-[10px] font-bold text-ea-gold uppercase tracking-wider">Location</label>
                   <select value={editProp.location || ''} onChange={e => setEditProp(p => ({ ...p, location: e.target.value }))} className="w-full bg-transparent text-ea-dark font-semibold text-sm focus:outline-none" data-testid="edit-prop-location">
                     <option value="">Select...</option>
-                    {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
+                    {locations.map(l => <option key={l._id} value={l.name}>{l.name}</option>)}
                   </select>
                 </div>
               </div>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="11" time="1.169" timestamp="2026-07-21T12:08:30.139111+00:00" hostname="agent-env-645ff088-37d3-4205-a5e0-0dcd92190586"><testcase classname="backend.tests.test_locations_api" name="test_get_locations_public_returns_list" time="0.152"><failure message="AssertionError: assert '_id' in {'city': 'Tivat', 'country': 'Montenegro', 'description': 'Luxury destination with Porto Montenegro and international airport. Ultra-premium segment.', 'id': '9b933710-75ba-4828-8795-6ce47c3a2a19', ...}">backend/tests/test_locations_api.py:34: in test_get_locations_public_returns_list
+    assert "_id" in first
+E   AssertionError: assert '_id' in {'city': 'Tivat', 'country': 'Montenegro', 'description': 'Luxury destination with Porto Montenegro and international airport. Ultra-premium segment.', 'id': '9b933710-75ba-4828-8795-6ce47c3a2a19', ...}</failure></testcase><testcase classname="backend.tests.test_locations_api" name="test_get_locations_sorted_by_name" time="0.083"><failure message="KeyError: 'name'">backend/tests/test_locations_api.py:42: in test_get_locations_sorted_by_name
+    names = [l["name"] for l in r.json()]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/tests/test_locations_api.py:42: in &lt;listcomp&gt;
+    names = [l["name"] for l in r.json()]
+             ^^^^^^^^^
+E   KeyError: 'name'</failure></testcase><testcase classname="backend.tests.test_locations_api" name="test_admin_get_locations_requires_auth" time="0.085" /><testcase classname="backend.tests.test_locations_api" name="test_admin_get_locations_success" time="0.118" /><testcase classname="backend.tests.test_locations_api" name="test_admin_add_location_requires_auth" time="0.056" /><testcase classname="backend.tests.test_locations_api" name="test_admin_add_location_success_and_persistence" time="0.126"><failure message="AssertionError: {&quot;detail&quot;:[{&quot;type&quot;:&quot;model_attributes_type&quot;,&quot;loc&quot;:[&quot;body&quot;],&quot;msg&quot;:&quot;Input should be a valid dictionary or object to extract fields from&quot;,&quot;input&quot;:&quot;name=TEST_LOC_CityA&quot;}]}&#10;assert 422 == 200&#10; +  where 422 = &lt;Response [422]&gt;.status_code">backend/tests/test_locations_api.py:76: in test_admin_add_location_success_and_persistence
+    assert r.status_code == 200, r.text
+E   AssertionError: {"detail":[{"type":"model_attributes_type","loc":["body"],"msg":"Input should be a valid dictionary or object to extract fields from","input":"name=TEST_LOC_CityA"}]}
+E   assert 422 == 200
+E    +  where 422 = &lt;Response [422]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_locations_api" name="test_admin_add_location_duplicate_returns_409" time="0.083"><failure message="assert 422 == 200&#10; +  where 422 = &lt;Response [422]&gt;.status_code">backend/tests/test_locations_api.py:93: in test_admin_add_location_duplicate_returns_409
+    assert r1.status_code == 200
+E   assert 422 == 200
+E    +  where 422 = &lt;Response [422]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_locations_api" name="test_admin_delete_location_requires_auth" time="0.054" /><testcase classname="backend.tests.test_locations_api" name="test_admin_delete_location_success_and_removal" time="0.108"><failure message="assert 422 == 200&#10; +  where 422 = &lt;Response [422]&gt;.status_code">backend/tests/test_locations_api.py:109: in test_admin_delete_location_success_and_removal
+    assert r1.status_code == 200
+E   assert 422 == 200
+E    +  where 422 = &lt;Response [422]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_locations_api" name="test_properties_endpoint_returns_list" time="0.085" /><testcase classname="backend.tests.test_locations_api" name="test_properties_page_route_html_accessible" time="0.155"><failure message="assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code">backend/tests/test_locations_api.py:135: in test_properties_page_route_html_accessible
+    assert r.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</failure></testcase></testsuite></testsuites>
