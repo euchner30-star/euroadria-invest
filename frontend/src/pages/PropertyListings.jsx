@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Maximize, BedDouble, Bath, Filter, Search, ChevronLeft, ChevronRight, Download, Phone, MessageSquare, X, Building2 } from 'lucide-react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -97,11 +97,38 @@ export function PropertyDetailPage() {
   const [loading, setLoading] = useState(true);
   const [activeImg, setActiveImg] = useState(0);
   const [showInquiry, setShowInquiry] = useState(false);
+  const [similar, setSimilar] = useState([]);
+  const [similarLabel, setSimilarLabel] = useState('');
 
   useEffect(() => {
+    setLoading(true);
+    setSimilar([]);
+    setActiveImg(0);
     fetch(`${API}/api/properties/${id}`)
       .then(r => r.ok ? r.json() : null)
-      .then(d => { setProperty(d); setLoading(false); })
+      .then(d => {
+        setProperty(d);
+        setLoading(false);
+        if (d?.location) {
+          fetch(`${API}/api/properties?status=available&location=${encodeURIComponent(d.location)}`)
+            .then(r => r.ok ? r.json() : [])
+            .then(all => {
+              const sameLocation = all.filter(p => p._id !== d._id).slice(0, 3);
+              if (sameLocation.length > 0) {
+                setSimilar(sameLocation);
+                setSimilarLabel(d.location);
+              } else {
+                // Fallback: show other available properties
+                fetch(`${API}/api/properties?status=available`)
+                  .then(r => r.ok ? r.json() : [])
+                  .then(others => {
+                    setSimilar(others.filter(p => p._id !== d._id).slice(0, 3));
+                    setSimilarLabel('');
+                  });
+              }
+            });
+        }
+      })
       .catch(() => setLoading(false));
   }, [id]);
 
@@ -217,16 +244,39 @@ export function PropertyDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Similar Properties */}
+      {similar.length > 0 && (
+        <div className="border-t border-gray-100 bg-gray-50" data-testid="similar-properties">
+          <div className="max-w-6xl mx-auto px-4 sm:px-8 py-12">
+            <h2 className="text-xl font-bold text-[#04151F] mb-2">
+              {similarLabel ? `Ähnliche Objekte in ${similarLabel}` : 'Weitere Investmentmöglichkeiten'}
+            </h2>
+            <p className="text-sm text-[#04151F]/40 mb-8">
+              {similarLabel ? 'Weitere Investmentmöglichkeiten in derselben Region' : 'Entdecken Sie weitere Premium-Immobilien'}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {similar.map(p => <PropertyCard key={p._id} property={p} />)}
+            </div>
+            <div className="mt-8 text-center">
+              <Link to={similarLabel ? `/properties?location=${encodeURIComponent(similarLabel)}` : '/properties'} className="inline-flex items-center gap-2 px-6 py-2.5 border border-[#C8A96A] text-[#C8A96A] text-sm font-medium rounded-lg hover:bg-[#C8A96A] hover:text-[#04151F] transition-all" data-testid="view-all-location">
+                {similarLabel ? `Alle Objekte in ${similarLabel} ansehen` : 'Alle Immobilien ansehen'}
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 // ── Property Listings Page ─────────────────────────────────────────────
 export default function PropertyListings() {
+  const [searchParams] = useSearchParams();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState('All');
-  const [locationFilter, setLocationFilter] = useState('');
+  const [locationFilter, setLocationFilter] = useState(searchParams.get('location') || '');
   const [priceRange, setPriceRange] = useState('');
 
   useEffect(() => {

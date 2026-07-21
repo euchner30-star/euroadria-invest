@@ -10,6 +10,7 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 - Property grid on /properties, Home page (FeaturedProperties), and per-location pages
 - Property detail page with breadcrumb navigation (Home / Alle Immobilien / Title)
 - "Zurück zu allen Immobilien" back-link on detail pages
+- **"Ähnliche Objekte" section** on detail pages: shows similar properties from same region, falls back to other available properties if none in same region
 - Inquiry form + WhatsApp contact on detail pages
 - PDF Exposé download with UTF-8 support
 - Test property "Šipkov Krš Villa" assigned to Pržno location
