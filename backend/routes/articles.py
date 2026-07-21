@@ -109,9 +109,8 @@ async def get_article_og_html(slug: str, request: Request):
 
     title = f"{article.get('title', '')} | EuroAdria Corporate Solutions"
     description = article.get('excerpt', '')[:200]
-    image = article.get('image', '') or "https://images.unsplash.com/photo-1756298041997-c37748e6f0ca?w=1200&h=630&fit=crop"
-    if not image.startswith('http'):
-        image = "https://images.unsplash.com/photo-1756298041997-c37748e6f0ca?w=1200&h=630&fit=crop"
+    # Use generated OG image with logo overlay
+    image = f"{SITE_URL}/api/articles/og/{slug}.jpg"
     
     # Convert short ref param to full utm_source for tracking
     redirect_url = f"{SITE_URL}/blog/{slug}"
@@ -150,6 +149,87 @@ async def get_article_og_html(slug: str, request: Request):
 <body><script>window.location.replace("{redirect_url}")</script><noscript><a href="{redirect_url}">Weiter zum Artikel</a></noscript></body>
 </html>"""
     return Response(content=html, media_type="text/html")
+
+
+@router.get("/articles/og/{slug}.jpg")
+async def article_og_image(slug: str):
+    """Generate OG image for blog article: article image + EuroAdria logo overlay."""
+    from PIL import Image, ImageDraw, ImageFont
+    import requests as req
+
+    article = await db.articles.find_one({"slug": slug}, {"_id": 0})
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+
+    image_url = article.get("image", "")
+    if not image_url or not image_url.startswith("http"):
+        raise HTTPException(status_code=404, detail="No image available")
+
+    # Fetch article image
+    try:
+        img_resp = req.get(image_url, timeout=15)
+        base_img = Image.open(io.BytesIO(img_resp.content)).convert("RGB")
+    except Exception:
+        raise HTTPException(status_code=404, detail="Image fetch failed")
+
+    # Resize to OG dimensions (1200x630)
+    og_w, og_h = 1200, 630
+    img_ratio = base_img.width / base_img.height
+    og_ratio = og_w / og_h
+    if img_ratio > og_ratio:
+        new_h = og_h
+        new_w = int(og_h * img_ratio)
+    else:
+        new_w = og_w
+        new_h = int(og_w / img_ratio)
+    base_img = base_img.resize((new_w, new_h), Image.LANCZOS)
+    left = (new_w - og_w) // 2
+    top = (new_h - og_h) // 2
+    base_img = base_img.crop((left, top, left + og_w, top + og_h))
+
+    # Overlay white logo
+    try:
+        logo_resp = req.get("https://www.euroadria.me/euroadria-logo-white.png", timeout=10)
+        logo = Image.open(io.BytesIO(logo_resp.content)).convert("RGBA")
+        logo_h = 120
+        logo_w = int(logo.width * (logo_h / logo.height))
+        logo = logo.resize((logo_w, logo_h), Image.LANCZOS)
+        base_rgba = base_img.convert("RGBA")
+        base_rgba.paste(logo, (og_w - logo_w - 30, 24), logo)
+        base_img = base_rgba.convert("RGB")
+    except Exception:
+        pass
+
+    # Dark gradient at bottom with title
+    overlay = Image.new("RGBA", (og_w, og_h), (0, 0, 0, 0))
+    draw_ov = ImageDraw.Draw(overlay)
+    for y in range(og_h - 160, og_h):
+        alpha = int(200 * (y - (og_h - 160)) / 160)
+        draw_ov.rectangle([(0, y), (og_w, y + 1)], fill=(4, 21, 31, alpha))
+    base_rgba = base_img.convert("RGBA")
+    base_rgba = Image.alpha_composite(base_rgba, overlay)
+    final = base_rgba.convert("RGB")
+
+    # Add title text
+    draw = ImageDraw.Draw(final)
+    try:
+        font_title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
+        font_sub = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
+    except Exception:
+        font_title = ImageFont.load_default()
+        font_sub = font_title
+
+    title = article.get("title", "")[:70]
+    category = article.get("category", "Blog")
+    draw.text((40, og_h - 100), title, fill=(255, 255, 255), font=font_title)
+    draw.text((40, og_h - 55), f"EuroAdria · {category}", fill=(200, 169, 106), font=font_sub)
+
+    buf = io.BytesIO()
+    final.save(buf, format="JPEG", quality=85)
+    buf.seek(0)
+    return Response(content=buf.getvalue(), media_type="image/jpeg", headers={"Cache-Control": "public, max-age=3600"})
+
+
 
 
 @router.get("/articles/id/{article_id}", response_model=Article)

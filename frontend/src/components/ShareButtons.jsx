@@ -20,7 +20,7 @@ const ShareButtons = ({ title, url, excerpt, slug, category }) => {
   // Use OG endpoint for sharing — social bots read correct title/image, humans get redirected
   const getShareUrl = (source) => {
     if (slug) {
-      return `https://euroadria.me/api/og/blog/${slug}?utm_source=${source}&utm_medium=social&utm_campaign=share`;
+      return `https://www.euroadria.me/api/og/blog/${slug}?utm_source=${source}&utm_medium=social&utm_campaign=share`;
     }
     try {
       const u = new URL(baseUrl.startsWith('http') ? baseUrl : 'https://euroadria.me' + baseUrl);
@@ -32,7 +32,7 @@ const ShareButtons = ({ title, url, excerpt, slug, category }) => {
   };
 
   // Short OG URL for clean sharing (ref param gets expanded to utm_source on redirect)
-  const ogUrl = (ref) => slug ? `https://euroadria.me/api/og/blog/${slug}?ref=${ref}` : baseUrl;
+  const ogUrl = (ref) => slug ? `https://www.euroadria.me/api/og/blog/${slug}?ref=${ref}` : baseUrl;
 
   // Auto-generate hashtags from category
   const hashtags = React.useMemo(() => {
