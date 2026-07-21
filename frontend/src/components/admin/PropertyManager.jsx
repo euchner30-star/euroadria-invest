@@ -27,7 +27,7 @@ export default function PropertyManager({ credentials }) {
     try {
       const [pRes, lRes] = await Promise.all([
         fetch(`${API}/api/admin/properties`, { headers: authHeader }),
-        fetch(`${API}/api/admin/locations`, { headers: authHeader }),
+        fetch(`${API}/api/admin/property-locations`, { headers: authHeader }),
       ]);
       if (pRes.ok) setProperties(await pRes.json());
       if (lRes.ok) setLocations(await lRes.json());
@@ -151,7 +151,7 @@ export default function PropertyManager({ credentials }) {
                 {loc.name}
                 <button onClick={async () => {
                   if (!window.confirm(`Delete "${loc.name}"?`)) return;
-                  await fetch(`${API}/api/admin/locations/${loc._id}`, { method: 'DELETE', headers: authHeader });
+                  await fetch(`${API}/api/admin/property-locations/${loc._id}`, { method: 'DELETE', headers: authHeader });
                   setLocations(prev => prev.filter(l => l._id !== loc._id));
                 }} className="ml-1 text-red-300 hover:text-red-500"><X className="w-3 h-3" /></button>
               </span>
@@ -161,7 +161,7 @@ export default function PropertyManager({ credentials }) {
             <input type="text" value={newLocation} onChange={e => setNewLocation(e.target.value)} onKeyDown={async e => {
               if (e.key === 'Enter' && newLocation.trim()) {
                 const fd = new FormData(); fd.append('name', newLocation.trim());
-                const res = await fetch(`${API}/api/admin/locations`, { method: 'POST', headers: authHeader, body: fd });
+                const res = await fetch(`${API}/api/admin/property-locations`, { method: 'POST', headers: authHeader, body: fd });
                 if (res.ok) { const d = await res.json(); setLocations(prev => [...prev, d].sort((a, b) => a.name.localeCompare(b.name))); setNewLocation(''); }
                 else { const err = await res.json(); alert(err.detail || 'Error'); }
               }
@@ -169,7 +169,7 @@ export default function PropertyManager({ credentials }) {
             <button onClick={async () => {
               if (!newLocation.trim()) return;
               const fd = new FormData(); fd.append('name', newLocation.trim());
-              const res = await fetch(`${API}/api/admin/locations`, { method: 'POST', headers: authHeader, body: fd });
+              const res = await fetch(`${API}/api/admin/property-locations`, { method: 'POST', headers: authHeader, body: fd });
               if (res.ok) { const d = await res.json(); setLocations(prev => [...prev, d].sort((a, b) => a.name.localeCompare(b.name))); setNewLocation(''); }
               else { const err = await res.json(); alert(err.detail || 'Error'); }
             }} className="px-4 py-2 bg-ea-dark text-white text-sm font-medium rounded-lg hover:bg-ea-dark/90" data-testid="add-location-btn">Add</button>

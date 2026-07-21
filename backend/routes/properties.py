@@ -22,38 +22,43 @@ router = APIRouter()
 
 # ── Location Management ─────────────────────────────────────────────────
 
-@router.get("/locations")
-async def get_locations():
-    """Get all locations (public)."""
+@router.get("/property-locations")
+async def get_property_locations():
+    """Get all property locations (public)."""
     locations = await db.property_locations.find({}).sort("name", 1).to_list(100)
     for l in locations:
         l["_id"] = str(l["_id"])
     return locations
 
 
-@router.get("/admin/locations")
-async def admin_get_locations(admin: str = Depends(verify_admin)):
-    """Get all locations (admin)."""
+@router.get("/admin/property-locations")
+async def admin_get_property_locations(admin: str = Depends(verify_admin)):
+    """Get all property locations (admin)."""
     locations = await db.property_locations.find({}).sort("name", 1).to_list(100)
     for l in locations:
         l["_id"] = str(l["_id"])
     return locations
 
 
-@router.post("/admin/locations")
-async def admin_add_location(admin: str = Depends(verify_admin), name: str = Form(...)):
-    """Add a new location."""
-    existing = await db.property_locations.find_one({"name": name.strip()})
+@router.post("/admin/property-locations")
+async def admin_add_property_location(admin: str = Depends(verify_admin), name: str = Form(...)):
+    """Add a new property location."""
+    n = name.strip()
+    if not n:
+        raise HTTPException(status_code=400, detail="Name is required")
+    existing = await db.property_locations.find_one({"name": n})
     if existing:
         raise HTTPException(status_code=409, detail="Location already exists")
-    result = await db.property_locations.insert_one({"name": name.strip(), "created_at": datetime.now(timezone.utc).isoformat()})
-    return {"success": True, "_id": str(result.inserted_id), "name": name.strip()}
+    result = await db.property_locations.insert_one({"name": n, "created_at": datetime.now(timezone.utc).isoformat()})
+    return {"success": True, "_id": str(result.inserted_id), "name": n}
 
 
-@router.delete("/admin/locations/{location_id}")
-async def admin_delete_location(location_id: str, admin: str = Depends(verify_admin)):
-    """Delete a location."""
-    await db.property_locations.delete_one({"_id": ObjectId(location_id)})
+@router.delete("/admin/property-locations/{location_id}")
+async def admin_delete_property_location(location_id: str, admin: str = Depends(verify_admin)):
+    """Delete a property location."""
+    result = await db.property_locations.delete_one({"_id": _oid(location_id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Location not found")
     return {"success": True}
 
 

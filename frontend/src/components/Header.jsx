@@ -400,7 +400,7 @@ const Header = () => {
                     <Link 
                       to="/properties" 
                       className="flex items-center gap-2 text-xs font-semibold text-ea-gold px-3 pt-3 pb-1"
-                      onClick={() => setMobileMenuOpen(false)}
+                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <Building2 className="w-3 h-3" />
                       {lang === 'en' ? 'All Properties' : 'Alle Immobilien'} →
