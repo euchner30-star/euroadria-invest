@@ -4,7 +4,7 @@ import { Plus, Edit3, Trash2, X, Image, Upload, FileText, Eye, EyeOff, Star, Map
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const PROPERTY_TYPES = ['Apartment', 'House', 'Villa', 'Land', 'Commercial', 'Hotel', 'Other'];
-const LOCATIONS = ['Budva', 'Sveti Stefan', 'Tivat', 'Kotor', 'Herceg Novi', 'Bar', 'Ulcinj', 'Podgorica', 'Nikšić', 'Žabljak', 'Skadar Lake', 'Cetinje', 'Novi Sad', 'Belgrade'];
+const LOCATIONS = ['Budva', 'Sveti Stefan', 'Pržno', 'Tivat', 'Kotor', 'Herceg Novi', 'Bar', 'Ulcinj', 'Podgorica', 'Nikšić', 'Žabljak', 'Skadar Lake', 'Cetinje', 'Novi Sad', 'Belgrade'];
 const STATUSES = ['available', 'reserved', 'sold'];
 const FEATURES_OPTIONS = ['Sea View', 'Pool', 'Parking', 'Balcony', 'Garden', 'Furnished', 'Air Conditioning', 'Elevator', 'New Build', 'Renovation Needed'];
 
