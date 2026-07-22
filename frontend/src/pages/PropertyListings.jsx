@@ -204,6 +204,7 @@ export function PropertyDetailPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     setLoading(true);
     setSimilar([]);
     setActiveImg(0);
