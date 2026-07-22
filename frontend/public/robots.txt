@@ -3,6 +3,11 @@
 
 User-agent: *
 Allow: /
+Allow: /api/p/
+Allow: /api/og/
+Allow: /api/properties/og/
+Allow: /api/articles/og/
+Allow: /api/sitemap.xml
 Disallow: /admin
 Disallow: /api/
 
