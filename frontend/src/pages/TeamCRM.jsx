@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { LogOut, Search, ChevronDown, ChevronUp, Phone, Mail, MapPin, Clock, Target, MessageSquare, Plus, Trash2, Edit3, User, Calendar, DollarSign, Filter, Send, X, Settings, TrendingUp, Building, Upload } from 'lucide-react';
+import { LogOut, Search, ChevronDown, ChevronUp, Phone, Mail, MapPin, Clock, Target, MessageSquare, Plus, Trash2, Edit3, User, Calendar, DollarSign, Filter, Send, X, Settings, TrendingUp, Building, Upload, FileText } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -95,6 +95,9 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
   const [showSignatureEdit, setShowSignatureEdit] = useState(false);
   const [signatureDraft, setSignatureDraft] = useState('');
   const [emailAttachment, setEmailAttachment] = useState(null);
+  const [documents, setDocuments] = useState([]);
+  const [selectedDocs, setSelectedDocs] = useState([]);
+  const [showDocPicker, setShowDocPicker] = useState(false);
 
   useEffect(() => {
     // Load signature
@@ -105,6 +108,10 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
     fetch(`${API}/api/team/leads/${lead._id}/emails`, { headers: { 'Authorization': `Bearer ${token}` } })
       .then(r => r.ok ? r.json() : [])
       .then(d => setSentEmails(d));
+    // Load document library
+    fetch(`${API}/api/team/documents`, { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : [])
+      .then(d => setDocuments(d));
   }, [lead._id, token]);
 
   const addNote = async () => {
@@ -156,6 +163,7 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
       formData.append('body', emailBody);
       formData.append('signature', signature);
       if (emailAttachment) formData.append('attachment', emailAttachment);
+      if (selectedDocs.length > 0) formData.append('document_ids', selectedDocs.join(','));
       const res = await fetch(`${API}/api/team/leads/${lead._id}/email`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
@@ -164,9 +172,11 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
       if (res.ok) {
         setEmailSent(true);
         const attachName = emailAttachment ? emailAttachment.name : null;
-        setNotes(prev => [{ _id: Date.now(), text: `Email sent: "${emailSubject}"${attachName ? ` (Attachment: ${attachName})` : ''}`, author: 'System', created_at: new Date().toISOString() }, ...prev]);
-        setSentEmails(prev => [{ subject: emailSubject, body: emailBody, sent_at: new Date().toISOString(), attachment: attachName }, ...prev]);
-        setTimeout(() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); setEmailSent(false); setEmailAttachment(null); }, 1500);
+        const docNames = selectedDocs.map(id => documents.find(d => d._id === id)?.label).filter(Boolean);
+        const allDocs = [...(attachName ? [attachName] : []), ...docNames];
+        setNotes(prev => [{ _id: Date.now(), text: `Email sent: "${emailSubject}"${allDocs.length ? ` (Documents: ${allDocs.join(', ')})` : ''}`, author: 'System', created_at: new Date().toISOString() }, ...prev]);
+        setSentEmails(prev => [{ subject: emailSubject, body: emailBody, sent_at: new Date().toISOString(), attachment: attachName, documents: docNames }, ...prev]);
+        setTimeout(() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); setEmailSent(false); setEmailAttachment(null); setSelectedDocs([]); }, 1500);
       } else {
         const err = await res.json();
         alert(err.detail || 'Email could not be sent');
@@ -381,13 +391,58 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
             <div className="flex items-center gap-3">
               <label className="flex-1 flex items-center gap-2 px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 transition-all">
                 <Upload className="w-4 h-4 text-white/40" />
-                <span className="text-white/40 text-sm">{emailAttachment ? emailAttachment.name : 'Attach file (max 10MB)'}</span>
+                <span className="text-white/40 text-sm">{emailAttachment ? emailAttachment.name : 'Attach file (max 25MB)'}</span>
                 <input type="file" className="hidden" onChange={e => setEmailAttachment(e.target.files[0] || null)} data-testid="email-attachment-input" />
               </label>
               {emailAttachment && (
                 <button onClick={() => setEmailAttachment(null)} className="text-white/30 hover:text-red-400 transition-all"><X className="w-4 h-4" /></button>
               )}
             </div>
+            {/* Document Library Picker */}
+            <div>
+              <button onClick={() => setShowDocPicker(!showDocPicker)} className="flex items-center gap-2 text-sm text-[#C8A96A]/70 hover:text-[#C8A96A] transition-all" data-testid="doc-picker-toggle">
+                <FileText className="w-4 h-4" />
+                {selectedDocs.length > 0 ? `${selectedDocs.length} document${selectedDocs.length > 1 ? 's' : ''} selected` : 'Select from document library'}
+              </button>
+              {showDocPicker && (
+                <div className="mt-2 bg-white/5 border border-white/10 rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto" data-testid="doc-picker-list">
+                  {documents.length === 0 ? (
+                    <p className="text-white/30 text-xs">No documents in library yet</p>
+                  ) : documents.map(doc => (
+                    <label key={doc._id} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 cursor-pointer transition-all">
+                      <input
+                        type="checkbox"
+                        checked={selectedDocs.includes(doc._id)}
+                        onChange={e => {
+                          if (e.target.checked) setSelectedDocs(prev => [...prev, doc._id]);
+                          else setSelectedDocs(prev => prev.filter(id => id !== doc._id));
+                        }}
+                        className="w-4 h-4 accent-[#C8A96A] rounded"
+                      />
+                      <FileText className="w-4 h-4 text-[#C8A96A]/50 shrink-0" />
+                      <span className="text-white/70 text-sm flex-1 truncate">{doc.label}</span>
+                      <span className="text-white/20 text-xs">{(doc.size / (1024 * 1024)).toFixed(1)} MB</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* Selected docs summary */}
+            {selectedDocs.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {selectedDocs.map(id => {
+                  const doc = documents.find(d => d._id === id);
+                  if (!doc) return null;
+                  return (
+                    <span key={id} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#C8A96A]/10 border border-[#C8A96A]/20 rounded-full text-xs text-[#C8A96A]">
+                      <FileText className="w-3 h-3" />
+                      {doc.label}
+                      <button onClick={() => setSelectedDocs(prev => prev.filter(x => x !== id))} className="ml-1 text-[#C8A96A]/50 hover:text-red-400"><X className="w-3 h-3" /></button>
+                    </span>
+                  );
+                })}
+              </div>
+            )}
             {/* Signature Preview */}
             <div className="bg-white/[0.03] border border-white/5 rounded-lg px-4 py-3">
               {signature && (

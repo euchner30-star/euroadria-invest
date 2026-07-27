@@ -366,8 +366,8 @@ SIGNATURE_HTML_TEMPLATE = """
 
 
 @router.post("/team/leads/{lead_id}/email")
-async def send_lead_email(lead_id: str, member=Depends(get_current_member), subject: str = Form(...), body: str = Form(...), signature: str = Form(""), attachment: Optional[UploadFile] = File(None)):
-    """Send an email to a lead from the Team CRM, optionally with an attachment."""
+async def send_lead_email(lead_id: str, member=Depends(get_current_member), subject: str = Form(...), body: str = Form(...), signature: str = Form(""), attachment: Optional[UploadFile] = File(None), document_ids: str = Form("")):
+    """Send an email to a lead. Attachments and library documents are sent as download links."""
     from bson import ObjectId
     from emails import wrap_email
 
@@ -382,17 +382,95 @@ async def send_lead_email(lead_id: str, member=Depends(get_current_member), subj
     if not lead_email:
         raise HTTPException(status_code=400, detail="Lead has no email address")
 
-    # Build HTML body with personal greeting + corporate signature
+    from core import SITE_URL
+
+    # Generate download links for documents
+    download_links_html = ""
+    doc_names = []
+
+    # Handle library documents (comma-separated IDs)
+    if document_ids and document_ids.strip():
+        for doc_id in document_ids.split(","):
+            doc_id = doc_id.strip()
+            if not doc_id:
+                continue
+            doc = await db.documents.find_one({"_id": ObjectId(doc_id), "is_deleted": {"$ne": True}})
+            if doc:
+                dl_id = str(_uuid.uuid4())
+                await db.download_links.insert_one({
+                    "download_id": dl_id,
+                    "storage_path": doc["storage_path"],
+                    "filename": doc["filename"],
+                    "label": doc.get("label", doc["filename"]),
+                    "lead_id": lead_id,
+                    "created_by": member["name"],
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "download_count": 0,
+                })
+                dl_url = f"{SITE_URL}/api/dl/{dl_id}"
+                size_mb = doc.get("size", 0) / (1024 * 1024)
+                doc_names.append(doc.get("label", doc["filename"]))
+                download_links_html += f"""
+                <a href="{dl_url}" style="display:block;margin:8px 0;padding:14px 20px;background:#04151F;border-radius:10px;text-decoration:none;color:#fff;font-size:14px;">
+                    <span style="display:inline-block;vertical-align:middle;margin-right:10px;">📄</span>
+                    <span style="font-weight:600;">{doc.get('label', doc['filename'])}</span>
+                    <span style="float:right;color:#C8A96A;font-size:12px;">{size_mb:.1f} MB · Download</span>
+                </a>"""
+
+    # Handle uploaded attachment → convert to download link
+    attachment_name = None
+    if attachment and attachment.filename:
+        file_content = await attachment.read()
+        if len(file_content) > 25 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File too large (max 25MB)")
+
+        from object_storage import put_object
+        ext = attachment.filename.rsplit(".", 1)[-1] if "." in attachment.filename else "pdf"
+        storage_path = f"euroadria/attachments/{_uuid.uuid4()}.{ext}"
+        put_object(storage_path, file_content, attachment.content_type or "application/octet-stream")
+
+        dl_id = str(_uuid.uuid4())
+        await db.download_links.insert_one({
+            "download_id": dl_id,
+            "storage_path": storage_path,
+            "filename": attachment.filename,
+            "label": attachment.filename,
+            "lead_id": lead_id,
+            "created_by": member["name"],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "download_count": 0,
+        })
+        dl_url = f"{SITE_URL}/api/dl/{dl_id}"
+        size_mb = len(file_content) / (1024 * 1024)
+        attachment_name = attachment.filename
+        doc_names.append(attachment.filename)
+        download_links_html += f"""
+        <a href="{dl_url}" style="display:block;margin:8px 0;padding:14px 20px;background:#04151F;border-radius:10px;text-decoration:none;color:#fff;font-size:14px;">
+            <span style="display:inline-block;vertical-align:middle;margin-right:10px;">📎</span>
+            <span style="font-weight:600;">{attachment.filename}</span>
+            <span style="float:right;color:#C8A96A;font-size:12px;">{size_mb:.1f} MB · Download</span>
+        </a>"""
+
+    # Build HTML body
     body_html = body.replace("\n", "<br>")
     if signature and signature.strip():
         personal_line = f'<p style="margin: 20px 0 0; color: #555; font-size: 14px; line-height: 1.6;">{signature.replace(chr(10), "<br>")}</p>'
     else:
         personal_line = ""
 
+    docs_section = ""
+    if download_links_html:
+        docs_section = f"""
+        <div style="margin: 24px 0; padding: 20px; background: #f8f8f8; border-radius: 12px;">
+            <p style="margin: 0 0 12px; font-size: 13px; color: #999; font-weight: 600; letter-spacing: 0.5px;">DOCUMENTS</p>
+            {download_links_html}
+        </div>"""
+
     content = f"""
     <div style="color: #333; font-size: 15px; line-height: 1.7;">
         {body_html}
     </div>
+    {docs_section}
     {personal_line}
     {SIGNATURE_HTML_TEMPLATE}
     """
@@ -407,19 +485,6 @@ async def send_lead_email(lead_id: str, member=Depends(get_current_member), subj
             "reply_to": member["email"]
         }
 
-        # Handle attachment
-        attachment_name = None
-        if attachment and attachment.filename:
-            file_content = await attachment.read()
-            if len(file_content) > 10 * 1024 * 1024:
-                raise HTTPException(status_code=400, detail="Attachment too large (max 10MB)")
-            import base64
-            email_params["attachments"] = [{
-                "filename": attachment.filename,
-                "content": list(file_content),
-            }]
-            attachment_name = attachment.filename
-
         result = resend.Emails.send(email_params)
 
         # Store sent email in DB
@@ -430,6 +495,7 @@ async def send_lead_email(lead_id: str, member=Depends(get_current_member), subj
             "body": body,
             "signature": signature or "",
             "attachment": attachment_name,
+            "documents": doc_names,
             "sent_by": member["name"],
             "sent_by_email": member["email"],
             "sent_at": datetime.now(timezone.utc).isoformat(),
@@ -439,8 +505,8 @@ async def send_lead_email(lead_id: str, member=Depends(get_current_member), subj
 
         # Auto-add note
         note_text = f"Email sent: \"{subject}\""
-        if attachment_name:
-            note_text += f" (Attachment: {attachment_name})"
+        if doc_names:
+            note_text += f" (Documents: {', '.join(doc_names)})"
         await db.lead_notes.insert_one({
             "lead_id": lead_id,
             "text": note_text,
@@ -527,4 +593,137 @@ async def track_email_open(lead_id: str, request: Request):
         content=PIXEL_PNG,
         media_type="image/png",
         headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+    )
+
+
+# ── Document Library ─────────────────────────────────────────────────────
+import uuid as _uuid
+from object_storage import upload_image, get_object
+
+
+@router.get("/team/documents")
+async def get_documents(member=Depends(get_current_member)):
+    """Get all documents in the library."""
+    docs = await db.documents.find({"is_deleted": {"$ne": True}}).sort("uploaded_at", -1).to_list(200)
+    for d in docs:
+        d["_id"] = str(d["_id"])
+    return docs
+
+
+@router.post("/team/documents")
+async def upload_document(member=Depends(get_current_member), file: UploadFile = File(...), label: str = Form("")):
+    """Upload a document to the library (stored in Object Storage)."""
+    content = await file.read()
+    if len(content) > 25 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large (max 25MB)")
+
+    ext = file.filename.rsplit(".", 1)[-1] if "." in file.filename else "pdf"
+    storage_path = f"euroadria/documents/{_uuid.uuid4()}.{ext}"
+
+    from object_storage import put_object
+    put_object(storage_path, content, file.content_type or "application/pdf")
+
+    doc = {
+        "storage_path": storage_path,
+        "filename": file.filename,
+        "label": label.strip() or file.filename,
+        "content_type": file.content_type or "application/pdf",
+        "size": len(content),
+        "uploaded_by": member["name"],
+        "uploaded_at": datetime.now(timezone.utc).isoformat(),
+        "download_count": 0,
+        "is_deleted": False,
+    }
+    result = await db.documents.insert_one(doc)
+    doc["_id"] = str(result.inserted_id)
+    return doc
+
+
+@router.delete("/team/documents/{doc_id}")
+async def delete_document(doc_id: str, member=Depends(get_current_member)):
+    """Soft-delete a document from the library."""
+    from bson import ObjectId
+    await db.documents.update_one({"_id": ObjectId(doc_id)}, {"$set": {"is_deleted": True}})
+    return {"success": True}
+
+
+# Admin document endpoints (same as team but with admin auth)
+from core import verify_admin as _verify_admin
+
+@router.get("/admin/documents")
+async def admin_get_documents(admin: str = Depends(_verify_admin)):
+    """Admin: Get all documents."""
+    docs = await db.documents.find({"is_deleted": {"$ne": True}}).sort("uploaded_at", -1).to_list(200)
+    for d in docs:
+        d["_id"] = str(d["_id"])
+    return docs
+
+@router.post("/admin/documents")
+async def admin_upload_document(admin: str = Depends(_verify_admin), file: UploadFile = File(...), label: str = Form("")):
+    """Admin: Upload a document."""
+    content = await file.read()
+    if len(content) > 25 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large (max 25MB)")
+    ext = file.filename.rsplit(".", 1)[-1] if "." in file.filename else "pdf"
+    storage_path = f"euroadria/documents/{_uuid.uuid4()}.{ext}"
+    from object_storage import put_object
+    put_object(storage_path, content, file.content_type or "application/pdf")
+    doc = {
+        "storage_path": storage_path,
+        "filename": file.filename,
+        "label": label.strip() or file.filename,
+        "content_type": file.content_type or "application/pdf",
+        "size": len(content),
+        "uploaded_by": "Admin",
+        "uploaded_at": datetime.now(timezone.utc).isoformat(),
+        "download_count": 0,
+        "is_deleted": False,
+    }
+    result = await db.documents.insert_one(doc)
+    doc["_id"] = str(result.inserted_id)
+    return doc
+
+@router.delete("/admin/documents/{doc_id}")
+async def admin_delete_document(doc_id: str, admin: str = Depends(_verify_admin)):
+    """Admin: Soft-delete a document."""
+    from bson import ObjectId
+    await db.documents.update_one({"_id": ObjectId(doc_id)}, {"$set": {"is_deleted": True}})
+    return {"success": True}
+
+
+
+
+# ── Public Document Download (no auth required) ─────────────────────────
+
+@router.get("/dl/{download_id}")
+async def public_download(download_id: str):
+    """Public download endpoint. Anyone with the link can download."""
+    dl = await db.download_links.find_one({"download_id": download_id})
+    if not dl:
+        raise HTTPException(status_code=404, detail="Download link not found or expired")
+
+    # Track download
+    await db.download_links.update_one(
+        {"download_id": download_id},
+        {"$set": {"last_downloaded": datetime.now(timezone.utc).isoformat()}, "$inc": {"download_count": 1}},
+    )
+
+    storage_path = dl["storage_path"]
+    try:
+        data, content_type = get_object(storage_path)
+    except Exception:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    filename = dl.get("filename", "document.pdf")
+    from urllib.parse import quote
+    ascii_name = filename.encode("ascii", "ignore").decode("ascii") or "document"
+    utf8_name = quote(filename)
+
+    return Response(
+        content=data,
+        media_type=content_type,
+        headers={
+            "Content-Disposition": f'attachment; filename="{ascii_name}"; filename*=UTF-8\'\'{utf8_name}',
+            "Cache-Control": "private, max-age=3600",
+        },
     )
