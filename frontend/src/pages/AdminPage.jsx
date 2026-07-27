@@ -16,12 +16,14 @@ import TeamManagement from '../components/admin/TeamManagement';
 import PropertyManager from '../components/admin/PropertyManager';
 import NewsletterAdmin from '../components/admin/NewsletterAdmin';
 import PDFGenerator from '../components/admin/PDFGenerator';
+import TeamActivities from '../components/admin/TeamActivities';
 
 const NAV_GROUPS = [
   {
     label: 'Überblick',
     items: [
       { key: 'dashboard', icon: BarChart3, label: 'Dashboard' },
+      { key: 'activities', icon: Clock, label: 'Aktivitäten' },
       { key: 'pipeline', icon: Target, label: 'Pipeline' },
       { key: 'revenue', icon: DollarSign, label: 'Revenue' },
       { key: 'team', icon: Users, label: 'Team & Provisionen' },
@@ -1156,6 +1158,11 @@ const AdminPage = () => {
             <UTMLinkGenerator />
           </div>
         )}
+
+        {activeTab === 'activities' && (
+          <TeamActivities credentials={credentials} />
+        )}
+
 
         {/* Bulk Import Modal */}
         {showBulkImport && (

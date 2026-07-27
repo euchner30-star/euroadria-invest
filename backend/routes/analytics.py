@@ -790,3 +790,81 @@ async def get_status_checks():
         if isinstance(check['timestamp'], str):
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
     return status_checks
+
+
+# ── Team Activities Feed ─────────────────────────────────────────────────
+
+@router.get("/admin/activities")
+async def admin_get_activities(admin: str = Depends(verify_admin), member: str = None, days: int = 7, limit: int = 100):
+    """Get recent team activities: notes, emails, status changes, lead assignments."""
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+
+    activities = []
+
+    # 1. Notes added by team members
+    note_query = {"created_at": {"$gte": cutoff}, "author": {"$ne": "System"}}
+    if member:
+        note_query["author"] = member
+    notes = await db.lead_notes.find(note_query).sort("created_at", -1).to_list(limit)
+    for n in notes:
+        # Get lead name
+        try:
+            from bson import ObjectId
+            lead = await db.leads.find_one({"_id": ObjectId(n["lead_id"])}, {"name": 1, "email": 1})
+        except:
+            lead = None
+        activities.append({
+            "type": "note",
+            "author": n.get("author", "Unknown"),
+            "text": n.get("text", "")[:150],
+            "lead_name": lead.get("name", "") if lead else "",
+            "lead_email": lead.get("email", "") if lead else "",
+            "lead_id": n.get("lead_id"),
+            "timestamp": n.get("created_at"),
+        })
+
+    # 2. Emails sent by team
+    email_query = {"sent_at": {"$gte": cutoff}}
+    if member:
+        email_query["sent_by"] = member
+    emails = await db.lead_emails.find(email_query).sort("sent_at", -1).to_list(limit)
+    for e in emails:
+        try:
+            lead = await db.leads.find_one({"_id": ObjectId(e["lead_id"])}, {"name": 1})
+        except:
+            lead = None
+        docs = e.get("documents", [])
+        activities.append({
+            "type": "email",
+            "author": e.get("sent_by", "Unknown"),
+            "text": f"Email: \"{e.get('subject', '')}\"" + (f" ({len(docs)} docs)" if docs else ""),
+            "lead_name": lead.get("name", "") if lead else e.get("to", ""),
+            "lead_id": e.get("lead_id"),
+            "timestamp": e.get("sent_at"),
+        })
+
+    # 3. System notes (status changes, assignments) - these have author="System"
+    sys_query = {"created_at": {"$gte": cutoff}, "author": "System"}
+    sys_notes = await db.lead_notes.find(sys_query).sort("created_at", -1).to_list(limit)
+    for n in sys_notes:
+        try:
+            lead = await db.leads.find_one({"_id": ObjectId(n["lead_id"])}, {"name": 1, "assigned_to_name": 1})
+        except:
+            lead = None
+        activities.append({
+            "type": "system",
+            "author": "System",
+            "text": n.get("text", "")[:150],
+            "lead_name": lead.get("name", "") if lead else "",
+            "lead_id": n.get("lead_id"),
+            "timestamp": n.get("created_at"),
+        })
+
+    # Sort all by timestamp descending
+    activities.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+
+    # Get unique team members for filter
+    members_cursor = db.team_members.find({}, {"name": 1, "email": 1, "_id": 0})
+    team = await members_cursor.to_list(50)
+
+    return {"activities": activities[:limit], "team_members": team}

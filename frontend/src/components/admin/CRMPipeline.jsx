@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import {
   Users, DollarSign, TrendingUp, Target, ArrowRight, Plus, Edit2, Trash2, Save,
-  Loader2, GripVertical, Phone, Mail, Calendar, ChevronDown, X, AlertCircle, Check
+  Loader2, GripVertical, Phone, Mail, Calendar, ChevronDown, X, AlertCircle, Check, User
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
@@ -297,6 +297,11 @@ const DealCard = ({ deal, stages, currentStage, onMove, onEdit, onDelete }) => {
       {lead.email && (
         <div className="flex items-center gap-1.5 text-xs text-ea-dark/40 mb-1">
           <Mail className="w-3 h-3" /> {lead.email}
+        </div>
+      )}
+      {lead.assigned_to_name && (
+        <div className="flex items-center gap-1.5 text-xs text-ea-gold/80 mb-1 font-medium">
+          <User className="w-3 h-3" /> {lead.assigned_to_name}
         </div>
       )}
       {lead.phone && (

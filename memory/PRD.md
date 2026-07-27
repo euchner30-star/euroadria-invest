@@ -6,14 +6,20 @@ Professional "Investment Intelligence Platform" for the Balkan region with full 
 ## Completed Features (Latest)
 ### Property Listings - ImmoScout Style (2026-07-21)
 - Full CRUD for properties with GridFS image/PDF uploads
-- Dynamic Location CRUD in Admin Panel
+- Dynamic Location CRUD in Admin Panel (auto-seed 18 locations)
 - Property grid on /properties, Home page (FeaturedProperties), and per-location pages
 - Property detail page with breadcrumb navigation (Home / Alle Immobilien / Title)
 - "Zurück zu allen Immobilien" back-link on detail pages
-- **"Ähnliche Objekte" section** on detail pages: shows similar properties from same region, falls back to other available properties if none in same region
-- Inquiry form + WhatsApp contact on detail pages
+- **"Ähnliche Objekte" section** on detail pages: shows similar properties from same region
+- **Price on Request** toggle per property
+- **Inquiry form** with email notifications (team + customer with property image + corporate signature + tracking pixel)
+- **Share button** (WhatsApp, Facebook, X, Email, Copy Link) with OG image generation (property photo + logo + title/price)
+- **OG share endpoint** `/api/p/{id}` for social media crawlers
+- **Emergent Object Storage** for fast image delivery with GridFS fallback
+- **Document Library** for team: upload documents, select from library, send as download links in emails
+- **Team Activities Feed** in Admin: see who did what, filter by member/timeframe
+- Memory leak fix: cached logo, fonts, OG images
 - PDF Exposé download with UTF-8 support
-- Test property "Šipkov Krš Villa" assigned to Pržno location
 
 ### Sales CRM Phase 1+2 (2026-07-10/17)
 - Extended pipeline: 8 stages (new→contacted→qualified→offer→negotiation→contract→won→lost)
