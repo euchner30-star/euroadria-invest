@@ -398,11 +398,107 @@ async def serve_property_image(image_id: str):
         raise HTTPException(status_code=404, detail="Image not found")
 
 
+# ── OG Image Generation (cached) ────────────────────────────────────────
+import gc
+
+_cached_logo = None
+_cached_fonts = None
+_og_cache = {}  # property_id -> (bytes, timestamp)
+OG_CACHE_TTL = 3600  # 1 hour
+
+def _get_logo():
+    """Fetch and cache the white logo."""
+    global _cached_logo
+    if _cached_logo is not None:
+        return _cached_logo
+    try:
+        from PIL import Image as PILImage
+        import requests as req
+        logo_resp = req.get("https://www.euroadria.me/euroadria-logo-white.png", timeout=10)
+        logo = PILImage.open(io.BytesIO(logo_resp.content)).convert("RGBA")
+        logo_h = 120
+        logo_w = int(logo.width * (logo_h / logo.height))
+        _cached_logo = logo.resize((logo_w, logo_h), PILImage.LANCZOS)
+    except Exception:
+        _cached_logo = None
+    return _cached_logo
+
+def _get_fonts():
+    """Load and cache fonts."""
+    global _cached_fonts
+    if _cached_fonts is not None:
+        return _cached_fonts
+    from PIL import ImageFont
+    try:
+        _cached_fonts = (
+            ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28),
+            ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16),
+        )
+    except Exception:
+        default = ImageFont.load_default()
+        _cached_fonts = (default, default)
+    return _cached_fonts
+
+def _generate_og(base_img_data, title, subtitle):
+    """Generate OG image from raw image data. Returns JPEG bytes."""
+    from PIL import Image as PILImage, ImageDraw
+    try:
+        base_img = PILImage.open(io.BytesIO(base_img_data)).convert("RGB")
+        og_w, og_h = 1200, 630
+
+        # Crop to OG ratio
+        img_ratio = base_img.width / base_img.height
+        og_ratio = og_w / og_h
+        if img_ratio > og_ratio:
+            new_h, new_w = og_h, int(og_h * img_ratio)
+        else:
+            new_w, new_h = og_w, int(og_w / img_ratio)
+        base_img = base_img.resize((new_w, new_h), PILImage.LANCZOS)
+        left, top = (new_w - og_w) // 2, (new_h - og_h) // 2
+        base_img = base_img.crop((left, top, left + og_w, top + og_h))
+
+        # Logo overlay
+        logo = _get_logo()
+        if logo:
+            base_rgba = base_img.convert("RGBA")
+            base_rgba.paste(logo, (og_w - logo.width - 30, 24), logo)
+            base_img = base_rgba.convert("RGB")
+            del base_rgba
+
+        # Dark gradient
+        overlay = PILImage.new("RGBA", (og_w, og_h), (0, 0, 0, 0))
+        draw_ov = ImageDraw.Draw(overlay)
+        for y in range(og_h - 140, og_h):
+            alpha = int(180 * (y - (og_h - 140)) / 140)
+            draw_ov.rectangle([(0, y), (og_w, y + 1)], fill=(4, 21, 31, alpha))
+        base_rgba = base_img.convert("RGBA")
+        final = PILImage.alpha_composite(base_rgba, overlay).convert("RGB")
+        del overlay, base_rgba, base_img
+
+        # Text
+        font_title, font_sub = _get_fonts()
+        draw = ImageDraw.Draw(final)
+        draw.text((40, og_h - 90), title[:60], fill=(255, 255, 255), font=font_title)
+        draw.text((40, og_h - 50), subtitle, fill=(200, 169, 106), font=font_sub)
+
+        buf = io.BytesIO()
+        final.save(buf, format="JPEG", quality=80)
+        del final
+        gc.collect()
+        return buf.getvalue()
+    except Exception:
+        gc.collect()
+        return None
+
+
 @router.get("/properties/og/{property_id}.jpg")
 async def serve_og_image(property_id: str):
-    """Generate Open Graph image: property cover + EuroAdria logo overlay."""
-    from PIL import Image, ImageDraw, ImageFont
-    import requests as req
+    """Serve cached OG image for property."""
+    import time
+    # Check cache
+    cached = _og_cache.get(property_id)
+    if cached and (time.time() - cached[1]) < OG_CACHE_TTL:
+        return Response(content=cached[0], media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
 
     prop = await db.properties.find_one({"_id": _oid(property_id)})
     if not prop:
@@ -412,7 +508,6 @@ async def serve_og_image(property_id: str):
     if not cover:
         raise HTTPException(status_code=404, detail="No image available")
 
-    # Fetch property image
     try:
         if "/" in cover:
             img_data, _ = get_object(cover)
@@ -421,71 +516,24 @@ async def serve_og_image(property_id: str):
             fs = AsyncIOMotorGridFSBucket(db)
             grid_out = await fs.open_download_stream(_oid(cover))
             img_data = await grid_out.read()
-        base_img = Image.open(io.BytesIO(img_data)).convert("RGB")
     except Exception:
         raise HTTPException(status_code=404, detail="Image not found")
 
-    # Resize to OG dimensions (1200x630)
-    og_w, og_h = 1200, 630
-    img_ratio = base_img.width / base_img.height
-    og_ratio = og_w / og_h
-    if img_ratio > og_ratio:
-        new_h = og_h
-        new_w = int(og_h * img_ratio)
-    else:
-        new_w = og_w
-        new_h = int(og_w / img_ratio)
-    base_img = base_img.resize((new_w, new_h), Image.LANCZOS)
-    left = (new_w - og_w) // 2
-    top = (new_h - og_h) // 2
-    base_img = base_img.crop((left, top, left + og_w, top + og_h))
-
-    # Fetch and overlay logo (top-right corner) - white version, transparent
-    try:
-        logo_resp = req.get("https://www.euroadria.me/euroadria-logo-white.png", timeout=10)
-        logo = Image.open(io.BytesIO(logo_resp.content)).convert("RGBA")
-        logo_h = 120
-        logo_w = int(logo.width * (logo_h / logo.height))
-        logo = logo.resize((logo_w, logo_h), Image.LANCZOS)
-
-        base_rgba = base_img.convert("RGBA")
-        base_rgba.paste(logo, (og_w - logo_w - 30, 24), logo)
-        base_img = base_rgba.convert("RGB")
-    except Exception:
-        pass
-
-    # Add dark gradient bar at bottom with property info
-    overlay = Image.new("RGBA", (og_w, og_h), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(overlay)
-    # Bottom gradient
-    for y in range(og_h - 140, og_h):
-        alpha = int(180 * (y - (og_h - 140)) / 140)
-        draw.rectangle([(0, y), (og_w, y + 1)], fill=(4, 21, 31, alpha))
-
-    base_rgba = base_img.convert("RGBA")
-    base_rgba = Image.alpha_composite(base_rgba, overlay)
-    final = base_rgba.convert("RGB")
-
-    # Add text
-    draw = ImageDraw.Draw(final)
-    try:
-        font_title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
-        font_sub = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
-    except Exception:
-        font_title = ImageFont.load_default()
-        font_sub = font_title
-
-    title = prop.get("title", "")[:60]
+    title = prop.get("title", "")
     location = prop.get("location", "")
     price_text = "Price on Request" if prop.get("price_on_request") else f"{prop.get('price', 0):,.0f} EUR"
 
-    draw.text((40, og_h - 90), title, fill=(255, 255, 255), font=font_title)
-    draw.text((40, og_h - 50), f"{location}  ·  {price_text}", fill=(200, 169, 106), font=font_sub)
+    result = _generate_og(img_data, title, f"{location}  ·  {price_text}")
+    del img_data
+    if not result:
+        raise HTTPException(status_code=500, detail="Image generation failed")
 
-    buf = io.BytesIO()
-    final.save(buf, format="JPEG", quality=85)
-    buf.seek(0)
-    return Response(content=buf.getvalue(), media_type="image/jpeg", headers={"Cache-Control": "public, max-age=3600"})
+    # Cache (limit to 20 entries to prevent memory growth)
+    if len(_og_cache) > 20:
+        _og_cache.clear()
+    _og_cache[property_id] = (result, time.time())
+
+    return Response(content=result, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
 
 
 
