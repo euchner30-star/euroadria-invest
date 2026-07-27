@@ -447,24 +447,30 @@ export default function TeamManagement({ credentials }) {
           <div className="space-y-2">
             {products.map(p => (
               <div key={p._id} className="border border-gray-100 rounded-xl overflow-hidden hover:border-gray-200 transition-all">
-                <div className="flex items-center gap-4 p-3.5 cursor-pointer" onClick={() => setExpandedProduct(expandedProduct === p._id ? null : p._id)}>
-                  <div className="w-9 h-9 rounded-lg bg-[#C8A96A]/10 flex items-center justify-center shrink-0">
-                    <Package className="w-4 h-4 text-[#C8A96A]" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-ea-dark text-sm">{p.name}</span>
-                      <span className="text-xs px-2 py-0.5 bg-gray-100 rounded-full text-ea-dark/40">{p.category}</span>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3.5 cursor-pointer" onClick={() => setExpandedProduct(expandedProduct === p._id ? null : p._id)}>
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="w-9 h-9 rounded-lg bg-[#C8A96A]/10 flex items-center justify-center shrink-0">
+                      <Package className="w-4 h-4 text-[#C8A96A]" />
                     </div>
-                    {p.description && <p className="text-xs text-ea-dark/40 truncate">{p.description}</p>}
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold text-ea-dark text-sm">{p.name}</span>
+                        <span className="text-xs px-2 py-0.5 bg-gray-100 rounded-full text-ea-dark/40">{p.category}</span>
+                      </div>
+                      {p.description && <p className="text-xs text-ea-dark/40 truncate">{p.description}</p>}
+                    </div>
                   </div>
-                  <div className="text-right shrink-0 mr-2">
-                    <p className="font-bold text-ea-dark text-sm">{p.price?.toLocaleString('de-DE')} €</p>
-                    <p className="text-xs text-[#C8A96A]">{p.commission_tiers?.length > 1 ? `${p.commission_tiers[0].rate}–${p.commission_tiers[p.commission_tiers.length - 1].rate}%` : `${p.commission_tiers?.[0]?.rate || 0}%`}</p>
+                  <div className="flex items-center justify-between sm:justify-end gap-3 pl-12 sm:pl-0">
+                    <div className="text-left sm:text-right">
+                      <p className="font-bold text-ea-dark text-sm">{p.price?.toLocaleString('de-DE')} €</p>
+                      <p className="text-xs text-[#C8A96A]">{p.commission_tiers?.length > 1 ? `${p.commission_tiers[0].rate}–${p.commission_tiers[p.commission_tiers.length - 1].rate}%` : `${p.commission_tiers?.[0]?.rate || 0}%`}</p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button onClick={e => { e.stopPropagation(); setProductForm({ name: p.name, description: p.description || '', price: p.price || '', category: p.category || 'Service', commission_tiers: p.commission_tiers?.length ? p.commission_tiers : [{ min_sales: 0, rate: 10 }] }); setEditProductId(p._id); setShowProductForm(true); }} className="p-1.5 rounded-lg hover:bg-gray-100"><Edit3 className="w-3.5 h-3.5 text-ea-dark/30" /></button>
+                      <button onClick={async e => { e.stopPropagation(); if (window.confirm('Delete?')) { await fetch(`${API}/api/admin/products/${p._id}`, { method: 'DELETE', headers: authHeader }); fetchData(); } }} className="p-1.5 rounded-lg hover:bg-red-50"><Trash2 className="w-3.5 h-3.5 text-red-400" /></button>
+                      {expandedProduct === p._id ? <ChevronUp className="w-4 h-4 text-ea-dark/20" /> : <ChevronDown className="w-4 h-4 text-ea-dark/20" />}
+                    </div>
                   </div>
-                  <button onClick={e => { e.stopPropagation(); setProductForm({ name: p.name, description: p.description || '', price: p.price || '', category: p.category || 'Service', commission_tiers: p.commission_tiers?.length ? p.commission_tiers : [{ min_sales: 0, rate: 10 }] }); setEditProductId(p._id); setShowProductForm(true); }} className="p-1.5 rounded-lg hover:bg-gray-100"><Edit3 className="w-3.5 h-3.5 text-ea-dark/30" /></button>
-                  <button onClick={async e => { e.stopPropagation(); if (window.confirm('Delete?')) { await fetch(`${API}/api/admin/products/${p._id}`, { method: 'DELETE', headers: authHeader }); fetchData(); } }} className="p-1.5 rounded-lg hover:bg-red-50"><Trash2 className="w-3.5 h-3.5 text-red-400" /></button>
-                  {expandedProduct === p._id ? <ChevronUp className="w-4 h-4 text-ea-dark/20" /> : <ChevronDown className="w-4 h-4 text-ea-dark/20" />}
                 </div>
 
                 {expandedProduct === p._id && (
@@ -482,7 +488,7 @@ export default function TeamManagement({ credentials }) {
                       </div>
                     </div>
                     <div>
-                      <h4 className="text-xs font-semibold text-ea-dark/40 mb-2 flex items-center gap-1"><Users className="w-3 h-3" /> ZUGEWIESEN AN</h4>
+                      <h4 className="text-xs font-semibold text-ea-dark/40 mb-2 flex items-center gap-1"><Users className="w-3 h-3" /> ZUWEISEN — tippen zum Zuweisen/Entfernen</h4>
                       <div className="flex flex-wrap gap-2">
                         {members.map(m => {
                           const assigned = (p.assigned_to || []).includes(m.email);
@@ -492,13 +498,13 @@ export default function TeamManagement({ credentials }) {
                               const updated = current.includes(m.email) ? current.filter(e => e !== m.email) : [...current, m.email];
                               await fetch(`${API}/api/admin/products/${p._id}/assign`, { method: 'PUT', headers: { ...authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ emails: updated }) });
                               fetchData();
-                            }} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${assigned ? 'bg-[#C8A96A] text-[#04151F]' : 'bg-gray-100 text-ea-dark/40 hover:bg-gray-200'}`}>
-                              {m.name}
+                            }} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${assigned ? 'bg-[#C8A96A] text-[#04151F] shadow-sm' : 'bg-white border border-gray-200 text-ea-dark/50 hover:border-[#C8A96A]'}`}>
+                              {assigned ? '✓ ' : ''}{m.name}
                             </button>
                           );
                         })}
-                        {(p.assigned_to || []).length === 0 && <span className="text-xs text-ea-dark/30 italic">No team member assigned yet</span>}
                       </div>
+                      {(p.assigned_to || []).length === 0 && <p className="text-xs text-ea-dark/30 mt-2">Noch niemand zugewiesen — Vertriebler sieht dieses Produkt erst nach Zuweisung</p>}
                     </div>
                   </div>
                 )}
