@@ -4,7 +4,7 @@ import {
   LogIn, LogOut, Plus, Edit2, Trash2, Save, X, 
   FileText, Loader2, AlertCircle, Check, MessageSquare,
   CheckCircle, XCircle, Clock, Mail, User, HelpCircle, MapPin, Building2, Image as ImageIcon,
-  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield, Send, Eye, Upload, Calendar, DollarSign, Target,
+  Layout, Users, Home, Phone, Globe, Download, TrendingUp, BarChart3, Shield, Send, Eye, Upload, Calendar, DollarSign, Target, Package,
   ChevronDown, ChevronRight, Menu, X as XIcon, Printer
 } from 'lucide-react';
 import { PipelineView, RevenueDashboard } from '../components/admin/CRMPipeline';
@@ -17,6 +17,7 @@ import PropertyManager from '../components/admin/PropertyManager';
 import NewsletterAdmin from '../components/admin/NewsletterAdmin';
 import PDFGenerator from '../components/admin/PDFGenerator';
 import TeamActivities from '../components/admin/TeamActivities';
+import ProductCatalog from '../components/admin/ProductCatalog';
 
 const NAV_GROUPS = [
   {
@@ -27,6 +28,7 @@ const NAV_GROUPS = [
       { key: 'pipeline', icon: Target, label: 'Pipeline' },
       { key: 'revenue', icon: DollarSign, label: 'Revenue' },
       { key: 'team', icon: Users, label: 'Team & Provisionen' },
+      { key: 'products', icon: Package, label: 'Produkte' },
     ]
   },
   {
@@ -2847,6 +2849,11 @@ const AdminPage = () => {
         {activeTab === 'properties' && (
           <PropertyManager credentials={credentials} />
         )}
+
+        {activeTab === 'products' && (
+          <ProductCatalog credentials={credentials} />
+        )}
+
 
           </div>
         </div>

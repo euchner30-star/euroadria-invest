@@ -868,3 +868,77 @@ async def admin_get_activities(admin: str = Depends(verify_admin), member: str =
     team = await members_cursor.to_list(50)
 
     return {"activities": activities[:limit], "team_members": team}
+
+
+# ── Product Catalog & Commission Tiers ───────────────────────────────────
+
+class ProductCreate(BaseModel):
+    name: str
+    description: Optional[str] = ""
+    price: float = 0
+    category: Optional[str] = "Service"
+    commission_tiers: Optional[list] = None  # [{min_sales: 0, rate: 10}, {min_sales: 5, rate: 12}]
+
+class ProductUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[float] = None
+    category: Optional[str] = None
+    commission_tiers: Optional[list] = None
+    active: Optional[bool] = None
+
+@router.get("/admin/products")
+async def admin_get_products(admin: str = Depends(verify_admin)):
+    """Get all products with commission tiers."""
+    products = await db.products_catalog.find({}).sort("created_at", -1).to_list(100)
+    for p in products:
+        p["_id"] = str(p["_id"])
+    return products
+
+@router.post("/admin/products")
+async def admin_create_product(data: ProductCreate, admin: str = Depends(verify_admin)):
+    """Create a new product with commission tiers."""
+    product = {
+        "name": data.name.strip(),
+        "description": (data.description or "").strip(),
+        "price": data.price,
+        "category": data.category or "Service",
+        "commission_tiers": data.commission_tiers or [{"min_sales": 0, "rate": 10}],
+        "active": True,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    result = await db.products_catalog.insert_one(product)
+    product["_id"] = str(result.inserted_id)
+    return product
+
+@router.put("/admin/products/{product_id}")
+async def admin_update_product(product_id: str, data: ProductUpdate, admin: str = Depends(verify_admin)):
+    """Update a product."""
+    from bson import ObjectId
+    update = {}
+    for field in ["name", "description", "price", "category", "commission_tiers", "active"]:
+        val = getattr(data, field, None)
+        if val is not None:
+            update[field] = val
+    if not update:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    update["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.products_catalog.update_one({"_id": ObjectId(product_id)}, {"$set": update})
+    return {"success": True}
+
+@router.delete("/admin/products/{product_id}")
+async def admin_delete_product(product_id: str, admin: str = Depends(verify_admin)):
+    """Delete a product."""
+    from bson import ObjectId
+    await db.products_catalog.delete_one({"_id": ObjectId(product_id)})
+    return {"success": True}
+
+@router.put("/admin/products/{product_id}/assign")
+async def admin_assign_product(product_id: str, admin: str = Depends(verify_admin), emails: list = []):
+    """Assign product to team members."""
+    from bson import ObjectId
+    await db.products_catalog.update_one(
+        {"_id": ObjectId(product_id)},
+        {"$set": {"assigned_to": emails}}
+    )
+    return {"success": True}
