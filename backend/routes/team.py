@@ -534,13 +534,13 @@ async def get_lead_emails(lead_id: str, member=Depends(get_current_member)):
 
 @router.get("/team/products")
 async def get_team_products(member=Depends(get_current_member)):
-    """Get products assigned to this team member with their commission tiers."""
+    """Get products explicitly assigned to this team member."""
     all_products = await db.products_catalog.find({"active": True}).to_list(100)
     result = []
     for p in all_products:
         assigned = p.get("assigned_to", [])
-        # Show if assigned to this member or if no assignment filter (available to all)
-        if not assigned or member["email"] in assigned:
+        # Only show if explicitly assigned to this member
+        if member["email"] in assigned:
             p["_id"] = str(p["_id"])
             result.append(p)
     return result
