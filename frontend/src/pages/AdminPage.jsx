@@ -28,7 +28,6 @@ const NAV_GROUPS = [
       { key: 'pipeline', icon: Target, label: 'Pipeline' },
       { key: 'revenue', icon: DollarSign, label: 'Revenue' },
       { key: 'team', icon: Users, label: 'Team & Provisionen' },
-      { key: 'products', icon: Package, label: 'Produkte' },
     ]
   },
   {
@@ -2848,10 +2847,6 @@ const AdminPage = () => {
         {/* Properties Tab */}
         {activeTab === 'properties' && (
           <PropertyManager credentials={credentials} />
-        )}
-
-        {activeTab === 'products' && (
-          <ProductCatalog credentials={credentials} />
         )}
 
 

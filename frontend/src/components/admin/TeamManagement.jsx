@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, Edit3, Trash2, X, DollarSign, Check, Download, Shield, UserCheck } from 'lucide-react';
+import { Users, Plus, Edit3, Trash2, X, DollarSign, Check, Download, Shield, UserCheck, Package, TrendingUp, ChevronDown, ChevronUp, Save } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -8,6 +8,8 @@ const ROLES = [
   { value: 'teamleader', label: 'Team Leader', desc: 'Sees own + team leads, earns team commission' },
   { value: 'restricted', label: 'Restricted', desc: 'Only assigned leads' },
 ];
+
+const CATEGORIES = ['Relocation', 'Immobilien', 'Consulting', 'Service', 'Premium'];
 
 export default function TeamManagement({ credentials }) {
   const [members, setMembers] = useState([]);
@@ -19,20 +21,27 @@ export default function TeamManagement({ credentials }) {
   const [saving, setSaving] = useState(false);
   const [commModels, setCommModels] = useState([]);
   const [showModels, setShowModels] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [editProductId, setEditProductId] = useState(null);
+  const [expandedProduct, setExpandedProduct] = useState(null);
+  const [productForm, setProductForm] = useState({ name: '', description: '', price: '', category: 'Service', commission_tiers: [{ min_sales: 0, rate: 10 }] });
 
   const authHeader = { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) };
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [mRes, cRes, cmRes] = await Promise.all([
+      const [mRes, cRes, cmRes, pRes] = await Promise.all([
         fetch(`${API}/api/admin/team-members`, { headers: authHeader }),
         fetch(`${API}/api/admin/commissions`, { headers: authHeader }),
         fetch(`${API}/api/admin/commission-models`, { headers: authHeader }),
+        fetch(`${API}/api/admin/products`, { headers: authHeader }),
       ]);
       if (mRes.ok) setMembers(await mRes.json());
       if (cRes.ok) setCommissions(await cRes.json());
       if (cmRes.ok) setCommModels(await cmRes.json());
+      if (pRes.ok) setProducts(await pRes.json());
     } catch {}
     setLoading(false);
   };
@@ -367,6 +376,137 @@ export default function TeamManagement({ credentials }) {
           </div>
         ) : (
           <p className="text-center text-ea-dark/30 py-8">No commissions yet. Assign leads to team members and set property values.</p>
+        )}
+      </div>
+
+      {/* Products & Commission Tiers */}
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h3 className="text-base font-semibold text-ea-dark flex items-center gap-2"><Package className="w-5 h-5 text-[#C8A96A]" /> Produkte & Provisionsstaffeln</h3>
+            <p className="text-xs text-ea-dark/40 mt-0.5">{products.length} products defined</p>
+          </div>
+          <button onClick={() => { setProductForm({ name: '', description: '', price: '', category: 'Service', commission_tiers: [{ min_sales: 0, rate: 10 }] }); setEditProductId(null); setShowProductForm(true); }} className="flex items-center gap-2 px-4 py-2 bg-[#C8A96A] text-[#04151F] text-sm font-bold rounded-lg hover:bg-[#C8A96A]/90 transition-all" data-testid="add-product-btn">
+            <Plus className="w-4 h-4" /> New Product
+          </button>
+        </div>
+
+        {/* Product Form */}
+        {showProductForm && (
+          <div className="bg-gray-50 rounded-xl p-5 mb-5 border border-gray-200 space-y-4" data-testid="product-form">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-bold text-ea-dark">{editProductId ? 'Edit Product' : 'New Product'}</h4>
+              <button onClick={() => setShowProductForm(false)} className="text-ea-dark/30 hover:text-ea-dark/60"><X className="w-4 h-4" /></button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <input type="text" placeholder="Product Name *" value={productForm.name} onChange={e => setProductForm(f => ({ ...f, name: e.target.value }))} className="bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="product-name-input" />
+              <input type="number" placeholder="Price (EUR)" value={productForm.price} onChange={e => setProductForm(f => ({ ...f, price: e.target.value }))} className="bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#C8A96A]" />
+              <select value={productForm.category} onChange={e => setProductForm(f => ({ ...f, category: e.target.value }))} className="bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#C8A96A]">
+                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <input type="text" placeholder="Description (optional)" value={productForm.description} onChange={e => setProductForm(f => ({ ...f, description: e.target.value }))} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#C8A96A]" />
+
+            {/* Commission Tiers */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-semibold text-ea-dark">Provisionsstaffeln</label>
+                <button onClick={() => { const last = productForm.commission_tiers[productForm.commission_tiers.length - 1]; setProductForm(f => ({ ...f, commission_tiers: [...f.commission_tiers, { min_sales: (last?.min_sales || 0) + 5, rate: (last?.rate || 10) + 2 }] })); }} className="text-xs text-[#C8A96A] hover:text-[#C8A96A]/70 font-medium">+ Add Tier</button>
+              </div>
+              {productForm.commission_tiers.map((tier, i) => (
+                <div key={i} className="flex items-center gap-3 bg-white rounded-lg p-2.5 mb-2 border border-gray-100">
+                  <div className="flex items-center gap-2 flex-1">
+                    <label className="text-xs text-ea-dark/40 shrink-0">Ab Sales:</label>
+                    <input type="number" value={tier.min_sales} onChange={e => setProductForm(f => ({ ...f, commission_tiers: f.commission_tiers.map((t, j) => j === i ? { ...t, min_sales: parseFloat(e.target.value) || 0 } : t) }))} className="w-16 bg-gray-50 border border-gray-200 rounded px-2 py-1 text-sm text-center" />
+                    <label className="text-xs text-ea-dark/40 ml-2">Provision:</label>
+                    <input type="number" step="0.5" value={tier.rate} onChange={e => setProductForm(f => ({ ...f, commission_tiers: f.commission_tiers.map((t, j) => j === i ? { ...t, rate: parseFloat(e.target.value) || 0 } : t) }))} className="w-16 bg-gray-50 border border-gray-200 rounded px-2 py-1 text-sm text-center" />
+                    <span className="text-sm text-ea-dark/60">%</span>
+                    {productForm.price > 0 && <span className="text-xs text-[#C8A96A] ml-1">= {(productForm.price * tier.rate / 100).toLocaleString('de-DE')} €</span>}
+                  </div>
+                  {productForm.commission_tiers.length > 1 && (
+                    <button onClick={() => setProductForm(f => ({ ...f, commission_tiers: f.commission_tiers.filter((_, j) => j !== i) }))} className="text-red-400 hover:text-red-600"><X className="w-3.5 h-3.5" /></button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <button onClick={async () => {
+              if (!productForm.name.trim()) return;
+              const body = { name: productForm.name, description: productForm.description, price: parseFloat(productForm.price) || 0, category: productForm.category, commission_tiers: productForm.commission_tiers.filter(t => t.rate > 0) };
+              const url = editProductId ? `${API}/api/admin/products/${editProductId}` : `${API}/api/admin/products`;
+              const res = await fetch(url, { method: editProductId ? 'PUT' : 'POST', headers: { ...authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+              if (res.ok) { setShowProductForm(false); setEditProductId(null); fetchData(); }
+            }} className="px-6 py-2 bg-ea-dark text-white text-sm font-bold rounded-lg hover:bg-ea-dark/90" data-testid="product-save-btn">
+              {editProductId ? 'Update' : 'Create Product'}
+            </button>
+          </div>
+        )}
+
+        {/* Product Cards */}
+        {products.length > 0 ? (
+          <div className="space-y-2">
+            {products.map(p => (
+              <div key={p._id} className="border border-gray-100 rounded-xl overflow-hidden hover:border-gray-200 transition-all">
+                <div className="flex items-center gap-4 p-3.5 cursor-pointer" onClick={() => setExpandedProduct(expandedProduct === p._id ? null : p._id)}>
+                  <div className="w-9 h-9 rounded-lg bg-[#C8A96A]/10 flex items-center justify-center shrink-0">
+                    <Package className="w-4 h-4 text-[#C8A96A]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-ea-dark text-sm">{p.name}</span>
+                      <span className="text-xs px-2 py-0.5 bg-gray-100 rounded-full text-ea-dark/40">{p.category}</span>
+                    </div>
+                    {p.description && <p className="text-xs text-ea-dark/40 truncate">{p.description}</p>}
+                  </div>
+                  <div className="text-right shrink-0 mr-2">
+                    <p className="font-bold text-ea-dark text-sm">{p.price?.toLocaleString('de-DE')} €</p>
+                    <p className="text-xs text-[#C8A96A]">{p.commission_tiers?.length > 1 ? `${p.commission_tiers[0].rate}–${p.commission_tiers[p.commission_tiers.length - 1].rate}%` : `${p.commission_tiers?.[0]?.rate || 0}%`}</p>
+                  </div>
+                  <button onClick={e => { e.stopPropagation(); setProductForm({ name: p.name, description: p.description || '', price: p.price || '', category: p.category || 'Service', commission_tiers: p.commission_tiers?.length ? p.commission_tiers : [{ min_sales: 0, rate: 10 }] }); setEditProductId(p._id); setShowProductForm(true); }} className="p-1.5 rounded-lg hover:bg-gray-100"><Edit3 className="w-3.5 h-3.5 text-ea-dark/30" /></button>
+                  <button onClick={async e => { e.stopPropagation(); if (window.confirm('Delete?')) { await fetch(`${API}/api/admin/products/${p._id}`, { method: 'DELETE', headers: authHeader }); fetchData(); } }} className="p-1.5 rounded-lg hover:bg-red-50"><Trash2 className="w-3.5 h-3.5 text-red-400" /></button>
+                  {expandedProduct === p._id ? <ChevronUp className="w-4 h-4 text-ea-dark/20" /> : <ChevronDown className="w-4 h-4 text-ea-dark/20" />}
+                </div>
+
+                {expandedProduct === p._id && (
+                  <div className="border-t border-gray-100 p-4 bg-gray-50/50 space-y-4">
+                    <div>
+                      <h4 className="text-xs font-semibold text-ea-dark/40 mb-2 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> PROVISIONSSTAFFELN</h4>
+                      <div className="flex gap-2 flex-wrap">
+                        {(p.commission_tiers || []).map((t, i) => (
+                          <div key={i} className="bg-white rounded-lg px-4 py-2.5 border border-gray-200 text-center min-w-[80px]">
+                            <p className="text-lg font-bold text-[#C8A96A]">{t.rate}%</p>
+                            <p className="text-xs text-ea-dark/40">{t.min_sales === 0 ? 'Start' : `ab ${t.min_sales} Sales`}</p>
+                            {p.price > 0 && <p className="text-xs text-ea-dark/60 font-medium mt-1">{(p.price * t.rate / 100).toLocaleString('de-DE')} €</p>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-semibold text-ea-dark/40 mb-2 flex items-center gap-1"><Users className="w-3 h-3" /> ZUGEWIESEN AN</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {members.map(m => {
+                          const assigned = (p.assigned_to || []).includes(m.email);
+                          return (
+                            <button key={m.email} onClick={async () => {
+                              const current = p.assigned_to || [];
+                              const updated = current.includes(m.email) ? current.filter(e => e !== m.email) : [...current, m.email];
+                              await fetch(`${API}/api/admin/products/${p._id}/assign`, { method: 'PUT', headers: { ...authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ emails: updated }) });
+                              fetchData();
+                            }} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${assigned ? 'bg-[#C8A96A] text-[#04151F]' : 'bg-gray-100 text-ea-dark/40 hover:bg-gray-200'}`}>
+                              {m.name}
+                            </button>
+                          );
+                        })}
+                        {(p.assigned_to || []).length === 0 && <span className="text-xs text-ea-dark/30 italic">No team member assigned yet</span>}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-ea-dark/30 py-6">No products yet. Create your first product above.</p>
         )}
       </div>
     </div>
