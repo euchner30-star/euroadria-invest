@@ -1119,49 +1119,46 @@ const AnalyticsDashboard = ({ credentials }) => {
           <h3 className="text-base font-semibold text-ea-dark">
             {allLeads ? `Alle Leads (${allLeads.length})` : 'Recent Leads'}
           </h3>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {!allLeads ? (
               <button
                 onClick={loadAllLeads}
                 disabled={loadingAllLeads}
-                className="flex items-center gap-2 px-4 py-2 bg-ea-gold/10 text-ea-dark text-sm font-medium rounded-lg hover:bg-ea-gold/20 transition-all disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-2 bg-ea-gold/10 text-ea-dark text-xs font-medium rounded-lg hover:bg-ea-gold/20 transition-all disabled:opacity-50"
                 data-testid="load-all-leads"
               >
-                <Users className="w-4 h-4" />
-                {loadingAllLeads ? 'Laden...' : 'Alle Leads anzeigen'}
+                <Users className="w-3.5 h-3.5" />
+                {loadingAllLeads ? '...' : 'Alle Leads'}
               </button>
             ) : (
               <button
                 onClick={() => { setAllLeads(null); setLeadSearch(''); setSourceFilter('all'); }}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-ea-dark/70 text-sm font-medium rounded-lg hover:bg-gray-200 transition-all"
+                className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-ea-dark/70 text-xs font-medium rounded-lg hover:bg-gray-200 transition-all"
                 data-testid="show-recent-leads"
               >
-                Nur aktuelle
+                Aktuelle
               </button>
             )}
             <button
               onClick={() => setShowAddLead(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 text-sm font-medium rounded-lg hover:bg-green-100 transition-all"
+              className="flex items-center gap-1.5 px-3 py-2 bg-green-50 text-green-700 text-xs font-medium rounded-lg hover:bg-green-100 transition-all"
               data-testid="add-lead-btn"
             >
-              <Plus className="w-4 h-4" />
-              Lead
+              <Plus className="w-3.5 h-3.5" /> Lead
             </button>
             <button
               onClick={() => { setShowImportModal(true); setImportResult(null); setImportFile(null); }}
-              className="flex items-center gap-2 px-4 py-2 bg-ea-gold/10 text-ea-dark text-sm font-medium rounded-lg hover:bg-ea-gold/20 transition-all"
+              className="flex items-center gap-1.5 px-3 py-2 bg-ea-gold/10 text-ea-dark text-xs font-medium rounded-lg hover:bg-ea-gold/20 transition-all"
               data-testid="import-leads-btn"
             >
-              <Upload className="w-4 h-4" />
-              Import
+              <Upload className="w-3.5 h-3.5" /> Import
             </button>
             <button
               onClick={exportLeadsCSV}
-              className="flex items-center gap-2 px-4 py-2 bg-ea-dark text-white text-sm font-medium rounded-lg hover:bg-ea-dark/90 transition-all"
+              className="flex items-center gap-1.5 px-3 py-2 bg-ea-dark text-white text-xs font-medium rounded-lg hover:bg-ea-dark/90 transition-all"
               data-testid="export-leads-csv"
             >
-              <Download className="w-4 h-4" />
-              CSV
+              <Download className="w-3.5 h-3.5" /> CSV
             </button>
           </div>
         </div>
