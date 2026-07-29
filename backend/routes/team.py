@@ -28,6 +28,10 @@ class NoteCreate(BaseModel):
 
 class LeadUpdate(BaseModel):
     status: Optional[str] = None
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    source: Optional[str] = None
     lead_value: Optional[float] = None
     interest: Optional[str] = None
     timeline: Optional[str] = None
@@ -179,7 +183,7 @@ async def update_team_lead(lead_id: str, data: LeadUpdate, member=Depends(get_cu
         if not lead or lead.get("assigned_to") != member["email"]:
             raise HTTPException(status_code=403, detail="Access denied")
     update = {}
-    for field in ['status', 'lead_value', 'interest', 'timeline', 'contact_method', 'property_value', 'property_type', 'property_location']:
+    for field in ['status', 'name', 'email', 'phone', 'source', 'lead_value', 'interest', 'timeline', 'contact_method', 'property_value', 'property_type', 'property_location']:
         val = getattr(data, field, None)
         if val is not None:
             update[field] = val

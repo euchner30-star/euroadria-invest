@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { LogOut, Search, ChevronDown, ChevronUp, Phone, Mail, MapPin, Clock, Target, MessageSquare, Plus, Trash2, Edit3, User, Calendar, DollarSign, Filter, Send, X, Settings, TrendingUp, Building, Upload, FileText } from 'lucide-react';
+import { LogOut, Search, ChevronDown, ChevronUp, Phone, Mail, MapPin, Clock, Target, MessageSquare, Plus, Trash2, Edit3, User, Calendar, DollarSign, Filter, Send, X, Settings, TrendingUp, Building, Upload, FileText, Package } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -98,6 +98,7 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
   const [documents, setDocuments] = useState([]);
   const [selectedDocs, setSelectedDocs] = useState([]);
   const [showDocPicker, setShowDocPicker] = useState(false);
+  const [editContact, setEditContact] = useState(null);
 
   useEffect(() => {
     // Load signature
@@ -204,15 +205,54 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
       {/* Header */}
       <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
-          <div>
-            <h2 className="text-white text-2xl font-bold">{lead.name}</h2>
-            <div className="flex flex-wrap gap-4 mt-3 text-white/60 text-sm">
-              {lead.email && <span className="flex items-center gap-1.5"><Mail className="w-4 h-4" /> {lead.email}</span>}
-              {lead.phone && <span className="flex items-center gap-1.5"><Phone className="w-4 h-4" /> {lead.phone}</span>}
-              {(lead.city || lead.country) && <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> {[lead.city, lead.state, lead.country].filter(Boolean).join(', ')}</span>}
-            </div>
+          <div className="flex-1 min-w-0">
+            {editContact ? (
+              <div className="space-y-3">
+                <input type="text" value={editContact.name} onChange={e => setEditContact(c => ({ ...c, name: e.target.value }))} placeholder="Name" className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white text-lg font-bold focus:outline-none focus:border-[#C8A96A]" data-testid="edit-lead-name" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-white/40 shrink-0" />
+                    <input type="email" value={editContact.email} onChange={e => setEditContact(c => ({ ...c, email: e.target.value }))} placeholder="Email" className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="edit-lead-email" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-white/40 shrink-0" />
+                    <input type="tel" value={editContact.phone} onChange={e => setEditContact(c => ({ ...c, phone: e.target.value }))} placeholder="Phone" className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="edit-lead-phone" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Target className="w-4 h-4 text-white/40 shrink-0" />
+                    <input type="text" value={editContact.source} onChange={e => setEditContact(c => ({ ...c, source: e.target.value }))} placeholder="Source" className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#C8A96A]" data-testid="edit-lead-source" />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={async () => {
+                    const res = await fetch(`${API}/api/team/leads/${lead._id}`, {
+                      method: 'PUT', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ name: editContact.name, email: editContact.email, phone: editContact.phone, source: editContact.source })
+                    });
+                    if (res.ok) { lead.name = editContact.name; lead.email = editContact.email; lead.phone = editContact.phone; lead.source = editContact.source; setEditContact(null); }
+                  }} className="px-4 py-2 bg-[#C8A96A] text-[#04151F] text-sm font-bold rounded-lg hover:bg-[#C8A96A]/90" data-testid="save-lead-contact">Save</button>
+                  <button onClick={() => setEditContact(null)} className="px-4 py-2 text-white/50 text-sm hover:text-white">Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <h2 className="text-white text-2xl font-bold">{lead.name}</h2>
+                <div className="flex flex-wrap gap-4 mt-3 text-white/60 text-sm">
+                  {lead.email && <span className="flex items-center gap-1.5"><Mail className="w-4 h-4" /> {lead.email}</span>}
+                  {lead.phone && <span className="flex items-center gap-1.5"><Phone className="w-4 h-4" /> {lead.phone}</span>}
+                  {(lead.city || lead.country) && <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> {[lead.city, lead.state, lead.country].filter(Boolean).join(', ')}</span>}
+                </div>
+              </div>
+            )}
           </div>
-          <StatusBadge status={status} />
+          <div className="flex items-center gap-2">
+            {!editContact && (
+              <button onClick={() => setEditContact({ name: lead.name || '', email: lead.email || '', phone: lead.phone || '', source: lead.source || '' })} className="p-2 rounded-lg hover:bg-white/10 transition-all" data-testid="edit-lead-btn" title="Edit contact">
+                <Edit3 className="w-4 h-4 text-white/40" />
+              </button>
+            )}
+            <StatusBadge status={status} />
+          </div>
         </div>
         {lead.email_opened && (
           <div className="mt-3 flex items-center gap-2 text-green-400 text-sm">
@@ -546,6 +586,7 @@ export default function TeamPage() {
   const [showAddLead, setShowAddLead] = useState(false);
   const [newLead, setNewLead] = useState({ name: '', email: '', phone: '', source: '', interest: '', note: '' });
   const [addingLead, setAddingLead] = useState(false);
+  const [myProducts, setMyProducts] = useState([]);
 
   const fetchLeads = useCallback(async () => {
     if (!token) return;
@@ -603,6 +644,10 @@ export default function TeamPage() {
       })
       .then(d => { setUser(d); fetchLeads(); fetchCommissions(); })
       .catch(() => { setLoading(false); });
+    // Fetch products
+    fetch(`${API}/api/team/products`, { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : [])
+      .then(d => setMyProducts(d));
   }, [token, fetchLeads]);
 
   const handleLogin = (data) => {
@@ -815,6 +860,33 @@ export default function TeamPage() {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* My Products & Commission Tiers */}
+            {myProducts.length > 0 && (
+              <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-6" data-testid="my-products">
+                <h3 className="text-[#C8A96A] font-bold text-sm mb-3 flex items-center gap-2"><Package className="w-4 h-4" /> My Products & Commission Rates</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {myProducts.map(p => (
+                    <div key={p._id} className="bg-white/5 rounded-xl p-4 border border-white/5">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-white font-bold text-sm">{p.name}</span>
+                        <span className="text-xs px-2 py-0.5 bg-white/10 rounded-full text-white/50">{p.category}</span>
+                      </div>
+                      <p className="text-white/80 text-lg font-bold mb-3">{p.price?.toLocaleString('de-DE')} €</p>
+                      <div className="flex gap-2 flex-wrap">
+                        {(p.commission_tiers || []).map((t, i) => (
+                          <div key={i} className="bg-[#C8A96A]/10 border border-[#C8A96A]/20 rounded-lg px-3 py-1.5 text-center">
+                            <p className="text-[#C8A96A] font-bold text-sm">{t.rate}%</p>
+                            <p className="text-white/30 text-xs">{t.min_sales === 0 ? 'Start' : `ab ${t.min_sales}`}</p>
+                            {p.price > 0 && <p className="text-white/60 text-xs font-medium">{(p.price * t.rate / 100).toLocaleString('de-DE')} €</p>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
