@@ -307,19 +307,24 @@ class AdminNoteCreate(BaseModel):
 
 
 class AdminLeadUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    source: Optional[str] = None
     commission_amount: Optional[float] = None
     property_value: Optional[float] = None
     property_type: Optional[str] = None
     property_location: Optional[str] = None
     status: Optional[str] = None
+    assigned_to: Optional[str] = None
 
 
 @router.put("/admin/leads/{lead_id}/update")
 async def admin_update_lead(lead_id: str, data: AdminLeadUpdate, admin: str = Depends(verify_admin)):
-    """Admin updates lead details (commission, property, status)."""
+    """Admin updates lead details."""
     from bson import ObjectId
     update = {}
-    for field in ['commission_amount', 'property_value', 'property_type', 'property_location', 'status']:
+    for field in ['name', 'email', 'phone', 'source', 'commission_amount', 'property_value', 'property_type', 'property_location', 'status', 'assigned_to']:
         val = getattr(data, field, None)
         if val is not None:
             update[field] = val

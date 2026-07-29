@@ -6,7 +6,7 @@ import {
 import { 
   Eye, Users, Calculator, Mail, TrendingUp, Monitor, Smartphone, Tablet,
   Download, ArrowUpRight, ArrowDownRight, FileText, Share2, Megaphone, RotateCcw, AlertTriangle, Trash2,
-  MessageSquare, Plus, X, Phone, MapPin, Clock, Target, Send, Upload, DollarSign
+  MessageSquare, Plus, X, Phone, MapPin, Clock, Target, Send, Upload, DollarSign, Edit3
 } from 'lucide-react';
 
 const COLORS = ['#C8A96A', '#04151F', '#6B7280', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
@@ -518,19 +518,55 @@ const AnalyticsDashboard = ({ credentials }) => {
           <div className="bg-white rounded-2xl max-w-2xl w-full shadow-xl max-h-[85vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <div>
-                <h3 className="text-lg font-bold text-ea-dark" data-testid="lead-detail-name">{selectedLead.name}</h3>
-                <p className="text-sm text-ea-dark/50">{selectedLead.email}</p>
+              <div className="flex-1 min-w-0 mr-4">
+                {selectedLead._editing ? (
+                  <input type="text" value={selectedLead.name || ''} onChange={e => setSelectedLead(p => ({ ...p, name: e.target.value }))} className="text-lg font-bold text-ea-dark bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 w-full focus:outline-none focus:border-ea-gold" data-testid="admin-edit-name" />
+                ) : (
+                  <h3 className="text-lg font-bold text-ea-dark" data-testid="lead-detail-name">{selectedLead.name}</h3>
+                )}
+                {selectedLead._editing ? (
+                  <input type="email" value={selectedLead.email || ''} onChange={e => setSelectedLead(p => ({ ...p, email: e.target.value }))} className="text-sm text-ea-dark/70 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1 w-full mt-1 focus:outline-none focus:border-ea-gold" data-testid="admin-edit-email" />
+                ) : (
+                  <p className="text-sm text-ea-dark/50">{selectedLead.email}</p>
+                )}
               </div>
-              <button onClick={() => setSelectedLead(null)} className="p-2 rounded-lg hover:bg-gray-100 transition-all" data-testid="lead-detail-close">
-                <X className="w-5 h-5 text-ea-dark/50" />
-              </button>
+              <div className="flex items-center gap-2">
+                {!selectedLead._editing && (
+                  <button onClick={() => setSelectedLead(p => ({ ...p, _editing: true }))} className="p-2 rounded-lg hover:bg-gray-100 transition-all" title="Edit lead">
+                    <Edit3 className="w-4 h-4 text-ea-dark/40" />
+                  </button>
+                )}
+                <button onClick={() => setSelectedLead(null)} className="p-2 rounded-lg hover:bg-gray-100 transition-all" data-testid="lead-detail-close">
+                  <X className="w-5 h-5 text-ea-dark/50" />
+                </button>
+              </div>
             </div>
 
             {/* Body */}
             <div className="overflow-y-auto flex-1 p-6 space-y-5">
-              {/* Lead Info Grid */}
-              <div className="grid grid-cols-2 gap-3">
+              {/* Editable Contact Fields */}
+              {selectedLead._editing ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-gray-50 rounded-xl p-4">
+                  <div>
+                    <label className="text-xs text-ea-dark/40 mb-1 block">Phone</label>
+                    <input type="tel" value={selectedLead.phone || ''} onChange={e => setSelectedLead(p => ({ ...p, phone: e.target.value }))} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold" data-testid="admin-edit-phone" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-ea-dark/40 mb-1 block">Source</label>
+                    <input type="text" value={selectedLead.source || ''} onChange={e => setSelectedLead(p => ({ ...p, source: e.target.value }))} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold" data-testid="admin-edit-source" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-ea-dark/40 mb-1 block">Interest</label>
+                    <input type="text" value={selectedLead.interest || ''} onChange={e => setSelectedLead(p => ({ ...p, interest: e.target.value }))} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-ea-dark/40 mb-1 block">Contact Method</label>
+                    <input type="text" value={selectedLead.contact_method || ''} onChange={e => setSelectedLead(p => ({ ...p, contact_method: e.target.value }))} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ea-gold" />
+                  </div>
+                </div>
+              ) : (
+                /* Lead Info Grid (read-only) */
+                <div className="grid grid-cols-2 gap-3">
                 {selectedLead.phone && (
                   <div className="flex items-center gap-2 text-sm">
                     <Phone className="w-4 h-4 text-ea-dark/40" />
@@ -568,6 +604,7 @@ const AnalyticsDashboard = ({ credentials }) => {
                   </div>
                 )}
               </div>
+              )}
 
               {/* Email Status */}
               <div className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-3">
@@ -609,21 +646,31 @@ const AnalyticsDashboard = ({ credentials }) => {
                 </div>
                 <button
                   onClick={async () => {
+                    const payload = {
+                      property_value: selectedLead.property_value || null,
+                      property_type: selectedLead.property_type || null,
+                      property_location: selectedLead.property_location || null,
+                      commission_amount: selectedLead.commission_amount || null,
+                    };
+                    // Include contact fields if editing
+                    if (selectedLead._editing) {
+                      payload.name = selectedLead.name || null;
+                      payload.email = selectedLead.email || null;
+                      payload.phone = selectedLead.phone || null;
+                      payload.source = selectedLead.source || null;
+                    }
                     await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${selectedLead._id}/update`, {
                       method: 'PUT',
                       headers: { 'Content-Type': 'application/json', 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) },
-                      body: JSON.stringify({
-                        property_value: selectedLead.property_value || null,
-                        property_type: selectedLead.property_type || null,
-                        property_location: selectedLead.property_location || null,
-                        commission_amount: selectedLead.commission_amount || null,
-                      })
+                      body: JSON.stringify(payload)
                     });
+                    setSelectedLead(p => ({ ...p, _editing: false }));
+                    fetchLeads();
                   }}
                   className="w-full py-2 bg-ea-dark text-white text-sm font-bold rounded-lg hover:bg-ea-dark/90 transition-all"
                   data-testid="admin-save-deal"
                 >
-                  Save Deal Details
+                  {selectedLead._editing ? 'Save All Changes' : 'Save Deal Details'}
                 </button>
               </div>
 
