@@ -1,5 +1,5 @@
 """Property listings endpoints - CRUD for real estate listings with images and PDF exposé."""
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Request
 from fastapi.responses import StreamingResponse, Response
 from pydantic import BaseModel
 from typing import Optional, List
@@ -168,11 +168,13 @@ async def property_share_page(property_id: str):
 
 
 @router.post("/properties/{property_id}/inquiry")
-async def property_inquiry(property_id: str, name: str = Form(...), email: str = Form(...), phone: str = Form(""), message: str = Form("")):
+async def property_inquiry(property_id: str, request: Request, name: str = Form(...), email: str = Form(...), phone: str = Form(""), message: str = Form("")):
     """Submit an inquiry for a property - creates a lead and sends notification email."""
     import resend
     import uuid as _uuid
     from core import RESEND_API_KEY, NOTIFICATION_EMAIL
+
+    client_ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "unknown").split(",")[0].strip()
 
     prop = await db.properties.find_one({"_id": _oid(property_id)})
     if not prop:
@@ -189,6 +191,7 @@ async def property_inquiry(property_id: str, name: str = Form(...), email: str =
         "property_inquiry_id": property_id,
         "property_title": prop.get("title", ""),
         "message": message.strip(),
+        "ip_address": client_ip,
         "submitted_at": datetime.now(timezone.utc).isoformat(),
     }
     if existing:

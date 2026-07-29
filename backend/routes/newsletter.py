@@ -1,5 +1,5 @@
 """Newsletter endpoints (Brevo integration)."""
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from datetime import datetime, timezone
 import requests as http_requests
 
@@ -25,8 +25,9 @@ def brevo_request(method: str, endpoint: str, data: dict = None):
 
 
 @router.post("/newsletter/subscribe")
-async def newsletter_subscribe(sub: NewsletterSubscribe):
+async def newsletter_subscribe(sub: NewsletterSubscribe, request: Request):
     """Subscribe to newsletter via Brevo"""
+    client_ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "unknown").split(",")[0].strip()
     if not BREVO_API_KEY:
         raise HTTPException(status_code=500, detail="Newsletter nicht konfiguriert")
 
@@ -46,7 +47,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
 
         await db.newsletter_subscribers.update_one(
             {"email": sub.email},
-            {"$set": {"email": sub.email, "name": sub.name or "", "subscribed_at": datetime.now(timezone.utc).isoformat(), "active": True}},
+            {"$set": {"email": sub.email, "name": sub.name or "", "subscribed_at": datetime.now(timezone.utc).isoformat(), "active": True, "ip_address": client_ip}},
             upsert=True
         )
 
@@ -57,6 +58,7 @@ async def newsletter_subscribe(sub: NewsletterSubscribe):
                 "source": "newsletter",
                 "expose_name": "Newsletter-Anmeldung",
                 "type": "newsletter",
+                "ip_address": client_ip,
                 "submitted_at": datetime.now(timezone.utc).isoformat()
             })
 

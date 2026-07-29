@@ -1,5 +1,5 @@
 """Contact form & Lead capture endpoints."""
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from datetime import datetime, timezone
 import uuid
 import base64
@@ -13,11 +13,13 @@ router = APIRouter()
 
 
 @router.post("/contact")
-async def submit_contact_form(form: ContactForm):
+async def submit_contact_form(form: ContactForm, request: Request):
     """Handle contact form submissions"""
+    client_ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "unknown").split(",")[0].strip()
     contact_dict = form.model_dump()
     contact_dict["submitted_at"] = datetime.now(timezone.utc).isoformat()
     contact_dict["status"] = "new"
+    contact_dict["ip_address"] = client_ip
 
     # Store in database
     await db.contact_submissions.insert_one(contact_dict)
@@ -109,11 +111,13 @@ async def submit_contact_form(form: ContactForm):
 
 
 @router.post("/leads")
-async def capture_lead(lead: LeadForm):
+async def capture_lead(lead: LeadForm, request: Request):
     """Capture lead data before Exposé download"""
+    client_ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "unknown").split(",")[0].strip()
     lead_dict = lead.model_dump()
     lead_dict["submitted_at"] = datetime.now(timezone.utc).isoformat()
     lead_dict["type"] = "expose_download"
+    lead_dict["ip_address"] = client_ip
 
     result = await db.leads.insert_one(lead_dict)
     lead_id_str = str(result.inserted_id)
