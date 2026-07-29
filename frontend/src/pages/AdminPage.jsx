@@ -18,6 +18,7 @@ import NewsletterAdmin from '../components/admin/NewsletterAdmin';
 import PDFGenerator from '../components/admin/PDFGenerator';
 import TeamActivities from '../components/admin/TeamActivities';
 import ProductCatalog from '../components/admin/ProductCatalog';
+import DSGVOPanel from '../components/admin/DSGVOPanel';
 
 const NAV_GROUPS = [
   {
@@ -56,6 +57,7 @@ const NAV_GROUPS = [
       { key: 'regions', icon: MapPin, label: 'Regionen', badge: 'regions' },
       { key: 'investment', icon: TrendingUp, label: 'Investment' },
       { key: 'legal', icon: Shield, label: 'Rechtliches' },
+      { key: 'dsgvo', icon: Shield, label: 'DSGVO' },
     ]
   }
 ];
@@ -2651,6 +2653,11 @@ const AdminPage = () => {
         )}
 
         {/* Legal Tab */}
+
+        {activeTab === 'dsgvo' && (
+          <DSGVOPanel credentials={credentials} />
+        )}
+
         {activeTab === 'legal' && (
           <div className="space-y-6">
             <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 sm:p-8">

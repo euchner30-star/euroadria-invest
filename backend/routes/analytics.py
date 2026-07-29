@@ -947,3 +947,170 @@ async def admin_assign_product(product_id: str, admin: str = Depends(verify_admi
         {"$set": {"assigned_to": emails}}
     )
     return {"success": True}
+
+
+
+# ── Database Backup ──────────────────────────────────────────────────────
+
+@router.get("/admin/backup")
+async def admin_backup(admin: str = Depends(verify_admin)):
+    """Export complete database as JSON for backup purposes."""
+    import json
+    backup = {}
+    collections = ['leads', 'team_members', 'products_catalog', 'properties', 'property_locations',
+                    'articles', 'newsletter_subscribers', 'lead_emails', 'lead_notes', 'documents',
+                    'download_links', 'email_opens', 'commission_models', 'contact_submissions',
+                    'events', 'comments', 'crm_deals', 'site_settings', 'pages']
+
+    for coll_name in collections:
+        docs = await db[coll_name].find({}).to_list(10000)
+        for d in docs:
+            d["_id"] = str(d["_id"])
+        backup[coll_name] = docs
+
+    backup["_meta"] = {
+        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "total_collections": len([k for k in backup if k != "_meta"]),
+        "total_records": sum(len(v) for k, v in backup.items() if k != "_meta"),
+    }
+
+    from fastapi.responses import Response
+    content = json.dumps(backup, ensure_ascii=False, indent=2, default=str)
+    filename = f"euroadria-backup-{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.json"
+    return Response(
+        content=content,
+        media_type="application/json",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
+
+
+# ── DSGVO Data Subject Access (Auskunftsrecht) ──────────────────────────
+
+@router.get("/admin/dsgvo/lookup")
+async def dsgvo_lookup(email: str, admin: str = Depends(verify_admin)):
+    """DSGVO: Lookup all stored data for a person by email."""
+    email = email.strip().lower()
+    result = {"email": email, "data": {}}
+
+    # 1. Leads
+    leads = await db.leads.find({"email": {"$regex": f"^{email}$", "$options": "i"}}).to_list(50)
+    if leads:
+        for l in leads:
+            l["_id"] = str(l["_id"])
+        result["data"]["leads"] = leads
+
+    # 2. Newsletter
+    subs = await db.newsletter_subscribers.find({"email": {"$regex": f"^{email}$", "$options": "i"}}).to_list(10)
+    if subs:
+        for s in subs:
+            s["_id"] = str(s["_id"])
+        result["data"]["newsletter"] = subs
+
+    # 3. Contact submissions
+    contacts = await db.contact_submissions.find({"email": {"$regex": f"^{email}$", "$options": "i"}}).to_list(50)
+    if contacts:
+        for c in contacts:
+            c["_id"] = str(c["_id"])
+        result["data"]["contact_submissions"] = contacts
+
+    # 4. Sent emails (to this person)
+    emails_sent = await db.lead_emails.find({"to": {"$regex": f"^{email}$", "$options": "i"}}).to_list(100)
+    if emails_sent:
+        for e in emails_sent:
+            e["_id"] = str(e["_id"])
+        result["data"]["emails_received"] = emails_sent
+
+    # 5. Email tracking (opens)
+    opens = await db.email_opens.find({"email": {"$regex": f"^{email}$", "$options": "i"}}).to_list(50)
+    if opens:
+        for o in opens:
+            o["_id"] = str(o["_id"])
+        result["data"]["email_tracking"] = opens
+
+    # 6. Download links created for this person
+    lead_ids = [l["_id"] for l in leads] if leads else []
+    if lead_ids:
+        downloads = await db.download_links.find({"lead_id": {"$in": lead_ids}}).to_list(50)
+        if downloads:
+            for d in downloads:
+                d["_id"] = str(d["_id"])
+            result["data"]["download_links"] = downloads
+
+    # 7. Notes on their leads
+    if lead_ids:
+        notes = await db.lead_notes.find({"lead_id": {"$in": lead_ids}}).to_list(200)
+        if notes:
+            for n in notes:
+                n["_id"] = str(n["_id"])
+            result["data"]["notes"] = notes
+
+    # 8. CRM deals
+    deals = await db.crm_deals.find({"email": {"$regex": f"^{email}$", "$options": "i"}}).to_list(50)
+    if deals:
+        for d in deals:
+            d["_id"] = str(d["_id"])
+        result["data"]["crm_deals"] = deals
+
+    # 9. Comments
+    comments = await db.comments.find({"email": {"$regex": f"^{email}$", "$options": "i"}}).to_list(50)
+    if comments:
+        for c in comments:
+            c["_id"] = str(c["_id"])
+        result["data"]["comments"] = comments
+
+    # 10. Team member (if they are one)
+    member = await db.team_members.find_one({"email": {"$regex": f"^{email}$", "$options": "i"}}, {"password": 0})
+    if member:
+        member["_id"] = str(member["_id"])
+        result["data"]["team_member"] = member
+
+    # Summary
+    total_records = sum(len(v) if isinstance(v, list) else 1 for v in result["data"].values())
+    result["total_records"] = total_records
+    result["collections_with_data"] = list(result["data"].keys())
+
+    return result
+
+
+@router.delete("/admin/dsgvo/delete")
+async def dsgvo_delete(email: str, admin: str = Depends(verify_admin)):
+    """DSGVO: Delete all data for a person (Recht auf Löschung)."""
+    email = email.strip().lower()
+    deleted = {}
+
+    # Get lead IDs first
+    leads = await db.leads.find({"email": {"$regex": f"^{email}$", "$options": "i"}}).to_list(50)
+    lead_ids = [str(l["_id"]) for l in leads]
+
+    # Delete from all collections
+    r = await db.leads.delete_many({"email": {"$regex": f"^{email}$", "$options": "i"}})
+    if r.deleted_count: deleted["leads"] = r.deleted_count
+
+    r = await db.newsletter_subscribers.delete_many({"email": {"$regex": f"^{email}$", "$options": "i"}})
+    if r.deleted_count: deleted["newsletter"] = r.deleted_count
+
+    r = await db.contact_submissions.delete_many({"email": {"$regex": f"^{email}$", "$options": "i"}})
+    if r.deleted_count: deleted["contact_submissions"] = r.deleted_count
+
+    r = await db.email_opens.delete_many({"email": {"$regex": f"^{email}$", "$options": "i"}})
+    if r.deleted_count: deleted["email_tracking"] = r.deleted_count
+
+    r = await db.comments.delete_many({"email": {"$regex": f"^{email}$", "$options": "i"}})
+    if r.deleted_count: deleted["comments"] = r.deleted_count
+
+    r = await db.crm_deals.delete_many({"email": {"$regex": f"^{email}$", "$options": "i"}})
+    if r.deleted_count: deleted["crm_deals"] = r.deleted_count
+
+    if lead_ids:
+        r = await db.lead_emails.delete_many({"lead_id": {"$in": lead_ids}})
+        if r.deleted_count: deleted["emails"] = r.deleted_count
+
+        r = await db.lead_notes.delete_many({"lead_id": {"$in": lead_ids}})
+        if r.deleted_count: deleted["notes"] = r.deleted_count
+
+        r = await db.download_links.delete_many({"lead_id": {"$in": lead_ids}})
+        if r.deleted_count: deleted["download_links"] = r.deleted_count
+
+    total = sum(deleted.values())
+    logger.info(f"DSGVO deletion for {email}: {total} records deleted from {list(deleted.keys())}")
+    return {"success": True, "email": email, "deleted": deleted, "total_deleted": total}
