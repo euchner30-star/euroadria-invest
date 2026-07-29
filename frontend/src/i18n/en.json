@@ -42,7 +42,7 @@
   },
   "cookie": {
     "title": "Cookie Settings",
-    "text": "We use cookies to provide you with the best possible experience on our website. Some cookies are essential for the operation of the website, while others help us improve the website and your experience.",
+    "text": "We use cookies and store personal data (e.g. IP address, contact details) to provide you with the best experience. Some cookies are essential for the operation of the website, others help us improve our website and services.",
     "privacyLink": "Privacy Policy",
     "imprintLink": "Imprint",
     "termsLink": "Terms",
@@ -51,11 +51,11 @@
     "acceptAll": "Accept All",
     "save": "Save Preferences",
     "necessary": "Necessary",
-    "necessaryDesc": "These cookies are required for the website to function and cannot be disabled.",
+    "necessaryDesc": "These cookies are essential for the operation of the website and cannot be disabled. This includes storing your cookie preferences and technically necessary functions.",
     "analytics": "Analytics",
-    "analyticsDesc": "Helps us understand how visitors use the website.",
+    "analyticsDesc": "Helps us understand how visitors use the website. We use Google Analytics (GA4) and Google Tag Manager. Your IP address is anonymized during processing.",
     "marketing": "Marketing",
-    "marketingDesc": "Used to display relevant advertisements.",
+    "marketingDesc": "Used to display relevant advertising and measure the success of our campaigns (Meta Pixel). Data may be shared with third parties.",
     "alwaysActive": "Always active"
   },
   "contact": {

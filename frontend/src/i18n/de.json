@@ -42,7 +42,7 @@
   },
   "cookie": {
     "title": "Cookie-Einstellungen",
-    "text": "Wir verwenden Cookies, um Ihnen die bestmögliche Erfahrung auf unserer Website zu bieten. Einige Cookies sind für den Betrieb der Website unbedingt erforderlich, während andere uns helfen, die Website und Ihre Erfahrung zu verbessern.",
+    "text": "Wir verwenden Cookies und speichern personenbezogene Daten (z.B. IP-Adresse, Kontaktdaten) um Ihnen die bestmögliche Erfahrung zu bieten. Einige Cookies sind für den Betrieb der Website notwendig, andere helfen uns, die Website und unsere Services zu verbessern.",
     "privacyLink": "Datenschutzerklärung",
     "imprintLink": "Impressum",
     "termsLink": "AGB",
@@ -51,11 +51,11 @@
     "acceptAll": "Alle akzeptieren",
     "save": "Auswahl speichern",
     "necessary": "Notwendig",
-    "necessaryDesc": "Diese Cookies sind für den Betrieb der Website erforderlich und können nicht deaktiviert werden.",
+    "necessaryDesc": "Diese Cookies sind für den Betrieb der Website erforderlich und können nicht deaktiviert werden. Dazu gehört die Speicherung Ihrer Cookie-Einstellungen und technisch notwendige Funktionen.",
     "analytics": "Analyse",
-    "analyticsDesc": "Hilft uns zu verstehen, wie Besucher die Website nutzen.",
+    "analyticsDesc": "Hilft uns zu verstehen, wie Besucher die Website nutzen. Dazu verwenden wir Google Analytics (GA4) und Google Tag Manager. Ihre IP-Adresse wird dabei anonymisiert verarbeitet.",
     "marketing": "Marketing",
-    "marketingDesc": "Wird verwendet, um relevante Werbung anzuzeigen.",
+    "marketingDesc": "Wird verwendet, um relevante Werbung anzuzeigen und den Erfolg unserer Kampagnen zu messen (Meta Pixel). Daten können an Dritte weitergegeben werden.",
     "alwaysActive": "Immer aktiv"
   },
   "contact": {

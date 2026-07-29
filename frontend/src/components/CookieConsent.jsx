@@ -18,10 +18,17 @@ const CookieConsent = () => {
     // Check if user has already made a choice
     const savedConsent = localStorage.getItem(COOKIE_CONSENT_KEY);
     if (!savedConsent) {
-      // Show banner after a short delay for better UX
       const timer = setTimeout(() => setShowBanner(true), 1000);
       return () => clearTimeout(timer);
     }
+    // Re-show banner if consent version is outdated
+    try {
+      const parsed = JSON.parse(savedConsent);
+      if (parsed.version !== '1.1') {
+        const timer = setTimeout(() => setShowBanner(true), 1000);
+        return () => clearTimeout(timer);
+      }
+    } catch {}
   }, []);
 
   const handleAcceptAll = () => {
@@ -30,7 +37,7 @@ const CookieConsent = () => {
       analytics: true,
       marketing: true,
       timestamp: new Date().toISOString(),
-      version: '1.0'
+      version: '1.1'
     };
     localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consent));
     setShowBanner(false);
@@ -44,7 +51,7 @@ const CookieConsent = () => {
       analytics: false,
       marketing: false,
       timestamp: new Date().toISOString(),
-      version: '1.0'
+      version: '1.1'
     };
     localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consent));
     setShowBanner(false);
@@ -54,7 +61,7 @@ const CookieConsent = () => {
     const consent = {
       ...preferences,
       timestamp: new Date().toISOString(),
-      version: '1.0'
+      version: '1.1'
     };
     localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consent));
     setShowBanner(false);
