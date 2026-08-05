@@ -29,8 +29,10 @@ logger = logging.getLogger("euroadria")
 
 # ── Admin Auth ──────────────────────────────────────────────────────────
 security = HTTPBasic()
-ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'euroadria2025')
+ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
+if not ADMIN_USERNAME or not ADMIN_PASSWORD:
+    raise RuntimeError("ADMIN_USERNAME and ADMIN_PASSWORD must be set in .env")
 
 
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):

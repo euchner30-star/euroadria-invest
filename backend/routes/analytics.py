@@ -383,6 +383,9 @@ async def admin_send_email(lead_id: str, admin: str = Depends(verify_admin), sub
         raise HTTPException(status_code=400, detail="Lead has no email address")
 
     from core import SITE_URL
+    import bleach
+    body = bleach.clean(body, tags=[], strip=True)
+    subject = bleach.clean(subject, tags=[], strip=True)
     download_links_html = ""
     doc_names = []
 

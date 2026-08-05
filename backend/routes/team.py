@@ -10,11 +10,13 @@ import jwt
 import os
 import resend
 
-from core import db, RESEND_API_KEY, logger
+from core import db, RESEND_API_KEY, logger, verify_admin as _verify_admin
 
 router = APIRouter()
 security = HTTPBearer()
-JWT_SECRET = os.environ.get("JWT_SECRET", "euroadria-team-secret-2026")
+JWT_SECRET = os.environ.get("JWT_SECRET")
+if not JWT_SECRET:
+    raise RuntimeError("JWT_SECRET must be set in .env")
 
 
 # ── Models ──────────────────────────────────────────────────────────────
@@ -200,6 +202,11 @@ async def update_team_lead(lead_id: str, data: LeadUpdate, member=Depends(get_cu
 @router.post("/team/leads/{lead_id}/notes")
 async def add_note(lead_id: str, data: NoteCreate, member=Depends(get_current_member)):
     """Add a note to a lead."""
+    from bson import ObjectId
+    if member.get("role") == "restricted":
+        lead = await db.leads.find_one({"_id": ObjectId(lead_id)})
+        if not lead or lead.get("assigned_to") != member["email"]:
+            raise HTTPException(status_code=403, detail="Access denied")
     note = {
         "lead_id": lead_id,
         "text": data.text,
@@ -387,6 +394,11 @@ async def send_lead_email(lead_id: str, member=Depends(get_current_member), subj
         raise HTTPException(status_code=400, detail="Lead has no email address")
 
     from core import SITE_URL
+    import bleach
+
+    # Sanitize user input for email body
+    body = bleach.clean(body, tags=[], strip=True)
+    subject = bleach.clean(subject, tags=[], strip=True)
 
     # Generate download links for documents
     download_links_html = ""
@@ -556,9 +568,9 @@ async def get_team_products(member=Depends(get_current_member)):
 
 # ── Seed member ─────────────────────────────────────────────────────────
 
-@router.get("/team/seed")
-async def seed_team():
-    """Seed team members (run once per new member)."""
+@router.get("/admin/team-seed")
+async def seed_team(admin: str = Depends(_verify_admin)):
+    """Seed team members (admin-only, run once per new member)."""
     results = []
     members = [
         {"email": "milena@euroadria.me", "name": "Milena Bubanja", "password": "mb2026!mnfgz", "role": "member"},
@@ -670,8 +682,7 @@ async def delete_document(doc_id: str, member=Depends(get_current_member)):
     return {"success": True}
 
 
-# Admin document endpoints (same as team but with admin auth)
-from core import verify_admin as _verify_admin
+# Admin document endpoints
 
 @router.get("/admin/documents")
 async def admin_get_documents(admin: str = Depends(_verify_admin)):
