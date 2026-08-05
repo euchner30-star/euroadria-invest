@@ -14,9 +14,9 @@ from core import db, RESEND_API_KEY, logger, verify_admin as _verify_admin
 
 router = APIRouter()
 security = HTTPBearer()
-JWT_SECRET = os.environ.get("JWT_SECRET")
-if not JWT_SECRET:
-    raise RuntimeError("JWT_SECRET must be set in .env")
+JWT_SECRET = os.environ.get("JWT_SECRET", "euroadria-team-jwt-2026-xK9mP2")
+if JWT_SECRET == "euroadria-team-jwt-2026-xK9mP2" and os.environ.get('RENDER'):
+    logger.warning("⚠️ Using default JWT secret — set JWT_SECRET in env vars for production!")
 
 
 # ── Models ──────────────────────────────────────────────────────────────
