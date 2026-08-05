@@ -365,11 +365,12 @@ class AdminEmailSend(BaseModel):
 
 
 @router.post("/admin/leads/{lead_id}/email")
-async def admin_send_email(lead_id: str, data: AdminEmailSend, admin: str = Depends(verify_admin)):
-    """Send email to a lead from Admin panel (Holger)."""
+async def admin_send_email(lead_id: str, admin: str = Depends(verify_admin), subject: str = Form(...), body: str = Form(...), attachments: List[UploadFile] = File(None), document_ids: str = Form("")):
+    """Send email to a lead from Admin panel (Holger) with multiple attachments."""
     from bson import ObjectId
     from emails import wrap_email
     from routes.team import SIGNATURE_HTML_TEMPLATE
+    import uuid as _uuid
 
     lead = await db.leads.find_one({"_id": ObjectId(lead_id)})
     if not lead:
@@ -381,14 +382,78 @@ async def admin_send_email(lead_id: str, data: AdminEmailSend, admin: str = Depe
     if not lead_email:
         raise HTTPException(status_code=400, detail="Lead has no email address")
 
-    body_html = data.body.replace("\n", "<br>")
-    personal = ""
+    from core import SITE_URL
+    download_links_html = ""
+    doc_names = []
+
+    # Handle library documents
+    if document_ids and document_ids.strip():
+        for doc_id in document_ids.split(","):
+            doc_id = doc_id.strip()
+            if not doc_id:
+                continue
+            doc = await db.documents.find_one({"_id": ObjectId(doc_id), "is_deleted": {"$ne": True}})
+            if doc:
+                dl_id = str(_uuid.uuid4())
+                await db.download_links.insert_one({
+                    "download_id": dl_id, "storage_path": doc["storage_path"],
+                    "filename": doc["filename"], "label": doc.get("label", doc["filename"]),
+                    "lead_id": lead_id, "created_by": "Admin (Holger)",
+                    "created_at": datetime.now(timezone.utc).isoformat(), "download_count": 0,
+                })
+                dl_url = f"{SITE_URL}/api/dl/{dl_id}"
+                size_mb = doc.get("size", 0) / (1024 * 1024)
+                doc_names.append(doc.get("label", doc["filename"]))
+                download_links_html += f"""
+                <a href="{dl_url}" style="display:block;margin:8px 0;padding:14px 20px;background:#04151F;border-radius:10px;text-decoration:none;color:#fff;font-size:14px;">
+                    <span style="display:inline-block;vertical-align:middle;margin-right:10px;">📄</span>
+                    <span style="font-weight:600;">{doc.get('label', doc['filename'])}</span>
+                    <span style="float:right;color:#C8A96A;font-size:12px;">{size_mb:.1f} MB · Download</span>
+                </a>"""
+
+    # Handle uploaded attachments
+    if attachments:
+        for attachment in attachments:
+            if not attachment or not attachment.filename:
+                continue
+            file_content = await attachment.read()
+            if len(file_content) > 25 * 1024 * 1024:
+                continue
+            from object_storage import put_object
+            ext = attachment.filename.rsplit(".", 1)[-1] if "." in attachment.filename else "pdf"
+            storage_path = f"euroadria/attachments/{_uuid.uuid4()}.{ext}"
+            put_object(storage_path, file_content, attachment.content_type or "application/octet-stream")
+            dl_id = str(_uuid.uuid4())
+            await db.download_links.insert_one({
+                "download_id": dl_id, "storage_path": storage_path,
+                "filename": attachment.filename, "label": attachment.filename,
+                "lead_id": lead_id, "created_by": "Admin (Holger)",
+                "created_at": datetime.now(timezone.utc).isoformat(), "download_count": 0,
+            })
+            dl_url = f"{SITE_URL}/api/dl/{dl_id}"
+            size_mb = len(file_content) / (1024 * 1024)
+            doc_names.append(attachment.filename)
+            download_links_html += f"""
+            <a href="{dl_url}" style="display:block;margin:8px 0;padding:14px 20px;background:#04151F;border-radius:10px;text-decoration:none;color:#fff;font-size:14px;">
+                <span style="display:inline-block;vertical-align:middle;margin-right:10px;">📎</span>
+                <span style="font-weight:600;">{attachment.filename}</span>
+                <span style="float:right;color:#C8A96A;font-size:12px;">{size_mb:.1f} MB · Download</span>
+            </a>"""
+
+    body_html = body.replace("\n", "<br>")
+    docs_section = ""
+    if download_links_html:
+        docs_section = f"""
+        <div style="margin: 24px 0; padding: 20px; background: #f8f8f8; border-radius: 12px;">
+            <p style="margin: 0 0 12px; font-size: 13px; color: #999; font-weight: 600; letter-spacing: 0.5px;">DOCUMENTS</p>
+            {download_links_html}
+        </div>"""
 
     content = f"""
     <div style="color: #333; font-size: 15px; line-height: 1.7;">
         {body_html}
     </div>
-    {personal}
+    {docs_section}
     {SIGNATURE_HTML_TEMPLATE}
     """
 
@@ -397,7 +462,7 @@ async def admin_send_email(lead_id: str, data: AdminEmailSend, admin: str = Depe
         result = resend.Emails.send({
             "from": "Holger Kuhlmann - EuroAdria <office@euroadria.me>",
             "to": [lead_email],
-            "subject": data.subject,
+            "subject": subject,
             "html": wrap_email(content, lang="en", lead_id=lead_id, include_footer=False),
             "reply_to": "office@euroadria.me"
         })
@@ -405,8 +470,9 @@ async def admin_send_email(lead_id: str, data: AdminEmailSend, admin: str = Depe
         email_record = {
             "lead_id": lead_id,
             "to": lead_email,
-            "subject": data.subject,
-            "body": data.body,
+            "subject": subject,
+            "body": body,
+            "documents": doc_names,
             "sent_by": "Admin (Holger)",
             "sent_by_email": "office@euroadria.me",
             "sent_at": datetime.now(timezone.utc).isoformat(),
@@ -414,14 +480,17 @@ async def admin_send_email(lead_id: str, data: AdminEmailSend, admin: str = Depe
         }
         await db.lead_emails.insert_one(email_record)
 
+        note_text = f"Email sent: \"{subject}\""
+        if doc_names:
+            note_text += f" (Documents: {', '.join(doc_names)})"
         await db.lead_notes.insert_one({
             "lead_id": lead_id,
-            "text": f"Email sent: \"{data.subject}\"",
+            "text": note_text,
             "author": "Admin (Holger)",
             "created_at": datetime.now(timezone.utc).isoformat()
         })
 
-        logger.info(f"Admin email sent to {lead_email}: {data.subject}")
+        logger.info(f"Admin email sent to {lead_email}: {subject}")
         return {"success": True, "message": f"Email sent to {lead_email}"}
     except Exception as e:
         logger.error(f"Admin email send failed: {e}")

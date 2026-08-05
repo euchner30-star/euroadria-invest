@@ -370,7 +370,7 @@ SIGNATURE_HTML_TEMPLATE = """
 
 
 @router.post("/team/leads/{lead_id}/email")
-async def send_lead_email(lead_id: str, member=Depends(get_current_member), subject: str = Form(...), body: str = Form(...), signature: str = Form(""), attachment: Optional[UploadFile] = File(None), document_ids: str = Form("")):
+async def send_lead_email(lead_id: str, member=Depends(get_current_member), subject: str = Form(...), body: str = Form(...), signature: str = Form(""), attachments: List[UploadFile] = File(None), document_ids: str = Form("")):
     """Send an email to a lead. Attachments and library documents are sent as download links."""
     from bson import ObjectId
     from emails import wrap_email
@@ -421,39 +421,42 @@ async def send_lead_email(lead_id: str, member=Depends(get_current_member), subj
                     <span style="float:right;color:#C8A96A;font-size:12px;">{size_mb:.1f} MB · Download</span>
                 </a>"""
 
-    # Handle uploaded attachment → convert to download link
-    attachment_name = None
-    if attachment and attachment.filename:
-        file_content = await attachment.read()
-        if len(file_content) > 25 * 1024 * 1024:
-            raise HTTPException(status_code=400, detail="File too large (max 25MB)")
+    # Handle uploaded attachments → convert each to download link
+    attachment_names = []
+    if attachments:
+        for attachment in attachments:
+            if not attachment or not attachment.filename:
+                continue
+            file_content = await attachment.read()
+            if len(file_content) > 25 * 1024 * 1024:
+                continue  # Skip files > 25MB
 
-        from object_storage import put_object
-        ext = attachment.filename.rsplit(".", 1)[-1] if "." in attachment.filename else "pdf"
-        storage_path = f"euroadria/attachments/{_uuid.uuid4()}.{ext}"
-        put_object(storage_path, file_content, attachment.content_type or "application/octet-stream")
+            from object_storage import put_object
+            ext = attachment.filename.rsplit(".", 1)[-1] if "." in attachment.filename else "pdf"
+            storage_path = f"euroadria/attachments/{_uuid.uuid4()}.{ext}"
+            put_object(storage_path, file_content, attachment.content_type or "application/octet-stream")
 
-        dl_id = str(_uuid.uuid4())
-        await db.download_links.insert_one({
-            "download_id": dl_id,
-            "storage_path": storage_path,
-            "filename": attachment.filename,
-            "label": attachment.filename,
-            "lead_id": lead_id,
-            "created_by": member["name"],
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "download_count": 0,
-        })
-        dl_url = f"{SITE_URL}/api/dl/{dl_id}"
-        size_mb = len(file_content) / (1024 * 1024)
-        attachment_name = attachment.filename
-        doc_names.append(attachment.filename)
-        download_links_html += f"""
-        <a href="{dl_url}" style="display:block;margin:8px 0;padding:14px 20px;background:#04151F;border-radius:10px;text-decoration:none;color:#fff;font-size:14px;">
-            <span style="display:inline-block;vertical-align:middle;margin-right:10px;">📎</span>
-            <span style="font-weight:600;">{attachment.filename}</span>
-            <span style="float:right;color:#C8A96A;font-size:12px;">{size_mb:.1f} MB · Download</span>
-        </a>"""
+            dl_id = str(_uuid.uuid4())
+            await db.download_links.insert_one({
+                "download_id": dl_id,
+                "storage_path": storage_path,
+                "filename": attachment.filename,
+                "label": attachment.filename,
+                "lead_id": lead_id,
+                "created_by": member["name"],
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "download_count": 0,
+            })
+            dl_url = f"{SITE_URL}/api/dl/{dl_id}"
+            size_mb = len(file_content) / (1024 * 1024)
+            attachment_names.append(attachment.filename)
+            doc_names.append(attachment.filename)
+            download_links_html += f"""
+            <a href="{dl_url}" style="display:block;margin:8px 0;padding:14px 20px;background:#04151F;border-radius:10px;text-decoration:none;color:#fff;font-size:14px;">
+                <span style="display:inline-block;vertical-align:middle;margin-right:10px;">📎</span>
+                <span style="font-weight:600;">{attachment.filename}</span>
+                <span style="float:right;color:#C8A96A;font-size:12px;">{size_mb:.1f} MB · Download</span>
+            </a>"""
 
     # Build HTML body
     body_html = body.replace("\n", "<br>")
@@ -498,7 +501,7 @@ async def send_lead_email(lead_id: str, member=Depends(get_current_member), subj
             "subject": subject,
             "body": body,
             "signature": signature or "",
-            "attachment": attachment_name,
+            "attachment": attachment_names if attachment_names else None,
             "documents": doc_names,
             "sent_by": member["name"],
             "sent_by_email": member["email"],

@@ -64,6 +64,7 @@ const AnalyticsDashboard = ({ credentials }) => {
   const [emailBody, setEmailBody] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [emailAttachments, setEmailAttachments] = useState([]);
   const [sentEmails, setSentEmails] = useState([]);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importFile, setImportFile] = useState(null);
@@ -202,25 +203,30 @@ const AnalyticsDashboard = ({ credentials }) => {
     setSendingEmail(true);
     setEmailSent(false);
     try {
+      const formData = new FormData();
+      formData.append('subject', emailSubject);
+      formData.append('body', emailBody);
+      if (emailAttachments.length > 0) {
+        emailAttachments.forEach(f => formData.append('attachments', f));
+      }
       const res = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/api/admin/leads/${selectedLead._id}/email`,
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
-          },
-          body: JSON.stringify({ subject: emailSubject, body: emailBody })
+          headers: { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) },
+          body: formData
         }
       );
       if (res.ok) {
         setEmailSent(true);
+        const attachNames = emailAttachments.map(f => f.name);
+        const noteText = `Email sent: "${emailSubject}"${attachNames.length ? ` (${attachNames.join(', ')})` : ''}`;
         setSelectedLead(prev => ({
           ...prev,
-          notes: [{ _id: Date.now(), text: `Email sent: "${emailSubject}"`, author: 'Admin (Holger)', created_at: new Date().toISOString() }, ...(prev.notes || [])]
+          notes: [{ _id: Date.now(), text: noteText, author: 'Admin (Holger)', created_at: new Date().toISOString() }, ...(prev.notes || [])]
         }));
-        setSentEmails(prev => [{ subject: emailSubject, body: emailBody, sent_at: new Date().toISOString() }, ...prev]);
-        setTimeout(() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); setEmailSent(false); }, 1500);
+        setSentEmails(prev => [{ subject: emailSubject, body: emailBody, documents: attachNames, sent_at: new Date().toISOString() }, ...prev]);
+        setTimeout(() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); setEmailSent(false); setEmailAttachments([]); }, 1500);
       } else {
         const err = await res.json();
         alert(err.detail || 'Email konnte nicht gesendet werden');
@@ -717,6 +723,24 @@ const AnalyticsDashboard = ({ credentials }) => {
                     />
                     <div className="bg-gray-50 rounded-lg px-3 py-2 text-xs text-ea-dark/30">
                       Signatur: Holger Kuhlmann, CEO & Founder + EuroAdria Corporate
+                    </div>
+                    {/* Multi-file attachments */}
+                    <div>
+                      <label className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 transition-all">
+                        <Upload className="w-3.5 h-3.5 text-ea-dark/40" />
+                        <span className="text-xs text-ea-dark/40">Attach files (max 25MB each)</span>
+                        <input type="file" multiple className="hidden" onChange={e => setEmailAttachments(prev => [...prev, ...Array.from(e.target.files)])} data-testid="admin-email-attachments" />
+                      </label>
+                      {emailAttachments.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          {emailAttachments.map((f, i) => (
+                            <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-ea-gold/10 rounded text-xs text-ea-dark/70">
+                              {f.name}
+                              <button onClick={() => setEmailAttachments(prev => prev.filter((_, j) => j !== i))} className="text-ea-dark/30 hover:text-red-500"><X className="w-3 h-3" /></button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <button
                       onClick={sendAdminEmail}

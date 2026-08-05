@@ -94,7 +94,7 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
   const [sentEmails, setSentEmails] = useState([]);
   const [showSignatureEdit, setShowSignatureEdit] = useState(false);
   const [signatureDraft, setSignatureDraft] = useState('');
-  const [emailAttachment, setEmailAttachment] = useState(null);
+  const [emailAttachments, setEmailAttachments] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [selectedDocs, setSelectedDocs] = useState([]);
   const [showDocPicker, setShowDocPicker] = useState(false);
@@ -163,7 +163,7 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
       formData.append('subject', emailSubject);
       formData.append('body', emailBody);
       formData.append('signature', signature);
-      if (emailAttachment) formData.append('attachment', emailAttachment);
+      if (emailAttachments.length > 0) emailAttachments.forEach(f => formData.append('attachments', f));
       if (selectedDocs.length > 0) formData.append('document_ids', selectedDocs.join(','));
       const res = await fetch(`${API}/api/team/leads/${lead._id}/email`, {
         method: 'POST',
@@ -172,12 +172,12 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
       });
       if (res.ok) {
         setEmailSent(true);
-        const attachName = emailAttachment ? emailAttachment.name : null;
+        const attachNames = emailAttachments.map(f => f.name);
         const docNames = selectedDocs.map(id => documents.find(d => d._id === id)?.label).filter(Boolean);
-        const allDocs = [...(attachName ? [attachName] : []), ...docNames];
+        const allDocs = [...attachNames, ...docNames];
         setNotes(prev => [{ _id: Date.now(), text: `Email sent: "${emailSubject}"${allDocs.length ? ` (Documents: ${allDocs.join(', ')})` : ''}`, author: 'System', created_at: new Date().toISOString() }, ...prev]);
         setSentEmails(prev => [{ subject: emailSubject, body: emailBody, sent_at: new Date().toISOString(), attachment: attachName, documents: docNames }, ...prev]);
-        setTimeout(() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); setEmailSent(false); setEmailAttachment(null); setSelectedDocs([]); }, 1500);
+        setTimeout(() => { setShowEmailComposer(false); setEmailSubject(''); setEmailBody(''); setEmailSent(false); setEmailAttachments([]); setSelectedDocs([]); }, 1500);
       } else {
         const err = await res.json();
         alert(err.detail || 'Email could not be sent');
@@ -427,15 +427,22 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
               className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-[#C8A96A] resize-none"
               data-testid="email-body-textarea"
             />
-            {/* Attachment */}
-            <div className="flex items-center gap-3">
-              <label className="flex-1 flex items-center gap-2 px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 transition-all">
+            {/* Attachments */}
+            <div>
+              <label className="flex items-center gap-2 px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 transition-all">
                 <Upload className="w-4 h-4 text-white/40" />
-                <span className="text-white/40 text-sm">{emailAttachment ? emailAttachment.name : 'Attach file (max 25MB)'}</span>
-                <input type="file" className="hidden" onChange={e => setEmailAttachment(e.target.files[0] || null)} data-testid="email-attachment-input" />
+                <span className="text-white/40 text-sm">Attach files (max 25MB each)</span>
+                <input type="file" multiple className="hidden" onChange={e => setEmailAttachments(prev => [...prev, ...Array.from(e.target.files)])} data-testid="email-attachment-input" />
               </label>
-              {emailAttachment && (
-                <button onClick={() => setEmailAttachment(null)} className="text-white/30 hover:text-red-400 transition-all"><X className="w-4 h-4" /></button>
+              {emailAttachments.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {emailAttachments.map((f, i) => (
+                    <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-lg text-xs text-white/70">
+                      {f.name} <span className="text-white/30">({(f.size / 1024 / 1024).toFixed(1)}MB)</span>
+                      <button onClick={() => setEmailAttachments(prev => prev.filter((_, j) => j !== i))} className="text-white/30 hover:text-red-400"><X className="w-3 h-3" /></button>
+                    </span>
+                  ))}
+                </div>
               )}
             </div>
             {/* Document Library Picker */}
