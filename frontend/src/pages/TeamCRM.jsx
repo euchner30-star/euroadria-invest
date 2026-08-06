@@ -452,9 +452,27 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
                 {selectedDocs.length > 0 ? `${selectedDocs.length} document${selectedDocs.length > 1 ? 's' : ''} selected` : 'Select from document library'}
               </button>
               {showDocPicker && (
-                <div className="mt-2 bg-white/5 border border-white/10 rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto" data-testid="doc-picker-list">
+                <div className="mt-2 bg-white/5 border border-white/10 rounded-lg p-3 space-y-2 max-h-64 overflow-y-auto" data-testid="doc-picker-list">
+                  {/* Upload button */}
+                  <label className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#C8A96A]/10 border border-[#C8A96A]/20 cursor-pointer hover:bg-[#C8A96A]/20 transition-all">
+                    <Plus className="w-4 h-4 text-[#C8A96A]" />
+                    <span className="text-[#C8A96A] text-sm font-medium">Upload to library</span>
+                    <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" className="hidden" onChange={async e => {
+                      const file = e.target.files[0];
+                      if (!file) return;
+                      const fd = new FormData();
+                      fd.append('file', file);
+                      fd.append('label', file.name.replace(/\.[^/.]+$/, ''));
+                      const res = await fetch(`${API}/api/team/documents`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: fd });
+                      if (res.ok) {
+                        const newDoc = await res.json();
+                        setDocuments(prev => [newDoc, ...prev]);
+                      }
+                      e.target.value = '';
+                    }} />
+                  </label>
                   {documents.length === 0 ? (
-                    <p className="text-white/30 text-xs">No documents in library yet</p>
+                    <p className="text-white/30 text-xs">No documents yet — upload your first one above</p>
                   ) : documents.map(doc => (
                     <label key={doc._id} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 cursor-pointer transition-all">
                       <input
