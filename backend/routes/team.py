@@ -226,6 +226,24 @@ async def delete_note(lead_id: str, note_id: str, member=Depends(get_current_mem
     return {"success": True}
 
 
+@router.put("/team/leads/{lead_id}/notes/{note_id}")
+async def update_note(lead_id: str, note_id: str, data: NoteCreate, member=Depends(get_current_member)):
+    """Edit an existing note (only by the author)."""
+    from bson import ObjectId
+    note = await db.lead_notes.find_one({"_id": ObjectId(note_id), "lead_id": lead_id})
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+    if note.get("author") != member["name"] and note.get("author") != "System":
+        raise HTTPException(status_code=403, detail="Can only edit your own notes")
+    await db.lead_notes.update_one(
+        {"_id": ObjectId(note_id)},
+        {"$set": {"text": data.text, "edited_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True}
+
+
+
+
 # ── Commission Dashboard ────────────────────────────────────────────────
 
 @router.get("/team/commissions")

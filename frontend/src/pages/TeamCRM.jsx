@@ -137,6 +137,23 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
     setNotes(notes.filter(n => n._id !== noteId));
   };
 
+  const [editingNote, setEditingNote] = useState(null);
+  const [editNoteText, setEditNoteText] = useState('');
+
+  const saveNoteEdit = async (noteId) => {
+    if (!editNoteText.trim()) return;
+    const res = await fetch(`${API}/api/team/leads/${lead._id}/notes/${noteId}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: editNoteText })
+    });
+    if (res.ok) {
+      setNotes(notes.map(n => n._id === noteId ? { ...n, text: editNoteText, edited_at: new Date().toISOString() } : n));
+      setEditingNote(null);
+      setEditNoteText('');
+    }
+  };
+
   const saveChanges = async () => {
     setSaving(true);
     await fetch(`${API}/api/team/leads/${lead._id}`, {
@@ -581,13 +598,30 @@ function LeadDetail({ lead, token, onBack, onUpdate }) {
           {notes.length === 0 && <p className="text-white/30 text-sm text-center py-6">No notes yet. Add the first one above.</p>}
           {notes.map((note) => (
             <div key={note._id} className="bg-white/5 rounded-lg p-4 group">
-              <div className="flex justify-between items-start">
-                <p className="text-white text-sm leading-relaxed">{note.text}</p>
-                <button onClick={() => deleteNote(note._id)} className="text-white/20 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all ml-2 shrink-0" data-testid={`note-delete-${note._id}`}>
-                  <Trash2 className="w-4 h-4" />
-                </button>
+              <div className="flex justify-between items-start gap-2">
+                {editingNote === note._id ? (
+                  <div className="flex-1 space-y-2">
+                    <textarea value={editNoteText} onChange={e => setEditNoteText(e.target.value)} className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm resize-none focus:outline-none focus:border-[#C8A96A]" rows={3} />
+                    <div className="flex gap-2">
+                      <button onClick={() => saveNoteEdit(note._id)} className="px-3 py-1 bg-[#C8A96A] text-[#04151F] text-xs font-bold rounded-lg">Save</button>
+                      <button onClick={() => setEditingNote(null)} className="px-3 py-1 text-white/40 text-xs">Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-white text-sm leading-relaxed">{note.text}</p>
+                )}
+                {editingNote !== note._id && note.author !== 'System' && (
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all shrink-0">
+                    <button onClick={() => { setEditingNote(note._id); setEditNoteText(note.text); }} className="text-white/20 hover:text-[#C8A96A]" data-testid={`note-edit-${note._id}`}>
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => deleteNote(note._id)} className="text-white/20 hover:text-red-400" data-testid={`note-delete-${note._id}`}>
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
               </div>
-              <p className="text-white/30 text-xs mt-2">{note.author} - {new Date(note.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+              <p className="text-white/30 text-xs mt-2">{note.author} - {new Date(note.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}{note.edited_at ? ' (edited)' : ''}</p>
             </div>
           ))}
         </div>
