@@ -471,6 +471,11 @@ img {
 }
 
 
+/* Dark map tiles filter */
+.dark-tiles {
+  filter: invert(1) hue-rotate(180deg) brightness(0.8) contrast(1.1) saturate(0.3);
+}
+
 /* Leaflet Map Popup Styling */
 .leaflet-popup-content-wrapper {
   background: #fff;
