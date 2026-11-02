@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingUp, Building2, Sparkles } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
+const FALLBACK_HERO = 'https://images.unsplash.com/photo-1634033363853-bf0314b44f16?fm=webp&q=80&w=1920';
+
 const Hero = ({ backgroundImage, overlayOpacity = 50, title, subtitle, ctaText, backgroundImagePosition }) => {
-  const heroImage = backgroundImage || '';
+  const heroImage = backgroundImage || FALLBACK_HERO;
   const { t } = useLanguage();
 
   // Optimize Unsplash URLs for faster LCP
