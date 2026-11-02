@@ -30,10 +30,7 @@ const Hero = ({ overlayOpacity = 55, title, subtitle, ctaText }) => {
       </video>
 
       {/* Dark gradient overlay */}
-      <div 
-        className="absolute inset-0 bg-gradient-to-b from-ea-dark/70 via-ea-dark/50 to-ea-dark/80" 
-        style={{ opacity: overlayOpacity / 100 }}
-      />
+      <div className="absolute inset-0 bg-gradient-to-b from-ea-dark/80 via-ea-dark/65 to-ea-dark/90" />
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 pt-20 sm:pt-24">
@@ -47,10 +44,10 @@ const Hero = ({ overlayOpacity = 55, title, subtitle, ctaText }) => {
         </div>
 
         <div className="text-center max-w-4xl mx-auto mb-8 sm:mb-12">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-semibold text-white mb-4 sm:mb-8 leading-tight drop-shadow-lg px-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-8 leading-tight [text-shadow:_0_2px_12px_rgba(0,0,0,0.6)] px-2">
             {title || t('hero.title')}
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-ea-light/90 leading-relaxed max-w-3xl mx-auto drop-shadow-md px-2">
+          <p className="text-sm sm:text-base md:text-lg text-white/95 font-medium leading-relaxed max-w-3xl mx-auto [text-shadow:_0_1px_8px_rgba(0,0,0,0.5)] px-2">
             {subtitle || t('hero.subtitle')}
           </p>
         </div>
