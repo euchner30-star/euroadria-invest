@@ -1,37 +1,37 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingUp, Building2, Sparkles } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-const FALLBACK_HERO = 'https://images.unsplash.com/photo-1634033363853-bf0314b44f16?fm=webp&q=80&w=1920';
-
-const Hero = ({ backgroundImage, overlayOpacity = 50, title, subtitle, ctaText, backgroundImagePosition }) => {
-  const heroImage = backgroundImage || FALLBACK_HERO;
+const Hero = ({ backgroundImage, overlayOpacity = 55, title, subtitle, ctaText }) => {
   const { t } = useLanguage();
+  const videoRef = useRef(null);
 
-  // Optimize Unsplash URLs for faster LCP
-  const optimizedHeroImage = heroImage && heroImage.includes('unsplash.com') && !heroImage.includes('&fm=')
-    ? `${heroImage}${heroImage.includes('?') ? '&' : '?'}fm=webp&q=75&w=1920`
-    : heroImage;
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, []);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-ea-dark" data-testid="hero-section">
-      {/* Background Image - eager load for LCP */}
-      {optimizedHeroImage && (
-        <img
-          src={optimizedHeroImage}
-          alt=""
-          fetchpriority="high"
-          decoding="sync"
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ objectPosition: `center ${backgroundImagePosition ?? 50}%` }}
-          data-testid="hero-background"
-        />
-      )}
-      
+      {/* Video Background */}
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        loop
+        playsInline
+        poster="/videos/hero-poster.jpg"
+        className="absolute inset-0 w-full h-full object-cover"
+        data-testid="hero-video-background"
+      >
+        <source src="/videos/hero-bg.mp4" type="video/mp4" />
+      </video>
+
       {/* Dark overlay */}
       <div 
-        className="absolute inset-0 bg-ea-dark" 
+        className="absolute inset-0 bg-gradient-to-b from-ea-dark/70 via-ea-dark/50 to-ea-dark/80" 
         style={{ opacity: overlayOpacity / 100 }}
       />
 
@@ -47,10 +47,10 @@ const Hero = ({ backgroundImage, overlayOpacity = 50, title, subtitle, ctaText, 
         </div>
 
         <div className="text-center max-w-4xl mx-auto mb-12">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-white mb-8 leading-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-white mb-8 leading-tight drop-shadow-lg">
             {title || t('hero.title')}
           </h1>
-          <p className="text-lg md:text-xl text-ea-light/90 leading-relaxed max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-ea-light/90 leading-relaxed max-w-3xl mx-auto drop-shadow-md">
             {subtitle || t('hero.subtitle')}
           </p>
         </div>

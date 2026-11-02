@@ -1,81 +1,58 @@
-# EuroAdria Investment Intelligence Platform - PRD
+# EuroAdria Investment Intelligence Platform — PRD
 
 ## Original Problem Statement
-Professional "Investment Intelligence Platform" for the Balkan region with full CMS + Sales CRM. Decoupled architecture (React + FastAPI + MongoDB Atlas), hosted on Render.
+Professionelle EuroAdria Investment Intelligence Platform für den Balkan: React/FastAPI/MongoDB mit CMS, Immobilienportal, Admin-CRM, Team-CRM, E-Mail-System, Provisionen, Dokumentenbibliothek, Analytics und DSGVO-Funktionen. Kommunikation auf Deutsch.
 
-## Completed Features (Latest)
-### Property Listings - ImmoScout Style (2026-07-21)
-- Full CRUD for properties with GridFS image/PDF uploads
-- Dynamic Location CRUD in Admin Panel (auto-seed 18 locations)
-- Property grid on /properties, Home page (FeaturedProperties), and per-location pages
-- Property detail page with breadcrumb navigation (Home / Alle Immobilien / Title)
-- "Zurück zu allen Immobilien" back-link on detail pages
-- **"Ähnliche Objekte" section** on detail pages: shows similar properties from same region
-- **Price on Request** toggle per property
-- **Inquiry form** with email notifications (team + customer with property image + corporate signature + tracking pixel)
-- **Share button** (WhatsApp, Facebook, X, Email, Copy Link) with OG image generation (property photo + logo + title/price)
-- **OG share endpoint** `/api/p/{id}` for social media crawlers
-- **Emergent Object Storage** for fast image delivery with GridFS fallback
-- **Document Library** for team: upload documents, select from library, send as download links in emails
-- **Team Activities Feed** in Admin: see who did what, filter by member/timeframe
-- Memory leak fix: cached logo, fonts, OG images
-- PDF Exposé download with UTF-8 support
+## Architecture
+- **Frontend**: React 19, TailwindCSS, Shadcn/UI, react-helmet-async
+- **Backend**: FastAPI, Motor/MongoDB
+- **Storage**: Object Storage für neue Bilder/Dokumente, GridFS-Fallback für Altbestände
+- **Hosting**: Render (Production, Domain euroadria.me); Emergent (Preview)
+- **Auth**: Admin HTTP Basic, Team JWT+bcrypt
 
-### Sales CRM Phase 1+2 (2026-07-10/17)
-- Extended pipeline: 8 stages (new→contacted→qualified→offer→negotiation→contract→won→lost)
-- Property details: value, type (7 options), location
-- Individual commission amounts per deal (not percentage)
-- Commission dashboard in Team CRM: pipeline/won/pending/confirmed
-- **Team Management UI** in Admin Panel: Create/Edit/Delete team members
-- **Commission confirmation** by admin (button in Lead Detail Modal + Team tab)
-- **Commission CSV Export** with all deal data
-- **Configurable roles**: member (full access) / restricted (assigned leads only)
-- D. Lein account (restricted), Lead assignment, CSV Import, Manual Lead Creation
-- Email sending from Admin + Team CRM with corporate signature + logo
-- Team Leader hierarchy with commission bonuses
+## Core Features Implemented
+- Property CRUD mit dynamischen Locations, Price-on-Request, Gallery, OG-Images
+- Blog/Articles CMS mit Share-Funktionalität
+- Team CRM: Login, Lead-Management, Notes, E-Mail mit Mehrfachanhängen, Dokumentenbibliothek
+- Admin Dashboard: Kanban Pipeline, Lead-Bearbeitung, Team-Aktivitäten, Produkt-/Provisionskatalog
+- DSGVO-Panel: E-Mail-Suche über alle Collections, IP-Erfassung, Backup-Export
+- Cookie-Banner v1.1 (DE/EN, IP, GA4, Meta Pixel Hinweise)
+- Investment Heatmap mit Leaflet-Karten
+- E-Mail: Resend für alle Mails, Tracking-Pixel, Corporate-Signatur
+- OG/Social Share: Serverseitige Share-HTML für WhatsApp/Social
+- Video Hero: Drohnen-Video von Budva/Montenegro als Hintergrund
 
-### Previous Features
-- Full CMS (articles, pages, regions, events, newsletter)
-- ROI Calculator, Investment Models
-- Tracking (GTM, GA4 dual, Meta Pixel - DSGVO compliant)
-- GridFS file storage, PDF streaming
-- English translation, Team CRM, Email tracking
-- 30-Minute Auto-Logout for inactive sessions
+## Recent Changes (2026-11-02)
+- **Karten-Fix**: CARTO Tiles (API KEY REQUIRED) durch OpenStreetMap + CSS Dark-Filter ersetzt
+- **Hero Video**: Statisches Hintergrundbild durch Pexels Drohnen-Video (Budva, Montenegro) ersetzt, komprimiert auf 3MB
 
-## Pipeline Stages
-new → contacted → qualified → offer → negotiation → contract → won → lost
+## Pending / Backlog
 
-## Commission System
-- Individual amount per deal (set by sales rep or admin)
-- Pending when status=won
-- Confirmed by admin via "Provision bestätigen" button
-- Visible in Team CRM dashboard + Admin Team tab
+### P0 — Critical
+- Brevo-Nutzung klären: Newsletter-Sendepfad prüfen, Entscheidung ob behalten/ersetzen/deaktivieren
+- Dokumentenbibliothek: Download-Endpoint wegen Preview-404 vollständig testen
+- E-Mail-Versand in Production mit Resend konfigurieren/verifizieren
+- Security-Reaudit nach korrekter Render-Env-Konfiguration
 
-## Team Roles
-- **member** (Milena): Full access to all leads
-- **restricted** (D. Lein): Only sees assigned leads
+### P1 — Important
+- Cloudflare/Crawler-Freigabe für Facebook/Twitter/LinkedIn Social Previews
+- Render → Emergent Hosting Migration (nach Nutzerentscheidung)
+- Refactoring: AdminPage.jsx, AnalyticsDashboard.jsx, TeamCRM.jsx aufteilen
 
-## Key API Endpoints
-### Sales CRM
-- PUT /api/team/leads/{id} - Update with property_value, property_type, property_location, commission_amount
-- GET /api/team/commissions - Commission dashboard for current member
-- POST /api/admin/team-members - Create team member
-- PUT /api/admin/team-members/{email} - Update member (name, role, commission_rate)
-- DELETE /api/admin/team-members/{email} - Delete member
-- GET /api/admin/commissions - All commissions for export
-- PUT /api/admin/leads/{id}/confirm-commission - Confirm commission
-- PUT /api/admin/leads/{id}/assign - Assign lead to member
-- POST /api/admin/leads/import - CSV bulk import
-- POST /api/admin/leads - Manual lead creation
+### P2 — Nice to Have
+- Video-Hintergrund Hero (verschiedene Szenen/Montage)
+- Podcast-Integration
+- Lead-Reaktivierung via WhatsApp
+- PDF-Generator: Templates speichern
+- Google Docs Import per URL
+- Telegram/SMS/WhatsApp-Benachrichtigungen (vom Nutzer pausiert)
 
-## Upcoming (P1)
-- Lead Reactivation (WhatsApp) - Dead leads 7+ days, WhatsApp group invite
-- Video Background Hero Section
-- Podcast Integration
-
-## Backlog (P2)
-- Template-Speichern im PDF Generator
-- Google Docs Import via URL
-- Performance dashboard per rep
-- Auto commission notifications
-- Refactoring: Split AnalyticsDashboard.jsx and TeamCRM.jsx (1000+ lines)
+## Key Files
+- `/app/frontend/src/components/Hero.jsx` — Video Hero
+- `/app/frontend/src/components/InvestmentHeatmap.jsx` — Karten mit OSM Tiles
+- `/app/frontend/src/App.css` — Dark-Tiles CSS Filter
+- `/app/backend/routes/properties.py` — Immobilien CRUD, OG, Share
+- `/app/backend/routes/team.py` — Team CRM, Docs, E-Mail
+- `/app/backend/routes/analytics.py` — Admin, DSGVO, Backup
+- `/app/backend/routes/newsletter.py` — Newsletter (Brevo-Abhängigkeit prüfen)
+- `/app/backend/core.py` — DB, Auth, Config

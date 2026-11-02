@@ -888,7 +888,7 @@ async def admin_get_activities(admin: str = Depends(verify_admin), member: str =
         try:
             from bson import ObjectId
             lead = await db.leads.find_one({"_id": ObjectId(n["lead_id"])}, {"name": 1, "email": 1})
-        except:
+        except Exception:
             lead = None
         activities.append({
             "type": "note",
@@ -908,7 +908,7 @@ async def admin_get_activities(admin: str = Depends(verify_admin), member: str =
     for e in emails:
         try:
             lead = await db.leads.find_one({"_id": ObjectId(e["lead_id"])}, {"name": 1})
-        except:
+        except Exception:
             lead = None
         docs = e.get("documents", [])
         activities.append({
@@ -926,7 +926,7 @@ async def admin_get_activities(admin: str = Depends(verify_admin), member: str =
     for n in sys_notes:
         try:
             lead = await db.leads.find_one({"_id": ObjectId(n["lead_id"])}, {"name": 1, "assigned_to_name": 1})
-        except:
+        except Exception:
             lead = None
         activities.append({
             "type": "system",

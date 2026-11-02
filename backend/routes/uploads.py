@@ -71,13 +71,7 @@ async def upload_image(file: UploadFile = File(...), admin: str = Depends(verify
             upsert=True
         )
 
-        # Also save locally as fallback
-        try:
-            file_path = UPLOAD_DIR / filename
-            with open(file_path, "wb") as f:
-                f.write(optimized)
-        except Exception:
-            pass
+        # Local fallback removed — use GridFS/Object Storage only
 
         url = f"/api/img/{filename}"
         original_size = len(content)
